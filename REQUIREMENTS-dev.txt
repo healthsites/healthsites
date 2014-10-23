@@ -13,3 +13,6 @@ Sphinx
 
 # pdb plus plus
 pdbpp
+
+# hizashi-utils
+hizashi-utils
