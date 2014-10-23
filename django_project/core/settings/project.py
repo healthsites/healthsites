@@ -20,7 +20,7 @@ DATABASES = {
 
 # Project apps
 INSTALLED_APPS += (
-    'sites',
+    'localities',
 )
 
 
