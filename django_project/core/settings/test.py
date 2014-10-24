@@ -15,7 +15,7 @@ NOSE_ARGS = (
     '--cover-html-dir=xmlrunner/html',
     '--cover-inclusive',
     '--cover-branches',
-    # '--cover-package=django_app',
+    '--cover-package=localities',
     '--nocapture',
     '--nologcapture'
 )

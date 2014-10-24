@@ -5,6 +5,7 @@ coverage
 nose-exclude
 pep8
 pylint
+factory_boy
 
 django-devserver
 
