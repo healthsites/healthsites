@@ -2,7 +2,7 @@ import logging
 LOG = logging.getLogger(__name__)
 
 from django.utils import timezone
-
+from django.utils.text import slugify
 from django.contrib.gis.db import models
 
 
@@ -22,6 +22,8 @@ class Locality(models.Model):
     created = models.DateTimeField(blank=True)
     modified = models.DateTimeField(blank=True)
     values = models.ManyToManyField('Attribute', through='Value')
+
+    objects = models.GeoManager()
 
     def save(self, *args, **kwargs):
         # update created and modified fields
@@ -44,15 +46,21 @@ class Value(models.Model):
 
     def __unicode__(self):
         return u'({}) {}={}'.format(
-            self.locality.id, self.attribute.name, self.data
+            self.locality.id, self.attribute.key, self.data
         )
 
 
 class Attribute(models.Model):
-    name = models.CharField(max_length=50)
+    key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
 
-    in_group = models.ManyToManyField('Group')
+    in_groups = models.ManyToManyField('Group')
 
     def __unicode__(self):
-        return u'{}'.format(self.name)
+        return u'{}'.format(self.key)
+
+    def save(self, *args, **kwargs):
+        # make sure key has a slug-like representation
+        self.key = slugify(unicode(self.key))
+
+        super(Attribute, self).save(*args, **kwargs)

@@ -10,7 +10,7 @@ class TestModelLocality(TestCase):
         self.assertEqual(unicode(locality), u'1')
 
     def test_model_with_value(self):
-        attr = AttributeF.create(name='test')
+        attr = AttributeF.create(key='test')
         locality = LocalityValueF.create(
             pk=1, attr1__data='test', attr1__attribute=attr
         )

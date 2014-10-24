@@ -17,16 +17,16 @@ class GroupF(factory.django.DjangoModelFactory):
 
 
 class AttributeF(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "attribute_{}".format(n))
+    key = factory.Sequence(lambda n: "attribute_{}".format(n))
     description = ''
 
     @factory.post_generation
-    def in_group(self, create, extracted, **kwargs):
+    def in_groups(self, create, extracted, **kwargs):
         if not create:
             return
         if extracted:
             for group in extracted:
-                self.in_group.add(group)
+                self.in_groups.add(group)
 
     class Meta:
         model = Attribute

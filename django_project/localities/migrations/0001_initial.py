@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='Attribute',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=50)),
+                ('key', models.TextField(unique=True)),
                 ('description', models.TextField(default=b'', null=True, blank=True)),
             ],
             options={
@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='attribute',
-            name='in_group',
+            name='in_groups',
             field=models.ManyToManyField(to='localities.Group'),
             preserve_default=True,
         ),
