@@ -21,11 +21,11 @@ class Locality(models.Model):
     geom = models.PointField(srid=4326)
     created = models.DateTimeField(blank=True)
     modified = models.DateTimeField(blank=True)
-    attributes = models.ManyToManyField('Attribute', through='Value')
+    values = models.ManyToManyField('Attribute', through='Value')
 
     def save(self, *args, **kwargs):
         # update created and modified fields
-        if self.pk:
+        if self.pk and not(kwargs.get('force_insert')):
             self.modified = timezone.now()
         else:
             current_time = timezone.now()
@@ -44,7 +44,7 @@ class Value(models.Model):
 
     def __unicode__(self):
         return u'({}) {}={}'.format(
-            self.locality.id, self.attribute.name, self.value
+            self.locality.id, self.attribute.name, self.data
         )
 
 

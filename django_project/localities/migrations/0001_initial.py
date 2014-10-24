@@ -40,8 +40,9 @@ class Migration(migrations.Migration):
                 ('uuid', models.TextField(unique=True)),
                 ('upstream_id', models.TextField(null=True)),
                 ('geom', django.contrib.gis.db.models.fields.PointField(srid=4326)),
-                ('created', models.DateTimeField()),
-                ('modified', models.DateTimeField()),
+                ('created', models.DateTimeField(blank=True)),
+                ('modified', models.DateTimeField(blank=True)),
+                ('group', models.ForeignKey(to='localities.Group')),
             ],
             options={
             },
@@ -61,14 +62,8 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='locality',
-            name='attributes',
+            name='values',
             field=models.ManyToManyField(to='localities.Attribute', through='localities.Value'),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='locality',
-            name='group',
-            field=models.ForeignKey(to='localities.Group'),
             preserve_default=True,
         ),
         migrations.AddField(
