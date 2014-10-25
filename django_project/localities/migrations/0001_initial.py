@@ -42,7 +42,6 @@ class Migration(migrations.Migration):
                 ('geom', django.contrib.gis.db.models.fields.PointField(srid=4326)),
                 ('created', models.DateTimeField(blank=True)),
                 ('modified', models.DateTimeField(blank=True)),
-                ('group', models.ForeignKey(to='localities.Group')),
             ],
             options={
             },
@@ -60,10 +59,20 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
+        migrations.AlterUniqueTogether(
+            name='value',
+            unique_together=set([('locality', 'attribute')]),
+        ),
         migrations.AddField(
             model_name='locality',
-            name='values',
+            name='attributes',
             field=models.ManyToManyField(to='localities.Attribute', through='localities.Value'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='locality',
+            name='group',
+            field=models.ForeignKey(to='localities.Group'),
             preserve_default=True,
         ),
         migrations.AddField(

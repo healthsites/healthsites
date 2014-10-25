@@ -21,7 +21,7 @@ class Locality(models.Model):
     geom = models.PointField(srid=4326)
     created = models.DateTimeField(blank=True)
     modified = models.DateTimeField(blank=True)
-    values = models.ManyToManyField('Attribute', through='Value')
+    attributes = models.ManyToManyField('Attribute', through='Value')
 
     objects = models.GeoManager()
 
@@ -43,6 +43,9 @@ class Value(models.Model):
     locality = models.ForeignKey('Locality')
     attribute = models.ForeignKey('Attribute')
     data = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = ('locality', 'attribute')
 
     def __unicode__(self):
         return u'({}) {}={}'.format(

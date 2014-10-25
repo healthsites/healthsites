@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .model_factories import LocalityF, LocalityValueF, AttributeF
+from .model_factories import LocalityF, LocalityValueF, AttributeF, GroupF
 
 
 class TestModelLocality(TestCase):
