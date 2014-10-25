@@ -25,6 +25,37 @@ class Locality(models.Model):
 
     objects = models.GeoManager()
 
+    def get_attr_map(self):
+        return (
+            Attribute.objects
+            .filter(in_groups=self.group)
+            .order_by('id')
+            .values('id', 'key')
+        )
+
+    def set_values(self, value_map):
+        attrs = self.get_attr_map()
+        changed_values = []
+        for key, data in value_map.iteritems():
+            # get attribute_id
+            attr_list = [attr for attr in attrs if attr['key'] == key]
+
+            if attr_list:
+                attr_id = attr_list[0]['id']
+                # update or create new values
+                changed_values.append(
+                    self.value_set.update_or_create(
+                        data=data, attribute_id=attr_id
+                    )
+                )
+            else:
+                # attr_id was not found (maybe a bad attribute)
+                LOG.warning(
+                    'Locality %s has no attribute key %s', self.pk, key
+                )
+
+        return changed_values
+
     def save(self, *args, **kwargs):
         # update created and modified fields
         if self.pk and not(kwargs.get('force_insert')):

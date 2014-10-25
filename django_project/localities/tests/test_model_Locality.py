@@ -20,3 +20,58 @@ class TestModelLocality(TestCase):
             [unicode(val) for val in locality.value_set.all()],
             [u'(1) test=test']
         )
+
+    def test_get_attr_map(self):
+        gr = GroupF.create(name='a group')
+
+        AttributeF.create(id=1, key='test', in_groups=[gr])
+        AttributeF.create(id=2, key='osm', in_groups=[gr])
+
+        # this group should not be in results
+        gr2 = GroupF.create(name='a group')
+        AttributeF.create(key='osm2', in_groups=[gr2])
+
+        locality = LocalityF.create(group=gr)
+
+        self.assertEqual(
+            list(locality.get_attr_map()),
+            [{'id': 1, 'key': u'test'}, {'id': 2, 'key': u'osm'}]
+        )
+
+    def test_set_values(self):
+        gr = GroupF.create(name='a group')
+
+        AttributeF.create(key='test', in_groups=[gr])
+        AttributeF.create(key='osm', in_groups=[gr])
+
+        locality = LocalityF.create(pk=1, group=gr)
+
+        value_map = {'osm': 'osm val', 'test': 'test val'}
+        chg_values = locality.set_values(value_map)
+
+        self.assertEqual(len(chg_values), 2)
+
+        # both attributes are created
+        self.assertEqual([val[1] for val in chg_values], [True, True])
+
+        value_map = {'osm': 'osm val'}
+        chg_values = locality.set_values(value_map)
+
+        # attribute has been updated
+        self.assertEqual(chg_values[0][1], False)
+
+    def test_set_values_bad_key(self):
+        gr = GroupF.create(name='a group')
+
+        AttributeF.create(key='test', in_groups=[gr])
+        AttributeF.create(key='osm', in_groups=[gr])
+
+        locality = LocalityF.create(pk=1, group=gr)
+
+        gr2 = GroupF.create(name='a group')
+        AttributeF.create(key='osm2', in_groups=[gr2])
+
+        value_map = {'osm2': 'bad key', 'test': 'test val'}
+        chg_values = locality.set_values(value_map)
+
+        self.assertEqual(len(chg_values), 1)
