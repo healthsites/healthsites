@@ -1,5 +1,7 @@
 from django.test import TestCase
 
+from django.db import IntegrityError
+
 from .model_factories import AttributeF, GroupF
 
 
@@ -16,4 +18,11 @@ class TestModelAttribute(TestCase):
         self.assertEqual(
             [group.name for group in attr.in_groups.all()],
             ['A group']
+        )
+
+    def test_model_uniqueness(self):
+        AttributeF.create(key='An attribute')
+
+        self.assertRaises(
+            IntegrityError, AttributeF.create, key='An attribute'
         )

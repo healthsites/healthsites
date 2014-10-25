@@ -17,7 +17,7 @@ class Group(models.Model):
 class Locality(models.Model):
     group = models.ForeignKey('Group')
     uuid = models.TextField(unique=True)
-    upstream_id = models.TextField(null=True)
+    upstream_id = models.TextField(null=True, unique=True)
     geom = models.PointField(srid=4326)
     created = models.DateTimeField(blank=True)
     modified = models.DateTimeField(blank=True)

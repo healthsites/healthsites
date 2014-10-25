@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('uuid', models.TextField(unique=True)),
-                ('upstream_id', models.TextField(null=True)),
+                ('upstream_id', models.TextField(unique=True, null=True)),
                 ('geom', django.contrib.gis.db.models.fields.PointField(srid=4326)),
                 ('created', models.DateTimeField(blank=True)),
                 ('modified', models.DateTimeField(blank=True)),

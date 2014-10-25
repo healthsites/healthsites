@@ -1,5 +1,7 @@
 from django.test import TestCase
 
+from django.db import IntegrityError
+
 from .model_factories import LocalityF, LocalityValueF, AttributeF, GroupF
 
 
@@ -75,3 +77,15 @@ class TestModelLocality(TestCase):
         chg_values = locality.set_values(value_map)
 
         self.assertEqual(len(chg_values), 1)
+
+    def test_uuid_uniqueness(self):
+        LocalityF.create(uuid='test_uuid')
+
+        self.assertRaises(IntegrityError, LocalityF.create, uuid='test_uuid')
+
+    def test_upstream_id_uniqueness(self):
+        LocalityF.create(upstream_id='test_id')
+
+        self.assertRaises(
+            IntegrityError, LocalityF.create, upstream_id='test_id'
+        )
