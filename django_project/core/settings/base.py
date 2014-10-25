@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django settings for healthsites project.
 
 from .utils import ABS_PATH
