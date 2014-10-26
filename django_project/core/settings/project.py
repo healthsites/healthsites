@@ -29,9 +29,10 @@ INSTALLED_APPS += (
 PIPELINE_JS = {
     'contrib': {
         'source_filenames': (
-            # 'js/jquery-1.11.1.min.js',
-            # 'js/csrf-ajax.js',
-            # 'js/underscore-min.js'
+            'js/leaflet.js',
+            'js/jquery-1.11.1.min.js',
+            'js/csrf-ajax.js',
+            'js/bootstrap.min.js'
         ),
         'output_filename': 'js/contrib.js',
     }
@@ -40,8 +41,8 @@ PIPELINE_JS = {
 PIPELINE_CSS = {
     'contrib': {
         'source_filenames': (
-            # 'css/bootstrap.min.css',
-            # 'css/bootstrap-responsive.min.css',
+            'css/leaflet.css',
+            'css/bootstrap.min.css',
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {
