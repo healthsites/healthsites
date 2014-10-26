@@ -23,7 +23,7 @@ class CSVImporter():
         self.attr_map = {
             'uuid': 'uuid',
             'upstream_id': '_num',
-            'geom': ['lat', 'lon'],
+            'geom': ['lon', 'lat'],
             'attributes': {
                 'services': 'services',
                 'contact-details': 'contact_details',
