@@ -32,7 +32,8 @@ PIPELINE_JS = {
             'js/leaflet.js',
             'js/jquery-1.11.1.min.js',
             'js/csrf-ajax.js',
-            'js/bootstrap.min.js'
+            'js/bootstrap.min.js',
+            'js/app.js'
         ),
         'output_filename': 'js/contrib.js',
     }
@@ -43,6 +44,7 @@ PIPELINE_CSS = {
         'source_filenames': (
             'css/leaflet.css',
             'css/bootstrap.min.css',
+            'css/main.css',
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {

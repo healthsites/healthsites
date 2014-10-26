@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Healthsites{% endblock %}
+
+{% block content %}
+
+<nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+<div class="container-fluid">
+<a class="navbar-brand" href="#">Konektaz</a>
+</nav>
+
+<div id="map"></div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script type="text/javascript">
+new APP();
+</script>
+{% endblock %}
