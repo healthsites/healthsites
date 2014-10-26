@@ -4,5 +4,6 @@ pytz
 django-braces
 django-model-utils
 django-pipeline
+django-geojson
 
 # raven
