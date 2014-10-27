@@ -2,12 +2,9 @@
 import logging
 LOG = logging.getLogger(__name__)
 
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView, DetailView, ListView
 
 from braces.views import JSONResponseMixin
-
-from djgeojson.views import GeoJSONLayerView
-
 
 from localities.models import Locality
 from localities.utils import render_fragment
@@ -17,10 +14,17 @@ class MainView(TemplateView):
     template_name = 'main.html'
 
 
-class LocalitiesLayer(GeoJSONLayerView):
-    # precision = 4   # float
-    model = Locality
-    # properties = ['id']
+class LocalitiesLayer(JSONResponseMixin, ListView):
+    def get_queryset(self):
+        queryset = (
+            Locality.objects.all()
+        )
+        return queryset
+
+    def get(self, request, *args, **kwargs):
+        object_list = [row.repr_simple() for row in self.get_queryset()]
+
+        return self.render_json_response(object_list)
 
 
 class LocalityInfo(JSONResponseMixin, DetailView):

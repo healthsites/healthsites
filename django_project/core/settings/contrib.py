@@ -5,7 +5,6 @@ from .base import *
 INSTALLED_APPS += (
     # 'raven.contrib.django',  # enable Raven plugin
     'pipeline',
-    'djgeojson'
 )
 
 # define template function (example for underscore)

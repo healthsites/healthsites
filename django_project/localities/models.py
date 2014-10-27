@@ -68,6 +68,9 @@ class Locality(models.Model):
             self.created = current_time
         super(Locality, self).save(*args, **kwargs)
 
+    def repr_simple(self):
+        return {u'i': self.pk, u'g': [self.geom.x, self.geom.y]}
+
     def repr_dict(self):
         return {
             u'id': self.pk,

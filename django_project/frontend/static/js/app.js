@@ -12,13 +12,13 @@ var APP = (function () {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.MAP);
 
-        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(this.MAP);
+        // var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        // }).addTo(this.MAP);
 
         var baseLayers = {
             "Humanitarian Style": hdm,
-            "OpenStreetMap": osm
+            // "OpenStreetMap": osm
         };
 
         // enable Layer control
@@ -48,30 +48,35 @@ var APP = (function () {
                 "opacity": 0.3
             };
 
-            var geojsonSingleURL = '/localities.geojson';
+            var geojsonSingleURL = '/localities.json';
             // read localities data
             $.getJSON(geojsonSingleURL, function (data) {
-                var geojsonLayer = L.geoJson(data, {
-                    pointToLayer: function (feature, latlng) {
-                        return L.circleMarker(latlng, style);
-                    },
-                    onEachFeature: function (feature, layer) {
-                        layer.on('mouseover', function () {
-                            layer.setStyle(hoverStyle);
+                var localitiesLayer = L.layerGroup();
+
+                for (var i = data.length - 1; i >= 0; i--) {
+                    var feature = new L.circleMarker([
+                            parseFloat(data[i]['g'][1]),
+                            parseFloat(data[i]['g'][0])
+                        ], style);
+                    feature.id = data[i]['i'];
+
+                    feature.on('mouseover', function (event) {
+                        event.target.setStyle(hoverStyle);
+                    });
+                    feature.on('click', function (event) {
+                        $.getJSON('/localities/'+event.target.id, function (data) {
+                            $('#localityModal .modal-body').html(data.repr);
+                            $('#localityModal').modal('show');
                         });
-                        layer.on('click', function () {
-                            $.getJSON('/localities/'+feature.id, function (data) {
-                                $('#localityModal .modal-body').html(data.repr);
-                                $('#localityModal').modal('show');
-                            });
-                        });
-                        layer.on('mouseout', function () {
-                            layer.setStyle(style);
-                        });
-                    }
-                });
+                    });
+                    feature.on('mouseout', function (event) {
+                        event.target.setStyle(style);
+                    });
+                    localitiesLayer.addLayer(feature);
+                };
+
                 var markers = new L.MarkerClusterGroup();
-                markers.addLayer(geojsonLayer);
+                markers.addLayer(localitiesLayer);
                 // add markers layer to the map
                 self.MAP.addLayer(markers);
             }

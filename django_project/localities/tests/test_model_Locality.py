@@ -110,3 +110,11 @@ class TestModelLocality(TestCase):
             u'geom': [16, 45],
             u'values': {u'test': u'test val', u'osm': u'osm val'}
         })
+
+    def test_repr_simple_method(self):
+
+        locality = LocalityF.create(pk=1, geom='POINT (16 45)')
+
+        self.assertDictEqual(locality.repr_simple(), {
+            u'i': 1, u'g': [16, 45]
+        })
