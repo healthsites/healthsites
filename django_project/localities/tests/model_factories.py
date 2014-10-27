@@ -12,6 +12,7 @@ from ..models import (
 class GroupF(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "group_{}".format(n))
     description = ''
+    template_fragment = ''
 
     class Meta:
         model = Group

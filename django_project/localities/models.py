@@ -10,6 +10,7 @@ from django.contrib.gis.db import models
 class Group(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True, default='')
+    template_fragment = models.TextField(null=True, blank=True, default='')
 
     def __unicode__(self):
         return u'{}'.format(self.name)
