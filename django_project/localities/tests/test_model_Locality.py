@@ -90,3 +90,23 @@ class TestModelLocality(TestCase):
         self.assertRaises(
             IntegrityError, LocalityF.create, upstream_id='test_id'
         )
+
+    def test_repr_dict_method(self):
+        gr = GroupF.create(name='a group')
+
+        AttributeF.create(key='test', in_groups=[gr])
+        AttributeF.create(key='osm', in_groups=[gr])
+
+        locality = LocalityF.create(
+            pk=1, group=gr, uuid='93b7e8c4621a4597938dfd3d27659162',
+            geom='POINT (16 45)'
+        )
+
+        value_map = {'osm': 'osm val', 'test': 'test val'}
+        locality.set_values(value_map)
+
+        self.assertDictEqual(locality.repr_dict(), {
+            u'id': 1, u'uuid': '93b7e8c4621a4597938dfd3d27659162',
+            u'geom': [16, 45],
+            u'values': {u'test': u'test val', u'osm': u'osm val'}
+        })

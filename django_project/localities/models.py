@@ -68,6 +68,17 @@ class Locality(models.Model):
             self.created = current_time
         super(Locality, self).save(*args, **kwargs)
 
+    def repr_dict(self):
+        return {
+            u'id': self.pk,
+            u'uuid': self.uuid,
+            u'values': {
+                val.attribute.key: val.data
+                for val in self.value_set.select_related('attribute').all()
+            },
+            u'geom': [self.geom.x, self.geom.y]
+        }
+
     def __unicode__(self):
         return u'{}'.format(self.id)
 
