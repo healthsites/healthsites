@@ -10,7 +10,7 @@ class TestModelAttribute(TestCase):
     def test_model_repr(self):
         attr = AttributeF.create(key='An attribute')
 
-        self.assertEqual(unicode(attr), 'an-attribute')
+        self.assertEqual(unicode(attr), 'an_attribute')
 
     def test_relations(self):
         group = GroupF.create(name='A group')

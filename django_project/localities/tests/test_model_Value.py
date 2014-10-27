@@ -12,7 +12,7 @@ class TestModelValue(TestCase):
         attr = AttributeF.create(key='An attribute')
         value = ValueF.create(locality=loc, attribute=attr, data='test')
 
-        self.assertEqual(unicode(value), '(1) an-attribute=test')
+        self.assertEqual(unicode(value), '(1) an_attribute=test')
 
     def test_model_uniqueness(self):
         loc = LocalityF.create()

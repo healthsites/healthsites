@@ -96,6 +96,6 @@ class Attribute(models.Model):
 
     def save(self, *args, **kwargs):
         # make sure key has a slug-like representation
-        self.key = slugify(unicode(self.key))
+        self.key = slugify(unicode(self.key)).replace('-', '_')
 
         super(Attribute, self).save(*args, **kwargs)
