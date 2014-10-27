@@ -16,3 +16,8 @@ body {
     height: 100%;
     width: 100%;
 }
+
+#localityModal {
+    right:30px;
+    left:auto !important;
+}

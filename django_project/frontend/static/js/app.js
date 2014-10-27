@@ -60,7 +60,10 @@ var APP = (function () {
                             layer.setStyle(hoverStyle);
                         });
                         layer.on('click', function () {
-                            console.log(feature);
+                            $.getJSON('/localities/'+feature.id, function (data) {
+                                $('#localityModal .modal-body').html(data.repr);
+                                $('#localityModal').modal('show');
+                            });
                         });
                         layer.on('mouseout', function () {
                             layer.setStyle(style);
