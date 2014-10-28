@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
 
-from .views import LocalitiesLayer, LocalityInfo
+from .views import LocalitiesLayer, LocalityInfo, LocalityUpdate
 
 urlpatterns = patterns(
     '',
@@ -11,5 +11,10 @@ urlpatterns = patterns(
     ),
     url(
         r'^localities/(?P<pk>\d+)$', LocalityInfo.as_view(),
-        name='locality-info')
+        name='locality-info'
+    ),
+    url(
+        r'^localities/(?P<pk>\d+)/form$', LocalityUpdate.as_view(),
+        name='locality-update'
+    )
 )
