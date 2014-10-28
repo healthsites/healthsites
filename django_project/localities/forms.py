@@ -9,15 +9,12 @@ class LocalityForm(forms.Form):
     lon = forms.FloatField()
     lat = forms.FloatField()
 
-    def __init__(self, locality, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
+        locality = kwargs.pop('locality')
 
         tmp_initial_data = {
             'lon': locality.geom.x, 'lat': locality.geom.y
         }
-
-        for attr in locality.group.attribute_set.all():
-            field = forms.CharField(label=attr.key)
-            self.base_fields[attr.key] = field
 
         # Locality forms are special as they automatcally collect initial data
         # based on the actual models
@@ -27,3 +24,7 @@ class LocalityForm(forms.Form):
         kwargs.update({'initial': tmp_initial_data})
 
         super(LocalityForm, self).__init__(*args, **kwargs)
+
+        for attr in locality.group.attribute_set.all():
+            field = forms.CharField(label=attr.key)
+            self.fields[attr.key] = field

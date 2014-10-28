@@ -14,7 +14,7 @@ class TestImporters(TestCase):
 
         loc = LocalityF.create(geom='POINT(16 45)', group=grp)
 
-        frm = LocalityForm(loc)
+        frm = LocalityForm(locality=loc)
 
         self.assertEqual(
             frm.as_ul(), (
@@ -37,7 +37,7 @@ class TestImporters(TestCase):
             attr1__attribute=test_attr, attr1__data='osm', group=grp
         )
 
-        frm = LocalityForm(loc)
+        frm = LocalityForm(locality=loc)
 
         self.assertEqual(
             frm.as_ul(), (
