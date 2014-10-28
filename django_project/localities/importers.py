@@ -108,6 +108,7 @@ class CSVImporter():
                 'values': {
                     key: self._read_attr(row_data, row_val)
                     for key, row_val in self.attr_map['attributes'].iteritems()
+                    if self._read_attr(row_data, row_val) not in (None, '')
                 }
             }
         })

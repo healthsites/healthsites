@@ -22,7 +22,7 @@ class TestImporters(TestCase):
         )
 
         self.assertEqual(Locality.objects.count(), 3)
-        self.assertEqual(Value.objects.count(), 9)
+        self.assertEqual(Value.objects.count(), 8)
 
     def test_ok_data_tabs(self):
         group = GroupF.create(name='Test')
@@ -32,13 +32,13 @@ class TestImporters(TestCase):
 
         CSVImporter(
             'Test', 'test_imp',
-            './localities/tests/test_data/test_csv_import_ok.csv',
+            './localities/tests/test_data/test_csv_import_ok.tsv',
             './localities/tests/test_data/test_csv_import_map.json',
             use_tabs=True
         )
 
         self.assertEqual(Locality.objects.count(), 3)
-        self.assertEqual(Value.objects.count(), 9)
+        self.assertEqual(Value.objects.count(), 8)
 
     def test_ok_data_bad_group(self):
         group = GroupF.create(name='Test')
