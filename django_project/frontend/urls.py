@@ -11,5 +11,7 @@ urlpatterns = patterns(
         r'^localities.json$',
         LocalitiesLayer.as_view(), name='localities'
     ),
-    url(r'^localities/(?P<pk>\d+)$', LocalityInfo.as_view(), name='localities')
+    url(
+        r'^localities/(?P<pk>\d+)$', LocalityInfo.as_view(),
+        name='locality-info')
 )

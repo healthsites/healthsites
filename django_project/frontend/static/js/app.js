@@ -12,13 +12,13 @@ var APP = (function () {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.MAP);
 
-        // var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        //    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        // }).addTo(this.MAP);
+        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        });
 
         var baseLayers = {
             "Humanitarian Style": hdm,
-            // "OpenStreetMap": osm
+            "OpenStreetMap": osm
         };
 
         // enable Layer control
