@@ -35,6 +35,10 @@ class Locality(models.Model):
             .values('id', 'key')
         )
 
+    def set_geom(self, lon, lat):
+        self.geom.set_x(lon)
+        self.geom.set_y(lat)
+
     def set_values(self, value_map):
         attrs = self.get_attr_map()
         changed_values = []
