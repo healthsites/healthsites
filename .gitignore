@@ -63,3 +63,7 @@ target/
 
 # Virtual env
 venv
+
+# Node
+static
+node_modules
