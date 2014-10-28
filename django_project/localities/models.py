@@ -47,7 +47,7 @@ class Locality(models.Model):
                 # update or create new values
                 changed_values.append(
                     self.value_set.update_or_create(
-                        data=data, attribute_id=attr_id
+                        attribute_id=attr_id, defaults={'data': data}
                     )
                 )
             else:
