@@ -28,7 +28,7 @@ npm -g install yuglify
 virtualenv venv
 source venv/bin/activate
 cd django_project
-python manage.py collectstatic --settings=core.settings.dev_timlinux
+python manage.py collectstatic --noinput --settings=core.settings.dev_timlinux
 ```
 
 

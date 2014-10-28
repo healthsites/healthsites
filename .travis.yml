@@ -23,7 +23,7 @@ before_script:
   - psql -c 'create database gis;' -U postgres
   - psql -c 'create extension postgis;' gis -U postgres
   - cd django_project
-  - python manage.py collectstatic --settings=core.settings.dev_travis
+  - python manage.py collectstatic --noinput --settings=core.settings.dev_travis
 
 script:
   - python manage.py test --settings=core.settings.test_travis
