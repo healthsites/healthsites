@@ -57,3 +57,9 @@ docs/_build/
 
 # PyBuilder
 target/
+
+#PyCharm
+.idea
+
+# Virtual env
+venv
