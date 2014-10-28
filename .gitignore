@@ -57,3 +57,13 @@ docs/_build/
 
 # PyBuilder
 target/
+
+#PyCharm
+.idea
+
+# Virtual env
+venv
+
+# Node
+static
+node_modules
