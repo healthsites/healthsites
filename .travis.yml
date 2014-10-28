@@ -13,7 +13,7 @@ addons:
   postgresql: "9.3"
 
 install:
-- pip install -r REQUIREMENTS.txt
+- pip install -r REQUIREMENTS-dev.txt
 - nodeenv -p --node=0.10.31
 - npm -g install yuglify
 
