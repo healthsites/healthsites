@@ -3,6 +3,7 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import uuid
+import json
 
 from django.contrib.gis.geos import Point
 from django.db import transaction
@@ -15,23 +16,13 @@ from ._csv_unicode import UnicodeDictReader
 
 class CSVImporter():
 
-    def __init__(self, group_name, source_name, csv_filename):
+    def __init__(self, group_name, source_name, csv_filename, attr_json_file):
         self.group_name = group_name
         self.source_name = source_name
         self.csv_filename = csv_filename
 
-        self.attr_map = {
-            'uuid': 'uuid',
-            'upstream_id': '_num',
-            'geom': ['lon', 'lat'],
-            'attributes': {
-                'services': 'services',
-                'contact-details': 'contact_details',
-                'physical-address': 'physical_address',
-                'name': 'name',
-                'url': '_pageUrl'
-            }
-        }
+        with open(attr_json_file, 'rb') as attr_map_file:
+            self.attr_map = json.load(attr_map_file)
 
         # import
         self._get_group()
@@ -74,7 +65,7 @@ class CSVImporter():
             row_data, self.attr_map['upstream_id']
         )
         if not(row_upstream_id):
-            LOG.error('Row {} has no upstream_id, skipping...', row_num)
+            LOG.error('Row %s has no upstream_id, skipping...', row_num)
             # skip this row
             return None
 

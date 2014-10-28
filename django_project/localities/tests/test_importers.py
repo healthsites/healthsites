@@ -17,7 +17,8 @@ class TestImporters(TestCase):
 
         CSVImporter(
             'Test', 'test_imp',
-            './localities/tests/test_data/test_csv_import_ok.csv'
+            './localities/tests/test_data/test_csv_import_ok.csv',
+            './localities/tests/test_data/test_csv_import_map.json'
         )
 
         self.assertEqual(Locality.objects.count(), 3)
@@ -32,7 +33,8 @@ class TestImporters(TestCase):
         self.assertRaises(
             LocalityImportError, CSVImporter,
             'Test-error', 'test_imp',
-            './localities/tests/test_data/test_csv_import_ok.csv'
+            './localities/tests/test_data/test_csv_import_ok.csv',
+            './localities/tests/test_data/test_csv_import_map.json'
         )
 
     def test_missing_upstream_id(self):
@@ -43,7 +45,8 @@ class TestImporters(TestCase):
 
         CSVImporter(
             'Test', 'test_imp',
-            './localities/tests/test_data/test_csv_import_bad.csv'
+            './localities/tests/test_data/test_csv_import_bad.csv',
+            './localities/tests/test_data/test_csv_import_map.json'
         )
 
         self.assertEqual(Locality.objects.count(), 2)
@@ -58,7 +61,8 @@ class TestImporters(TestCase):
 
         CSVImporter(
             'Test', 'test_imp',
-            './localities/tests/test_data/test_csv_import_bad.csv'
+            './localities/tests/test_data/test_csv_import_bad.csv',
+            './localities/tests/test_data/test_csv_import_map.json'
         )
 
         self.assertEqual(Locality.objects.count(), 2)
@@ -79,7 +83,8 @@ class TestImporters(TestCase):
 
         CSVImporter(
             'Test', 'test_imp',
-            './localities/tests/test_data/test_csv_import_bad.csv'
+            './localities/tests/test_data/test_csv_import_bad.csv',
+            './localities/tests/test_data/test_csv_import_map.json'
         )
 
         self.assertEqual(Locality.objects.count(), 2)
