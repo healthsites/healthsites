@@ -35,8 +35,8 @@ class TestImporters(TestCase):
         self.assertEqual(resp.content, '[{"i": 1, "g": [16.0, 45.0]}]')
 
     def test_localitiesInfo_view(self):
-        test_attr = AttributeF.create(key='test')
         grp = GroupF(template_fragment='Test value: {{ values.test }}')
+        test_attr = AttributeF.create(key='test', in_groups=[grp])
 
         LocalityValueF.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
