@@ -17,6 +17,7 @@ NOSE_ARGS = (
     '--cover-inclusive',
     '--cover-branches',
     '--cover-package=localities',
+    '--cover-package=frontend',
     '--nocapture',
     '--nologcapture'
 )
