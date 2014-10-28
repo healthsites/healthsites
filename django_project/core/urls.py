@@ -16,6 +16,7 @@ urlpatterns = patterns(
 
     # include application urls
     url(r'', include('frontend.urls')),
+    url(r'', include('localities.urls'))
 
 )
 
@@ -28,5 +29,5 @@ if settings.DEBUG:
                 'document_root': settings.MEDIA_ROOT,
                 'show_indexes': True
             }),
-        url(r'', include('django.contrib.staticfiles.urls')),
+        url(r'', include('django.contrib.staticfiles.urls'))
     )

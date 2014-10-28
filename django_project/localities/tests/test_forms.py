@@ -19,9 +19,9 @@ class TestImporters(TestCase):
         self.assertEqual(
             frm.as_ul(), (
                 u'<li><label for="id_lon">Lon:</label> <input id="id_lon" name'
-                u'="lon" step="any" type="number" value="45.0" /></li>\n<li><l'
+                u'="lon" step="any" type="number" value="16.0" /></li>\n<li><l'
                 u'abel for="id_lat">Lat:</label> <input id="id_lat" name="lat"'
-                u' step="any" type="number" value="16.0" /></li>\n<li><label f'
+                u' step="any" type="number" value="45.0" /></li>\n<li><label f'
                 u'or="id_test">test:</label> <input id="id_test" name="test" t'
                 u'ype="text" /></li>\n<li><label for="id_osm">osm:</label> <in'
                 u'put id="id_osm" name="osm" type="text" /></li>'
@@ -42,9 +42,9 @@ class TestImporters(TestCase):
         self.assertEqual(
             frm.as_ul(), (
                 u'<li><label for="id_lon">Lon:</label> <input id="id_lon" name'
-                u'="lon" step="any" type="number" value="45.0" /></li>\n<li><l'
+                u'="lon" step="any" type="number" value="16.0" /></li>\n<li><l'
                 u'abel for="id_lat">Lat:</label> <input id="id_lat" name="lat"'
-                u' step="any" type="number" value="16.0" /></li>\n<li><label f'
+                u' step="any" type="number" value="45.0" /></li>\n<li><label f'
                 u'or="id_test">test:</label> <input id="id_test" name="test" t'
                 u'ype="text" value="osm" /></li>'
             )
