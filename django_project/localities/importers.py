@@ -15,11 +15,16 @@ from ._csv_unicode import UnicodeDictReader
 
 
 class CSVImporter():
+    parsed_data = {}
 
-    def __init__(self, group_name, source_name, csv_filename, attr_json_file):
+    def __init__(
+            self, group_name, source_name, csv_filename, attr_json_file,
+            use_tabs=False):
         self.group_name = group_name
         self.source_name = source_name
         self.csv_filename = csv_filename
+
+        self.use_tabs = use_tabs
 
         with open(attr_json_file, 'rb') as attr_map_file:
             self.attr_map = json.load(attr_map_file)
@@ -27,6 +32,7 @@ class CSVImporter():
         # import
         self._get_group()
         self.parse_file()
+        self.save_localities()
 
     def _get_group(self):
         try:
@@ -59,6 +65,14 @@ class CSVImporter():
         except KeyError:
             return None
 
+    def parse_geom(self, lon, lat):
+        try:
+            lon = float(lon)
+            lat = float(lat)
+            return (lon, lat)
+        except ValueError:
+            return None
+
     def parse_row(self, row_num, row_data):
         row_uuid = self._read_attr(row_data, self.attr_map['uuid'])
         row_upstream_id = self._read_attr(
@@ -71,30 +85,57 @@ class CSVImporter():
 
         gen_upstream_id = u'{}¶{}'.format(self.source_name, row_upstream_id)
 
-        loc = self._find_locality(row_uuid, gen_upstream_id)
+        if gen_upstream_id in self.parsed_data:
+            LOG.error(
+                'Row %s with upstream_id: %s already exists, skipping...',
+                row_num, gen_upstream_id
+            )
 
-        loc.group = self.group
-        loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
-        loc.upstream_id = gen_upstream_id
-        loc.geom = Point(*map(float, [
+        tmp_geom = self.parse_geom(
             row_data[self.attr_map['geom'][0]],
             row_data[self.attr_map['geom'][1]]
-        ]))
+        )
+        if not(tmp_geom):
+            LOG.error('Row %s has invalid geometry, skipping...', row_num)
+            # skip this row
+            return None
 
-        # save Locality
-        loc.save()
-        LOG.info('Saved %s (%s)', loc.uuid, loc.id)
+        self.parsed_data.update({
+            gen_upstream_id: {
+                'uuid': row_uuid,
+                'upstream_id': gen_upstream_id,
+                'geom': tmp_geom,
+                'values': {
+                    key: self._read_attr(row_data, row_val)
+                    for key, row_val in self.attr_map['attributes'].iteritems()
+                }
+            }
+        })
 
-        # map values to attributes
-        value_map = {
-            key: self._read_attr(row_data, row_val)
-            for key, row_val in self.attr_map['attributes'].iteritems()
-        }
-        # save values for Locality
-        loc.set_values(value_map)
+    def save_localities(self):
+        for gen_upstream_id, values in self.parsed_data.iteritems():
+            row_uuid = values['uuid']
+            loc = self._find_locality(row_uuid, gen_upstream_id)
+
+            loc.group = self.group
+            loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
+            loc.upstream_id = gen_upstream_id
+
+            loc.geom = Point(*values['geom'])
+            # save Locality
+            loc.save()
+            LOG.info('Saved %s (%s)', loc.uuid, loc.id)
+
+            # save values for Locality
+            loc.set_values(values['values'])
 
     def parse_file(self):
         with open(self.csv_filename, 'rb') as csv_file:
+            if self.use_tabs:
+                data_file = UnicodeDictReader(csv_file, delimiter='\t')
+            else:
+                data_file = UnicodeDictReader(csv_file)
+
             with transaction.atomic():
-                for r_num, r_data in enumerate(UnicodeDictReader(csv_file)):
+                for r_num, r_data in enumerate(data_file):
                     self.parse_row(r_num, r_data)
