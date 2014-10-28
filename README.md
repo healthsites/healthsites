@@ -1,4 +1,16 @@
-[![Stories in Ready](https://badge.waffle.io/konekta/healthsites.png?label=ready&title=Ready)](https://waffle.io/konekta/healthsites)
+Healthsites is a framework for capturing, publishing and sharing critical
+health and sanitation related data to help make these facilities more 
+accessible and relevant to the communities they serve. Our framework does not 
+limit our endeavours to these domains and in the future we plan to support 
+additional domains where it is helpful in humanitarian work.
+
+
+Tests status: [![Build Status](https://travis-ci.org/konektaz/healthsites.svg)](https://travis-ci.org/konektaz/healthsites)
+
+Scrum status: [![Stories in Ready](https://badge.waffle.io/konekta/healthsites
+.png?label=ready&title=Ready)](https://waffle.io/konekta/healthsites)
+
+
 
 # Setup instructions
 
@@ -16,7 +28,7 @@ npm -g install yuglify
 virtualenv venv
 source venv/bin/activate
 cd django_project
-python manage.py collectstatic --settings=core.settings.dev_timlinux
+python manage.py collectstatic --noinput --settings=core.settings.dev_timlinux
 ```
 
 
