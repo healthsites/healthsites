@@ -29,9 +29,8 @@ before_script:
   - python manage.py collectstatic --noinput --settings=core.settings.dev_travis
 
 script:
-
-  - coverage run --source=. --omit=*/migrations/*, core/settings/* -m django_project .manage test
-
+  - cd django_project
+  - coverage run --source=django_project --omit=*/migrations/*,core/settings/* manage.py test
 
 after_success:
   - coverage report -m
