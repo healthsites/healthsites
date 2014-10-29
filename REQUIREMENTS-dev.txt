@@ -17,3 +17,7 @@ pdbpp
 
 # hizashi-utils
 hizashi-utils
+
+# Coverage reporting on coveralls.io
+coverage
+python-coveralls

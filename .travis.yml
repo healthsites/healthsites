@@ -27,3 +27,8 @@ before_script:
 
 script:
   - python manage.py test --settings=core.settings.test_travis
+
+
+after_success:
+  - coverage report
+  - coveralls
