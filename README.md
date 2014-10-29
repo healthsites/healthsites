@@ -7,6 +7,8 @@ additional domains where it is helpful in humanitarian work.
 
 Tests status: [![Build Status](https://travis-ci.org/konektaz/healthsites.svg)](https://travis-ci.org/konektaz/healthsites)
 
+Coverage status: [![Coverage Status](https://coveralls.io/repos/timlinux/healthsites/badge.png)](https://coveralls.io/r/timlinux/healthsites)
+
 Development status: [![Stories in Ready](https://badge.waffle.io/konektaz/healthsites
 .png?label=ready&title=Ready)](https://waffle.io/konektaz/healthsites)
 
