@@ -6,7 +6,7 @@ from .model_factories import (
     LocalityF,
     LocalityValueF,
     AttributeF,
-    GroupF
+    DomainF
 )
 
 from ..models import Locality
@@ -26,12 +26,12 @@ class TestViews(TestCase):
         self.assertEqual(resp.content, '[{"i": 1, "g": [16.0, 45.0]}]')
 
     def test_localitiesInfo_view(self):
-        grp = GroupF(template_fragment='Test value: {{ values.test }}')
-        test_attr = AttributeF.create(key='test', in_groups=[grp])
+        dom = DomainF(template_fragment='Test value: {{ values.test }}')
+        test_attr = AttributeF.create(key='test', in_domains=[dom])
 
         LocalityValueF.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
-            attr1__attribute=test_attr, attr1__data='osm', group=grp
+            attr1__attribute=test_attr, attr1__data='osm', domain=dom
         )
 
         resp = self.client.get(reverse('locality-info', kwargs={'pk': 1}))
@@ -48,12 +48,12 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_get(self):
-        grp = GroupF()
-        test_attr = AttributeF.create(key='test', in_groups=[grp])
+        dom = DomainF()
+        test_attr = AttributeF.create(key='test', in_domains=[dom])
 
         LocalityValueF.create(
             id=1, geom='POINT(16 45)', attr1__attribute=test_attr,
-            attr1__data='osm', group=grp
+            attr1__data='osm', domain=dom
         )
 
         resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
@@ -73,12 +73,12 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post(self):
-        grp = GroupF()
-        test_attr = AttributeF.create(key='test', in_groups=[grp])
+        dom = DomainF()
+        test_attr = AttributeF.create(key='test', in_domains=[dom])
 
         LocalityValueF.create(
             id=1, geom='POINT(16 45)', attr1__attribute=test_attr,
-            attr1__data='osm', group=grp
+            attr1__data='osm', domain=dom
         )
 
         resp = self.client.post(
@@ -101,12 +101,12 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post_fail(self):
-        grp = GroupF()
-        test_attr = AttributeF.create(key='test', in_groups=[grp])
+        dom = DomainF()
+        test_attr = AttributeF.create(key='test', in_domains=[dom])
 
         LocalityValueF.create(
             id=1, geom='POINT(16 45)', attr1__attribute=test_attr,
-            attr1__data='osm', group=grp
+            attr1__data='osm', domain=dom
         )
 
         resp = self.client.post(

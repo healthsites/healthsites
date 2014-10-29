@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
-from .models import Group, Locality, Value, Attribute
+from .models import Domain, Locality, Value, Attribute
 
 
-class GroupMA(admin.ModelAdmin):
+class DomainMA(admin.ModelAdmin):
     pass
 
-admin.site.register(Group, GroupMA)
+admin.site.register(Domain, DomainMA)
 
 
 class LocalityMA(admin.ModelAdmin):

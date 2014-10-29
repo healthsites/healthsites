@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-from .model_factories import LocalityValueF, GroupF, AttributeF, LocalityF
+from .model_factories import LocalityValueF, DomainF, AttributeF, LocalityF
 
 from ..forms import LocalityForm
 
 
 class TestImporters(TestCase):
     def test_dynamicformfields(self):
-        grp = GroupF.create(name='test')
-        AttributeF.create(key='test', in_groups=[grp])
-        AttributeF.create(key='osm', in_groups=[grp])
+        dom = DomainF.create(name='test')
+        AttributeF.create(key='test', in_domains=[dom])
+        AttributeF.create(key='osm', in_domains=[dom])
 
-        loc = LocalityF.create(geom='POINT(16 45)', group=grp)
+        loc = LocalityF.create(geom='POINT(16 45)', domain=dom)
 
         frm = LocalityForm(locality=loc)
 
@@ -29,12 +29,12 @@ class TestImporters(TestCase):
         )
 
     def test_dynamicform_initialdata(self):
-        grp = GroupF()
-        test_attr = AttributeF.create(key='test', in_groups=[grp])
+        dom = DomainF()
+        test_attr = AttributeF.create(key='test', in_domains=[dom])
 
         loc = LocalityValueF.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
-            attr1__attribute=test_attr, attr1__data='osm', group=grp
+            attr1__attribute=test_attr, attr1__data='osm', domain=dom
         )
 
         frm = LocalityForm(locality=loc)
