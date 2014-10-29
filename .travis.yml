@@ -30,7 +30,6 @@ before_script:
   - python manage.py collectstatic --noinput --settings=core.settings.dev_travis
 
 script:
-  - cd django_project
   - coverage run manage.py test
 
 after_success:
