@@ -1,8 +1,6 @@
 -r REQUIREMENTS.txt
 
-django-nose
 coverage
-nose-exclude
 pep8
 pylint
 factory_boy
