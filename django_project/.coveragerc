@@ -1,0 +1,10 @@
+# .coveragerc to control coverage.py
+[run]
+branch = True
+source = .
+omit = */tests/*,*migrations/*
+include = localities/*,frontend/*
+
+[report]
+precision = 2
+show_missing = True
