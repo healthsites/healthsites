@@ -7,8 +7,9 @@ additional domains where it is helpful in humanitarian work.
 
 Tests status: [![Build Status](https://travis-ci.org/konektaz/healthsites.svg)](https://travis-ci.org/konektaz/healthsites)
 
-Scrum status: [![Stories in Ready](https://badge.waffle.io/konekta/healthsites
-.png?label=ready&title=Ready)](https://waffle.io/konekta/healthsites)
+Development status: [![Stories in Ready](https://badge.waffle.io/konektaz/healthsites
+.png?label=ready&title=Ready)](https://waffle.io/konektaz/healthsites)
+
 
 
 
