@@ -1,0 +1,10 @@
+{
+    "uuid": "uuid",
+    "upstream_id": "_num",
+    "geom": ["lon", "lat"],
+    "attributes": {
+        "services": "services",
+        "name": "name",
+        "url": "_pageUrl"
+    }
+}
