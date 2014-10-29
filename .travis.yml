@@ -31,7 +31,7 @@ before_script:
 
 script:
   - cd django_project
-  - coverage run --source=django_project --omit=*/migrations/*,core/settings/* manage.py test
+  - coverage run manage.py test
 
 after_success:
   - coverage report -m
