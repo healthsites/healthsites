@@ -32,13 +32,18 @@ PIPELINE_JS = {
             'js/leaflet.js',
             'js/leaflet.markercluster.js',
             'js/jquery-1.11.1.min.js',
+            'js/bootstrap.js'
+        ),
+        'output_filename': 'js/contrib.js',
+    },
+    'appjs': {
+        'source_filenames': (
             'js/csrf-ajax.js',
-            'js/bootstrap.min.js',
             'js/app.js',
             'js/map.js',
             'js/localityModal.js'
         ),
-        'output_filename': 'js/contrib.js',
+        'output_filename': 'js/appjs.js'
     }
 }
 
