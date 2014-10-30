@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .contrib import *
+from .contrib import *  # noqa
 
 DATABASES = {
     'default': {
