@@ -1,3 +1,5 @@
+# Welcome to the healthsites code base!
+
 Healthsites is a framework for capturing, publishing and sharing critical
 health and sanitation related data to help make these facilities more 
 accessible and relevant to the communities they serve. Our framework does not 
