@@ -63,8 +63,9 @@ docker run \
 ```
    
 In the container do:
-    
+
 ```
+apt-get update
 apt-get -y install openssh-server libpq5 python-gdal python-geoip \
     python python-dev python-distribute python-pip python-psycopg2 npm
 npm -g install yuglify
@@ -79,6 +80,11 @@ export DATABASE_USERNAME=docker
 export DATABASE_PASSWORD=docker
 export DJANGO_SETTINGS_MODULE=core.settings.prod_docker
 export DATABASE_HOST=healthsites-postgis
+
+
+python manage.py migrate
+python manage.py syncdb
+python manage.py collectstatic --noinput
 python manage.py runserver    
 
 
