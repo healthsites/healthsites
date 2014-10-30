@@ -15,4 +15,4 @@ DATABASES = {
     }
 }
 
-PIPELINE_YUGLIFY_BINARY = ABS_PATH('usr', 'local', 'bin', 'yuglify')
+PIPELINE_YUGLIFY_BINARY = '/usr/local/bin/yuglify'
