@@ -64,12 +64,12 @@ class TestViews(TestCase):
 
         self.assertEqual(
             resp.content,
-            u'<tr><th><label for="id_lon">Lon:</label></th><td><input id="id_l'
-            u'on" name="lon" step="any" type="number" value="16.0" /></td></tr'
-            u'>\n<tr><th><label for="id_lat">Lat:</label></th><td><input id="i'
-            u'd_lat" name="lat" step="any" type="number" value="45.0" /></td><'
-            u'/tr>\n<tr><th><label for="id_test">test:</label></th><td><input '
-            u'id="id_test" name="test" type="text" value="osm" /></td></tr>'
+            u'<form>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" n'
+            u'ame="lon" step="any" type="number" value="16.0" /></p>\n<p><labe'
+            u'l for="id_lat">Lat:</label> <input id="id_lat" name="lat" step="'
+            u'any" type="number" value="45.0" /></p>\n<p><label for="id_test">'
+            u'test:</label> <input id="id_test" name="test" type="text" value='
+            u'"osm" /></p>\n</form>'
         )
 
     def test_localitiesUpdate_form_post(self):
@@ -118,12 +118,11 @@ class TestViews(TestCase):
 
         self.assertEqual(
             resp.content,
-            u'<tr><th><label for="id_lon">Lon:</label></th><td><ul class="erro'
-            u'rlist"><li>This field is required.</li></ul><input id="id_lon" n'
-            u'ame="lon" step="any" type="number" /></td></tr>\n<tr><th><label '
-            u'for="id_lat">Lat:</label></th><td><ul class="errorlist"><li>This'
-            u' field is required.</li></ul><input id="id_lat" name="lat" step='
-            u'"any" type="number" /></td></tr>\n<tr><th><label for="id_test">t'
-            u'est:</label></th><td><input id="id_test" name="test" type="text"'
-            u' value="new_osm" /></td></tr>'
+            u'<form>\n<ul class="errorlist"><li>This field is required.</li></'
+            u'ul>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" name'
+            u'="lon" step="any" type="number" /></p>\n<ul class="errorlist"><l'
+            u'i>This field is required.</li></ul>\n<p><label for="id_lat">Lat:'
+            u'</label> <input id="id_lat" name="lat" step="any" type="number" '
+            u'/></p>\n<p><label for="id_test">test:</label> <input id="id_test'
+            u'" name="test" type="text" value="new_osm" /></p>\n</form>'
         )
