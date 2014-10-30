@@ -3,6 +3,7 @@
 coverage
 pep8
 pylint
+flake8
 factory_boy
 
 django-devserver

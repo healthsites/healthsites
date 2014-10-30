@@ -16,11 +16,10 @@ addons:
   postgresql: "9.3"
 
 install:
-  - pip install coveralls coverage
+  - pip install coveralls
   - pip install -r REQUIREMENTS-dev.txt
   - nodeenv -p --node=0.10.31
   - npm -g install yuglify
-
 
 
 before_script:
@@ -30,8 +29,8 @@ before_script:
   - python manage.py collectstatic --noinput --settings=core.settings.dev_travis
 
 script:
+  - flake8
   - coverage run manage.py test
 
 after_success:
-  - coverage report -m
   - coveralls

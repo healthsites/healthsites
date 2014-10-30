@@ -7,7 +7,7 @@ from django.utils.text import slugify
 from django.contrib.gis.db import models
 
 
-class Group(models.Model):
+class Domain(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True, default='')
     template_fragment = models.TextField(null=True, blank=True, default='')
@@ -17,7 +17,7 @@ class Group(models.Model):
 
 
 class Locality(models.Model):
-    group = models.ForeignKey('Group')
+    domain = models.ForeignKey('Domain')
     uuid = models.TextField(unique=True)
     upstream_id = models.TextField(null=True, unique=True)
     geom = models.PointField(srid=4326)
@@ -30,7 +30,7 @@ class Locality(models.Model):
     def get_attr_map(self):
         return (
             Attribute.objects
-            .filter(in_groups=self.group)
+            .filter(in_domains=self.domain)
             .order_by('id')
             .values('id', 'key')
         )
@@ -108,7 +108,7 @@ class Attribute(models.Model):
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
 
-    in_groups = models.ManyToManyField('Group')
+    in_domains = models.ManyToManyField('Domain')
 
     def __unicode__(self):
         return u'{}'.format(self.key)

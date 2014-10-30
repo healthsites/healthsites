@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .base import *
+from .base import *  # noqa
 
 # Extra installed apps
 INSTALLED_APPS += (
