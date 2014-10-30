@@ -17,7 +17,7 @@ class TestModelAttribute(TestCase):
         attr = AttributeF.create(key='An attribute', in_domains=[domain])
 
         self.assertEqual(
-            [domain.name for domain in attr.in_domains.all()],
+            [dom.name for dom in attr.in_domains.all()],
             ['A domain']
         )
 
