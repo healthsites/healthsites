@@ -37,3 +37,51 @@ python manage.py collectstatic --noinput --settings=core.settings.dev_timlinux
 ```
 
 
+# Simple deployment under docker
+
+```
+
+mkdir -p ~/production-sites
+cd ~/production-sites
+git clone git://github.com/konektaz/healthsites.git
+
+
+docker run \
+    --name="healthsites-postgis" \
+    --hostname="healthsites-postgis" \
+    -d -t kartoza/postgis
+    
+docker run \
+    --rm \
+    --name="healthsites-django" \
+    --hostname="healthsites-django" \
+    --link healthsites-postgis:healthsites-postgis \
+    -v /home/timlinux/production-sites/healthsites:/home/web \
+    -p 10080:8000 \
+    -i -t ubuntu:trusty /bin/bash
+
+```
+   
+In the container do:
+    
+```
+apt-get -y install openssh-server libpq5 python-gdal python-geoip \
+    python python-dev python-distribute python-pip python-psycopg2 npm
+npm -g install yuglify
+pip install Django==1.7.1 psycopg2 pytz django-braces django-model-utils 
+    django-pipeline
+```
+    
+Now in the container run the demo server:
+
+```
+export DATABASE_USERNAME=docker
+export DATABASE_PASSWORD=docker
+export DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+export DATABASE_HOST=healthsites-postgis
+python manage.py runserver    
+
+
+```
+
+
