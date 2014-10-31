@@ -79,6 +79,22 @@ function manage {
          /home/web/django_project/manage.py "$@"
 }
 
+function bash_prompt {
+    echo "Running bash prompt in django container"
+    echo "---------------------------------------"
+
+    docker run \
+        --rm \
+        --name="healthsites-bash" \
+        --hostname="healthsites-bash" \
+        ${OPTIONS} \
+        --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
+        -v /home/${USER}/production-sites/healthsites:/home/web \
+        --entrypoint="/bin/bash" \
+        -i -t konektaz/healthsites \
+        -s
+}
+
 function run_django_server {
     echo "Running django uwsgi service with options:"
     echo "${@}"
