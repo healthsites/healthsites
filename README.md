@@ -11,7 +11,7 @@ Tests status: [![Build Status](https://travis-ci.org/konektaz/healthsites.svg)](
 
 Coverage status: [![Coverage Status](https://coveralls.io/repos/konektaz/healthsites/badge.png?branch=develop)](https://coveralls.io/r/konektaz/healthsites?branch=develop)
 
-Development status: [![Stories in Ready](https://badge.waffle.io/konektaz/healthsites.svg?label=ready&title=Ready)](http://waffle.io/konektaz/healthsites)
+Development status: [![Stories in Ready](https://badge.waffle.io/konektaz/healthsites.svg?label=ready&title=Ready)](http://waffle.io/konektaz/healthsites) [![Stories in Ready](https://badge.waffle.io/konektaz/healthsites.svg?label=In%20Progress&title=In%20Progress)](http://waffle.io/konektaz/healthsites)
 
 
 
