@@ -9,15 +9,13 @@ restart_postgis_server
 
 # Now build the django image
 
-cd docker-prod
+cd ../docker-prod
 ./build.sh
-cd ..
+cd -
 
 # Now collect migrate and collect static
-
 migrate
 collectstatic
 
 # Now run the service
-
 run_django_server
