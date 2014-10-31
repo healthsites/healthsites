@@ -1,3 +1,3 @@
 #!/bin/bash
-source functions.sh
+source ${BASH_SOURCE%/*}/functions.sh
 manage "$@"

@@ -1,3 +1,3 @@
 #!/bin/bash
-source functions.sh
-manage "collectstatic --noinput"
+source ${BASH_SOURCE%/*}/functions.sh
+manage collectstatic --noinput

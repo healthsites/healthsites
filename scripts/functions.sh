@@ -36,7 +36,7 @@ function restart_postgis_server {
     # Todo:  prevent multiple entries in pgpass
     #echo "localhost:${POSTGIS_PORT}:*:${USER}:${PASSWORD}" >> ~/.pgpass
 
-    sleep 10
+    sleep 20
 
 }
 
@@ -80,8 +80,10 @@ function manage {
 }
 
 function run_django_server {
-    echo "Running django uwsgi service"
-    echo "----------------------------"
+    echo "Running django uwsgi service with options:"
+    echo "${@}"
+    echo "------------------------------------------"
+
     docker kill healthsites-django
     docker rm healthsites-django
     docker run \
@@ -93,5 +95,5 @@ function run_django_server {
         -v /home/${USER}/production-sites/healthsites:/home/web \
         -v /tmp/healthsites-tmp:/tmp/healthsites-tmp \
         -p 49360:49360 \
-        -d -t konektaz/healthsites
+        -d -t konektaz/healthsites $@
 }
