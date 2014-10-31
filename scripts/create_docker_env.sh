@@ -14,8 +14,8 @@ cd ../docker-prod
 cd -
 
 # Now collect migrate and collect static
-migrate
-collectstatic
+manage migrate
+manage "collectstatic --noinput"
 
 # Now run the service
 run_django_server
