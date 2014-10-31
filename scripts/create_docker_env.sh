@@ -3,7 +3,7 @@
 # First lets get Postgis going
 source ${BASH_SOURCE%/*}/functions.sh
 
-#docker build -t kartoza/postgis git://github.com/kartoza/docker-postgis
+docker build -t kartoza/postgis git://github.com/kartoza/docker-postgis
 
 restart_postgis_server
 
@@ -15,7 +15,7 @@ cd -
 
 # Now collect migrate and collect static
 manage migrate
-manage "collectstatic --noinput"
+manage collectstatic --noinput
 
 # Now run the service
 run_django_server

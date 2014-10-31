@@ -25,7 +25,7 @@ RUN npm -g install yuglify
 # So when yuglify is installed it references the wrong node binary...
 # lets fixt that here...
 
-RUN rpl "#!/usr/bin/env node" "#!/usr/bin/env nodejs" /usr/local/bin/yuglify
+RUN rpl "env node" "env nodejs" /usr/local/lib/node_modules/yuglify/bin/yuglify
 
 ADD REQUIREMENTS.txt /REQUIREMENTS.txt
 RUN pip install -r /REQUIREMENTS.txt
