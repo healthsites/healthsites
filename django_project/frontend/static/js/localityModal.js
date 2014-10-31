@@ -37,6 +37,9 @@ window.LocalityModal = (function () {
             '</div>'
         ].join(''),
 
+        // HARDCODED DOMAIN NAME
+        DOMAIN: 'Health',
+
         _bindInternalEvents: function() {
             var self = this;
             this.$modal.on('hidden.bs.modal', function (evt) {
@@ -47,11 +50,17 @@ window.LocalityModal = (function () {
             this.$modal.on('get-info', this.getInfo.bind(this));
             this.$modal.on('show-info', this.showInfo.bind(this));
             this.$modal.on('show-edit', this.showEdit.bind(this));
+
+            this.$modal.on('create-new', this.createNewLocality.bind(this));
+            this.$modal.on('show-create', this.showCreate.bind(this));
             this.$modal.on('update-coordinates', this.updateCoordinates.bind(this));
 
             this.$modal_footer.on('click', '.edit', this.showEditForm.bind(this));
             this.$modal_footer.on('click', '.save', this.saveForm.bind(this));
             this.$modal_footer.on('click', '.cancel', this.cancelEdit.bind(this));
+
+            this.$modal_footer.on('click', '.save-create', this.saveCreateForm.bind(this));
+            this.$modal_footer.on('click', '.cancel-create', this.cancelCreate.bind(this));
 
             this.$modal_footer.on('click', '.close-modal', function (evt) {
                 self.$modal.modal('hide');
@@ -70,6 +79,9 @@ window.LocalityModal = (function () {
             this.showInfo();
         },
 
+        cancelCreate: function(evt) {
+            $APP.trigger('map.cancel.edit');
+        },
 
         showInfo: function(evt) {
             $('.modal-backdrop').css('position', 'absolute');
@@ -89,17 +101,34 @@ window.LocalityModal = (function () {
                 self.locality_data = data;
                 self.$modal.trigger('show-info');
                 // show selected point on the map
-                $APP.trigger('map.show.point', data);
+                $APP.trigger('map.show.point', {'geom':[data.geom[1], data.geom[0]]});
             });
         },
 
         showEdit: function(evt, payload) {
             this.$modal_body.html(payload.data);
-            var edit_action = this.$modal_footer.find('.edit');
-            edit_action.toggleClass('edit btn-warning save').text('Save Changes');
+            this.$modal_footer.html([
+                '<button type="button" class="btn btn-default cancel">Cancel</button>',
+                '<button type="button" class="btn btn-warning save">Save changes</button>'
+            ].join(''))
 
-            var close_action = this.$modal_footer.find('.close-modal');
-            close_action.toggleClass('close-modal cancel').text('Cancel');
+            // 'remove' modal window backdrop
+            $('.modal-backdrop').css('position', 'relative');
+        },
+
+        showCreate: function(evt, payload) {
+            this.$modal_body.html(payload.data);
+            if (payload.geom) {
+                $('#id_lon').val(payload.geom[1]);
+                $('#id_lat').val(payload.geom[0]);
+            }
+
+            this.$modal_footer.html([
+                '<button type="button" class="btn btn-default cancel-create">Cancel</button>',
+                '<button type="button" class="btn btn-warning save-create">Create</button>'
+            ].join(''))
+            // show modal create
+            this.$modal.modal('show');
 
             // 'remove' modal window backdrop
             $('.modal-backdrop').css('position', 'relative');
@@ -112,10 +141,11 @@ window.LocalityModal = (function () {
             });
         },
 
-        showCreateForm: function(evt) {
+        createNewLocality: function(evt, payload) {
             var self = this;
-            $.get('/localities/'+this.locality_id+'/form', function (data) {
-                self.$modal.trigger('show-edit', {'data':data});
+            $.get('/localities/form/'+this.DOMAIN, function (data) {
+                $APP.trigger('map.show.point', {'geom':[payload.data.lat, payload.data.lng]});
+                self.$modal.trigger('show-create', {'data':data, 'geom':[payload.data.lat, payload.data.lng] });
             });
         },
 
@@ -140,6 +170,30 @@ window.LocalityModal = (function () {
             })
         },
 
+        saveCreateForm: function(evt) {
+            var self = this;
+            var form = this.$modal_body.find('form');
+
+            $.ajax('/localities/form/'+this.DOMAIN, {
+                'type': 'POST',
+                'data': form.serializeArray(),
+                'success': function (data, status, xhr) {
+                    if (data !== 'OK') {
+                        // there were some form processing errors
+                        self.$modal.trigger('show-create', {'data': data});
+                    } else {
+                        // hide form...
+                        // trigger create cleanup
+                        self.$modal.modal('hide');
+                        $APP.trigger('map.cancel.edit');
+                    }
+                },
+                'error': function (xhr, status, error) {
+                    console.log(xhr, status, error);
+                }
+            })
+        },
+
         _bindExternalEvents: function () {
             var self = this;
 
@@ -151,9 +205,9 @@ window.LocalityModal = (function () {
                 self.$modal.trigger('update-coordinates', payload);
             });
 
-            $APP.on('locality.new.save', function (evt, payload) {
-
-            }
+            $APP.on('locality.new.create', function (evt, payload) {
+                self.$modal.trigger('create-new', payload);
+            });
         }
     }
 

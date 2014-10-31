@@ -2,6 +2,8 @@
 import logging
 LOG = logging.getLogger(__name__)
 
+import uuid
+
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
@@ -103,10 +105,16 @@ class LocalityCreate(SingleObjectMixin, FormView):
         return super(LocalityCreate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
+        tmp_uuid = uuid.uuid4().hex
+
         loc = Locality()
         loc.domain = self.object
+        loc.uuid = tmp_uuid
+        # generate unique upstream_id
+        loc.upstream_id = u'web¶{}'.format(tmp_uuid)
+
         loc.geom = Point(
-            form.cleaned_data.get('lon'), form.cleaned_data.get('lat')
+            form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
         )
         loc.save()
         loc.set_values(form.cleaned_data)

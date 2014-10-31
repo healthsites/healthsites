@@ -62,7 +62,7 @@ window.MAP = (function () {
             var self = this;
 
             $APP.on('map.show.point', function (evt, payload) {
-                self.original_marker_position = [payload.geom[1], payload.geom[0]];
+                self.original_marker_position = [payload.geom[0], payload.geom[1]];
 
                 self.pointLayer.setLatLng(self.original_marker_position);
                 self.MAP.addLayer(self.pointLayer);
@@ -97,10 +97,12 @@ window.MAP = (function () {
             });
 
             $APP.on('button.new_locality.save', function (evt) {
-                self.markerEditControl.save();
                 self.markerEditControl.disable();
                 self.MAP.removeLayer(self.newLocalityLayerMarker);
-                $APP.trigger('locality.new.save', {data: self.newLocalityLayerMarker});
+
+                $APP.trigger('locality.new.create', {
+                    data: self.newLocalityLayerMarker.getLatLng()
+                });
             });
         },
 
