@@ -3,7 +3,7 @@ from .base import *  # noqa
 
 # Extra installed apps
 INSTALLED_APPS += (
-    # 'raven.contrib.django',  # enable Raven plugin
+    'raven.contrib.django.raven_compat',  # enable Raven plugin
     'pipeline',
 )
 

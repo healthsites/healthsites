@@ -7,9 +7,9 @@ DATABASES = {
         'NAME': 'gis',
         'USER': 'docker',
         'PASSWORD': 'docker',
-        'HOST': '172.17.0.2',
+        'HOST': 'healthsites-docker',
         # Set to empty string for default.
-        'PORT': '',
+        'PORT': '5432',
     }
 }
 
