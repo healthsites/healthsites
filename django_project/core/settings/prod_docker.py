@@ -1,5 +1,4 @@
-# noqa
-from .project import *
+from .project import *  # noqa
 import os
 
 ALLOWED_HOSTS = ['*']
@@ -15,5 +14,3 @@ DATABASES = {
         'TEST_NAME': 'unittests',
     }
 }
-
-#PIPELINE_YUGLIFY_BINARY = '/usr/local/bin/yuglify'
