@@ -18,4 +18,6 @@ manage migrate
 manage "collectstatic --noinput"
 
 # Now run the service
-run_django_server --protocol=http
+run_django_server
+# For debugging to see if uwsgi is running nicely before adding nginx
+#run_django_server --protocol=http
