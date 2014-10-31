@@ -3,11 +3,11 @@ from django.test import TestCase
 
 from .model_factories import LocalityValueF, DomainF, AttributeF, LocalityF
 
-from ..forms import LocalityForm
+from ..forms import LocalityForm, DomainForm
 
 
-class TestImporters(TestCase):
-    def test_dynamicformfields(self):
+class TestLocalityForms(TestCase):
+    def test_LocalityForm(self):
         dom = DomainF.create(name='test')
         AttributeF.create(key='test', in_domains=[dom])
         AttributeF.create(key='osm', in_domains=[dom])
@@ -28,7 +28,7 @@ class TestImporters(TestCase):
             )
         )
 
-    def test_dynamicform_initialdata(self):
+    def test_LocalityForm_initialdata(self):
         dom = DomainF()
         test_attr = AttributeF.create(key='test', in_domains=[dom])
 
@@ -47,5 +47,24 @@ class TestImporters(TestCase):
                 u' step="any" type="number" value="45.0" /></li>\n<li><label f'
                 u'or="id_test">test:</label> <input id="id_test" name="test" t'
                 u'ype="text" value="osm" /></li>'
+            )
+        )
+
+    def test_DomainForm(self):
+        dom = DomainF.create(name='test')
+        AttributeF.create(key='test', in_domains=[dom])
+        AttributeF.create(key='osm', in_domains=[dom])
+
+        frm = DomainForm(domain=dom)
+
+        self.assertEqual(
+            frm.as_ul(), (
+                u'<li><label for="id_lon">Lon:</label> <input id="id_lon" name'
+                u'="lon" step="any" type="number" /></li>\n<li><label for="id_'
+                u'lat">Lat:</label> <input id="id_lat" name="lat" step="any" t'
+                u'ype="number" /></li>\n<li><label for="id_test">test:</label>'
+                u' <input id="id_test" name="test" type="text" /></li>\n<li><l'
+                u'abel for="id_osm">osm:</label> <input id="id_osm" name="osm"'
+                u' type="text" /></li>'
             )
         )

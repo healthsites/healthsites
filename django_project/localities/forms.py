@@ -5,6 +5,20 @@ LOG = logging.getLogger(__name__)
 import django.forms as forms
 
 
+class DomainForm(forms.Form):
+    lon = forms.FloatField()
+    lat = forms.FloatField()
+
+    def __init__(self, *args, **kwargs):
+        domain = kwargs.pop('domain')
+
+        super(DomainForm, self).__init__(*args, **kwargs)
+
+        for attr in domain.attribute_set.all():
+            field = forms.CharField(label=attr.key)
+            self.fields[attr.key] = field
+
+
 class LocalityForm(forms.Form):
     lon = forms.FloatField()
     lat = forms.FloatField()

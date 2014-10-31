@@ -126,3 +126,69 @@ class TestViews(TestCase):
             u'/></p>\n<p><label for="id_test">test:</label> <input id="id_test'
             u'" name="test" type="text" value="new_osm" /></p>\n</form>'
         )
+
+    def test_localitiesCreate_form_get(self):
+        dom = DomainF(name='test')
+        AttributeF.create(key='test', in_domains=[dom])
+
+        resp = self.client.get(
+            reverse('locality-create', kwargs={'domain': 'test'})
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
+
+        self.assertEqual(
+            resp.content,
+            u'<form>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" n'
+            u'ame="lon" step="any" type="number" /></p>\n<p><label for="id_lat'
+            u'">Lat:</label> <input id="id_lat" name="lat" step="any" type="nu'
+            u'mber" /></p>\n<p><label for="id_test">test:</label> <input id="i'
+            u'd_test" name="test" type="text" /></p>\n</form>'
+        )
+
+    def test_localitiesCreate_form_post(self):
+        dom = DomainF(name='test')
+        AttributeF.create(key='test', in_domains=[dom])
+
+        resp = self.client.post(
+            reverse('locality-create', kwargs={'domain': 'test'}),
+            {'test': 'new_osm', 'lon': 10, 'lat': 35}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(resp.content, 'OK')
+
+        loc = Locality.objects.get()
+
+        self.assertEqual(loc.geom.x, 10.0)
+        self.assertEqual(loc.geom.y, 35.0)
+
+        self.assertListEqual(
+            [val.data for val in loc.value_set.all()],
+            ['new_osm']
+        )
+
+    def test_localitiesCreate_form_post_fail(self):
+        dom = DomainF(name='test')
+        AttributeF.create(key='test', in_domains=[dom])
+
+        resp = self.client.post(
+            reverse('locality-create', kwargs={'domain': 'test'}),
+            {'test': 'new_osm'}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(
+            resp.content,
+            u'<form>\n<ul class="errorlist"><li>This field is required.</li></'
+            u'ul>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" name'
+            u'="lon" step="any" type="number" /></p>\n<ul class="errorlist"><l'
+            u'i>This field is required.</li></ul>\n<p><label for="id_lat">Lat:'
+            u'</label> <input id="id_lat" name="lat" step="any" type="number" '
+            u'/></p>\n<p><label for="id_test">test:</label> <input id="id_test'
+            u'" name="test" type="text" value="new_osm" /></p>\n</form>'
+        )

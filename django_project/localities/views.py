@@ -5,12 +5,13 @@ LOG = logging.getLogger(__name__)
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
+from django.contrib.gis.geos import Point
 
 from braces.views import JSONResponseMixin
 
-from .models import Locality
+from .models import Locality, Domain
 from .utils import render_fragment
-from .forms import LocalityForm
+from .forms import LocalityForm, DomainForm
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -46,7 +47,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
         return self.render_json_response(obj_repr)
 
 
-class LocalityUpdate(JSONResponseMixin, SingleObjectMixin, FormView):
+class LocalityUpdate(SingleObjectMixin, FormView):
     form_class = LocalityForm
     template_name = 'updateform.html'
 
@@ -75,3 +76,42 @@ class LocalityUpdate(JSONResponseMixin, SingleObjectMixin, FormView):
 
     def get_form(self, form_class):
         return form_class(locality=self.object, **self.get_form_kwargs())
+
+
+class LocalityCreate(SingleObjectMixin, FormView):
+    form_class = DomainForm
+    template_name = 'updateform.html'
+
+    def get_queryset(self):
+        queryset = Domain.objects
+        return queryset
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+        queryset = queryset.filter(name=self.kwargs.get('domain'))
+
+        obj = queryset.get()
+        return obj
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(LocalityCreate, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super(LocalityCreate, self).post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        loc = Locality()
+        loc.domain = self.object
+        loc.geom = Point(
+            form.cleaned_data.get('lon'), form.cleaned_data.get('lat')
+        )
+        loc.save()
+        loc.set_values(form.cleaned_data)
+
+        return HttpResponse('OK')
+
+    def get_form(self, form_class):
+        return form_class(domain=self.object, **self.get_form_kwargs())
