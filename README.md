@@ -67,9 +67,9 @@ In the container do:
 ```
 apt-get update
 apt-get -y install openssh-server libpq5 python-gdal python-geoip \
-    python python-dev python-distribute python-pip python-psycopg2 npm
+    python python-dev python-distribute python-pip python-psycopg2 npm node
 npm -g install yuglify
-pip install Django==1.7.1 psycopg2 pytz django-braces django-model-utils 
+pip install Django==1.7.1 psycopg2 pytz django-braces django-model-utils \
     django-pipeline
 ```
     
