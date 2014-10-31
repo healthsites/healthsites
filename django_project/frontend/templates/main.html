@@ -7,6 +7,8 @@
 <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
 <div class="container-fluid">
 <a class="navbar-brand" href="#">Konektaz</a>
+<button id="new_locality" type="button" class="btn btn-default navbar-btn" data-mapclick-text="Click on the map" data-savelocality-text="Save Locality">Add a new Locality</button>
+</div>
 </nav>
 
 <div id="map"></div>
@@ -16,7 +18,6 @@
 {% block extra_js %}
 
 <script type="text/javascript">
-new MAP();
-new LocalityModal();
+new APP();
 </script>
 {% endblock %}

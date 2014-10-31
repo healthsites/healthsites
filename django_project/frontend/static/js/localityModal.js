@@ -13,7 +13,7 @@ window.LocalityModal = (function () {
         this.$modal.appendTo('body');
 
         this._bindExternalEvents();
-        this._bindModalEvents();
+        this._bindInternalEvents();
 
     };
 
@@ -37,7 +37,7 @@ window.LocalityModal = (function () {
             '</div>'
         ].join(''),
 
-        _bindModalEvents: function() {
+        _bindInternalEvents: function() {
             var self = this;
             this.$modal.on('hidden.bs.modal', function (evt) {
                 // remove marker layer from the map
@@ -112,6 +112,13 @@ window.LocalityModal = (function () {
             });
         },
 
+        showCreateForm: function(evt) {
+            var self = this;
+            $.get('/localities/'+this.locality_id+'/form', function (data) {
+                self.$modal.trigger('show-edit', {'data':data});
+            });
+        },
+
         saveForm: function(evt) {
             var self = this;
             var form = this.$modal_body.find('form');
@@ -143,6 +150,10 @@ window.LocalityModal = (function () {
             $APP.on('locality.map.move', function (evt, payload) {
                 self.$modal.trigger('update-coordinates', payload);
             });
+
+            $APP.on('locality.new.save', function (evt, payload) {
+
+            }
         }
     }
 

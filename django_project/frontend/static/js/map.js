@@ -32,14 +32,32 @@ window.MAP = (function () {
         // add point layer
         this._setupPointLayer();
 
+        // add newLocalityLayer
+        this._setupNewLocalityLayer();
 
         //bind external events
         this._bindExternalEvents();
-    };
+        this._bindInternalEvents();
+
+    }
 
     // prototype
     module.prototype = {
         constructor: module,
+
+        _bindInternalEvents: function() {
+            var self = this;
+            this.MAP.on('draw:created', function (evt) {
+                self.newLocalityLayerMarker = evt.layer;
+                self.MAP.addLayer(self.newLocalityLayerMarker);
+                // activate edit state
+                self.markerEditControl = new L.Edit.Marker(evt.layer, self.drawControl.options);
+                self.markerEditControl.enable();
+
+                $APP.trigger('map.new_locality.point');
+            })
+        },
+
         _bindExternalEvents:function () {
             var self = this;
 
@@ -59,6 +77,49 @@ window.MAP = (function () {
                 self.MAP.removeLayer(self.pointLayer);
                 self.pointLayer.setLatLng([0,0]);
             });
+
+            $APP.on('button.new_locality.activate', function (evt) {
+                // enable markerDraw control
+                self.markerDrawControl.enable();
+            });
+
+            $APP.on('button.new_locality.deactivate', function (evt) {
+                // disable markerDraw control
+                self.markerDrawControl.disable();
+
+                // if edit was active revert and disable
+                if (self.markerEditControl) {
+                    self.markerEditControl.revertLayers();
+                    self.markerEditControl.disable();
+
+                    self.MAP.removeLayer(self.newLocalityLayerMarker);
+                }
+            });
+
+            $APP.on('button.new_locality.save', function (evt) {
+                self.markerEditControl.save();
+                self.markerEditControl.disable();
+                self.MAP.removeLayer(self.newLocalityLayerMarker);
+                $APP.trigger('locality.new.save', {data: self.newLocalityLayerMarker});
+            });
+        },
+
+        _setupNewLocalityLayer: function () {
+            this.newLocalityLayer = L.featureGroup();
+
+            this.drawControl = new L.Control.Draw({
+                draw: {
+                    polyline: false,
+                    polygon: false,
+                    rectangle: false,
+                    circle: false
+                },
+                edit: {
+                    featureGroup: this.newLocalityLayer
+                }
+            });
+            // create markerDraw control
+            this.markerDrawControl = new L.Draw.Marker(this.MAP, this.drawControl.options.draw.marker);
         },
 
         _setupPointLayer: function () {
@@ -114,10 +175,9 @@ window.MAP = (function () {
                 markers.addLayer(localitiesLayer);
                 // add markers layer to the map
                 self.MAP.addLayer(markers);
-            }
-        )
+            })
+        }
     }
-}
 
     // return module
     return module;
