@@ -1,8 +1,11 @@
-from .project import *  # noqa
+from .prod import *  # noqa
+#from .dev import *  # noqa
 import os
+print os.environ
 
 ALLOWED_HOSTS = ['*']
 
+ADMINS = (('Tim Sutton', 'tim@kartoza.com'), )
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',

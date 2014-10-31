@@ -11,13 +11,16 @@ USE_X_FORWARDED_HOST = True
 # Set debug to false for production
 DEBUG = TEMPLATE_DEBUG = False
 
-if 'raven.contrib.django' in INSTALLED_APPS:
-    SENTRY_DSN = ('#REPLACE ME#')
+if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
+    print '*********** Setting up sentry logging ************'
+    SENTRY_DSN = (
+        'http://ea65e461089d4fcda9d63696cd70fa50:9ba52586ab79479eba68'
+        '9dbbad671149@sentry.linfiniti.com/12')
 
-    MIDDLEWARE_CLASSES = (
-        'raven.contrib.django.middleware.SentryResponseErrorIdMiddleware',
-        'raven.contrib.django.middleware.SentryLogMiddleware',
-    ) + MIDDLEWARE_CLASSES
+    # MIDDLEWARE_CLASSES = (
+    #     'raven.contrib.django.middleware.SentryResponseErrorIdMiddleware',
+    #     'raven.contrib.django.middleware.SentryLogMiddleware',
+    # ) + MIDDLEWARE_CLASSES
 
     #
     # Sentry settings - logs exceptions to a database
@@ -39,7 +42,9 @@ if 'raven.contrib.django' in INSTALLED_APPS:
             # sentry logger
             'sentry': {
                 'level': 'WARNING',
-                'class': 'raven.contrib.django.handlers.SentryHandler',
+                'class': (
+                    'raven.contrib.django.raven_compat.'
+                    'handlers.SentryHandler'),
             }
         },
         'loggers': {

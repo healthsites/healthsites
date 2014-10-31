@@ -5,5 +5,4 @@ django-braces
 django-model-utils
 django-pipeline
 nodeenv
-
-# raven
+raven
