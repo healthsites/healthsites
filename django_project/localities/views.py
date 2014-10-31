@@ -31,7 +31,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
 
     def get_queryset(self):
         queryset = (
-            Locality.objects.select_related('group')
+            Locality.objects.select_related('domain')
         )
         return queryset
 
@@ -39,7 +39,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
         self.object = self.get_object()
         obj_repr = self.object.repr_dict()
         data_repr = render_fragment(
-            self.object.group.template_fragment, obj_repr
+            self.object.domain.template_fragment, obj_repr
         )
         obj_repr.update({'repr': data_repr})
 
@@ -52,7 +52,7 @@ class LocalityUpdate(JSONResponseMixin, SingleObjectMixin, FormView):
 
     def get_queryset(self):
         queryset = (
-            Locality.objects.select_related('group')
+            Locality.objects.select_related('domain')
         )
         return queryset
 

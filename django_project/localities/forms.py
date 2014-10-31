@@ -25,6 +25,6 @@ class LocalityForm(forms.Form):
 
         super(LocalityForm, self).__init__(*args, **kwargs)
 
-        for attr in locality.group.attribute_set.all():
+        for attr in locality.domain.attribute_set.all():
             field = forms.CharField(label=attr.key)
             self.fields[attr.key] = field

@@ -8,7 +8,7 @@ from ...importers import CSVImporter
 
 class Command(BaseCommand):
 
-    args = '<group_name> <source_name> <filename> <attr_map_file>'
+    args = '<domain_name> <source_name> <filename> <attr_map_file>'
     help = 'Import Localities from CSV file'
 
     option_list = BaseCommand.option_list + (
@@ -23,12 +23,12 @@ class Command(BaseCommand):
         if len(args) != 4:
             raise CommandError('Missing required arguments')
 
-        group_name = args[0]
+        domain_name = args[0]
         source_name = args[1]
         csv_filename = args[2]
         attr_map_file = args[3]
 
         CSVImporter(
-            group_name, source_name, csv_filename, attr_map_file,
+            domain_name, source_name, csv_filename, attr_map_file,
             options["use_tabs"]
         )

@@ -2,20 +2,20 @@
 import factory
 
 from ..models import (
-    Group,
+    Domain,
     Locality,
     Value,
     Attribute
 )
 
 
-class GroupF(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "group_{}".format(n))
+class DomainF(factory.django.DjangoModelFactory):
+    name = factory.Sequence(lambda n: "domain_{}".format(n))
     description = ''
     template_fragment = ''
 
     class Meta:
-        model = Group
+        model = Domain
 
 
 class AttributeF(factory.django.DjangoModelFactory):
@@ -23,19 +23,19 @@ class AttributeF(factory.django.DjangoModelFactory):
     description = ''
 
     @factory.post_generation
-    def in_groups(self, create, extracted, **kwargs):
+    def in_domains(self, create, extracted, **kwargs):
         if not create:
             return
         if extracted:
-            for group in extracted:
-                self.in_groups.add(group)
+            for domain in extracted:
+                self.in_domains.add(domain)
 
     class Meta:
         model = Attribute
 
 
 class LocalityF(factory.django.DjangoModelFactory):
-    group = factory.SubFactory('localities.tests.model_factories.GroupF')
+    domain = factory.SubFactory('localities.tests.model_factories.DomainF')
     uuid = factory.Sequence(lambda n: "uuid_{}".format(n))
     upstream_id = factory.Sequence(lambda n: "upstream_id_{}".format(n))
     geom = 'POINT (0 0)'

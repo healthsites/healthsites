@@ -8,7 +8,7 @@ import json
 from django.contrib.gis.geos import Point
 from django.db import transaction
 
-from .models import Locality, Group
+from .models import Locality, Domain
 from .exceptions import LocalityImportError
 
 from ._csv_unicode import UnicodeDictReader
@@ -18,9 +18,9 @@ class CSVImporter():
     parsed_data = {}
 
     def __init__(
-            self, group_name, source_name, csv_filename, attr_json_file,
+            self, domain_name, source_name, csv_filename, attr_json_file,
             use_tabs=False):
-        self.group_name = group_name
+        self.domain_name = domain_name
         self.source_name = source_name
         self.csv_filename = csv_filename
 
@@ -30,15 +30,15 @@ class CSVImporter():
             self.attr_map = json.load(attr_map_file)
 
         # import
-        self._get_group()
+        self._get_domain()
         self.parse_file()
         self.save_localities()
 
-    def _get_group(self):
+    def _get_domain(self):
         try:
-            self.group = Group.objects.filter(name=self.group_name).get()
-        except Group.DoesNotExist:
-            msg = 'Group "{}" does not exist'.format(self.group_name)
+            self.domain = Domain.objects.filter(name=self.domain_name).get()
+        except Domain.DoesNotExist:
+            msg = 'Domain "{}" does not exist'.format(self.domain_name)
             LOG.error(msg)
             raise LocalityImportError(msg)
 
@@ -118,7 +118,7 @@ class CSVImporter():
             row_uuid = values['uuid']
             loc = self._find_locality(row_uuid, gen_upstream_id)
 
-            loc.group = self.group
+            loc.domain = self.domain
             loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
             loc.upstream_id = gen_upstream_id
 
