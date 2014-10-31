@@ -9,7 +9,7 @@ restart_postgis_server
 
 # Now build the django image
 
-cd ../docker-prod
+cd ${BASH_SOURCE%/*}/../docker-prod
 ./build.sh
 cd -
 
