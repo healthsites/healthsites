@@ -2,7 +2,7 @@
 
 # First lets get Postgis going
 
-#docker build -t kartoza/postgis git://github.com/kartoza/docker-postgis
+docker build -t kartoza/postgis git://github.com/kartoza/docker-postgis
 
 #docker kill healthsites-postgis
 #docker rm healthsites-postgis

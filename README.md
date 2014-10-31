@@ -92,5 +92,8 @@ cd healthsites
 scripts\create_docker_env.sh
 ``
 
+## Setup nginx reverse proxy
 
+You should create a new nginx virtual host - please see 
+``healthsites-nginx.conf`` in the root directory of the source for an example.
 
