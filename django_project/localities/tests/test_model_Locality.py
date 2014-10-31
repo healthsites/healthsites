@@ -31,7 +31,7 @@ class TestModelLocality(TestCase):
         AttributeF.create(id=2, key='osm', in_domains=[dom])
 
         # this domain should not be in results
-        dom2 = DomainF.create(name='a domain')
+        dom2 = DomainF.create(name='a new domain')
         AttributeF.create(key='osm2', in_domains=[dom2])
 
         locality = LocalityF.create(domain=dom)
@@ -71,7 +71,7 @@ class TestModelLocality(TestCase):
 
         locality = LocalityF.create(pk=1, domain=dom)
 
-        dom2 = DomainF.create(name='a domain')
+        dom2 = DomainF.create(name='a new domain')
         AttributeF.create(key='osm2', in_domains=[dom2])
 
         value_map = {'osm2': 'bad key', 'test': 'test val'}

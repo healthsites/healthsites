@@ -8,7 +8,7 @@ from django.contrib.gis.db import models
 
 
 class Domain(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
     description = models.TextField(null=True, blank=True, default='')
     template_fragment = models.TextField(null=True, blank=True, default='')
 
