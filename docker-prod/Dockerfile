@@ -39,4 +39,4 @@ EXPOSE 49360
 
 # Under normal usage you would supply no additional params and
 # use nginx on the host to forward in the traffic.
-ENTRYPOINT ["uwsgi", "--ini /home/web/docker-prod/uwsgi.conf"]
+ENTRYPOINT ["uwsgi", "--ini", "/home/web/docker-prod/uwsgi.conf"]

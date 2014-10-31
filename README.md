@@ -84,6 +84,8 @@ git clone git://github.com/konektaz/healthsites.git
 
 ## Build your docker images and run them
 
+You can simply run the provided script and it will build and deploy the docker
+images for you.
 
 ``
 cd healthsites
