@@ -18,8 +18,14 @@ RUN apt-get -y update
 
 RUN apt-get -y install libpq5 python-gdal python-geoip \
     python python-dev python-distribute python-pip \
-    python-psycopg2 npm node
+    python-psycopg2 npm node rpl
 RUN npm -g install yuglify
+
+# Ubuntu is messed up and aliases node as node js
+# So when yuglify is installed it references the wrong node binary...
+# lets fixt that here...
+
+RUN rpl "#!/usr/bin/env node" "#!/usr/bin/env nodejs" /usr/local/bin/yuglify
 
 ADD REQUIREMENTS.txt /REQUIREMENTS.txt
 RUN pip install -r /REQUIREMENTS.txt
