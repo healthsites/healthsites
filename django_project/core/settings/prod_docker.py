@@ -1,5 +1,4 @@
 from .prod import *  # noqa
-#from .dev import *  # noqa
 import os
 print os.environ
 
