@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
-from .dev import *
+from .dev import *  # noqa
+
+INSTALLED_APPS += (
+    'django_extensions',
+)
 
 DATABASES = {
     'default': {

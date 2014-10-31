@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from .project import *
+from .project import *  # noqa
 
 # Use default Django test runner
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'

@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from django.db import IntegrityError
 
-from .model_factories import AttributeF, GroupF
+from .model_factories import AttributeF, DomainF
 
 
 class TestModelAttribute(TestCase):
@@ -13,12 +13,12 @@ class TestModelAttribute(TestCase):
         self.assertEqual(unicode(attr), 'an_attribute')
 
     def test_relations(self):
-        group = GroupF.create(name='A group')
-        attr = AttributeF.create(key='An attribute', in_groups=[group])
+        domain = DomainF.create(name='A domain')
+        attr = AttributeF.create(key='An attribute', in_domains=[domain])
 
         self.assertEqual(
-            [group.name for group in attr.in_groups.all()],
-            ['A group']
+            [dom.name for dom in attr.in_domains.all()],
+            ['A domain']
         )
 
     def test_model_uniqueness(self):

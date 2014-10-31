@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from django.db import IntegrityError
 
-from .model_factories import LocalityF, LocalityValueF, AttributeF, GroupF
+from .model_factories import LocalityF, LocalityValueF, AttributeF, DomainF
 
 
 class TestModelLocality(TestCase):
@@ -25,16 +25,16 @@ class TestModelLocality(TestCase):
         )
 
     def test_get_attr_map(self):
-        gr = GroupF.create(name='a group')
+        dom = DomainF.create(name='a domain')
 
-        AttributeF.create(id=1, key='test', in_groups=[gr])
-        AttributeF.create(id=2, key='osm', in_groups=[gr])
+        AttributeF.create(id=1, key='test', in_domains=[dom])
+        AttributeF.create(id=2, key='osm', in_domains=[dom])
 
-        # this group should not be in results
-        gr2 = GroupF.create(name='a group')
-        AttributeF.create(key='osm2', in_groups=[gr2])
+        # this domain should not be in results
+        dom2 = DomainF.create(name='a domain')
+        AttributeF.create(key='osm2', in_domains=[dom2])
 
-        locality = LocalityF.create(group=gr)
+        locality = LocalityF.create(domain=dom)
 
         self.assertEqual(
             list(locality.get_attr_map()),
@@ -42,12 +42,12 @@ class TestModelLocality(TestCase):
         )
 
     def test_set_values(self):
-        gr = GroupF.create(name='a group')
+        dom = DomainF.create(name='a domain')
 
-        AttributeF.create(key='test', in_groups=[gr])
-        AttributeF.create(key='osm', in_groups=[gr])
+        AttributeF.create(key='test', in_domains=[dom])
+        AttributeF.create(key='osm', in_domains=[dom])
 
-        locality = LocalityF.create(pk=1, group=gr)
+        locality = LocalityF.create(pk=1, domain=dom)
 
         value_map = {'osm': 'osm val', 'test': 'test val'}
         chg_values = locality.set_values(value_map)
@@ -64,15 +64,15 @@ class TestModelLocality(TestCase):
         self.assertEqual(chg_values[0][1], False)
 
     def test_set_values_bad_key(self):
-        gr = GroupF.create(name='a group')
+        dom = DomainF.create(name='a domain')
 
-        AttributeF.create(key='test', in_groups=[gr])
-        AttributeF.create(key='osm', in_groups=[gr])
+        AttributeF.create(key='test', in_domains=[dom])
+        AttributeF.create(key='osm', in_domains=[dom])
 
-        locality = LocalityF.create(pk=1, group=gr)
+        locality = LocalityF.create(pk=1, domain=dom)
 
-        gr2 = GroupF.create(name='a group')
-        AttributeF.create(key='osm2', in_groups=[gr2])
+        dom2 = DomainF.create(name='a domain')
+        AttributeF.create(key='osm2', in_domains=[dom2])
 
         value_map = {'osm2': 'bad key', 'test': 'test val'}
         chg_values = locality.set_values(value_map)
@@ -92,13 +92,13 @@ class TestModelLocality(TestCase):
         )
 
     def test_repr_dict_method(self):
-        gr = GroupF.create(name='a group')
+        dom = DomainF.create(name='a domain')
 
-        AttributeF.create(key='test', in_groups=[gr])
-        AttributeF.create(key='osm', in_groups=[gr])
+        AttributeF.create(key='test', in_domains=[dom])
+        AttributeF.create(key='osm', in_domains=[dom])
 
         locality = LocalityF.create(
-            pk=1, group=gr, uuid='93b7e8c4621a4597938dfd3d27659162',
+            pk=1, domain=dom, uuid='93b7e8c4621a4597938dfd3d27659162',
             geom='POINT (16 45)'
         )
 

@@ -1,3 +1,5 @@
+# Welcome to the healthsites code base!
+
 Healthsites is a framework for capturing, publishing and sharing critical
 health and sanitation related data to help make these facilities more 
 accessible and relevant to the communities they serve. Our framework does not 
@@ -7,7 +9,7 @@ additional domains where it is helpful in humanitarian work.
 
 Tests status: [![Build Status](https://travis-ci.org/konektaz/healthsites.svg)](https://travis-ci.org/konektaz/healthsites)
 
-Coverage status: [![Coverage Status](https://coveralls.io/repos/timlinux/healthsites/badge.png)](https://coveralls.io/r/timlinux/healthsites)
+Coverage status: [![Coverage Status](https://coveralls.io/repos/konektaz/healthsites/badge.png?branch=develop)](https://coveralls.io/r/konektaz/healthsites?branch=develop)
 
 Development status: [![Stories in Ready](https://badge.waffle.io/konektaz/healthsites
 .png?label=ready&title=Ready)](https://waffle.io/konektaz/healthsites)
