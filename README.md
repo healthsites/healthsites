@@ -14,9 +14,9 @@ Coverage status: [![Coverage Status](https://coveralls.io/repos/konektaz/healths
 Development status: [![Stories in Ready](https://badge.waffle.io/konektaz/healthsites.svg?label=ready&title=Ready)](http://waffle.io/konektaz/healthsites) [![Stories in Ready](https://badge.waffle.io/konektaz/healthsites.svg?label=In%20Progress&title=In%20Progress)](http://waffle.io/konektaz/healthsites)
 
 
-
-
 # Setup instructions
+
+## For local development
 
 ```
 virtualenv venv
@@ -26,65 +26,69 @@ nodeenv -p --node=0.10.31
 npm -g install yuglify
 ```
 
-# Running collect static
+# Create your dev profile
+
+```
+cd django_project/core/settings
+cp dev_dodobas.py dev_${USER}.py
+```
+
+Now edit dev_<your username> setting your database connection details as
+needed. We assume you have created a postgres (with postgis extentions) 
+database somewhere that you can use for your development work. See 
+[http://postgis.net/install/](http://postgis.net/install/) for details on doing
+that.
+
+## Running collect and migrate static
+
+Prepare your database and static resources by doing this:
 
 ```
 virtualenv venv
 source venv/bin/activate
 cd django_project
-python manage.py collectstatic --noinput --settings=core.settings.dev_timlinux
+python manage.py migrate
+python manage.py collectstatic --noinput --settings=core.settings.dev_${USER}
 ```
 
 
 # Simple deployment under docker
 
-```
+## Overview
 
+You need two docker containers:
+
+* A postgis container
+* A uwsgi container
+
+We assume you are running nginx on the host and we will set up a reverse
+proxy to pass django requests into the uwsgi container. Static files will
+be served directly using nginx on the host.
+
+A convenience script is provided under ``scripts\create_docker_env.sh`` which
+should get everything set up for you. Note you need at least docker 1.2 - use
+the [installation notes](http://docs.docker.com/installation/ubuntulinux/) 
+on the official docker page to get it set up.
+
+## Check out the source
+
+
+First checkout out the source tree:
+
+```
 mkdir -p ~/production-sites
 mkdir /tmp/healthsites-tmp
 cd ~/production-sites
 git clone git://github.com/konektaz/healthsites.git
-
-
-docker run \
-    --name="healthsites-postgis" \
-    --hostname="healthsites-postgis" \
-    -d -t kartoza/postgis
-    
-docker run \
-    --rm \
-    --name="healthsites-django" \
-    --hostname="healthsites-django" \
-    -e DATABASE_NAME=gis \
-    -e DATABASE_USERNAME=docker \
-    -e DATABASE_PASSWORD=docker \
-    -e DATABASE_HOST=healthsites-postgis \
-    --link healthsites-postgis:healthsites-postgis \
-    -v /home/${USER}/production-sites/healthsites:/home/web \
-    -v /tmp/healthsites-tmp:/tmp/healthsites-tmp \
-    -p 49360:49360 \
-    -i -t konektaz/healthsites
-
-```
-   
-In the container do:
-
 ```
 
-```
-    
-Now in the container run the demo server:
+## Build your docker images and run them
 
-```
-export DATABASE_NAME=gis
-export DATABASE_USERNAME=docker
-export DATABASE_PASSWORD=docker
-export DATABASE_HOST=healthsites-postgis
-export DJANGO_SETTINGS_MODULE=core.settings.prod_docker
 
-python manage.py migrate
-python manage.py collectstatic --noinput
-python manage.py runserver    
-```
+``
+cd healthsites
+scripts\create_docker_env.sh
+``
+
 
 
