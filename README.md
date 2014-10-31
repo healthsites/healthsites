@@ -41,6 +41,7 @@ python manage.py collectstatic --noinput --settings=core.settings.dev_timlinux
 ```
 
 mkdir -p ~/production-sites
+mkdir /tmp/healthsites-tmp
 cd ~/production-sites
 git clone git://github.com/konektaz/healthsites.git
 
@@ -54,23 +55,22 @@ docker run \
     --rm \
     --name="healthsites-django" \
     --hostname="healthsites-django" \
+    -e DATABASE_NAME=gis \
+    -e DATABASE_USERNAME=docker \
+    -e DATABASE_PASSWORD=docker \
+    -e DATABASE_HOST=healthsites-postgis \
     --link healthsites-postgis:healthsites-postgis \
-    -v /home/timlinux/production-sites/healthsites:/home/web \
-    -p 10080:8000 \
-    -i -t ubuntu:trusty /bin/bash
+    -v /home/${USER}/production-sites/healthsites:/home/web \
+    -v /tmp/healthsites-tmp:/tmp/healthsites-tmp \
+    -p 49360:49360 \
+    -i -t konektaz/healthsites
 
 ```
    
 In the container do:
 
 ```
-apt-get update
-apt-get -y install libpq5 python-gdal python-geoip \
-    python python-dev python-distribute python-pip \
-    python-psycopg2 npm node
-npm -g install yuglify
-pip install Django==1.7.1 psycopg2 pytz django-braces \
-    django-model-utils django-pipeline
+
 ```
     
 Now in the container run the demo server:
@@ -79,8 +79,8 @@ Now in the container run the demo server:
 export DATABASE_NAME=gis
 export DATABASE_USERNAME=docker
 export DATABASE_PASSWORD=docker
-export DJANGO_SETTINGS_MODULE=core.settings.prod_docker
 export DATABASE_HOST=healthsites-postgis
+export DJANGO_SETTINGS_MODULE=core.settings.prod_docker
 
 python manage.py migrate
 python manage.py collectstatic --noinput
