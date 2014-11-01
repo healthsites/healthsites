@@ -67,3 +67,6 @@ venv
 # Node
 django_project/static
 node_modules
+
+# Working data not intended to be versioned
+data_for_import

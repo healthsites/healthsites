@@ -2,6 +2,9 @@ window.MAP = (function () {
     "use strict";
     // private variables and functions
 
+    // Fix for https://github.com/Leaflet/Leaflet/issues/766
+    L.Icon.Default.imagePath = '/static/js/images/';
+
     // constructor
     var module = function () {
         // create a map in the "map" div, set the view to a given place and zoom
