@@ -3,11 +3,11 @@
 	border-radius: 20px;
 	transition: all 0.3s linear;
 }
-.leaflet-marker-icon:not(.no-anim),
+/*.leaflet-marker-icon:not(.no-anim),
 .leaflet-marker-shadow:not(.no-anim),
 .leaflet-markercluster-icon:not(.no-anim) {
 	transition: all 0.3s linear;
-}
+*/}
 
 .leaflet-zoom-anim .leaflet-zoom-animated.leaflet-marker-icon:not(.no-anim),
 .leaflet-zoom-anim .leaflet-zoom-animated.leaflet-marker-shadow:not(.no-anim),
