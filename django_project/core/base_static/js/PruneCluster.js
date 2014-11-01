@@ -533,10 +533,10 @@ var PruneClusterForLeaflet = (L.Layer ? L.Layer : L.Class).extend({
     },
     BuildLeafletMarker: function (marker, position) {
         var m = new L.Marker(position);
-        this.PrepareLeafletMarker(m, marker.data, marker.category);
+        this.PrepareLeafletMarker(m, marker.data, marker.category, marker);
         return m;
     },
-    PrepareLeafletMarker: function (marker, data, category) {
+    PrepareLeafletMarker: function (marker, data, category, original_marker) {
         if (data.icon) {
             if (typeof data.icon === 'function') {
                 marker.setIcon(data.icon(data, category));
