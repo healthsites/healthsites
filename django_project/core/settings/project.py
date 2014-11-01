@@ -57,6 +57,7 @@ PIPELINE_CSS = {
             'css/MarkerCluster.css',
             'css/bootstrap.min.css',
             'css/main.css',
+            'css/github-ribbon.css'
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {
