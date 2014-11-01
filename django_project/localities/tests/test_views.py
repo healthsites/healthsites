@@ -159,7 +159,8 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(resp.content, 'OK')
+        # check if got back an id, can be parsed as int
+        self.assertTrue(int(resp.content) != 0)
 
         loc = Locality.objects.get()
 

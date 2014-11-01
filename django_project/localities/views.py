@@ -119,7 +119,7 @@ class LocalityCreate(SingleObjectMixin, FormView):
         loc.save()
         loc.set_values(form.cleaned_data)
 
-        return HttpResponse('OK')
+        return HttpResponse(loc.pk)
 
     def get_form(self, form_class):
         return form_class(domain=self.object, **self.get_form_kwargs())
