@@ -30,7 +30,7 @@ PIPELINE_JS = {
     'contrib': {
         'source_filenames': (
             'js/leaflet.js',
-            'js/leaflet.markercluster.js',
+            'js/PruneCluster.js',
             'js/leaflet.draw-src.js',
             'js/jquery-1.11.1.min.js',
             'js/bootstrap.js'
@@ -52,9 +52,8 @@ PIPELINE_CSS = {
     'contrib': {
         'source_filenames': (
             'css/leaflet.css',
+            'css/PruneCluster.css',
             'css/leaflet.draw.css',
-            'css/MarkerCluster.Default.css',
-            'css/MarkerCluster.css',
             'css/bootstrap.min.css',
             'css/main.css',
             'css/github-ribbon.css'
