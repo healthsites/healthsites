@@ -6,6 +6,8 @@ accessible and relevant to the communities they serve. Our framework does not
 limit our endeavours to these domains and in the future we plan to support 
 additional domains where it is helpful in humanitarian work.
 
+**Please note that this project is in the early phase of its development.**
+
 You can visit a running instance of healthsites at [healthsites.io](http://healthsites.io).
 
 # Status
