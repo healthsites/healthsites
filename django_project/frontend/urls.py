@@ -8,5 +8,5 @@ urlpatterns = patterns(
     # basic app views
     url(r'^$', MainView.as_view(), name='home'),
     url(r'^about$', AboutView.as_view(), name='about'),
-    url(r'^help', AboutView.as_view(), name='help')
+    url(r'^help', HelpView.as_view(), name='help')
 )
