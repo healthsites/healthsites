@@ -27,6 +27,15 @@ window.MAP = (function () {
         // enable Layer control
         L.control.layers(baseLayers).addTo(this.MAP);
 
+        this.redIcon = L.icon({
+            iconUrl:'/static/js/images/marker-icon-red.png',
+            iconRetinaUrl:'/static/js/images/marker-icon-2x-red.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        });
+
         this.MAP.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text.
 
         // add markers layer
@@ -79,6 +88,7 @@ window.MAP = (function () {
                 self.localitiesLayer.RegisterMarker(marker);
                 self.localitiesLayer.ProcessView();
             });
+
             $APP.on('map.show.point', function (evt, payload) {
                 self.original_marker_position = [payload.geom[0], payload.geom[1]];
 
@@ -89,7 +99,6 @@ window.MAP = (function () {
                 if (self.lastClickedMarker) {
                     self.localitiesLayer.RemoveMarkers([self.lastClickedMarker]);
                     self.localitiesLayer.ProcessView();
-                    self.lastClickedMarker = undefined;
                 }
             });
 
@@ -145,7 +154,10 @@ window.MAP = (function () {
                     polyline: false,
                     polygon: false,
                     rectangle: false,
-                    circle: false
+                    circle: false,
+                    marker: {
+                        icon: this.redIcon
+                    }
                 },
                 edit: {
                     featureGroup: this.newLocalityLayer
@@ -158,7 +170,8 @@ window.MAP = (function () {
         _setupPointLayer: function () {
             this.pointLayer = L.marker([0, 0], {
                 'clickable': true,
-                'draggable': true
+                'draggable': true,
+                'icon': this.redIcon
             });
 
             this.pointLayer.on('dragend', function (evt) {
