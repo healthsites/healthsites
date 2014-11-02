@@ -4,11 +4,11 @@ var __extends = this.__extends || function (d, b) {
     __.prototype = b.prototype;
     d.prototype = new __();
 };
-var PruneCluster;
+window.PruneCluster = null;
 (function (_PruneCluster) {
     var ratioForNativeSort = 0.2;
 
-    
+
 
     var Point = (function () {
         function Point() {
@@ -438,14 +438,9 @@ var PruneCluster;
     })();
     _PruneCluster.PruneCluster = PruneCluster;
 })(PruneCluster || (PruneCluster = {}));
-var PruneCluster;
-(function (PruneCluster) {
-    
 
-    
-})(PruneCluster || (PruneCluster = {}));
 
-var PruneClusterForLeaflet = (L.Layer ? L.Layer : L.Class).extend({
+window.PruneClusterForLeaflet = (L.Layer ? L.Layer : L.Class).extend({
     initialize: function (size, clusterMargin) {
         var _this = this;
         if (typeof size === "undefined") { size = 120; }
@@ -872,7 +867,7 @@ var PruneClusterForLeaflet = (L.Layer ? L.Layer : L.Class).extend({
         }
     }
 });
-var PruneClusterLeafletSpiderfier = (L.Layer ? L.Layer : L.Class).extend({
+window.PruneClusterLeafletSpiderfier = (L.Layer ? L.Layer : L.Class).extend({
     _2PI: Math.PI * 2,
     _circleFootSeparation: 25,
     _circleStartAngle: Math.PI / 6,
@@ -1027,4 +1022,3 @@ var PruneClusterLeafletSpiderfier = (L.Layer ? L.Layer : L.Class).extend({
         map.off('zoomend', this.Unspiderfy, this);
     }
 });
-//# sourceMappingURL=PruneCluster.js.map
