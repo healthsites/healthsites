@@ -11,3 +11,7 @@ class MainView(TemplateView):
 
 class AboutView(TemplateView):
     template_name = 'about.html'
+
+
+class HelpView(TemplateView):
+    template_name = 'help.html'
