@@ -42,7 +42,7 @@ window.LocalityModal = (function () {
 
         _bindInternalEvents: function() {
             var self = this;
-            this.$modal.on('hidden.bs.modal', function (evt) {
+            this.$modal.on('hide.bs.modal', function (evt) {
                 // remove marker layer from the map
                 $APP.trigger('map.remove.point');
             })
@@ -152,15 +152,18 @@ window.LocalityModal = (function () {
         saveForm: function(evt) {
             var self = this;
             var form = this.$modal_body.find('form');
+            var latlng = [$('#id_lat').val(), $('#id_lon').val()];
+            var data = form.serializeArray();
 
             $.ajax('/localities/'+this.locality_id+'/form', {
                 'type': 'POST',
-                'data': form.serializeArray(),
+                'data': data,
                 'success': function (data, status, xhr) {
                     if (data !== 'OK') {
                         // there were some form processing errors
                         self.$modal.trigger('show-edit', {'data': data});
                     } else {
+                        $APP.trigger('map.update-maker.location', {'latlng': latlng});
                         self.$modal.trigger('get-info');
                     }
                 },
@@ -178,14 +181,19 @@ window.LocalityModal = (function () {
                 'type': 'POST',
                 'data': form.serializeArray(),
                 'success': function (data, status, xhr) {
-                    if (data !== 'OK') {
+                    // try to parse data as an integer (ID)
+                    var new_loc_id = parseInt(data, 10);
+                    var latlng = [$('#id_lat').val(), $('#id_lon').val()];
+                    if (isNaN(new_loc_id)) {
                         // there were some form processing errors
                         self.$modal.trigger('show-create', {'data': data});
                     } else {
                         // hide form...
                         // trigger create cleanup
                         self.$modal.modal('hide');
-                        $APP.trigger('map.cancel.edit');
+                        $APP.trigger('locality.created', {
+                            'loc_id': new_loc_id, 'latlng': latlng
+                        });
                     }
                 },
                 'error': function (xhr, status, error) {

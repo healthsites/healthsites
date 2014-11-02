@@ -64,11 +64,33 @@ window.MAP = (function () {
         _bindExternalEvents:function () {
             var self = this;
 
+            $APP.on('map.update-maker.location', function (evt, payload) {
+                // update marker position
+                self.lastClickedMarker.position['lat'] = payload.latlng[0];
+                self.lastClickedMarker.position['lng'] = payload.latlng[1];
+            });
+
+            $APP.on('locality.created', function (evt, payload) {
+                var marker = new PruneCluster.Marker(
+                    payload.latlng[0], payload.latlng[1],
+                    {'id': payload.loc_id}
+                );
+
+                self.localitiesLayer.RegisterMarker(marker);
+                self.localitiesLayer.ProcessView();
+            });
             $APP.on('map.show.point', function (evt, payload) {
                 self.original_marker_position = [payload.geom[0], payload.geom[1]];
 
                 self.pointLayer.setLatLng(self.original_marker_position);
                 self.MAP.addLayer(self.pointLayer);
+
+                // remove maker and processView
+                if (self.lastClickedMarker) {
+                    self.localitiesLayer.RemoveMarkers([self.lastClickedMarker]);
+                    self.localitiesLayer.ProcessView();
+                    self.lastClickedMarker = undefined;
+                }
             });
 
             $APP.on('map.cancel.edit', function (evt) {
@@ -77,6 +99,12 @@ window.MAP = (function () {
             });
 
             $APP.on('map.remove.point', function (evt) {
+                if (self.lastClickedMarker) {
+                    self.localitiesLayer.RegisterMarker(self.lastClickedMarker);
+                    self.localitiesLayer.ProcessView();
+                    self.lastClickedMarker = undefined;
+                }
+
                 self.MAP.removeLayer(self.pointLayer);
                 self.pointLayer.setLatLng([0,0]);
             });
@@ -140,46 +168,30 @@ window.MAP = (function () {
 
         _setupMakersLayer: function () {
             var self = this;
-            var style = {
-                "clickable": true,
-                "color": "#00D",
-                "weight": 5.0,
-                "opacity": 0.3
-            };
-            var hoverStyle = {
-                "weight": 10.0,
-                "color": "#0DD",
-                "opacity": 0.3
-            };
 
             var geojsonSingleURL = '/localities.json';
             // read localities data
             $.getJSON(geojsonSingleURL, function (data) {
-                var localitiesLayer = L.layerGroup();
+                self.localitiesLayer = new PruneClusterForLeaflet();
 
-                for (var i = data.length - 1; i >= 0; i--) {
-                    var feature = new L.circleMarker([
-                            parseFloat(data[i]['g'][1]),
-                            parseFloat(data[i]['g'][0])
-                        ], style);
-                    feature.id = data[i]['i'];
-
-                    feature.on('mouseover', function (event) {
-                        event.target.setStyle(hoverStyle);
+                self.localitiesLayer.PrepareLeafletMarker = function(leafletMarker, data, category, original_marker) {
+                    leafletMarker.on('click', function () {
+                        self.lastClickedMarker = original_marker;
+                        $APP.trigger('locality.map.click', {'locality_id': data.id});
                     });
-                    feature.on('click', function (event) {
-                        $APP.trigger('locality.map.click', {'locality_id': event.target.id});
-                    });
-                    feature.on('mouseout', function (event) {
-                        event.target.setStyle(style);
-                    });
-                    localitiesLayer.addLayer(feature);
                 };
 
-                var markers = new L.MarkerClusterGroup();
-                markers.addLayer(localitiesLayer);
-                // add markers layer to the map
-                self.MAP.addLayer(markers);
+                for (var i = data.length - 1; i >= 0; i--) {
+                    var marker = new PruneCluster.Marker(
+                        parseFloat(data[i]['g'][1]), parseFloat(data[i]['g'][0]),
+                        {'id': data[i]['i']}
+                    );
+
+                    self.localitiesLayer.RegisterMarker(marker);
+
+                };
+
+                self.MAP.addLayer(self.localitiesLayer);
             })
         }
     }

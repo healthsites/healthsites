@@ -32,7 +32,15 @@ window.APP = (function () {
                     loc_button.toggleClass('btn-warning btn-danger');
                     loc_button.button('savelocality');
                 }
-            })
+            });
+
+            $APP.on('locality.created', function (evt, payload) {
+                var loc_button = $('#new_locality');
+
+                loc_button.toggleClass('btn-default btn-danger');
+                loc_button.button('toggle');
+                loc_button.button('reset');
+            });
         },
 
         _initAPPEvents: function () {
