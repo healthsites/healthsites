@@ -14,6 +14,10 @@
   <button id="new_locality" type="button" class="btn btn-default navbar-btn"
           data-mapclick-text="Click on the map"
           data-savelocality-text="Save Locality">Add a new Locality</button>
+  <a id="help-button" class="btn btn-default navbar-btn pull-right"
+          data-toggle="modal"
+          href="help"
+          data-target="#help-modal">Help</a>
 </div>
 </nav>
 
@@ -33,6 +37,17 @@
       </div> <!-- /.modal-content -->
     </div> <!-- /.modal-dialog -->
 </div> <!-- /.modal -->
+
+
+<!-- Help Modal -->
+<div class="modal fade" id="help-modal" tabindex="-1" role="dialog"
+     aria-labelledby="help-modal" aria-hidden="true">
+    <div class="help-dialog">
+      <div class="help-content">
+      </div> <!-- /.modal-content -->
+    </div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
+
 {% endblock %}
 
 {% block extra_js %}
