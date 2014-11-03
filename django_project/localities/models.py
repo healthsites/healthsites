@@ -12,6 +12,8 @@ class Domain(models.Model):
     description = models.TextField(null=True, blank=True, default='')
     template_fragment = models.TextField(null=True, blank=True, default='')
 
+    attributes = models.ManyToManyField('Attribute', through='Specification')
+
     def __unicode__(self):
         return u'{}'.format(self.name)
 
@@ -108,8 +110,6 @@ class Attribute(models.Model):
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
 
-    in_domains = models.ManyToManyField('Domain')
-
     def __unicode__(self):
         return u'{}'.format(self.key)
 
@@ -118,3 +118,15 @@ class Attribute(models.Model):
         self.key = slugify(unicode(self.key)).replace('-', '_')
 
         super(Attribute, self).save(*args, **kwargs)
+
+
+class Specification(models.Model):
+    domain = models.ForeignKey('Domain')
+    attribute = models.ForeignKey('Attribute')
+    required = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('domain', 'attribute')
+
+    def __unicode__(self):
+        return u'{} {}'.format(self.domain.name, self.attribute.key)
