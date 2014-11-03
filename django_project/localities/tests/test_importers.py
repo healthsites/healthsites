@@ -20,8 +20,8 @@ class TestImporters(TestCase):
         attr3 = AttributeF.create(key='services')
 
         DomainSpecification3AF.create(
-            name='Test', attr1__attribute=attr1, attr2__attribute=attr2,
-            attr3__attribute=attr3
+            name='Test', spec1__attribute=attr1, spec2__attribute=attr2,
+            spec3__attribute=attr3
         )
 
         CSVImporter(
@@ -39,8 +39,8 @@ class TestImporters(TestCase):
         attr3 = AttributeF.create(key='services')
 
         DomainSpecification3AF.create(
-            name='Test', attr1__attribute=attr1, attr2__attribute=attr2,
-            attr3__attribute=attr3
+            name='Test', spec1__attribute=attr1, spec2__attribute=attr2,
+            spec3__attribute=attr3
         )
 
         CSVImporter(
@@ -59,8 +59,8 @@ class TestImporters(TestCase):
         attr3 = AttributeF.create(key='services')
 
         DomainSpecification3AF.create(
-            name='Test', attr1__attribute=attr1, attr2__attribute=attr2,
-            attr3__attribute=attr3
+            name='Test', spec1__attribute=attr1, spec2__attribute=attr2,
+            spec3__attribute=attr3
         )
 
         self.assertRaises(
@@ -76,8 +76,8 @@ class TestImporters(TestCase):
         attr3 = AttributeF.create(key='services')
 
         DomainSpecification3AF.create(
-            name='Test', attr1__attribute=attr1, attr2__attribute=attr2,
-            attr3__attribute=attr3
+            name='Test', spec1__attribute=attr1, spec2__attribute=attr2,
+            spec3__attribute=attr3
         )
 
         CSVImporter(
@@ -94,7 +94,7 @@ class TestImporters(TestCase):
         attr2 = AttributeF.create(key='services')
 
         DomainSpecification2AF.create(
-            name='Test', attr1__attribute=attr1, attr2__attribute=attr2
+            name='Test', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
         loc = LocalityF.create(upstream_id='test_imp¶2')
@@ -119,7 +119,7 @@ class TestImporters(TestCase):
         attr2 = AttributeF.create(key='services')
 
         DomainSpecification2AF.create(
-            name='Test', attr1__attribute=attr1, attr2__attribute=attr2
+            name='Test', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
         loc = LocalityF.create(uuid='93b7e8c4621a4597938dfd3d27659162')

@@ -30,11 +30,12 @@ class TestViews(TestCase):
 
         dom = DomainSpecification1AF(
             template_fragment='Test value: {{ values.test }}',
-            attr1__attribute=test_attr
+            spec1__attribute=test_attr
         )
         LocalityValueF.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
-            attr1__attribute=test_attr, attr1__data='osm', domain=dom
+            val1__specification__attribute=test_attr, val1__data='osm',
+            domain=dom
         )
 
         resp = self.client.get(reverse('locality-info', kwargs={'pk': 1}))
@@ -53,13 +54,11 @@ class TestViews(TestCase):
     def test_localitiesUpdate_form_get(self):
         test_attr = AttributeF.create(key='test')
 
-        dom = DomainSpecification1AF(
-            attr1__attribute=test_attr
-        )
+        dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
         LocalityValueF.create(
-            id=1, geom='POINT(16 45)', attr1__attribute=test_attr,
-            attr1__data='osm', domain=dom
+            id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
+            val1__specification__attribute=test_attr
         )
 
         resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
@@ -81,13 +80,13 @@ class TestViews(TestCase):
     def test_localitiesUpdate_form_post(self):
         test_attr = AttributeF.create(key='test')
 
-        dom = DomainSpecification1AF(
-            attr1__attribute=test_attr
-        )
+        dom = DomainSpecification1AF(spec1__attribute=test_attr)
+
+        spec = dom.specification_set.all()[0]
 
         LocalityValueF.create(
-            id=1, geom='POINT(16 45)', attr1__attribute=test_attr,
-            attr1__data='osm', domain=dom
+            id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
+            val1__specification=spec
         )
 
         resp = self.client.post(
@@ -112,13 +111,11 @@ class TestViews(TestCase):
     def test_localitiesUpdate_form_post_fail(self):
         test_attr = AttributeF.create(key='test')
 
-        dom = DomainSpecification1AF(
-            attr1__attribute=test_attr
-        )
+        dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
         LocalityValueF.create(
-            id=1, geom='POINT(16 45)', attr1__attribute=test_attr,
-            attr1__data='osm', domain=dom
+            id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
+            val1__specification__attribute=test_attr
         )
 
         resp = self.client.post(
@@ -141,9 +138,7 @@ class TestViews(TestCase):
 
     def test_localitiesCreate_form_get(self):
         test_attr = AttributeF.create(key='test')
-        DomainSpecification1AF(
-            name='test', attr1__attribute=test_attr
-        )
+        DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
         resp = self.client.get(
             reverse('locality-create', kwargs={'domain': 'test'})
@@ -164,9 +159,7 @@ class TestViews(TestCase):
 
     def test_localitiesCreate_form_post(self):
         test_attr = AttributeF.create(key='test')
-        DomainSpecification1AF(
-            name='test', attr1__attribute=test_attr
-        )
+        DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
@@ -190,9 +183,7 @@ class TestViews(TestCase):
 
     def test_localitiesCreate_form_post_fail(self):
         test_attr = AttributeF.create(key='test')
-        DomainSpecification1AF(
-            name='test', attr1__attribute=test_attr
-        )
+        DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
@@ -215,7 +206,7 @@ class TestViews(TestCase):
     def test_localitiesCreate_form_post_required_attr(self):
         test_attr = AttributeF.create(key='test')
         DomainSpecification1AF(
-            name='test', attr1__attribute=test_attr, attr1__required=True
+            name='test', spec1__attribute=test_attr, spec1__required=True
         )
 
         resp = self.client.post(

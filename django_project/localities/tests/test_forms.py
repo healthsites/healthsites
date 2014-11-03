@@ -18,7 +18,7 @@ class TestLocalityForms(TestCase):
         attr2 = AttributeF.create(key='osm')
 
         dom = DomainSpecification2AF.create(
-            name='test', attr1__attribute=attr1, attr2__attribute=attr2
+            name='test', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
         loc = LocalityF.create(geom='POINT(16 45)', domain=dom)
@@ -41,12 +41,13 @@ class TestLocalityForms(TestCase):
         test_attr = AttributeF.create(key='test')
 
         dom = DomainSpecification1AF.create(
-            attr1__attribute=test_attr
+            spec1__attribute=test_attr
         )
 
         loc = LocalityValueF.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
-            attr1__attribute=test_attr, attr1__data='osm', domain=dom
+            val1__specification__attribute=test_attr, val1__data='osm',
+            domain=dom
         )
 
         frm = LocalityForm(locality=loc)
@@ -67,7 +68,7 @@ class TestLocalityForms(TestCase):
         attr2 = AttributeF.create(key='osm')
 
         dom = DomainSpecification2AF.create(
-            name='test', attr1__attribute=attr1, attr2__attribute=attr2
+            name='test', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
         frm = DomainForm(domain=dom)

@@ -21,7 +21,7 @@ class TestModelLocality(TestCase):
     def test_model_with_value(self):
         attr = AttributeF.create(key='test')
         locality = LocalityValueF.create(
-            pk=1, attr1__data='test', attr1__attribute=attr
+            pk=1, val1__data='test', val1__specification__attribute=attr
         )
 
         self.assertEqual(unicode(locality), u'1')
@@ -31,25 +31,26 @@ class TestModelLocality(TestCase):
         )
 
     def test_get_attr_map(self):
-        attr1 = AttributeF.create(id=1, key='test')
-        attr2 = AttributeF.create(id=2, key='osm')
+        attr1 = AttributeF.create(key='test')
+        attr2 = AttributeF.create(key='osm')
 
         dom = DomainSpecification2AF.create(
-            name='a domain', attr1__attribute=attr1, attr2__attribute=attr2
+            name='a domain', spec1__id=1, spec1__attribute=attr1,
+            spec2__id=2, spec2__attribute=attr2
         )
 
         # this domain should not be in results
-        attr3 = AttributeF.create(id=-1, key='osm2')
+        attr3 = AttributeF.create(key='osm2')
         DomainSpecification1AF.create(
-            name='a new domain', attr1__attribute=attr3
+            name='a new domain', spec1__attribute=attr3
         )
 
         locality = LocalityF.create(domain=dom)
 
         self.assertEqual(
             list(locality.get_attr_map()), [
-                {'attribute__id': 1, 'attribute__key': u'test'},
-                {'attribute__id': 2, 'attribute__key': u'osm'}
+                {'id': 1, 'attribute__key': u'test'},
+                {'id': 2, 'attribute__key': u'osm'}
             ]
         )
 
@@ -58,7 +59,7 @@ class TestModelLocality(TestCase):
         attr2 = AttributeF.create(id=2, key='osm')
 
         dom = DomainSpecification2AF.create(
-            name='a domain', attr1__attribute=attr1, attr2__attribute=attr2
+            name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
         locality = LocalityF.create(pk=1, domain=dom)
@@ -82,7 +83,7 @@ class TestModelLocality(TestCase):
         attr2 = AttributeF.create(id=2, key='osm')
 
         dom = DomainSpecification2AF.create(
-            name='a domain', attr1__attribute=attr1, attr2__attribute=attr2
+            name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
         locality = LocalityF.create(pk=1, domain=dom)
@@ -109,13 +110,13 @@ class TestModelLocality(TestCase):
         attr2 = AttributeF.create(key='osm')
 
         dom = DomainSpecification2AF.create(
-            name='a domain', attr1__attribute=attr1, attr2__attribute=attr2
+            name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
         # this domain should not be in results
         attr3 = AttributeF.create(key='osm2')
         DomainSpecification1AF.create(
-            name='a new domain', attr1__attribute=attr3
+            name='a new domain', spec1__attribute=attr3
         )
 
         locality = LocalityF.create(

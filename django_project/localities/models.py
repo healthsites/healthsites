@@ -25,15 +25,15 @@ class Locality(models.Model):
     geom = models.PointField(srid=4326)
     created = models.DateTimeField(blank=True)
     modified = models.DateTimeField(blank=True)
-    attributes = models.ManyToManyField('Attribute', through='Value')
+    specifications = models.ManyToManyField('Specification', through='Value')
 
     objects = models.GeoManager()
 
     def get_attr_map(self):
         return (
             self.domain.specification_set
-            .order_by('attribute__id')
-            .values('attribute__id', 'attribute__key')
+            .order_by('id')
+            .values('id', 'attribute__key')
         )
 
     def set_geom(self, lon, lat):
@@ -42,6 +42,7 @@ class Locality(models.Model):
 
     def set_values(self, value_map):
         attrs = self.get_attr_map()
+
         changed_values = []
         for key, data in value_map.iteritems():
             # get attribute_id
@@ -50,11 +51,11 @@ class Locality(models.Model):
             ]
 
             if attr_list:
-                attr_id = attr_list[0]['attribute__id']
+                spec_id = attr_list[0]['id']
                 # update or create new values
                 changed_values.append(
                     self.value_set.update_or_create(
-                        attribute_id=attr_id, defaults={'data': data}
+                        specification_id=spec_id, defaults={'data': data}
                     )
                 )
             else:
@@ -83,7 +84,7 @@ class Locality(models.Model):
             u'id': self.pk,
             u'uuid': self.uuid,
             u'values': {
-                val.attribute.key: val.data
+                val.specification.attribute.key: val.data
                 for val in self.value_set.select_related('attribute').all()
             },
             u'geom': [self.geom.x, self.geom.y]
@@ -95,15 +96,15 @@ class Locality(models.Model):
 
 class Value(models.Model):
     locality = models.ForeignKey('Locality')
-    attribute = models.ForeignKey('Attribute')
+    specification = models.ForeignKey('Specification')
     data = models.TextField(blank=True)
 
     class Meta:
-        unique_together = ('locality', 'attribute')
+        unique_together = ('locality', 'specification')
 
     def __unicode__(self):
         return u'({}) {}={}'.format(
-            self.locality.id, self.attribute.key, self.data
+            self.locality.id, self.specification.attribute.key, self.data
         )
 
 

@@ -40,15 +40,15 @@ class LocalityF(factory.django.DjangoModelFactory):
 
 
 class LocalityValueF(LocalityF):
-    attr1 = factory.RelatedFactory(
+    val1 = factory.RelatedFactory(
         'localities.tests.model_factories.ValueF', 'locality'
     )
 
 
 class ValueF(factory.django.DjangoModelFactory):
     locality = factory.SubFactory('localities.tests.model_factories.LocalityF')
-    attribute = factory.SubFactory(
-        'localities.tests.model_factories.AttributeF',
+    specification = factory.SubFactory(
+        'localities.tests.model_factories.SpecificationF',
     )
     data = ''
 
@@ -68,27 +68,27 @@ class SpecificationF(factory.django.DjangoModelFactory):
 
 
 class DomainSpecification1AF(DomainF):
-    attr1 = factory.RelatedFactory(
+    spec1 = factory.RelatedFactory(
         'localities.tests.model_factories.SpecificationF', 'domain'
     )
 
 
 class DomainSpecification2AF(DomainF):
-    attr1 = factory.RelatedFactory(
+    spec1 = factory.RelatedFactory(
         'localities.tests.model_factories.SpecificationF', 'domain'
     )
-    attr2 = factory.RelatedFactory(
+    spec2 = factory.RelatedFactory(
         'localities.tests.model_factories.SpecificationF', 'domain'
     )
 
 
 class DomainSpecification3AF(DomainF):
-    attr1 = factory.RelatedFactory(
+    spec1 = factory.RelatedFactory(
         'localities.tests.model_factories.SpecificationF', 'domain'
     )
-    attr2 = factory.RelatedFactory(
+    spec2 = factory.RelatedFactory(
         'localities.tests.model_factories.SpecificationF', 'domain'
     )
-    attr3 = factory.RelatedFactory(
+    spec3 = factory.RelatedFactory(
         'localities.tests.model_factories.SpecificationF', 'domain'
     )

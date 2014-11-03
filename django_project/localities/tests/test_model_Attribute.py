@@ -16,7 +16,7 @@ class TestModelAttribute(TestCase):
         attr1 = AttributeF.create(id=1, key='test')
 
         DomainSpecification1AF.create(
-            name='A domain', attr1__attribute=attr1
+            name='A domain', spec1__attribute=attr1
         )
 
         self.assertEqual(
