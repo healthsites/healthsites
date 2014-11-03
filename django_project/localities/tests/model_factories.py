@@ -5,7 +5,8 @@ from ..models import (
     Domain,
     Locality,
     Value,
-    Attribute
+    Attribute,
+    Specification
 )
 
 
@@ -21,14 +22,6 @@ class DomainF(factory.django.DjangoModelFactory):
 class AttributeF(factory.django.DjangoModelFactory):
     key = factory.Sequence(lambda n: "attribute_{}".format(n))
     description = ''
-
-    @factory.post_generation
-    def in_domains(self, create, extracted, **kwargs):
-        if not create:
-            return
-        if extracted:
-            for domain in extracted:
-                self.in_domains.add(domain)
 
     class Meta:
         model = Attribute
@@ -61,3 +54,41 @@ class ValueF(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Value
+
+
+class SpecificationF(factory.django.DjangoModelFactory):
+    domain = factory.SubFactory('localities.tests.model_factories.DomainF')
+    attribute = factory.SubFactory(
+        'localities.tests.model_factories.AttributeF',
+    )
+    required = False
+
+    class Meta:
+        model = Specification
+
+
+class DomainSpecification1AF(DomainF):
+    attr1 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )
+
+
+class DomainSpecification2AF(DomainF):
+    attr1 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )
+    attr2 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )
+
+
+class DomainSpecification3AF(DomainF):
+    attr1 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )
+    attr2 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )
+    attr3 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )

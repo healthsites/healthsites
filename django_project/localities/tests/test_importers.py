@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-from .model_factories import AttributeF, DomainF, LocalityF
+from .model_factories import (
+    AttributeF,
+    LocalityF,
+    DomainSpecification2AF,
+    DomainSpecification3AF
+)
 
 from ..importers import CSVImporter
 from ..models import Locality, Value
@@ -10,10 +15,14 @@ from ..exceptions import LocalityImportError
 
 class TestImporters(TestCase):
     def test_ok_data(self):
-        domain = DomainF.create(name='Test')
-        AttributeF.create(key='name', in_domains=[domain])
-        AttributeF.create(key='url', in_domains=[domain])
-        AttributeF.create(key='services', in_domains=[domain])
+        attr1 = AttributeF.create(key='name')
+        attr2 = AttributeF.create(key='url')
+        attr3 = AttributeF.create(key='services')
+
+        DomainSpecification3AF.create(
+            name='Test', attr1__attribute=attr1, attr2__attribute=attr2,
+            attr3__attribute=attr3
+        )
 
         CSVImporter(
             'Test', 'test_imp',
@@ -25,10 +34,14 @@ class TestImporters(TestCase):
         self.assertEqual(Value.objects.count(), 8)
 
     def test_ok_data_tabs(self):
-        domain = DomainF.create(name='Test')
-        AttributeF.create(key='name', in_domains=[domain])
-        AttributeF.create(key='url', in_domains=[domain])
-        AttributeF.create(key='services', in_domains=[domain])
+        attr1 = AttributeF.create(key='name')
+        attr2 = AttributeF.create(key='url')
+        attr3 = AttributeF.create(key='services')
+
+        DomainSpecification3AF.create(
+            name='Test', attr1__attribute=attr1, attr2__attribute=attr2,
+            attr3__attribute=attr3
+        )
 
         CSVImporter(
             'Test', 'test_imp',
@@ -41,10 +54,14 @@ class TestImporters(TestCase):
         self.assertEqual(Value.objects.count(), 8)
 
     def test_ok_data_bad_domain(self):
-        domain = DomainF.create(name='Test')
-        AttributeF.create(key='name', in_domains=[domain])
-        AttributeF.create(key='url', in_domains=[domain])
-        AttributeF.create(key='services', in_domains=[domain])
+        attr1 = AttributeF.create(key='name')
+        attr2 = AttributeF.create(key='url')
+        attr3 = AttributeF.create(key='services')
+
+        DomainSpecification3AF.create(
+            name='Test', attr1__attribute=attr1, attr2__attribute=attr2,
+            attr3__attribute=attr3
+        )
 
         self.assertRaises(
             LocalityImportError, CSVImporter,
@@ -54,10 +71,14 @@ class TestImporters(TestCase):
         )
 
     def test_missing_upstream_id(self):
-        domain = DomainF.create(name='Test')
-        AttributeF.create(key='name', in_domains=[domain])
-        AttributeF.create(key='url', in_domains=[domain])
-        AttributeF.create(key='services', in_domains=[domain])
+        attr1 = AttributeF.create(key='name')
+        attr2 = AttributeF.create(key='url')
+        attr3 = AttributeF.create(key='services')
+
+        DomainSpecification3AF.create(
+            name='Test', attr1__attribute=attr1, attr2__attribute=attr2,
+            attr3__attribute=attr3
+        )
 
         CSVImporter(
             'Test', 'test_imp',
@@ -69,9 +90,12 @@ class TestImporters(TestCase):
         self.assertEqual(Value.objects.count(), 6)
 
     def test_find_by_upstream_id(self):
-        domain = DomainF.create(name='Test')
-        AttributeF.create(key='name', in_domains=[domain])
-        AttributeF.create(key='services', in_domains=[domain])
+        attr1 = AttributeF.create(key='name')
+        attr2 = AttributeF.create(key='services')
+
+        DomainSpecification2AF.create(
+            name='Test', attr1__attribute=attr1, attr2__attribute=attr2
+        )
 
         loc = LocalityF.create(upstream_id='test_imp¶2')
 
@@ -91,9 +115,12 @@ class TestImporters(TestCase):
             ])
 
     def test_find_by_uuid(self):
-        domain = DomainF.create(name='Test')
-        AttributeF.create(key='name', in_domains=[domain])
-        AttributeF.create(key='services', in_domains=[domain])
+        attr1 = AttributeF.create(key='name')
+        attr2 = AttributeF.create(key='services')
+
+        DomainSpecification2AF.create(
+            name='Test', attr1__attribute=attr1, attr2__attribute=attr2
+        )
 
         loc = LocalityF.create(uuid='93b7e8c4621a4597938dfd3d27659162')
 

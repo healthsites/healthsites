@@ -31,10 +31,9 @@ class Locality(models.Model):
 
     def get_attr_map(self):
         return (
-            Attribute.objects
-            .filter(in_domains=self.domain)
-            .order_by('id')
-            .values('id', 'key')
+            self.domain.specification_set
+            .order_by('attribute__id')
+            .values('attribute__id', 'attribute__key')
         )
 
     def set_geom(self, lon, lat):
@@ -46,10 +45,12 @@ class Locality(models.Model):
         changed_values = []
         for key, data in value_map.iteritems():
             # get attribute_id
-            attr_list = [attr for attr in attrs if attr['key'] == key]
+            attr_list = [
+                attr for attr in attrs if attr['attribute__key'] == key
+            ]
 
             if attr_list:
-                attr_id = attr_list[0]['id']
+                attr_id = attr_list[0]['attribute__id']
                 # update or create new values
                 changed_values.append(
                     self.value_set.update_or_create(

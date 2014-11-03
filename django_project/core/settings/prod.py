@@ -3,7 +3,19 @@ from .project import *  # noqa
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'healthsites_dev',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        # Set to empty string for default.
+        'PORT': '',
+    }
+}
 
 # Comment if you are not running behind proxy
 USE_X_FORWARDED_HOST = True

@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from django.db import IntegrityError
 
-from .model_factories import AttributeF, DomainF
+from .model_factories import AttributeF, DomainSpecification1AF
 
 
 class TestModelAttribute(TestCase):
@@ -13,11 +13,14 @@ class TestModelAttribute(TestCase):
         self.assertEqual(unicode(attr), 'an_attribute')
 
     def test_relations(self):
-        domain = DomainF.create(name='A domain')
-        attr = AttributeF.create(key='An attribute', in_domains=[domain])
+        attr1 = AttributeF.create(id=1, key='test')
+
+        DomainSpecification1AF.create(
+            name='A domain', attr1__attribute=attr1
+        )
 
         self.assertEqual(
-            [dom.name for dom in attr.in_domains.all()],
+            [dom.name for dom in attr1.domain_set.all()],
             ['A domain']
         )
 
