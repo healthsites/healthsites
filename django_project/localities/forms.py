@@ -15,7 +15,9 @@ class DomainForm(forms.Form):
         super(DomainForm, self).__init__(*args, **kwargs)
 
         for spec in domain.specification_set.select_related('attribute'):
-            field = forms.CharField(label=spec.attribute.key)
+            field = forms.CharField(
+                label=spec.attribute.key, required=spec.required
+            )
             self.fields[spec.attribute.key] = field
 
 
@@ -41,5 +43,7 @@ class LocalityForm(forms.Form):
 
         for spec in (
                 locality.domain.specification_set.select_related('attribute')):
-            field = forms.CharField(label=spec.attribute.key)
+            field = forms.CharField(
+                label=spec.attribute.key, required=spec.required
+            )
             self.fields[spec.attribute.key] = field

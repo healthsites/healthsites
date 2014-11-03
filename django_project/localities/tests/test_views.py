@@ -211,3 +211,28 @@ class TestViews(TestCase):
             u'/></p>\n<p><label for="id_test">test:</label> <input id="id_test'
             u'" name="test" type="text" value="new_osm" /></p>\n</form>'
         )
+
+    def test_localitiesCreate_form_post_required_attr(self):
+        test_attr = AttributeF.create(key='test')
+        DomainSpecification1AF(
+            name='test', attr1__attribute=test_attr, attr1__required=True
+        )
+
+        resp = self.client.post(
+            reverse('locality-create', kwargs={'domain': 'test'}),
+            {'test': ''}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(
+            resp.content,
+            u'<form>\n<ul class="errorlist"><li>This field is required.</li></'
+            u'ul>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" name'
+            u'="lon" step="any" type="number" /></p>\n<ul class="errorlist"><l'
+            u'i>This field is required.</li></ul>\n<p><label for="id_lat">Lat:'
+            u'</label> <input id="id_lat" name="lat" step="any" type="number" '
+            u'/></p>\n<ul class="errorlist"><li>This field is required.</li></'
+            u'ul>\n<p><label for="id_test">test:</label> <input id="id_test" n'
+            u'ame="test" type="text" /></p>\n</form>'
+        )
