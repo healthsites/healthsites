@@ -22,8 +22,11 @@ DATABASES = {
 # Project apps
 INSTALLED_APPS += (
     'localities',
-    'frontend'
+    'frontend',
+    'users'
 )
+
+LOGIN_REDIRECT_URL = '/'
 
 
 PIPELINE_JS = {

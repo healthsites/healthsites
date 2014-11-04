@@ -16,7 +16,8 @@ urlpatterns = patterns(
 
     # include application urls
     url(r'', include('frontend.urls')),
-    url(r'', include('localities.urls'))
+    url(r'', include('localities.urls')),
+    url(r'', include('users.urls')),
 
 )
 

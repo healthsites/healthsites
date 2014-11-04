@@ -17,10 +17,18 @@
           data-mapclick-text="Click on the map"
           data-savelocality-text="Save Locality">Add a new Locality</button>
 -->
-  <a id="help-button" class="btn btn-default navbar-btn pull-right"
+  <div class="navbar-right">
+  {% if user.is_authenticated %}
+    <a id="profile" href="{% url 'userprofilepage' %}" class="btn btn-default navbar-btn">Profile</a>
+    <a class="btn btn-default navbar-btn" href="{% url 'logout_user' %}">Logout</a>
+  {% else %}
+    <a id="signin" href="{% url 'usersignpage' %}" class="btn btn-default navbar-btn">Sign in</a>
+  {% endif %}
+  <a id="help-button" class="btn btn-default navbar-btn"
           data-toggle="modal"
           href="help"
           data-target="#help-modal">Help</a>
+  </div>
 </div>
 </nav>
 

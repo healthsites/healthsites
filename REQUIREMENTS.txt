@@ -6,3 +6,4 @@ django-model-utils
 django-pipeline
 nodeenv
 raven
+python-social-auth
