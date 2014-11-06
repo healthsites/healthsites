@@ -6,7 +6,8 @@ from .model_factories import (
     LocalityF,
     LocalityValueF,
     AttributeF,
-    DomainSpecification1AF
+    DomainSpecification1AF,
+    ChangesetF
 )
 
 from ..models import Locality
@@ -79,6 +80,7 @@ class TestViews(TestCase):
 
     def test_localitiesUpdate_form_post(self):
         test_attr = AttributeF.create(key='test')
+        chgset = ChangesetF.create(id=1)
 
         dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
@@ -86,7 +88,7 @@ class TestViews(TestCase):
 
         LocalityValueF.create(
             id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
-            val1__specification=spec
+            val1__specification=spec, changeset=chgset, val1__changeset=chgset
         )
 
         resp = self.client.post(
@@ -107,6 +109,18 @@ class TestViews(TestCase):
             [val.data for val in loc.value_set.all()],
             ['new_osm']
         )
+
+        # check if we got a new changeset
+        self.assertNotEqual(loc.changeset.id, chgset.id)
+
+        self.assertTrue(all(
+            val.changeset for val in loc.value_set.all()
+            if val.changeset == loc.changeset
+        ))
+        self.assertFalse(any(
+            val.changeset for val in loc.value_set.all()
+            if val.changeset == chgset.id
+        ))
 
     def test_localitiesUpdate_form_post_fail(self):
         test_attr = AttributeF.create(key='test')
