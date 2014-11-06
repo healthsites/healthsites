@@ -6,7 +6,8 @@ from ..models import (
     Locality,
     Value,
     Attribute,
-    Specification
+    Specification,
+    Changeset
 )
 
 
@@ -14,6 +15,9 @@ class DomainF(factory.django.DjangoModelFactory):
     name = factory.Sequence(lambda n: "domain_{}".format(n))
     description = ''
     template_fragment = ''
+    changeset = factory.SubFactory(
+        'localities.tests.model_factories.ChangesetF'
+    )
 
     class Meta:
         model = Domain
@@ -22,6 +26,9 @@ class DomainF(factory.django.DjangoModelFactory):
 class AttributeF(factory.django.DjangoModelFactory):
     key = factory.Sequence(lambda n: "attribute_{}".format(n))
     description = ''
+    changeset = factory.SubFactory(
+        'localities.tests.model_factories.ChangesetF'
+    )
 
     class Meta:
         model = Attribute
@@ -34,6 +41,9 @@ class LocalityF(factory.django.DjangoModelFactory):
     geom = 'POINT (0 0)'
     created = None
     modified = None
+    changeset = factory.SubFactory(
+        'localities.tests.model_factories.ChangesetF'
+    )
 
     class Meta:
         model = Locality
@@ -51,6 +61,9 @@ class ValueF(factory.django.DjangoModelFactory):
         'localities.tests.model_factories.SpecificationF',
     )
     data = ''
+    changeset = factory.SubFactory(
+        'localities.tests.model_factories.ChangesetF'
+    )
 
     class Meta:
         model = Value
@@ -62,6 +75,9 @@ class SpecificationF(factory.django.DjangoModelFactory):
         'localities.tests.model_factories.AttributeF',
     )
     required = False
+    changeset = factory.SubFactory(
+        'localities.tests.model_factories.ChangesetF'
+    )
 
     class Meta:
         model = Specification
@@ -92,3 +108,11 @@ class DomainSpecification3AF(DomainF):
     spec3 = factory.RelatedFactory(
         'localities.tests.model_factories.SpecificationF', 'domain'
     )
+
+
+class ChangesetF(factory.django.DjangoModelFactory):
+    created = None
+    comment = ''
+
+    class Meta:
+        model = Changeset

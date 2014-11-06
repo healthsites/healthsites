@@ -8,7 +8,8 @@ from .model_factories import (
     LocalityValueF,
     AttributeF,
     DomainSpecification1AF,
-    DomainSpecification2AF
+    DomainSpecification2AF,
+    ChangesetF
 )
 
 
@@ -62,10 +63,12 @@ class TestModelLocality(TestCase):
             name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
-        locality = LocalityF.create(pk=1, domain=dom)
+        chgset = ChangesetF.create()
+
+        locality = LocalityF.create(pk=1, domain=dom, changeset=chgset)
 
         value_map = {'osm': 'osm val', 'test': 'test val'}
-        chg_values = locality.set_values(value_map)
+        chg_values = locality.set_values(value_map, changeset=chgset)
 
         self.assertEqual(len(chg_values), 2)
 
@@ -73,7 +76,7 @@ class TestModelLocality(TestCase):
         self.assertEqual([val[1] for val in chg_values], [True, True])
 
         value_map = {'osm': 'osm val'}
-        chg_values = locality.set_values(value_map)
+        chg_values = locality.set_values(value_map, chgset)
 
         # attribute has been updated
         self.assertEqual(chg_values[0][1], False)
@@ -82,14 +85,16 @@ class TestModelLocality(TestCase):
         attr1 = AttributeF.create(id=1, key='test')
         attr2 = AttributeF.create(id=2, key='osm')
 
+        chgset = ChangesetF.create()
+
         dom = DomainSpecification2AF.create(
             name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
-        locality = LocalityF.create(pk=1, domain=dom)
+        locality = LocalityF.create(pk=1, domain=dom, changeset=chgset)
 
         value_map = {'osm2': 'bad key', 'test': 'test val'}
-        chg_values = locality.set_values(value_map)
+        chg_values = locality.set_values(value_map, changeset=chgset)
 
         self.assertEqual(len(chg_values), 1)
 
@@ -119,13 +124,15 @@ class TestModelLocality(TestCase):
             name='a new domain', spec1__attribute=attr3
         )
 
+        chgset = ChangesetF.create()
+
         locality = LocalityF.create(
             pk=1, domain=dom, uuid='93b7e8c4621a4597938dfd3d27659162',
-            geom='POINT (16 45)'
+            geom='POINT (16 45)', changeset=chgset
         )
 
         value_map = {'osm': 'osm val', 'test': 'test val'}
-        locality.set_values(value_map)
+        locality.set_values(value_map, changeset=chgset)
 
         self.assertDictEqual(locality.repr_dict(), {
             u'id': 1, u'uuid': '93b7e8c4621a4597938dfd3d27659162',

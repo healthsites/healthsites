@@ -13,6 +13,7 @@ class Domain(models.Model):
     template_fragment = models.TextField(null=True, blank=True, default='')
 
     attributes = models.ManyToManyField('Attribute', through='Specification')
+    changeset = models.ForeignKey('Changeset')
 
     def __unicode__(self):
         return u'{}'.format(self.name)
@@ -26,6 +27,7 @@ class Locality(models.Model):
     created = models.DateTimeField(blank=True)
     modified = models.DateTimeField(blank=True)
     specifications = models.ManyToManyField('Specification', through='Value')
+    changeset = models.ForeignKey('Changeset')
 
     objects = models.GeoManager()
 
@@ -40,7 +42,7 @@ class Locality(models.Model):
         self.geom.set_x(lon)
         self.geom.set_y(lat)
 
-    def set_values(self, value_map):
+    def set_values(self, value_map, changeset):
         attrs = self.get_attr_map()
 
         changed_values = []
@@ -55,7 +57,9 @@ class Locality(models.Model):
                 # update or create new values
                 changed_values.append(
                     self.value_set.update_or_create(
-                        specification_id=spec_id, defaults={'data': data}
+                        specification_id=spec_id, defaults={
+                            'data': data, 'changeset': changeset
+                        }
                     )
                 )
             else:
@@ -98,6 +102,7 @@ class Value(models.Model):
     locality = models.ForeignKey('Locality')
     specification = models.ForeignKey('Specification')
     data = models.TextField(blank=True)
+    changeset = models.ForeignKey('Changeset')
 
     class Meta:
         unique_together = ('locality', 'specification')
@@ -111,6 +116,7 @@ class Value(models.Model):
 class Attribute(models.Model):
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
+    changeset = models.ForeignKey('Changeset')
 
     def __unicode__(self):
         return u'{}'.format(self.key)
@@ -126,9 +132,27 @@ class Specification(models.Model):
     domain = models.ForeignKey('Domain')
     attribute = models.ForeignKey('Attribute')
     required = models.BooleanField(default=False)
+    changeset = models.ForeignKey('Changeset')
 
     class Meta:
         unique_together = ('domain', 'attribute')
 
     def __unicode__(self):
         return u'{} {}'.format(self.domain.name, self.attribute.key)
+
+
+class Changeset(models.Model):
+    # social_user = models.ForeignKey('SocialUser')
+    created = models.DateTimeField()
+    comment = models.TextField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        # update created and modified fields
+        if self.pk and not(kwargs.get('force_insert')):
+            super(Changeset, self).save(*args, **kwargs)
+        else:
+            self.created = timezone.now()
+        super(Changeset, self).save(*args, **kwargs)
+
+    def __unicode__(self):
+        return u'{}'.format(self.pk)

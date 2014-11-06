@@ -8,7 +8,8 @@ import json
 from django.contrib.gis.geos import Point
 from django.db import transaction
 
-from .models import Locality, Domain
+from .models import Locality, Domain, Changeset
+
 from .exceptions import LocalityImportError
 
 from ._csv_unicode import UnicodeDictReader
@@ -114,10 +115,14 @@ class CSVImporter():
         })
 
     def save_localities(self):
+        # generate a new changeset id
+        tmp_changeset = Changeset.objects.create()
+
         for gen_upstream_id, values in self.parsed_data.iteritems():
             row_uuid = values['uuid']
             loc = self._find_locality(row_uuid, gen_upstream_id)
 
+            loc.changeset = tmp_changeset
             loc.domain = self.domain
             loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
             loc.upstream_id = gen_upstream_id
@@ -128,7 +133,7 @@ class CSVImporter():
             LOG.info('Saved %s (%s)', loc.uuid, loc.id)
 
             # save values for Locality
-            loc.set_values(values['values'])
+            loc.set_values(values['values'], changeset=tmp_changeset)
 
     def parse_file(self):
         with open(self.csv_filename, 'rb') as csv_file:

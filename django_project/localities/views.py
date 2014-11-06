@@ -11,7 +11,7 @@ from django.contrib.gis.geos import Point
 
 from braces.views import JSONResponseMixin
 
-from .models import Locality, Domain
+from .models import Locality, Domain, Changeset
 from .utils import render_fragment
 from .forms import LocalityForm, DomainForm
 
@@ -68,11 +68,14 @@ class LocalityUpdate(SingleObjectMixin, FormView):
         return super(LocalityUpdate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
+        tmp_changeset = Changeset.objects.create()
+
         self.object.set_geom(
             form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
         )
+        self.object.changeset = tmp_changeset
         self.object.save()
-        self.object.set_values(form.cleaned_data)
+        self.object.set_values(form.cleaned_data, changeset=tmp_changeset)
 
         return HttpResponse('OK')
 
@@ -105,10 +108,13 @@ class LocalityCreate(SingleObjectMixin, FormView):
         return super(LocalityCreate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
+        tmp_changeset = Changeset.objects.create()
+
         tmp_uuid = uuid.uuid4().hex
 
         loc = Locality()
         loc.domain = self.object
+        loc.changeset = tmp_changeset
         loc.uuid = tmp_uuid
         # generate unique upstream_id
         loc.upstream_id = u'web¶{}'.format(tmp_uuid)
@@ -117,7 +123,7 @@ class LocalityCreate(SingleObjectMixin, FormView):
             form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
         )
         loc.save()
-        loc.set_values(form.cleaned_data)
+        loc.set_values(form.cleaned_data, changeset=tmp_changeset)
 
         return HttpResponse(loc.pk)
 
