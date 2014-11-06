@@ -8,6 +8,7 @@ from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from django.contrib.gis.geos import Point
+from django.db import transaction
 
 from braces.views import JSONResponseMixin
 
@@ -68,16 +69,21 @@ class LocalityUpdate(SingleObjectMixin, FormView):
         return super(LocalityUpdate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
-        tmp_changeset = Changeset.objects.create()
+        # update everything in one transaction
+        with transaction.atomic():
+            tmp_changeset = Changeset.objects.create()
 
-        self.object.set_geom(
-            form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
-        )
-        self.object.changeset = tmp_changeset
-        self.object.save()
-        self.object.set_values(form.cleaned_data, changeset=tmp_changeset)
+            self.object.set_geom(
+                form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
+            )
+            self.object.changeset = tmp_changeset
+            self.object.save()
+            self.object.set_values(form.cleaned_data, changeset=tmp_changeset)
 
-        return HttpResponse('OK')
+            return HttpResponse('OK')
+
+        # transaction failed
+        return HttpResponse('ERROR updating Locality and values')
 
     def get_form(self, form_class):
         return form_class(locality=self.object, **self.get_form_kwargs())
@@ -108,24 +114,28 @@ class LocalityCreate(SingleObjectMixin, FormView):
         return super(LocalityCreate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
-        tmp_changeset = Changeset.objects.create()
+        # create new as a single transaction
+        with transaction.atomic():
+            tmp_changeset = Changeset.objects.create()
 
-        tmp_uuid = uuid.uuid4().hex
+            tmp_uuid = uuid.uuid4().hex
 
-        loc = Locality()
-        loc.domain = self.object
-        loc.changeset = tmp_changeset
-        loc.uuid = tmp_uuid
-        # generate unique upstream_id
-        loc.upstream_id = u'web¶{}'.format(tmp_uuid)
+            loc = Locality()
+            loc.domain = self.object
+            loc.changeset = tmp_changeset
+            loc.uuid = tmp_uuid
+            # generate unique upstream_id
+            loc.upstream_id = u'web¶{}'.format(tmp_uuid)
 
-        loc.geom = Point(
-            form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
-        )
-        loc.save()
-        loc.set_values(form.cleaned_data, changeset=tmp_changeset)
+            loc.geom = Point(
+                form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
+            )
+            loc.save()
+            loc.set_values(form.cleaned_data, changeset=tmp_changeset)
 
-        return HttpResponse(loc.pk)
+            return HttpResponse(loc.pk)
+        # transaction failed
+        return HttpResponse('ERROR creating Locality and values')
 
     def get_form(self, form_class):
         return form_class(domain=self.object, **self.get_form_kwargs())
