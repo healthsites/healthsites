@@ -23,7 +23,7 @@ DATABASES = {
 INSTALLED_APPS += (
     'localities',
     'frontend',
-    'users'
+    'social_users'
 )
 
 LOGIN_REDIRECT_URL = '/'

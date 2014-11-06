@@ -8,18 +8,19 @@ from django.contrib.auth import logout as auth_logout
 
 
 class UserProfilePage(TemplateView):
-    template_name = 'userprofilepage.html'
+    template_name = 'social_users/profilepage.html'
 
     def get_context_data(self, *args, **kwargs):
         context = super(
             UserProfilePage, self).get_context_data(*args, **kwargs)
         context['auths'] = [
-            auth.provider for auth in self.request.user.social_auth.all()]
+            auth.provider for auth in self.request.user.social_auth.all()
+        ]
         return context
 
 
 class UserSigninPage(TemplateView):
-    template_name = 'usersigninpage.html'
+    template_name = 'social_users/signinpage.html'
 
 
 class LogoutUser(View):
