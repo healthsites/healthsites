@@ -14,6 +14,7 @@ class Domain(models.Model):
 
     attributes = models.ManyToManyField('Attribute', through='Specification')
     changeset = models.ForeignKey('Changeset')
+    version = models.IntegerField()
 
     def __unicode__(self):
         return u'{}'.format(self.name)
@@ -28,6 +29,7 @@ class Locality(models.Model):
     modified = models.DateTimeField(blank=True)
     specifications = models.ManyToManyField('Specification', through='Value')
     changeset = models.ForeignKey('Changeset')
+    version = models.IntegerField()
 
     objects = models.GeoManager()
 
@@ -55,13 +57,22 @@ class Locality(models.Model):
             if attr_list:
                 spec_id = attr_list[0]['id']
                 # update or create new values
-                changed_values.append(
-                    self.value_set.update_or_create(
-                        specification_id=spec_id, defaults={
-                            'data': data, 'changeset': changeset
-                        }
-                    )
-                )
+                try:
+                    obj = self.value_set.get(specification_id=spec_id)
+                    _created = False
+                except Value.DoesNotExist:
+                    obj = Value()
+                    obj.locality = self
+                    obj.specification_id = spec_id
+                    _created = True
+
+                obj.data = data
+                obj.changeset = changeset
+                # increase version number of a value
+                obj.version = (obj.version or 0) + 1
+                obj.save()
+
+                changed_values.append((obj, _created))
             else:
                 # attr_id was not found (maybe a bad attribute)
                 LOG.warning(
@@ -103,6 +114,7 @@ class Value(models.Model):
     specification = models.ForeignKey('Specification')
     data = models.TextField(blank=True)
     changeset = models.ForeignKey('Changeset')
+    version = models.IntegerField()
 
     class Meta:
         unique_together = ('locality', 'specification')
@@ -117,6 +129,7 @@ class Attribute(models.Model):
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
     changeset = models.ForeignKey('Changeset')
+    version = models.IntegerField()
 
     def __unicode__(self):
         return u'{}'.format(self.key)
@@ -133,6 +146,7 @@ class Specification(models.Model):
     attribute = models.ForeignKey('Attribute')
     required = models.BooleanField(default=False)
     changeset = models.ForeignKey('Changeset')
+    version = models.IntegerField()
 
     class Meta:
         unique_together = ('domain', 'attribute')

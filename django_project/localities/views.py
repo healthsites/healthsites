@@ -77,6 +77,7 @@ class LocalityUpdate(SingleObjectMixin, FormView):
                 form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
             )
             self.object.changeset = tmp_changeset
+            self.object.version = (self.object.version or 0) + 1
             self.object.save()
             self.object.set_values(form.cleaned_data, changeset=tmp_changeset)
 
@@ -123,6 +124,7 @@ class LocalityCreate(SingleObjectMixin, FormView):
             loc = Locality()
             loc.domain = self.object
             loc.changeset = tmp_changeset
+            loc.version = (loc.version or 0) + 1
             loc.uuid = tmp_uuid
             # generate unique upstream_id
             loc.upstream_id = u'web¶{}'.format(tmp_uuid)

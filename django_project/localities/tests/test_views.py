@@ -86,7 +86,7 @@ class TestViews(TestCase):
 
         spec = dom.specification_set.all()[0]
 
-        LocalityValueF.create(
+        org_loc = LocalityValueF.create(
             id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
             val1__specification=spec, changeset=chgset, val1__changeset=chgset
         )
@@ -121,6 +121,9 @@ class TestViews(TestCase):
             val.changeset for val in loc.value_set.all()
             if val.changeset == chgset.id
         ))
+
+        # test version, should be increased by 1
+        self.assertTrue(loc.version, org_loc.version + 1)
 
     def test_localitiesUpdate_form_post_fail(self):
         test_attr = AttributeF.create(key='test')
@@ -194,6 +197,9 @@ class TestViews(TestCase):
             [val.data for val in loc.value_set.all()],
             ['new_osm']
         )
+
+        # test version
+        self.assertTrue(loc.version == 1)
 
     def test_localitiesCreate_form_post_fail(self):
         test_attr = AttributeF.create(key='test')

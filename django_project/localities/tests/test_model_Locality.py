@@ -43,7 +43,7 @@ class TestModelLocality(TestCase):
         # this domain should not be in results
         attr3 = AttributeF.create(key='osm2')
         DomainSpecification1AF.create(
-            name='a new domain', spec1__attribute=attr3
+            name='a new domain', spec1__attribute=attr3, spec1__id=-1
         )
 
         locality = LocalityF.create(domain=dom)

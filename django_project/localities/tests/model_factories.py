@@ -18,6 +18,7 @@ class DomainF(factory.django.DjangoModelFactory):
     changeset = factory.SubFactory(
         'localities.tests.model_factories.ChangesetF'
     )
+    version = factory.Sequence(lambda n: n)
 
     class Meta:
         model = Domain
@@ -29,6 +30,7 @@ class AttributeF(factory.django.DjangoModelFactory):
     changeset = factory.SubFactory(
         'localities.tests.model_factories.ChangesetF'
     )
+    version = factory.Sequence(lambda n: n)
 
     class Meta:
         model = Attribute
@@ -44,6 +46,7 @@ class LocalityF(factory.django.DjangoModelFactory):
     changeset = factory.SubFactory(
         'localities.tests.model_factories.ChangesetF'
     )
+    version = factory.Sequence(lambda n: n)
 
     class Meta:
         model = Locality
@@ -64,6 +67,7 @@ class ValueF(factory.django.DjangoModelFactory):
     changeset = factory.SubFactory(
         'localities.tests.model_factories.ChangesetF'
     )
+    version = factory.Sequence(lambda n: n)
 
     class Meta:
         model = Value
@@ -78,6 +82,7 @@ class SpecificationF(factory.django.DjangoModelFactory):
     changeset = factory.SubFactory(
         'localities.tests.model_factories.ChangesetF'
     )
+    version = factory.Sequence(lambda n: n)
 
     class Meta:
         model = Specification
