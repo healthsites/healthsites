@@ -52,8 +52,17 @@ class LocalityF(factory.django.DjangoModelFactory):
         model = Locality
 
 
-class LocalityValueF(LocalityF):
+class LocalityValue1F(LocalityF):
     val1 = factory.RelatedFactory(
+        'localities.tests.model_factories.ValueF', 'locality'
+    )
+
+
+class LocalityValue2F(LocalityF):
+    val1 = factory.RelatedFactory(
+        'localities.tests.model_factories.ValueF', 'locality'
+    )
+    val2 = factory.RelatedFactory(
         'localities.tests.model_factories.ValueF', 'locality'
     )
 

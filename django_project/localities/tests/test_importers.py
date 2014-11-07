@@ -93,11 +93,11 @@ class TestImporters(TestCase):
         attr1 = AttributeF.create(key='name')
         attr2 = AttributeF.create(key='services')
 
-        DomainSpecification2AF.create(
+        dom = DomainSpecification2AF.create(
             name='Test', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
-        loc = LocalityF.create(upstream_id='test_imp¶2')
+        loc = LocalityF.create(upstream_id='test_imp¶2', domain=dom)
 
         CSVImporter(
             'Test', 'test_imp',
@@ -118,11 +118,13 @@ class TestImporters(TestCase):
         attr1 = AttributeF.create(key='name')
         attr2 = AttributeF.create(key='services')
 
-        DomainSpecification2AF.create(
+        dom = DomainSpecification2AF.create(
             name='Test', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
-        loc = LocalityF.create(uuid='93b7e8c4621a4597938dfd3d27659162')
+        loc = LocalityF.create(
+            uuid='93b7e8c4621a4597938dfd3d27659162', domain=dom
+        )
 
         CSVImporter(
             'Test', 'test_imp',

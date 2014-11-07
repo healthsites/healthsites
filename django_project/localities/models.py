@@ -51,11 +51,19 @@ class Locality(ChangesetMixin, models.Model):
         self.geom.set_x(lon)
         self.geom.set_y(lat)
 
-    def set_values(self, value_map, changeset):
+    def set_values(self, changed_data, changeset, changed_keys=None):
         attrs = self.get_attr_map()
 
+        # prepare changed_keys if not defined
+        if changed_keys is None:
+            changed_keys = changed_data.keys()
+
         changed_values = []
-        for key, data in value_map.iteritems():
+        for key, data in changed_data.iteritems():
+            # skip key if data has not changed
+            if key not in changed_keys:
+                continue
+
             # get attribute_id
             attr_list = [
                 attr for attr in attrs if attr['attribute__key'] == key
@@ -109,7 +117,7 @@ class Locality(ChangesetMixin, models.Model):
                 val.specification.attribute.key: val.data
                 for val in self.value_set.select_related('attribute').all()
             },
-            u'geom': [self.geom.x, self.geom.y]
+            u'geom': (self.geom.x, self.geom.y)
         }
 
     def __unicode__(self):

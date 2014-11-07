@@ -9,6 +9,7 @@ from django.contrib.gis.geos import Point
 from django.db import transaction
 
 from .models import Locality, Domain, Changeset
+from. utils import detect_data_changes
 
 from .exceptions import LocalityImportError
 
@@ -48,17 +49,17 @@ class CSVImporter():
             # try to find locality by uuid or upstream_id
             loc = Locality.objects.filter(uuid=uuid).get()
             LOG.debug('Found Locality by uuid: %s', uuid)
-            return loc
+            return (loc, False)
         except Locality.DoesNotExist:
             try:
                 loc = Locality.objects.filter(upstream_id=upstream_id).get()
                 LOG.debug('Found Locality by upstream_id: %s', upstream_id)
-                return loc
+                return (loc, False)
             except Locality.DoesNotExist:
                 # create new Locality
                 loc = Locality()
                 LOG.debug('Creating new Locality')
-                return loc
+                return (loc, True)
 
     def _read_attr(self, row, attr):
         try:
@@ -120,21 +121,40 @@ class CSVImporter():
 
         for gen_upstream_id, values in self.parsed_data.iteritems():
             row_uuid = values['uuid']
-            loc = self._find_locality(row_uuid, gen_upstream_id)
+            loc, _created = self._find_locality(row_uuid, gen_upstream_id)
 
-            loc.changeset = tmp_changeset
-            loc.inc_version()
-            loc.domain = self.domain
-            loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
-            loc.upstream_id = gen_upstream_id
+            if _created:
+                loc.changeset = tmp_changeset
+                loc.inc_version()
+                loc.domain = self.domain
+                loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
+                loc.upstream_id = gen_upstream_id
 
-            loc.geom = Point(*values['geom'])
-            # save Locality
-            loc.save()
-            LOG.info('Saved %s (%s)', loc.uuid, loc.id)
+                loc.geom = Point(*values['geom'])
+                # save Locality
+                loc.save()
+                LOG.info('Created %s (%s)', loc.uuid, loc.id)
 
-            # save values for Locality
-            loc.set_values(values['values'], changeset=tmp_changeset)
+                # save values for Locality
+                loc.set_values(values['values'], changeset=tmp_changeset)
+            else:
+                org_values = loc.repr_dict()
+                loc_changes = detect_data_changes(
+                    {'geom': org_values['geom']}, {'geom': values['geom']}
+                )
+                if loc_changes:
+                    loc.inc_version()
+                    loc.changeset = tmp_changeset
+                    loc.geom = Point(*values['geom'])
+
+                loc.save()
+                LOG.info('Updated %s (%s)', loc.uuid, loc.id)
+
+                val_changes = detect_data_changes(
+                    org_values['values'], values['values']
+                )
+                if val_changes:
+                    loc.set_values(values['values'], changeset=tmp_changeset)
 
     def parse_file(self):
         with open(self.csv_filename, 'rb') as csv_file:
