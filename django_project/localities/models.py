@@ -7,20 +7,29 @@ from django.utils.text import slugify
 from django.contrib.gis.db import models
 
 
-class Domain(models.Model):
+class ChangesetMixin(models.Model):
+    changeset = models.ForeignKey('Changeset')
+    version = models.IntegerField()
+
+    class Meta:
+        abstract = True
+
+    def inc_version(self):
+        self.version = (self.version or 0) + 1
+
+
+class Domain(ChangesetMixin):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(null=True, blank=True, default='')
     template_fragment = models.TextField(null=True, blank=True, default='')
 
     attributes = models.ManyToManyField('Attribute', through='Specification')
-    changeset = models.ForeignKey('Changeset')
-    version = models.IntegerField()
 
     def __unicode__(self):
         return u'{}'.format(self.name)
 
 
-class Locality(models.Model):
+class Locality(ChangesetMixin, models.Model):
     domain = models.ForeignKey('Domain')
     uuid = models.TextField(unique=True)
     upstream_id = models.TextField(null=True, unique=True)
@@ -28,8 +37,6 @@ class Locality(models.Model):
     created = models.DateTimeField(blank=True)
     modified = models.DateTimeField(blank=True)
     specifications = models.ManyToManyField('Specification', through='Value')
-    changeset = models.ForeignKey('Changeset')
-    version = models.IntegerField()
 
     objects = models.GeoManager()
 
@@ -69,7 +76,7 @@ class Locality(models.Model):
                 obj.data = data
                 obj.changeset = changeset
                 # increase version number of a value
-                obj.version = (obj.version or 0) + 1
+                obj.inc_version()
                 obj.save()
 
                 changed_values.append((obj, _created))
@@ -109,12 +116,10 @@ class Locality(models.Model):
         return u'{}'.format(self.id)
 
 
-class Value(models.Model):
+class Value(ChangesetMixin, models.Model):
     locality = models.ForeignKey('Locality')
     specification = models.ForeignKey('Specification')
     data = models.TextField(blank=True)
-    changeset = models.ForeignKey('Changeset')
-    version = models.IntegerField()
 
     class Meta:
         unique_together = ('locality', 'specification')
@@ -125,11 +130,9 @@ class Value(models.Model):
         )
 
 
-class Attribute(models.Model):
+class Attribute(ChangesetMixin, models.Model):
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
-    changeset = models.ForeignKey('Changeset')
-    version = models.IntegerField()
 
     def __unicode__(self):
         return u'{}'.format(self.key)
@@ -141,12 +144,10 @@ class Attribute(models.Model):
         super(Attribute, self).save(*args, **kwargs)
 
 
-class Specification(models.Model):
+class Specification(ChangesetMixin, models.Model):
     domain = models.ForeignKey('Domain')
     attribute = models.ForeignKey('Attribute')
     required = models.BooleanField(default=False)
-    changeset = models.ForeignKey('Changeset')
-    version = models.IntegerField()
 
     class Meta:
         unique_together = ('domain', 'attribute')

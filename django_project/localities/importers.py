@@ -123,7 +123,7 @@ class CSVImporter():
             loc = self._find_locality(row_uuid, gen_upstream_id)
 
             loc.changeset = tmp_changeset
-            loc.version = (loc.version or 0) + 1
+            loc.inc_version()
             loc.domain = self.domain
             loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
             loc.upstream_id = gen_upstream_id
