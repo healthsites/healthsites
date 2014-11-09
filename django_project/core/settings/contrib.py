@@ -5,6 +5,7 @@ from .base import *  # noqa
 INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',  # enable Raven plugin
     'pipeline',
+    'social.apps.django_app.default',
 )
 
 # define template function (example for underscore)
@@ -12,3 +13,13 @@ INSTALLED_APPS += (
 
 # enable cached storage - requires uglify.js (node.js)
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+
+AUTHENTICATION_BACKENDS = (
+    'social.backends.openstreetmap.OpenStreetMapOAuth',
+    'social.backends.twitter.TwitterOAuth',
+    'social.backends.github.GithubOAuth2',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
