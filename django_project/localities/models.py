@@ -6,6 +6,10 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.gis.db import models
 
+from django.contrib.contenttypes.fields import GenericForeignKey
+
+from model_utils import FieldTracker
+
 
 class ChangesetMixin(models.Model):
     changeset = models.ForeignKey('Changeset')
@@ -18,6 +22,15 @@ class ChangesetMixin(models.Model):
         self.version = (self.version or 0) + 1
 
 
+class ArchiveMixin(ChangesetMixin):
+    content_type = models.ForeignKey('contenttypes.ContentType')
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        abstract = True
+
+
 class Domain(ChangesetMixin):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(null=True, blank=True, default='')
@@ -25,11 +38,32 @@ class Domain(ChangesetMixin):
 
     attributes = models.ManyToManyField('Attribute', through='Specification')
 
+    tracker = FieldTracker()
+
+    def save(self, *args, **kwargs):
+        if self.pk and not(kwargs.get('force_insert')):
+            if self.tracker.changed():
+                chgset = Changeset.objects.create()
+                self.changeset = chgset
+                self.inc_version()
+                super(Domain, self).save(*args, **kwargs)
+        else:
+            chgset = Changeset.objects.create()
+            self.changeset = chgset
+            self.inc_version()
+            super(Domain, self).save(*args, **kwargs)
+
     def __unicode__(self):
         return u'{}'.format(self.name)
 
 
-class Locality(ChangesetMixin, models.Model):
+class DomainArchive(ArchiveMixin):
+    name = models.CharField(max_length=50)
+    description = models.TextField(null=True, blank=True)
+    template_fragment = models.TextField(null=True, blank=True)
+
+
+class Locality(ChangesetMixin):
     domain = models.ForeignKey('Domain')
     uuid = models.TextField(unique=True)
     upstream_id = models.TextField(null=True, unique=True)
@@ -124,7 +158,7 @@ class Locality(ChangesetMixin, models.Model):
         return u'{}'.format(self.id)
 
 
-class Value(ChangesetMixin, models.Model):
+class Value(ChangesetMixin):
     locality = models.ForeignKey('Locality')
     specification = models.ForeignKey('Specification')
     data = models.TextField(blank=True)
@@ -138,7 +172,7 @@ class Value(ChangesetMixin, models.Model):
         )
 
 
-class Attribute(ChangesetMixin, models.Model):
+class Attribute(ChangesetMixin):
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
 
@@ -152,7 +186,7 @@ class Attribute(ChangesetMixin, models.Model):
         super(Attribute, self).save(*args, **kwargs)
 
 
-class Specification(ChangesetMixin, models.Model):
+class Specification(ChangesetMixin):
     domain = models.ForeignKey('Domain')
     attribute = models.ForeignKey('Attribute')
     required = models.BooleanField(default=False)
@@ -179,3 +213,6 @@ class Changeset(models.Model):
 
     def __unicode__(self):
         return u'{}'.format(self.pk)
+
+# register signals
+import signals  # noqa
