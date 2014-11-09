@@ -5,9 +5,10 @@ LOG = logging.getLogger(__name__)
 from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, View
 from django.contrib.auth import logout as auth_logout
+from braces.views import LoginRequiredMixin
 
 
-class UserProfilePage(TemplateView):
+class UserProfilePage(LoginRequiredMixin, TemplateView):
     template_name = 'social_users/profilepage.html'
 
     def get_context_data(self, *args, **kwargs):
@@ -23,7 +24,7 @@ class UserSigninPage(TemplateView):
     template_name = 'social_users/signinpage.html'
 
 
-class LogoutUser(View):
+class LogoutUser(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         auth_logout(request)
         return HttpResponseRedirect('/')

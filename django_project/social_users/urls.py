@@ -5,7 +5,7 @@ from .views import UserSigninPage, UserProfilePage, LogoutUser
 urlpatterns = patterns(
     '',
     url('', include('social.apps.django_app.urls', namespace='social')),
-    url(r'^signin$', UserSigninPage.as_view(), name='usersignpage'),
-    url(r'^profile$', UserProfilePage.as_view(), name='userprofilepage'),
-    url(r'^logout$', LogoutUser.as_view(), name='logout_user'),
+    url(r'^signin/$', UserSigninPage.as_view(), name='usersignpage'),
+    url(r'^profile/$', UserProfilePage.as_view(), name='userprofilepage'),
+    url(r'^logout/$', LogoutUser.as_view(), name='logout_user')
 )

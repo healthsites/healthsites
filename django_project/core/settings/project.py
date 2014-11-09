@@ -27,7 +27,7 @@ INSTALLED_APPS += (
 )
 
 LOGIN_REDIRECT_URL = '/'
-
+LOGIN_URL = '/signin/'
 
 PIPELINE_JS = {
     'contrib': {

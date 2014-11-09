@@ -3,7 +3,7 @@
 branch = True
 source = .
 omit = */tests/*,*migrations/*
-include = localities/*,frontend/*
+include = localities/*,frontend/*,social_users/*
 
 [report]
 precision = 2
