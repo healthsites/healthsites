@@ -52,9 +52,3 @@ class TestViews(TestCase):
 
         self.assertRedirects(
             resp, '/', status_code=302, target_status_code=200)
-
-    def test_logout_view_no_user(self):
-        resp = self.client.get(reverse('logout_user'))
-        self.assertRedirects(
-            resp, '/signin/?next=/logout/',
-            status_code=302, target_status_code=200)

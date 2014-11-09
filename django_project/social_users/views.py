@@ -24,7 +24,7 @@ class UserSigninPage(TemplateView):
     template_name = 'social_users/signinpage.html'
 
 
-class LogoutUser(LoginRequiredMixin, View):
+class LogoutUser(View):
     def get(self, request, *args, **kwargs):
         auth_logout(request)
         return HttpResponseRedirect('/')
