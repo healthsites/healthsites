@@ -22,6 +22,34 @@ class ChangesetMixin(models.Model):
         self.version = (self.version or 0) + 1
 
 
+class UpdateMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        if self.pk and not(kwargs.get('force_insert')):
+            changed = self.tracker.changed()
+            if 'changeset_id' not in changed:
+                # not externally assigned chageset_id
+                chgset = Changeset.objects.create()
+                self.changeset = chgset
+            else:
+                # remove changeset_id from changed
+                changed.pop('changeset_id')
+            if changed:
+                # increase version and save if there are more changed attrs
+                self.inc_version()
+                super(UpdateMixin, self).save(*args, **kwargs)
+        else:
+            if not(hasattr(self, 'changeset')):
+                chgset = Changeset.objects.create()
+                self.changeset = chgset
+            else:
+                pass
+            self.inc_version()
+            super(UpdateMixin, self).save(*args, **kwargs)
+
+
 class ArchiveMixin(ChangesetMixin):
     content_type = models.ForeignKey('contenttypes.ContentType')
     object_id = models.PositiveIntegerField()
@@ -31,7 +59,7 @@ class ArchiveMixin(ChangesetMixin):
         abstract = True
 
 
-class Domain(ChangesetMixin):
+class Domain(UpdateMixin, ChangesetMixin):
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(null=True, blank=True, default='')
     template_fragment = models.TextField(null=True, blank=True, default='')
@@ -39,19 +67,6 @@ class Domain(ChangesetMixin):
     attributes = models.ManyToManyField('Attribute', through='Specification')
 
     tracker = FieldTracker()
-
-    def save(self, *args, **kwargs):
-        if self.pk and not(kwargs.get('force_insert')):
-            if self.tracker.changed():
-                chgset = Changeset.objects.create()
-                self.changeset = chgset
-                self.inc_version()
-                super(Domain, self).save(*args, **kwargs)
-        else:
-            chgset = Changeset.objects.create()
-            self.changeset = chgset
-            self.inc_version()
-            super(Domain, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return u'{}'.format(self.name)
@@ -63,13 +78,11 @@ class DomainArchive(ArchiveMixin):
     template_fragment = models.TextField(null=True, blank=True)
 
 
-class Locality(ChangesetMixin):
+class Locality(UpdateMixin, ChangesetMixin):
     domain = models.ForeignKey('Domain')
     uuid = models.TextField(unique=True)
     upstream_id = models.TextField(null=True, unique=True)
     geom = models.PointField(srid=4326)
-    created = models.DateTimeField(blank=True)
-    modified = models.DateTimeField(blank=True)
     specifications = models.ManyToManyField('Specification', through='Value')
 
     objects = models.GeoManager()
@@ -124,25 +137,6 @@ class Locality(ChangesetMixin):
 
         return changed_values
 
-    def save(self, *args, **kwargs):
-        # update created and modified fields
-        if self.pk and not(kwargs.get('force_insert')):
-            if self.tracker.changed():
-                chgset = Changeset.objects.create()
-                self.changeset = chgset
-                self.inc_version()
-                self.modified = timezone.now()
-                super(Locality, self).save(*args, **kwargs)
-        else:
-            current_time = timezone.now()
-            self.modified = current_time
-            self.created = current_time
-            if not(hasattr(self, 'changeset')):
-                chgset = Changeset.objects.create()
-                self.changeset = chgset
-            self.inc_version()
-            super(Locality, self).save(*args, **kwargs)
-
     def repr_simple(self):
         return {u'i': self.pk, u'g': [self.geom.x, self.geom.y]}
 
@@ -161,7 +155,7 @@ class Locality(ChangesetMixin):
         return u'{}'.format(self.id)
 
 
-class Value(ChangesetMixin):
+class Value(UpdateMixin, ChangesetMixin):
     locality = models.ForeignKey('Locality')
     specification = models.ForeignKey('Specification')
     data = models.TextField(blank=True)
@@ -176,28 +170,8 @@ class Value(ChangesetMixin):
             self.locality.id, self.specification.attribute.key, self.data
         )
 
-    def save(self, *args, **kwargs):
-        if self.pk and not(kwargs.get('force_insert')):
-            changed = self.tracker.changed()
-            if 'changeset_id' not in changed:
-                # not externally assigned chageset_id
-                chgset = Changeset.objects.create()
-                self.changeset = chgset
-            else:
-                # remove changeset_id from changed
-                changed.pop('changeset_id')
-            if changed:
-                # increase version and save if there are more changed attrs
-                self.inc_version()
-                super(Value, self).save(*args, **kwargs)
-        else:
-            chgset = Changeset.objects.create()
-            self.changeset = chgset
-            self.inc_version()
-            super(Value, self).save(*args, **kwargs)
 
-
-class Attribute(ChangesetMixin):
+class Attribute(UpdateMixin, ChangesetMixin):
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
 
@@ -210,20 +184,10 @@ class Attribute(ChangesetMixin):
         # make sure key has a slug-like representation
         self.key = slugify(unicode(self.key)).replace('-', '_')
 
-        if self.pk and not(kwargs.get('force_insert')):
-            if self.tracker.changed():
-                chgset = Changeset.objects.create()
-                self.changeset = chgset
-                self.inc_version()
-                super(Attribute, self).save(*args, **kwargs)
-        else:
-            chgset = Changeset.objects.create()
-            self.changeset = chgset
-            self.inc_version()
-            super(Attribute, self).save(*args, **kwargs)
+        super(Attribute, self).save(*args, **kwargs)
 
 
-class Specification(ChangesetMixin):
+class Specification(UpdateMixin, ChangesetMixin):
     domain = models.ForeignKey('Domain')
     attribute = models.ForeignKey('Attribute')
     required = models.BooleanField(default=False)
@@ -235,19 +199,6 @@ class Specification(ChangesetMixin):
 
     def __unicode__(self):
         return u'{} {}'.format(self.domain.name, self.attribute.key)
-
-    def save(self, *args, **kwargs):
-        if self.pk and not(kwargs.get('force_insert')):
-            if self.tracker.changed():
-                chgset = Changeset.objects.create()
-                self.changeset = chgset
-                self.inc_version()
-                super(Specification, self).save(*args, **kwargs)
-        else:
-            chgset = Changeset.objects.create()
-            self.changeset = chgset
-            self.inc_version()
-            super(Specification, self).save(*args, **kwargs)
 
 
 class Changeset(models.Model):

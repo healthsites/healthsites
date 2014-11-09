@@ -41,8 +41,6 @@ class LocalityF(factory.django.DjangoModelFactory):
     uuid = factory.Sequence(lambda n: "uuid_{}".format(n))
     upstream_id = factory.Sequence(lambda n: "upstream_id_{}".format(n))
     geom = 'POINT (0 0)'
-    created = None
-    modified = None
     changeset = factory.SubFactory(
         'localities.tests.model_factories.ChangesetF'
     )

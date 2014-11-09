@@ -298,7 +298,7 @@ class TestViews(TestCase):
         # value changeset of one attribute should CHANGE
         self.assertListEqual(
             [val.changeset.id == chgset.id for val in loc.value_set.all()],
-            [False, True]
+            [True, False]
         )
 
         # test version, should NOT CHANGE
