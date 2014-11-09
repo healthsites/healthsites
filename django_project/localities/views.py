@@ -13,7 +13,7 @@ from django.db import transaction
 from braces.views import JSONResponseMixin
 
 from .models import Locality, Domain, Changeset
-from .utils import render_fragment, detect_data_changes, ramify_data
+from .utils import render_fragment
 from .forms import LocalityForm, DomainForm
 
 
@@ -71,35 +71,14 @@ class LocalityUpdate(SingleObjectMixin, FormView):
     def form_valid(self, form):
         # update everything in one transaction
         with transaction.atomic():
-            # form_changed_data
-            loc_initial_data, values_initial_data = ramify_data(
-                form.initial, ['lat', 'lon']
+            self.object.set_geom(
+                form.cleaned_data.pop('lon'),
+                form.cleaned_data.pop('lat')
             )
-            loc_changed_data, values_changed_data = ramify_data(
-                form.cleaned_data, ['lat', 'lon']
+            self.object.save()
+            self.object.set_values(
+                form.cleaned_data, changeset=self.object.changeset
             )
-            loc_changes = detect_data_changes(
-                loc_initial_data, loc_changed_data
-            )
-            val_changes = detect_data_changes(
-                values_initial_data, values_changed_data
-            )
-
-            if loc_changes or val_changes:
-                tmp_changeset = Changeset.objects.create()
-                if loc_changes:
-                    self.object.set_geom(
-                        form.cleaned_data.pop('lon'),
-                        form.cleaned_data.pop('lat')
-                    )
-                    self.object.changeset = tmp_changeset
-                    self.object.inc_version()
-                    self.object.save()
-                if val_changes:
-                    self.object.set_values(
-                        values_changed_data, changeset=tmp_changeset,
-                        changed_keys=val_changes
-                    )
 
             return HttpResponse('OK')
 
@@ -143,8 +122,6 @@ class LocalityCreate(SingleObjectMixin, FormView):
 
             loc = Locality()
             loc.domain = self.object
-            loc.changeset = tmp_changeset
-            loc.inc_version()
             loc.uuid = tmp_uuid
             # generate unique upstream_id
             loc.upstream_id = u'web¶{}'.format(tmp_uuid)

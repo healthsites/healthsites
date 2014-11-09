@@ -298,7 +298,7 @@ class TestViews(TestCase):
         # value changeset of one attribute should CHANGE
         self.assertListEqual(
             [val.changeset.id == chgset.id for val in loc.value_set.all()],
-            [True, False]
+            [False, True]
         )
 
         # test version, should NOT CHANGE
@@ -308,7 +308,7 @@ class TestViews(TestCase):
         self.assertListEqual(
             [val.version == org_value_versions[idx]
                 for idx, val in enumerate(loc.value_set.all())],
-            [False, True]
+            [True, False]
         )
 
     def test_localitiesUpdate_form_post_fail(self):
@@ -385,7 +385,7 @@ class TestViews(TestCase):
         )
 
         # test version
-        self.assertTrue(loc.version == 1)
+        self.assertEqual(loc.version, 1)
 
     def test_localitiesCreate_form_post_fail(self):
         test_attr = AttributeF.create(key='test')

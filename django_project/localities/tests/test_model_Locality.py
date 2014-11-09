@@ -93,14 +93,11 @@ class TestModelLocality(TestCase):
 
         locality = LocalityF.create(pk=1, domain=dom, changeset=chgset)
 
-        value_map = {'osm': 'osm val', 'test': 'test val'}
-        chg_values = locality.set_values(
-            value_map, changeset=chgset, changed_keys=['osm']
-        )
-
+        value_map = {'osm': 'osm val'}
+        chg_values = locality.set_values(value_map, changeset=chgset)
         self.assertEqual(len(chg_values), 1)
 
-        # both attributes are created
+        # is attribute created
         self.assertEqual([val[1] for val in chg_values], [True])
 
     def test_set_values_bad_key(self):
