@@ -6,7 +6,7 @@ from .model_factories import (
     LocalityF,
     LocalityValueF,
     AttributeF,
-    DomainF
+    DomainSpecification1AF
 )
 
 from ..models import Locality
@@ -26,12 +26,16 @@ class TestViews(TestCase):
         self.assertEqual(resp.content, '[{"i": 1, "g": [16.0, 45.0]}]')
 
     def test_localitiesInfo_view(self):
-        dom = DomainF(template_fragment='Test value: {{ values.test }}')
-        test_attr = AttributeF.create(key='test', in_domains=[dom])
+        test_attr = AttributeF.create(key='test')
 
+        dom = DomainSpecification1AF(
+            template_fragment='Test value: {{ values.test }}',
+            spec1__attribute=test_attr
+        )
         LocalityValueF.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
-            attr1__attribute=test_attr, attr1__data='osm', domain=dom
+            val1__specification__attribute=test_attr, val1__data='osm',
+            domain=dom
         )
 
         resp = self.client.get(reverse('locality-info', kwargs={'pk': 1}))
@@ -48,12 +52,13 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_get(self):
-        dom = DomainF()
-        test_attr = AttributeF.create(key='test', in_domains=[dom])
+        test_attr = AttributeF.create(key='test')
+
+        dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
         LocalityValueF.create(
-            id=1, geom='POINT(16 45)', attr1__attribute=test_attr,
-            attr1__data='osm', domain=dom
+            id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
+            val1__specification__attribute=test_attr
         )
 
         resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
@@ -73,12 +78,15 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post(self):
-        dom = DomainF()
-        test_attr = AttributeF.create(key='test', in_domains=[dom])
+        test_attr = AttributeF.create(key='test')
+
+        dom = DomainSpecification1AF(spec1__attribute=test_attr)
+
+        spec = dom.specification_set.all()[0]
 
         LocalityValueF.create(
-            id=1, geom='POINT(16 45)', attr1__attribute=test_attr,
-            attr1__data='osm', domain=dom
+            id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
+            val1__specification=spec
         )
 
         resp = self.client.post(
@@ -101,12 +109,13 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post_fail(self):
-        dom = DomainF()
-        test_attr = AttributeF.create(key='test', in_domains=[dom])
+        test_attr = AttributeF.create(key='test')
+
+        dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
         LocalityValueF.create(
-            id=1, geom='POINT(16 45)', attr1__attribute=test_attr,
-            attr1__data='osm', domain=dom
+            id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
+            val1__specification__attribute=test_attr
         )
 
         resp = self.client.post(
@@ -128,8 +137,8 @@ class TestViews(TestCase):
         )
 
     def test_localitiesCreate_form_get(self):
-        dom = DomainF(name='test')
-        AttributeF.create(key='test', in_domains=[dom])
+        test_attr = AttributeF.create(key='test')
+        DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
         resp = self.client.get(
             reverse('locality-create', kwargs={'domain': 'test'})
@@ -149,8 +158,8 @@ class TestViews(TestCase):
         )
 
     def test_localitiesCreate_form_post(self):
-        dom = DomainF(name='test')
-        AttributeF.create(key='test', in_domains=[dom])
+        test_attr = AttributeF.create(key='test')
+        DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
@@ -173,8 +182,8 @@ class TestViews(TestCase):
         )
 
     def test_localitiesCreate_form_post_fail(self):
-        dom = DomainF(name='test')
-        AttributeF.create(key='test', in_domains=[dom])
+        test_attr = AttributeF.create(key='test')
+        DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
@@ -192,4 +201,29 @@ class TestViews(TestCase):
             u'</label> <input id="id_lat" name="lat" step="any" type="number" '
             u'/></p>\n<p><label for="id_test">test:</label> <input id="id_test'
             u'" name="test" type="text" value="new_osm" /></p>\n</form>'
+        )
+
+    def test_localitiesCreate_form_post_required_attr(self):
+        test_attr = AttributeF.create(key='test')
+        DomainSpecification1AF(
+            name='test', spec1__attribute=test_attr, spec1__required=True
+        )
+
+        resp = self.client.post(
+            reverse('locality-create', kwargs={'domain': 'test'}),
+            {'test': ''}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(
+            resp.content,
+            u'<form>\n<ul class="errorlist"><li>This field is required.</li></'
+            u'ul>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" name'
+            u'="lon" step="any" type="number" /></p>\n<ul class="errorlist"><l'
+            u'i>This field is required.</li></ul>\n<p><label for="id_lat">Lat:'
+            u'</label> <input id="id_lat" name="lat" step="any" type="number" '
+            u'/></p>\n<ul class="errorlist"><li>This field is required.</li></'
+            u'ul>\n<p><label for="id_test">test:</label> <input id="id_test" n'
+            u'ame="test" type="text" /></p>\n</form>'
         )

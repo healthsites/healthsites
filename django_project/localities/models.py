@@ -12,6 +12,8 @@ class Domain(models.Model):
     description = models.TextField(null=True, blank=True, default='')
     template_fragment = models.TextField(null=True, blank=True, default='')
 
+    attributes = models.ManyToManyField('Attribute', through='Specification')
+
     def __unicode__(self):
         return u'{}'.format(self.name)
 
@@ -23,16 +25,15 @@ class Locality(models.Model):
     geom = models.PointField(srid=4326)
     created = models.DateTimeField(blank=True)
     modified = models.DateTimeField(blank=True)
-    attributes = models.ManyToManyField('Attribute', through='Value')
+    specifications = models.ManyToManyField('Specification', through='Value')
 
     objects = models.GeoManager()
 
     def get_attr_map(self):
         return (
-            Attribute.objects
-            .filter(in_domains=self.domain)
+            self.domain.specification_set
             .order_by('id')
-            .values('id', 'key')
+            .values('id', 'attribute__key')
         )
 
     def set_geom(self, lon, lat):
@@ -41,17 +42,20 @@ class Locality(models.Model):
 
     def set_values(self, value_map):
         attrs = self.get_attr_map()
+
         changed_values = []
         for key, data in value_map.iteritems():
             # get attribute_id
-            attr_list = [attr for attr in attrs if attr['key'] == key]
+            attr_list = [
+                attr for attr in attrs if attr['attribute__key'] == key
+            ]
 
             if attr_list:
-                attr_id = attr_list[0]['id']
+                spec_id = attr_list[0]['id']
                 # update or create new values
                 changed_values.append(
                     self.value_set.update_or_create(
-                        attribute_id=attr_id, defaults={'data': data}
+                        specification_id=spec_id, defaults={'data': data}
                     )
                 )
             else:
@@ -80,7 +84,7 @@ class Locality(models.Model):
             u'id': self.pk,
             u'uuid': self.uuid,
             u'values': {
-                val.attribute.key: val.data
+                val.specification.attribute.key: val.data
                 for val in self.value_set.select_related('attribute').all()
             },
             u'geom': [self.geom.x, self.geom.y]
@@ -92,23 +96,21 @@ class Locality(models.Model):
 
 class Value(models.Model):
     locality = models.ForeignKey('Locality')
-    attribute = models.ForeignKey('Attribute')
+    specification = models.ForeignKey('Specification')
     data = models.TextField(blank=True)
 
     class Meta:
-        unique_together = ('locality', 'attribute')
+        unique_together = ('locality', 'specification')
 
     def __unicode__(self):
         return u'({}) {}={}'.format(
-            self.locality.id, self.attribute.key, self.data
+            self.locality.id, self.specification.attribute.key, self.data
         )
 
 
 class Attribute(models.Model):
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
-
-    in_domains = models.ManyToManyField('Domain')
 
     def __unicode__(self):
         return u'{}'.format(self.key)
@@ -118,3 +120,15 @@ class Attribute(models.Model):
         self.key = slugify(unicode(self.key)).replace('-', '_')
 
         super(Attribute, self).save(*args, **kwargs)
+
+
+class Specification(models.Model):
+    domain = models.ForeignKey('Domain')
+    attribute = models.ForeignKey('Attribute')
+    required = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('domain', 'attribute')
+
+    def __unicode__(self):
+        return u'{} {}'.format(self.domain.name, self.attribute.key)

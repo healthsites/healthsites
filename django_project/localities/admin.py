@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
-from .models import Domain, Locality, Value, Attribute
+from .models import Domain, Locality, Value, Attribute, Specification
 
 
 class DomainMA(admin.ModelAdmin):
@@ -26,3 +26,9 @@ class AttributeMA(admin.ModelAdmin):
     pass
 
 admin.site.register(Attribute, AttributeMA)
+
+
+class SpecificationMA(admin.ModelAdmin):
+    pass
+
+admin.site.register(Specification, SpecificationMA)

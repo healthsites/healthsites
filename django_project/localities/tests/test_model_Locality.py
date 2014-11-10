@@ -3,7 +3,13 @@ from django.test import TestCase
 
 from django.db import IntegrityError
 
-from .model_factories import LocalityF, LocalityValueF, AttributeF, DomainF
+from .model_factories import (
+    LocalityF,
+    LocalityValueF,
+    AttributeF,
+    DomainSpecification1AF,
+    DomainSpecification2AF
+)
 
 
 class TestModelLocality(TestCase):
@@ -15,7 +21,7 @@ class TestModelLocality(TestCase):
     def test_model_with_value(self):
         attr = AttributeF.create(key='test')
         locality = LocalityValueF.create(
-            pk=1, attr1__data='test', attr1__attribute=attr
+            pk=1, val1__data='test', val1__specification__attribute=attr
         )
 
         self.assertEqual(unicode(locality), u'1')
@@ -25,27 +31,36 @@ class TestModelLocality(TestCase):
         )
 
     def test_get_attr_map(self):
-        dom = DomainF.create(name='a domain')
+        attr1 = AttributeF.create(key='test')
+        attr2 = AttributeF.create(key='osm')
 
-        AttributeF.create(id=1, key='test', in_domains=[dom])
-        AttributeF.create(id=2, key='osm', in_domains=[dom])
+        dom = DomainSpecification2AF.create(
+            name='a domain', spec1__id=1, spec1__attribute=attr1,
+            spec2__id=2, spec2__attribute=attr2
+        )
 
         # this domain should not be in results
-        dom2 = DomainF.create(name='a new domain')
-        AttributeF.create(key='osm2', in_domains=[dom2])
+        attr3 = AttributeF.create(key='osm2')
+        DomainSpecification1AF.create(
+            name='a new domain', spec1__attribute=attr3
+        )
 
         locality = LocalityF.create(domain=dom)
 
         self.assertEqual(
-            list(locality.get_attr_map()),
-            [{'id': 1, 'key': u'test'}, {'id': 2, 'key': u'osm'}]
+            list(locality.get_attr_map()), [
+                {'id': 1, 'attribute__key': u'test'},
+                {'id': 2, 'attribute__key': u'osm'}
+            ]
         )
 
     def test_set_values(self):
-        dom = DomainF.create(name='a domain')
+        attr1 = AttributeF.create(id=1, key='test')
+        attr2 = AttributeF.create(id=2, key='osm')
 
-        AttributeF.create(key='test', in_domains=[dom])
-        AttributeF.create(key='osm', in_domains=[dom])
+        dom = DomainSpecification2AF.create(
+            name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
+        )
 
         locality = LocalityF.create(pk=1, domain=dom)
 
@@ -64,15 +79,14 @@ class TestModelLocality(TestCase):
         self.assertEqual(chg_values[0][1], False)
 
     def test_set_values_bad_key(self):
-        dom = DomainF.create(name='a domain')
+        attr1 = AttributeF.create(id=1, key='test')
+        attr2 = AttributeF.create(id=2, key='osm')
 
-        AttributeF.create(key='test', in_domains=[dom])
-        AttributeF.create(key='osm', in_domains=[dom])
+        dom = DomainSpecification2AF.create(
+            name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
+        )
 
         locality = LocalityF.create(pk=1, domain=dom)
-
-        dom2 = DomainF.create(name='a new domain')
-        AttributeF.create(key='osm2', in_domains=[dom2])
 
         value_map = {'osm2': 'bad key', 'test': 'test val'}
         chg_values = locality.set_values(value_map)
@@ -92,10 +106,18 @@ class TestModelLocality(TestCase):
         )
 
     def test_repr_dict_method(self):
-        dom = DomainF.create(name='a domain')
+        attr1 = AttributeF.create(key='test')
+        attr2 = AttributeF.create(key='osm')
 
-        AttributeF.create(key='test', in_domains=[dom])
-        AttributeF.create(key='osm', in_domains=[dom])
+        dom = DomainSpecification2AF.create(
+            name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
+        )
+
+        # this domain should not be in results
+        attr3 = AttributeF.create(key='osm2')
+        DomainSpecification1AF.create(
+            name='a new domain', spec1__attribute=attr3
+        )
 
         locality = LocalityF.create(
             pk=1, domain=dom, uuid='93b7e8c4621a4597938dfd3d27659162',

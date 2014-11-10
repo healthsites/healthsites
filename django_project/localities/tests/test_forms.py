@@ -1,16 +1,25 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-from .model_factories import LocalityValueF, DomainF, AttributeF, LocalityF
+from .model_factories import (
+    LocalityValueF,
+    AttributeF,
+    LocalityF,
+    DomainSpecification2AF,
+    DomainSpecification1AF
+)
 
 from ..forms import LocalityForm, DomainForm
 
 
 class TestLocalityForms(TestCase):
     def test_LocalityForm(self):
-        dom = DomainF.create(name='test')
-        AttributeF.create(key='test', in_domains=[dom])
-        AttributeF.create(key='osm', in_domains=[dom])
+        attr1 = AttributeF.create(key='test')
+        attr2 = AttributeF.create(key='osm')
+
+        dom = DomainSpecification2AF.create(
+            name='test', spec1__attribute=attr1, spec2__attribute=attr2
+        )
 
         loc = LocalityF.create(geom='POINT(16 45)', domain=dom)
 
@@ -29,12 +38,16 @@ class TestLocalityForms(TestCase):
         )
 
     def test_LocalityForm_initialdata(self):
-        dom = DomainF()
-        test_attr = AttributeF.create(key='test', in_domains=[dom])
+        test_attr = AttributeF.create(key='test')
+
+        dom = DomainSpecification1AF.create(
+            spec1__attribute=test_attr
+        )
 
         loc = LocalityValueF.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
-            attr1__attribute=test_attr, attr1__data='osm', domain=dom
+            val1__specification__attribute=test_attr, val1__data='osm',
+            domain=dom
         )
 
         frm = LocalityForm(locality=loc)
@@ -51,9 +64,12 @@ class TestLocalityForms(TestCase):
         )
 
     def test_DomainForm(self):
-        dom = DomainF.create(name='test')
-        AttributeF.create(key='test', in_domains=[dom])
-        AttributeF.create(key='osm', in_domains=[dom])
+        attr1 = AttributeF.create(key='test')
+        attr2 = AttributeF.create(key='osm')
+
+        dom = DomainSpecification2AF.create(
+            name='test', spec1__attribute=attr1, spec2__attribute=attr2
+        )
 
         frm = DomainForm(domain=dom)
 
