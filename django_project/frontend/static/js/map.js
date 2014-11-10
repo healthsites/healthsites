@@ -187,6 +187,16 @@ window.MAP = (function () {
             $.getJSON(geojsonSingleURL, function (data) {
                 self.localitiesLayer = new PruneClusterForLeaflet();
 
+                self.localitiesLayer.BuildLeafletClusterIcon = function(cluster) {
+                    var icon = L.divIcon({
+                        className: 'marker-icon',
+                        html: cluster.population,
+                        iconAnchor: [23,21],
+                        iconSize: [46, 42]
+                    });
+                    return icon;
+                };
+
                 self.localitiesLayer.PrepareLeafletMarker = function(leafletMarker, data, category, original_marker) {
                     leafletMarker.on('click', function () {
                         self.lastClickedMarker = original_marker;
