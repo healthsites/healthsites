@@ -2,6 +2,8 @@
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 
+from social_users.tests.model_factories import UserF
+
 from .model_factories import (
     LocalityF,
     LocalityValue1F,
@@ -54,7 +56,16 @@ class TestViews(TestCase):
             )
         )
 
+    def test_localitiesUpdate_form_get_no_user(self):
+        resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
+        self.assertRedirects(
+            resp, '/signin/?next=/localities/1/form',
+            status_code=302, target_status_code=200
+        )
+
     def test_localitiesUpdate_form_get(self):
+        UserF(username='test', password='test')
+
         test_attr = AttributeF.create(key='test')
 
         dom = DomainSpecification1AF(spec1__attribute=test_attr)
@@ -64,6 +75,7 @@ class TestViews(TestCase):
             val1__specification__attribute=test_attr
         )
 
+        self.client.login(username='test', password='test')
         resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
 
         self.assertEqual(resp.status_code, 200)
@@ -81,6 +93,7 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post(self):
+        UserF(username='test', password='test')
         test_attr = AttributeF.create(key='test')
         chgset = ChangesetF.create(id=1)
 
@@ -97,6 +110,7 @@ class TestViews(TestCase):
             org_val.version for org_val in org_loc.value_set.all()
         ]
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-update', kwargs={'pk': 1}),
             {'test': 'new_osm', 'lon': 10, 'lat': 35}
@@ -139,6 +153,8 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post_no_data_update(self):
+        UserF(username='test', password='test')
+
         test_attr = AttributeF.create(key='test')
         chgset = ChangesetF.create(id=1)
 
@@ -156,6 +172,7 @@ class TestViews(TestCase):
             org_val.version for org_val in org_loc.value_set.all()
         ]
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-update', kwargs={'pk': 1}),
             {'test': 'test_osm', 'lon': 16, 'lat': 45}
@@ -194,6 +211,8 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post_partial_data_update_locality(self):
+        UserF(username='test', password='test')
+
         test_attr = AttributeF.create(key='test')
         chgset = ChangesetF.create(id=1)
 
@@ -211,6 +230,7 @@ class TestViews(TestCase):
             org_val.version for org_val in org_loc.value_set.all()
         ]
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-update', kwargs={'pk': 1}),
             {'test': 'test_osm', 'lon': 16, 'lat': 10}
@@ -249,6 +269,7 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post_partial_data_update_values(self):
+        UserF(username='test', password='test')
         test_attr = AttributeF.create(key='test')
         test_attr2 = AttributeF.create(key='other_test')
         chgset = ChangesetF.create(id=1)
@@ -271,6 +292,7 @@ class TestViews(TestCase):
             org_val.version for org_val in org_loc.value_set.all()
         ]
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-update', kwargs={'pk': 1}), {
                 'test': 'new_test_osm', 'other_test': 'other_osm', 'lon': 16,
@@ -312,6 +334,7 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post_fail(self):
+        UserF(username='test', password='test')
         test_attr = AttributeF.create(key='test')
 
         dom = DomainSpecification1AF(spec1__attribute=test_attr)
@@ -321,6 +344,7 @@ class TestViews(TestCase):
             val1__specification__attribute=test_attr
         )
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-update', kwargs={'pk': 1}),
             {'test': 'new_osm'}
@@ -339,10 +363,21 @@ class TestViews(TestCase):
             u'" name="test" type="text" value="new_osm" /></p>\n</form>'
         )
 
+    def test_localitiesCreate_form_get_no_user(self):
+        resp = self.client.get(
+            reverse('locality-create', kwargs={'domain': 'test'})
+        )
+        self.assertRedirects(
+            resp, '/signin/?next=/localities/form/test',
+            status_code=302, target_status_code=200
+        )
+
     def test_localitiesCreate_form_get(self):
+        UserF(username='test', password='test')
         test_attr = AttributeF.create(key='test')
         DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
+        self.client.login(username='test', password='test')
         resp = self.client.get(
             reverse('locality-create', kwargs={'domain': 'test'})
         )
@@ -361,9 +396,11 @@ class TestViews(TestCase):
         )
 
     def test_localitiesCreate_form_post(self):
+        UserF(username='test', password='test')
         test_attr = AttributeF.create(key='test')
         DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
             {'test': 'new_osm', 'lon': 10, 'lat': 35}
@@ -388,9 +425,12 @@ class TestViews(TestCase):
         self.assertEqual(loc.version, 1)
 
     def test_localitiesCreate_form_post_fail(self):
+        UserF(username='test', password='test')
+
         test_attr = AttributeF.create(key='test')
         DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
             {'test': 'new_osm'}
@@ -410,11 +450,14 @@ class TestViews(TestCase):
         )
 
     def test_localitiesCreate_form_post_required_attr(self):
+        UserF(username='test', password='test')
+
         test_attr = AttributeF.create(key='test')
         DomainSpecification1AF(
             name='test', spec1__attribute=test_attr, spec1__required=True
         )
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
             {'test': ''}

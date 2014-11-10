@@ -123,6 +123,9 @@ class DomainSpecification3AF(DomainF):
 
 
 class ChangesetF(factory.django.DjangoModelFactory):
+    social_user = factory.SubFactory(
+        'social_users.tests.model_factories.UserF'
+    )
     created = None
     comment = ''
 

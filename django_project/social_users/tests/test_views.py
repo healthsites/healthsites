@@ -28,8 +28,10 @@ class TestViews(TestCase):
             extra_data='{"access_token":"qwertqwert"}',
             user=user
         )
+
         self.client.login(username='test1', password='test1')
         resp = self.client.get(reverse('userprofilepage'))
+
         self.assertEqual(resp.status_code, 200)
         self.assertListEqual(resp.context['auths'], [u'openstreetmap'])
         self.assertListEqual(
@@ -43,7 +45,8 @@ class TestViews(TestCase):
         resp = self.client.get(reverse('userprofilepage'))
         self.assertRedirects(
             resp, '/signin/?next=/profile/',
-            status_code=302, target_status_code=200)
+            status_code=302, target_status_code=200
+        )
 
     def test_logout_view(self):
         UserF(username='test1', password='test1')
@@ -51,4 +54,5 @@ class TestViews(TestCase):
         resp = self.client.get(reverse('logout_user'))
 
         self.assertRedirects(
-            resp, '/', status_code=302, target_status_code=200)
+            resp, '/', status_code=302, target_status_code=200
+        )

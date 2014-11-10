@@ -7,6 +7,8 @@ import json
 
 from django.contrib.gis.geos import Point
 from django.db import transaction
+from django.contrib.auth import get_user_model
+
 
 from .models import Locality, Domain, Changeset
 
@@ -116,7 +118,10 @@ class CSVImporter():
 
     def save_localities(self):
         # generate a new changeset id
-        tmp_changeset = Changeset.objects.create()
+        User = get_user_model()
+        # TODO: use real user for import, at the moment we use a dummy user
+        dummy_user = User.objects.get(pk=-1)
+        tmp_changeset = Changeset.objects.create(social_user=dummy_user)
 
         for gen_upstream_id, values in self.parsed_data.iteritems():
             row_uuid = values['uuid']
@@ -134,14 +139,14 @@ class CSVImporter():
                 LOG.info('Created %s (%s)', loc.uuid, loc.id)
 
                 # save values for Locality
-                loc.set_values(values['values'], changeset=tmp_changeset)
+                loc.set_values(values['values'], social_user=dummy_user)
             else:
                 loc.changeset = tmp_changeset
                 loc.geom = Point(*values['geom'])
 
                 loc.save()
                 LOG.info('Updated %s (%s)', loc.uuid, loc.id)
-                loc.set_values(values['values'], changeset=tmp_changeset)
+                loc.set_values(values['values'], social_user=dummy_user)
 
     def parse_file(self):
         with open(self.csv_filename, 'rb') as csv_file:

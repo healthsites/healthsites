@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.contrib.gis.geos import Point
 from django.db import transaction
 
-from braces.views import JSONResponseMixin
+from braces.views import JSONResponseMixin, LoginRequiredMixin
 
 from .models import Locality, Domain, Changeset
 from .utils import render_fragment
@@ -50,7 +50,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
         return self.render_json_response(obj_repr)
 
 
-class LocalityUpdate(SingleObjectMixin, FormView):
+class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
     form_class = LocalityForm
     template_name = 'updateform.html'
 
@@ -75,9 +75,15 @@ class LocalityUpdate(SingleObjectMixin, FormView):
                 form.cleaned_data.pop('lon'),
                 form.cleaned_data.pop('lat')
             )
+            if self.object.tracker.changed():
+                # there are some changes so create a new changeset
+                tmp_changeset = Changeset.objects.create(
+                    social_user=self.request.user
+                )
+                self.object.changeset = tmp_changeset
             self.object.save()
             self.object.set_values(
-                form.cleaned_data, changeset=self.object.changeset
+                form.cleaned_data, social_user=self.request.user
             )
 
             return HttpResponse('OK')
@@ -89,7 +95,7 @@ class LocalityUpdate(SingleObjectMixin, FormView):
         return form_class(locality=self.object, **self.get_form_kwargs())
 
 
-class LocalityCreate(SingleObjectMixin, FormView):
+class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
     form_class = DomainForm
     template_name = 'updateform.html'
 
@@ -116,11 +122,14 @@ class LocalityCreate(SingleObjectMixin, FormView):
     def form_valid(self, form):
         # create new as a single transaction
         with transaction.atomic():
-            tmp_changeset = Changeset.objects.create()
+            tmp_changeset = Changeset.objects.create(
+                social_user=self.request.user
+            )
 
             tmp_uuid = uuid.uuid4().hex
 
             loc = Locality()
+            loc.changeset = tmp_changeset
             loc.domain = self.object
             loc.uuid = tmp_uuid
             # generate unique upstream_id
@@ -130,7 +139,7 @@ class LocalityCreate(SingleObjectMixin, FormView):
                 form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
             )
             loc.save()
-            loc.set_values(form.cleaned_data, changeset=tmp_changeset)
+            loc.set_values(form.cleaned_data, social_user=self.request.user)
 
             return HttpResponse(loc.pk)
         # transaction failed

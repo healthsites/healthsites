@@ -5,6 +5,7 @@ LOG = logging.getLogger(__name__)
 from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.gis.db import models
+from django.conf import settings
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 
@@ -26,27 +27,27 @@ class UpdateMixin(models.Model):
     class Meta:
         abstract = True
 
+    def before_save(self, *args, **kwargs):
+        """
+        Executed before actually saving the model, should be overridden
+
+        WARNING: this method might not execute if there are no changed
+        attributes on update
+        """
+        pass
+
     def save(self, *args, **kwargs):
+        # update
         if self.pk and not(kwargs.get('force_insert')):
-            changed = self.tracker.changed()
-            if 'changeset_id' not in changed:
-                # not externally assigned chageset_id
-                chgset = Changeset.objects.create()
-                self.changeset = chgset
-            else:
-                # remove changeset_id from changed
-                changed.pop('changeset_id')
-            if changed:
+            if self.tracker.changed():
                 # increase version and save if there are more changed attrs
                 self.inc_version()
+                self.before_save(*args, update=True, **kwargs)
                 super(UpdateMixin, self).save(*args, **kwargs)
+        # create
         else:
-            if not(hasattr(self, 'changeset')):
-                chgset = Changeset.objects.create()
-                self.changeset = chgset
-            else:
-                pass
             self.inc_version()
+            self.before_save(*args, create=True, **kwargs)
             super(UpdateMixin, self).save(*args, **kwargs)
 
 
@@ -100,7 +101,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         self.geom.set_x(lon)
         self.geom.set_y(lat)
 
-    def set_values(self, changed_data, changeset):
+    def set_values(self, changed_data, social_user):
         attrs = self.get_attr_map()
 
         changed_values = []
@@ -123,12 +124,15 @@ class Locality(UpdateMixin, ChangesetMixin):
                     _created = True
 
                 obj.data = data
-                obj.changeset = changeset
-                # increase version number of a value
-                # obj.inc_version()
-                obj.save()
-
-                changed_values.append((obj, _created))
+                if obj.tracker.changed():
+                    obj.changeset = Changeset.objects.create(
+                        social_user=social_user
+                    )
+                    obj.save()
+                    changed_values.append((obj, _created))
+                else:
+                    # nothing changed, don't save the value
+                    pass
             else:
                 # attr_id was not found (maybe a bad attribute)
                 LOG.warning(
@@ -180,11 +184,9 @@ class Attribute(UpdateMixin, ChangesetMixin):
     def __unicode__(self):
         return u'{}'.format(self.key)
 
-    def save(self, *args, **kwargs):
+    def before_save(self, *args, **kwargs):
         # make sure key has a slug-like representation
         self.key = slugify(unicode(self.key)).replace('-', '_')
-
-        super(Attribute, self).save(*args, **kwargs)
 
 
 class Specification(UpdateMixin, ChangesetMixin):
@@ -202,7 +204,7 @@ class Specification(UpdateMixin, ChangesetMixin):
 
 
 class Changeset(models.Model):
-    # social_user = models.ForeignKey('SocialUser')
+    social_user = models.ForeignKey(settings.AUTH_USER_MODEL)
     created = models.DateTimeField()
     comment = models.TextField(blank=True, null=True)
 
