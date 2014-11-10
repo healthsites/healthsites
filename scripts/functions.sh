@@ -108,8 +108,8 @@ function run_django_server {
     echo "${@}"
     echo "------------------------------------------"
 
-    docker kill ${PROJECT}-django
-    docker rm ${PROJECT}-django
+    docker kill ${DJANGO_CONTAINER_NAME}
+    docker rm ${DJANGO_CONTAINER_NAME}
     docker run \
         --restart="always" \
         --name="${DJANGO_CONTAINER_NAME}" \
@@ -123,7 +123,7 @@ function run_django_server {
 }
 
 
-function run_django_server {
+function run_django_dev_server {
     echo "Running django development server with option"
     echo "Access it via ssh on port ${DJANGO_DEV_SERVER_SSH_PORT} of your host"
     echo "Use these connection details:"
@@ -139,19 +139,17 @@ function run_django_server {
     echo ""
     echo "python manage.py runserver 0.0.0.0:${DJANGO_DEV_SERVER_HTTP_PORT}"
     echo "------------------------------------------"
-DJANGO_DEV_SERVER_SSH_PORT=1122
-DJANGO_DEV_SERVER_HTTP_PORT=1180
-DJANGO_DEV_CONTAINER_NAME=${PROJECT}-django-dev
 
-    docker kill ${PROJECT}-dev-django
-    docker rm ${PROJECT}-dev-django
+    PROJECT_DIR=$(readlink -fn -- "${BASH_SOURCE%/*}/..")
+    docker kill ${DJANGO_DEV_CONTAINER_NAME}
+    docker rm ${DJANGO_DEV_CONTAINER_NAME}
     docker run \
         --restart="always" \
         --name="${DJANGO_DEV_CONTAINER_NAME}" \
         --hostname="${DJANGO_DEV_CONTAINER_NAME}" \
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
-        -v ${BASH_SOURCE%/*}/..:/home/web \
+        -v ${PROJECT_DIR}:/home/web \
         -v /tmp/${PROJECT}-tmp:/tmp/${PROJECT}-tmp \
         -p ${DJANGO_DEV_SERVER_SSH_PORT}:22 \
         -p ${DJANGO_DEV_SERVER_HTTP_PORT}:${DJANGO_DEV_SERVER_HTTP_PORT} \

@@ -3,7 +3,7 @@
 # This script is run inside the container when it starts
 
 # Ensure we have a user who matches the developer who owns this dir
-SITE_PATH="/home/web/healthsites"
+SITE_PATH="/home/web/"
 
 USER_ID=`ls -lahn ${SITE_PATH}/django_project | tail -1 | awk {'print $3'}`
 GROUP_ID=`ls -lahn ${SITE_PATH}/django_project | tail -1 | awk {'print $4'}`
@@ -12,7 +12,7 @@ groupadd -g ${GROUP_ID} docker
 useradd --shell /bin/bash --uid ${USER_ID} --gid ${GROUP_ID} --home ${SITE_PATH} docker
 groupadd admin
 usermod -a -G admin docker
-chown -R docker.docker ${SITE_PATH}/venv
+
 # set docker user password to 'docker'
 echo 'docker:docker' |chpasswd
 # Set root password to 'docker'
