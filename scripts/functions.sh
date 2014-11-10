@@ -1,13 +1,21 @@
 #!/bin/bash
 
+ORGANISATION=konektaz
+PROJECT=healthsites
 
 # Configurable options (though we recommend not changing these)
 POSTGIS_PORT=49361
-POSTGIS_CONTAINER_NAME=healthsites-postgis
+POSTGIS_CONTAINER_NAME=${PROJECT}-postgis
+
 QGIS_SERVER_PORT=49362
-QGIS_SERVER_CONTAINER_NAME=healthsites-qgis-server
+QGIS_SERVER_CONTAINER_NAME=${PROJECT}-qgis-server
+
 DJANGO_SERVER_PORT=49360
-DJANGO_CONTAINER_NAME=healthsites-django
+DJANGO_CONTAINER_NAME=${PROJECT}-django
+
+DJANGO_DEV_SERVER_SSH_PORT=1122
+DJANGO_DEV_SERVER_HTTP_PORT=1180
+DJANGO_DEV_CONTAINER_NAME=${PROJECT}-django-dev
 # Configurable options you probably want to change
 
 PG_USER=docker
@@ -69,13 +77,13 @@ function manage {
 
     docker run \
         --rm \
-        --name="healthsites-manage" \
-        --hostname="healthsites-manage" \
+        --name="${PROJECT}-manage" \
+        --hostname="${PROJECT}-manage" \
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
-        -v /home/${USER}/production-sites/healthsites:/home/web \
+        -v /home/${USER}/production-sites/${PROJECT}:/home/web \
         --entrypoint="/usr/bin/python" \
-        -i -t konektaz/healthsites \
+        -i -t ${ORGANISATION}/${PROJECT} \
          /home/web/django_project/manage.py "$@"
 }
 
@@ -85,13 +93,13 @@ function bash_prompt {
 
     docker run \
         --rm \
-        --name="healthsites-bash" \
-        --hostname="healthsites-bash" \
+        --name="${PROJECT}-bash" \
+        --hostname="${PROJECT}-bash" \
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
-        -v /home/${USER}/production-sites/healthsites:/home/web \
+        -v /home/${USER}/production-sites/${PROJECT}:/home/web \
         --entrypoint="/bin/bash" \
-        -i -t konektaz/healthsites \
+        -i -t ${ORGANISATION}/${PROJECT} \
         -s
 }
 
@@ -100,16 +108,52 @@ function run_django_server {
     echo "${@}"
     echo "------------------------------------------"
 
-    docker kill healthsites-django
-    docker rm healthsites-django
+    docker kill ${PROJECT}-django
+    docker rm ${PROJECT}-django
     docker run \
         --restart="always" \
         --name="${DJANGO_CONTAINER_NAME}" \
         --hostname="${DJANGO_CONTAINER_NAME}" \
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
-        -v /home/${USER}/production-sites/healthsites:/home/web \
-        -v /tmp/healthsites-tmp:/tmp/healthsites-tmp \
+        -v /home/${USER}/production-sites/${PROJECT}:/home/web \
+        -v /tmp/${PROJECT}-tmp:/tmp/${PROJECT}-tmp \
         -p 49360:49360 \
-        -d -t konektaz/healthsites $@
+        -d -t ${ORGANISATION}/${PROJECT} $@
+}
+
+
+function run_django_server {
+    echo "Running django development server with option"
+    echo "Access it via ssh on port ${DJANGO_DEV_SERVER_SSH_PORT} of your host"
+    echo "Use these connection details:"
+    echo ""
+    echo "  user: docker"
+    echo "  password: docker"
+    echo ""
+    echo "to log into the container via ssh or when setting up your"
+    echo "pycharm remote python environment."
+    echo ""
+    echo "Access it via http on port ${DJANGO_DEV_SERVER_HTTP_PORT} of your host"
+    echo "after starting the dev server like this:"
+    echo ""
+    echo "python manage.py runserver 0.0.0.0:${DJANGO_DEV_SERVER_HTTP_PORT}"
+    echo "------------------------------------------"
+DJANGO_DEV_SERVER_SSH_PORT=1122
+DJANGO_DEV_SERVER_HTTP_PORT=1180
+DJANGO_DEV_CONTAINER_NAME=${PROJECT}-django-dev
+
+    docker kill ${PROJECT}-dev-django
+    docker rm ${PROJECT}-dev-django
+    docker run \
+        --restart="always" \
+        --name="${DJANGO_DEV_CONTAINER_NAME}" \
+        --hostname="${DJANGO_DEV_CONTAINER_NAME}" \
+        ${OPTIONS} \
+        --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
+        -v ${BASH_SOURCE%/*}/..:/home/web \
+        -v /tmp/${PROJECT}-tmp:/tmp/${PROJECT}-tmp \
+        -p ${DJANGO_DEV_SERVER_SSH_PORT}:22 \
+        -p ${DJANGO_DEV_SERVER_HTTP_PORT}:${DJANGO_DEV_SERVER_HTTP_PORT} \
+        -d -t ${ORGANISATION}/${PROJECT}-dev $@
 }

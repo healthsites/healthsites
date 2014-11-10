@@ -18,8 +18,8 @@ echo 'docker:docker' |chpasswd
 # Set root password to 'docker'
 echo 'root:docker' |chpasswd
 
-# Fix irritation with new geos incompatibility
-sed -i "/\$.*/ {N; s/\$.*def geos_version_info/\.\*\$\'\)\ndef geos_version_info/g}"  \
-   /usr/local/lib/python2.7/dist-packages/django/contrib/gis/geos/libgeos.py
+# Fix irritation with new geos incompatibility on django 1.4?
+#sed -i "/\$.*/ {N; s/\$.*def geos_version_info/\.\*\$\'\)\ndef geos_version_info/g}"  \
+#   /usr/local/lib/python2.7/dist-packages/django/contrib/gis/geos/libgeos.py
 
 /usr/sbin/sshd -D
