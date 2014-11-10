@@ -17,7 +17,7 @@
    id="svg2"
    inkscape:version="0.48.4 r9939"
    sodipodi:docname="healthsite-marker.svg"
-   inkscape:export-filename="/home/timlinux/dev/python/healthsites/django_project/localities/static/img/healthsite-marker.png"
+   inkscape:export-filename="/home/timlinux/dev/python/healthsites/django_project/frontend/static/img/healthsites-logo-127x208.png"
    inkscape:export-xdpi="149"
    inkscape:export-ydpi="149">
   <metadata
@@ -28,7 +28,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -47,7 +47,7 @@
      showgrid="false"
      inkscape:zoom="1.8761954"
      inkscape:cx="210.98273"
-     inkscape:cy="215.10883"
+     inkscape:cy="236.16207"
      inkscape:window-x="0"
      inkscape:window-y="27"
      inkscape:window-maximized="1"
@@ -1017,17 +1017,26 @@
      y="9.9999962"
      width="255"
      height="418"
-     id="image7" />
+     id="image7"
+     inkscape:export-filename="/home/timlinux/dev/python/healthsites/django_project/frontend/static/img/healthsites-logo-142x233.png"
+     inkscape:export-xdpi="44.052807"
+     inkscape:export-ydpi="44.052807" />
   <path
      d="m 463.95347,408.7508 c -13,0 -114.383,-223.976 -114.383,-281.924 0,-57.947998 50.006,-104.923998 111.692,-104.923998 61.68499,0 111.69099,46.976 111.69099,104.923998 0,57.948 -99.56599,281.924 -108.99999,281.924 z"
      id="path9"
      style="fill:url(#linearGradient4337)"
-     inkscape:connector-curvature="0" />
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/timlinux/dev/python/healthsites/django_project/frontend/static/img/healthsites-logo-127x208.png"
+     inkscape:export-xdpi="44.82"
+     inkscape:export-ydpi="44.82" />
   <path
      d="m 462.55066,407.34799 c -13,0 -114.383,-223.976 -114.383,-281.924 0,-57.947998 50.006,-104.923998 111.692,-104.923998 61.685,0 111.691,46.976 111.691,104.923998 0,57.948 -99.566,281.924 -109,281.924 z"
      id="path11"
      style="fill-opacity:0;stroke:#000000;stroke-width:5"
-     inkscape:connector-curvature="0" />
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/timlinux/dev/python/healthsites/django_project/frontend/static/img/healthsites-logo-127x208.png"
+     inkscape:export-xdpi="44.82"
+     inkscape:export-ydpi="44.82" />
   <path
      sodipodi:type="inkscape:offset"
      inkscape:radius="-24.382561"
@@ -1035,7 +1044,10 @@
      style="fill:url(#linearGradient4332);fill-opacity:1;stroke:#0026bf;stroke-width:1;stroke-linecap:butt;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter4212)"
      id="path3431"
      d="m -1068.3438,-316.53125 0,127.5 a 24.384999,24.384999 0 0 1 -24.375,24.375 l -127.1562,0 0,145.59375 127.1562,0 a 24.384999,24.384999 0 0 1 24.375,24.375 l 0,126.59375 145.5938,0 0,-126.59375 a 24.384999,24.384999 0 0 1 24.375,-24.375 l 126.9375,0 0,-145.59375 -126.9375,0 a 24.384999,24.384999 0 0 1 -24.375,-24.375 l 0,-127.5 -145.5938,0 z"
-     transform="matrix(0.39733286,0,0,0.39733286,853.70285,170.4508)" />
+     transform="matrix(0.39733286,0,0,0.39733286,853.70285,170.4508)"
+     inkscape:export-filename="/home/timlinux/dev/python/healthsites/django_project/frontend/static/img/healthsites-logo-142x233.png"
+     inkscape:export-xdpi="44.052807"
+     inkscape:export-ydpi="44.052807" />
   <path
      d="m 43.061918,319.87763 c -1.21686,0 -10.70679,-20.96521 -10.70679,-26.38941 0,-5.42421 4.6808,-9.82138 10.4549,-9.82138 5.774,0 10.4548,4.39717 10.4548,9.82138 0,5.4242 -9.31984,26.38941 -10.20291,26.38941 z"
      id="path9-5"
@@ -1148,7 +1160,10 @@
      xml:space="preserve"
      style="font-size:57.10575104000000124px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;filter:url(#filter3141)"
      id="text3134"
-     sodipodi:linespacing="125%"><textPath
+     sodipodi:linespacing="125%"
+     inkscape:export-filename="/home/timlinux/dev/python/healthsites/django_project/frontend/static/img/healthsites-logo-142x233.png"
+     inkscape:export-xdpi="44.052807"
+     inkscape:export-ydpi="44.052807"><textPath
        xlink:href="#path11"
        id="textPath3138"><tspan
    style="-inkscape-font-specification:'50\'s Yesterdings JL Bold';font-family:'50\'s Yesterdings JL';font-weight:bold;font-style:normal;font-stretch:normal;font-variant:normal;font-size:57.1057507px;text-anchor:start;text-align:start;writing-mode:lr;line-height:125%"
