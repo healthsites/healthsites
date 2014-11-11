@@ -189,6 +189,11 @@ class Attribute(UpdateMixin, ChangesetMixin):
         self.key = slugify(unicode(self.key)).replace('-', '_')
 
 
+class AttributeArchive(ArchiveMixin):
+    key = models.TextField()
+    description = models.TextField(null=True, blank=True)
+
+
 class Specification(UpdateMixin, ChangesetMixin):
     domain = models.ForeignKey('Domain')
     attribute = models.ForeignKey('Attribute')

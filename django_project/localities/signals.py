@@ -7,7 +7,10 @@ from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
 
 
-from .models import Domain, DomainArchive
+from .models import (
+    Domain, DomainArchive,
+    Attribute, AttributeArchive,
+)
 
 
 @receiver(post_save, sender=Domain)
@@ -25,3 +28,20 @@ def domain_archive_handler(sender, instance, created, raw, **kwargs):
     archive.template_fragment = instance.template_fragment
 
     archive.save()
+
+
+@receiver(post_save, sender=Attribute)
+def attribute_archive_handler(sender, instance, created, raw, **kwargs):
+    ct = ContentType.objects.get(app_label='localities', model='attribute')
+    archive = AttributeArchive()
+    archive.content_type = ct
+    archive.object_id = instance.pk
+
+    archive.version = instance.version
+    archive.changeset = instance.changeset
+
+    archive.key = instance.key
+    archive.description = instance.description
+
+    archive.save()
+
