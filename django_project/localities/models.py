@@ -89,6 +89,11 @@ class Locality(UpdateMixin, ChangesetMixin):
 
     tracker = FieldTracker()
 
+    def before_save(self, *args, **kwargs):
+        # make sure that we don't allow uuid modifications
+        if self.tracker.previous('uuid') and self.tracker.has_changed('uuid'):
+            self.uuid = self.tracker.previous('uuid')
+
     def get_attr_map(self):
         return (
             self.domain.specification_set

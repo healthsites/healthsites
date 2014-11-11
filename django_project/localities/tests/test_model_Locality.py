@@ -33,6 +33,14 @@ class TestModelLocality(TestCase):
             [u'(1) test=test']
         )
 
+    def test_model_uuid_persistnace(self):
+        locality = LocalityF.create(uuid='uuid_original')
+
+        locality.uuid = 'uuid_test'
+        locality.save()
+
+        self.assertEqual(locality.uuid, 'uuid_original')
+
     def test_get_attr_map(self):
         attr1 = AttributeF.create(key='test')
         attr2 = AttributeF.create(key='osm')
