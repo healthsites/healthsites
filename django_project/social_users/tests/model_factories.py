@@ -67,7 +67,7 @@ class UserSocialAuthF(factory.django.DjangoModelFactory):
     user = factory.SubFactory('social_users.tests.model_factories.UserF')
     provider = factory.Sequence(lambda n: "provider%s" % n)
     uid = factory.Sequence(lambda n: "uid%s" % n)
-    extra_data = factory.Sequence(lambda n: "extra_data%s" % n)
+    extra_data = {}
 
     class Meta:
         model = UserSocialAuth

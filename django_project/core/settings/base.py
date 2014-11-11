@@ -52,7 +52,7 @@ STATICFILES_DIRS = (
 )
 
 # import SECRET_KEY into current namespace
-from .secret import SECRET_KEY  # noqa
+from .secret import *  # noqa
 
 # default middleware classes
 MIDDLEWARE_CLASSES = (

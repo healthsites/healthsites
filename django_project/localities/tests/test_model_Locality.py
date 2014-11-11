@@ -3,12 +3,15 @@ from django.test import TestCase
 
 from django.db import IntegrityError
 
+from social_users.tests.model_factories import UserF
+
 from .model_factories import (
     LocalityF,
-    LocalityValueF,
+    LocalityValue1F,
     AttributeF,
     DomainSpecification1AF,
-    DomainSpecification2AF
+    DomainSpecification2AF,
+    ChangesetF
 )
 
 
@@ -20,7 +23,7 @@ class TestModelLocality(TestCase):
 
     def test_model_with_value(self):
         attr = AttributeF.create(key='test')
-        locality = LocalityValueF.create(
+        locality = LocalityValue1F.create(
             pk=1, val1__data='test', val1__specification__attribute=attr
         )
 
@@ -29,6 +32,14 @@ class TestModelLocality(TestCase):
             [unicode(val) for val in locality.value_set.all()],
             [u'(1) test=test']
         )
+
+    def test_model_uuid_persistnace(self):
+        locality = LocalityF.create(uuid='uuid_original')
+
+        locality.uuid = 'uuid_test'
+        locality.save()
+
+        self.assertEqual(locality.uuid, 'uuid_original')
 
     def test_get_attr_map(self):
         attr1 = AttributeF.create(key='test')
@@ -42,7 +53,7 @@ class TestModelLocality(TestCase):
         # this domain should not be in results
         attr3 = AttributeF.create(key='osm2')
         DomainSpecification1AF.create(
-            name='a new domain', spec1__attribute=attr3
+            name='a new domain', spec1__attribute=attr3, spec1__id=-1
         )
 
         locality = LocalityF.create(domain=dom)
@@ -55,6 +66,7 @@ class TestModelLocality(TestCase):
         )
 
     def test_set_values(self):
+        user = UserF(username='test', password='test')
         attr1 = AttributeF.create(id=1, key='test')
         attr2 = AttributeF.create(id=2, key='osm')
 
@@ -62,23 +74,26 @@ class TestModelLocality(TestCase):
             name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
-        locality = LocalityF.create(pk=1, domain=dom)
+        chgset = ChangesetF.create(social_user=user)
+
+        locality = LocalityF.create(pk=1, domain=dom, changeset=chgset)
 
         value_map = {'osm': 'osm val', 'test': 'test val'}
-        chg_values = locality.set_values(value_map)
+        chg_values = locality.set_values(value_map, social_user=user)
 
         self.assertEqual(len(chg_values), 2)
 
         # both attributes are created
         self.assertEqual([val[1] for val in chg_values], [True, True])
 
-        value_map = {'osm': 'osm val'}
-        chg_values = locality.set_values(value_map)
+        value_map = {'osm': 'new osm val'}
+        chg_values = locality.set_values(value_map, social_user=user)
 
         # attribute has been updated
         self.assertEqual(chg_values[0][1], False)
 
-    def test_set_values_bad_key(self):
+    def test_set_values_partial(self):
+        user = UserF(username='test', password='test')
         attr1 = AttributeF.create(id=1, key='test')
         attr2 = AttributeF.create(id=2, key='osm')
 
@@ -86,10 +101,32 @@ class TestModelLocality(TestCase):
             name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
         )
 
-        locality = LocalityF.create(pk=1, domain=dom)
+        chgset = ChangesetF.create(social_user=user)
+
+        locality = LocalityF.create(pk=1, domain=dom, changeset=chgset)
+
+        value_map = {'osm': 'osm val'}
+        chg_values = locality.set_values(value_map, social_user=user)
+        self.assertEqual(len(chg_values), 1)
+
+        # is attribute created
+        self.assertEqual([val[1] for val in chg_values], [True])
+
+    def test_set_values_bad_key(self):
+        user = UserF(username='test', password='test')
+        attr1 = AttributeF.create(id=1, key='test')
+        attr2 = AttributeF.create(id=2, key='osm')
+
+        chgset = ChangesetF.create(social_user=user)
+
+        dom = DomainSpecification2AF.create(
+            name='a domain', spec1__attribute=attr1, spec2__attribute=attr2
+        )
+
+        locality = LocalityF.create(pk=1, domain=dom, changeset=chgset)
 
         value_map = {'osm2': 'bad key', 'test': 'test val'}
-        chg_values = locality.set_values(value_map)
+        chg_values = locality.set_values(value_map, social_user=user)
 
         self.assertEqual(len(chg_values), 1)
 
@@ -106,6 +143,7 @@ class TestModelLocality(TestCase):
         )
 
     def test_repr_dict_method(self):
+        user = UserF(username='test', password='test')
         attr1 = AttributeF.create(key='test')
         attr2 = AttributeF.create(key='osm')
 
@@ -119,17 +157,19 @@ class TestModelLocality(TestCase):
             name='a new domain', spec1__attribute=attr3
         )
 
+        chgset = ChangesetF.create(social_user=user)
+
         locality = LocalityF.create(
             pk=1, domain=dom, uuid='93b7e8c4621a4597938dfd3d27659162',
-            geom='POINT (16 45)'
+            geom='POINT (16 45)', changeset=chgset
         )
 
         value_map = {'osm': 'osm val', 'test': 'test val'}
-        locality.set_values(value_map)
+        locality.set_values(value_map, social_user=user)
 
         self.assertDictEqual(locality.repr_dict(), {
             u'id': 1, u'uuid': '93b7e8c4621a4597938dfd3d27659162',
-            u'geom': [16, 45],
+            u'geom': (16, 45),
             u'values': {u'test': u'test val', u'osm': u'osm val'}
         })
 

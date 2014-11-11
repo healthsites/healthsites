@@ -2,11 +2,16 @@
 from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
 
+from social_users.tests.model_factories import UserF
+
 from .model_factories import (
     LocalityF,
-    LocalityValueF,
+    LocalityValue1F,
+    LocalityValue2F,
     AttributeF,
-    DomainSpecification1AF
+    DomainSpecification1AF,
+    DomainSpecification2AF,
+    ChangesetF
 )
 
 from ..models import Locality
@@ -32,7 +37,7 @@ class TestViews(TestCase):
             template_fragment='Test value: {{ values.test }}',
             spec1__attribute=test_attr
         )
-        LocalityValueF.create(
+        LocalityValue1F.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
             val1__specification__attribute=test_attr, val1__data='osm',
             domain=dom
@@ -51,16 +56,26 @@ class TestViews(TestCase):
             )
         )
 
+    def test_localitiesUpdate_form_get_no_user(self):
+        resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
+        self.assertRedirects(
+            resp, '/signin/?next=/localities/1/form',
+            status_code=302, target_status_code=200
+        )
+
     def test_localitiesUpdate_form_get(self):
+        UserF(username='test', password='test')
+
         test_attr = AttributeF.create(key='test')
 
         dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
-        LocalityValueF.create(
+        LocalityValue1F.create(
             id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
             val1__specification__attribute=test_attr
         )
 
+        self.client.login(username='test', password='test')
         resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
 
         self.assertEqual(resp.status_code, 200)
@@ -78,17 +93,24 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_post(self):
+        UserF(username='test', password='test')
         test_attr = AttributeF.create(key='test')
+        chgset = ChangesetF.create(id=1)
 
         dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
         spec = dom.specification_set.all()[0]
 
-        LocalityValueF.create(
+        org_loc = LocalityValue1F.create(
             id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
-            val1__specification=spec
+            val1__specification=spec, changeset=chgset, val1__changeset=chgset
         )
+        org_loc_version = org_loc.version
+        org_value_versions = [
+            org_val.version for org_val in org_loc.value_set.all()
+        ]
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-update', kwargs={'pk': 1}),
             {'test': 'new_osm', 'lon': 10, 'lat': 35}
@@ -108,16 +130,221 @@ class TestViews(TestCase):
             ['new_osm']
         )
 
+        # check if we got a new changeset
+        self.assertNotEqual(loc.changeset.id, chgset.id)
+
+        self.assertTrue(all(
+            True for val in loc.value_set.all()
+            if val.changeset == loc.changeset
+        ))
+        self.assertFalse(any(
+            True for val in loc.value_set.all()
+            if val.changeset == chgset.id
+        ))
+
+        # test version, should be increased by 1
+        self.assertEqual(loc.version, org_loc_version + 1)
+
+        # test values version, should CHANGE
+        self.assertFalse(any([
+            True for idx, val in enumerate(loc.value_set.all())
+            if val.version == org_value_versions[idx]
+            ])
+        )
+
+    def test_localitiesUpdate_form_post_no_data_update(self):
+        UserF(username='test', password='test')
+
+        test_attr = AttributeF.create(key='test')
+        chgset = ChangesetF.create(id=1)
+
+        dom = DomainSpecification1AF(spec1__attribute=test_attr)
+
+        spec = dom.specification_set.all()[0]
+
+        org_loc = LocalityValue1F.create(
+            id=1, geom='POINT(16 45)', val1__data='test_osm', domain=dom,
+            val1__specification=spec, changeset=chgset, val1__changeset=chgset
+        )
+
+        org_loc_version = org_loc.version
+        org_value_versions = [
+            org_val.version for org_val in org_loc.value_set.all()
+        ]
+
+        self.client.login(username='test', password='test')
+        resp = self.client.post(
+            reverse('locality-update', kwargs={'pk': 1}),
+            {'test': 'test_osm', 'lon': 16, 'lat': 45}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(resp.content, 'OK')
+
+        loc = Locality.objects.get(pk=1)
+
+        self.assertEqual(loc.geom.x, 16.0)
+        self.assertEqual(loc.geom.y, 45.0)
+
+        self.assertListEqual(
+            [val.data for val in loc.value_set.all()],
+            ['test_osm']
+        )
+
+        # check if we got the SAME changeset (as data did NOT CHANGE)
+        self.assertEqual(loc.changeset.id, chgset.id)
+
+        # value changeset should NOT CHANGE
+        self.assertTrue(all(
+            True for val in loc.value_set.all()
+            if val.changeset.id == chgset.id
+        ))
+
+        # test version, should NOT CHANGE
+        self.assertEqual(loc.version, org_loc_version)
+
+        # test values version, should NOT CHANGE
+        self.assertListEqual(
+            [val.version for val in loc.value_set.all()],
+            org_value_versions
+        )
+
+    def test_localitiesUpdate_form_post_partial_data_update_locality(self):
+        UserF(username='test', password='test')
+
+        test_attr = AttributeF.create(key='test')
+        chgset = ChangesetF.create(id=1)
+
+        dom = DomainSpecification1AF(spec1__attribute=test_attr)
+
+        spec = dom.specification_set.all()[0]
+
+        org_loc = LocalityValue1F.create(
+            id=1, geom='POINT(16 45)', val1__data='test_osm', domain=dom,
+            val1__specification=spec, changeset=chgset, val1__changeset=chgset
+        )
+
+        org_loc_version = org_loc.version
+        org_value_versions = [
+            org_val.version for org_val in org_loc.value_set.all()
+        ]
+
+        self.client.login(username='test', password='test')
+        resp = self.client.post(
+            reverse('locality-update', kwargs={'pk': 1}),
+            {'test': 'test_osm', 'lon': 16, 'lat': 10}
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(resp.content, 'OK')
+
+        loc = Locality.objects.get(pk=1)
+
+        self.assertEqual(loc.geom.x, 16.0)
+        self.assertEqual(loc.geom.y, 10.0)
+
+        self.assertListEqual(
+            [val.data for val in loc.value_set.all()],
+            ['test_osm']
+        )
+
+        # check if we got a new changeset (data CHANGE)
+        self.assertNotEqual(loc.changeset.id, chgset.id)
+
+        # value changeset should NOT change
+        self.assertTrue(all(
+            True for val in loc.value_set.all()
+            if val.changeset.id == chgset.id
+        ))
+
+        # test version, should CHANGE
+        self.assertNotEqual(loc.version, org_loc_version)
+
+        # test values version, should NOT CHANGE
+        self.assertListEqual(
+            [val.version for val in loc.value_set.all()],
+            org_value_versions
+        )
+
+    def test_localitiesUpdate_form_post_partial_data_update_values(self):
+        UserF(username='test', password='test')
+        test_attr = AttributeF.create(key='test')
+        test_attr2 = AttributeF.create(key='other_test')
+        chgset = ChangesetF.create(id=1)
+
+        dom = DomainSpecification2AF(
+            spec1__attribute=test_attr, spec2__attribute=test_attr2
+        )
+
+        spec = [spec for spec in dom.specification_set.all()]
+
+        org_loc = LocalityValue2F.create(
+            id=1, geom='POINT(16 45)', domain=dom, changeset=chgset,
+            val1__data='test_osm', val1__specification=spec[0],
+            val1__changeset=chgset, val2__data='other_osm',
+            val2__specification=spec[1], val2__changeset=chgset
+        )
+
+        org_loc_version = org_loc.version
+        org_value_versions = [
+            org_val.version for org_val in org_loc.value_set.all()
+        ]
+
+        self.client.login(username='test', password='test')
+        resp = self.client.post(
+            reverse('locality-update', kwargs={'pk': 1}), {
+                'test': 'new_test_osm', 'other_test': 'other_osm', 'lon': 16,
+                'lat': 45
+            }
+        )
+
+        self.assertEqual(resp.status_code, 200)
+
+        self.assertEqual(resp.content, 'OK')
+
+        loc = Locality.objects.get(pk=1)
+
+        self.assertEqual(loc.geom.x, 16.0)
+        self.assertEqual(loc.geom.y, 45.0)
+
+        self.assertListEqual(
+            [val.data for val in loc.value_set.all()],
+            [u'other_osm', u'new_test_osm']
+        )
+
+        # check if we got the SAME changeset (NO data CHANGE)
+        self.assertEqual(loc.changeset.id, chgset.id)
+
+        # value changeset of one attribute should CHANGE
+        self.assertListEqual(
+            [val.changeset.id == chgset.id for val in loc.value_set.all()],
+            [True, False]
+        )
+
+        # test version, should NOT CHANGE
+        self.assertEqual(loc.version, org_loc_version)
+
+        # test values version, should CHANGE
+        self.assertListEqual(
+            [val.version == org_value_versions[idx]
+                for idx, val in enumerate(loc.value_set.all())],
+            [True, False]
+        )
+
     def test_localitiesUpdate_form_post_fail(self):
+        UserF(username='test', password='test')
         test_attr = AttributeF.create(key='test')
 
         dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
-        LocalityValueF.create(
+        LocalityValue1F.create(
             id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
             val1__specification__attribute=test_attr
         )
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-update', kwargs={'pk': 1}),
             {'test': 'new_osm'}
@@ -136,10 +363,21 @@ class TestViews(TestCase):
             u'" name="test" type="text" value="new_osm" /></p>\n</form>'
         )
 
+    def test_localitiesCreate_form_get_no_user(self):
+        resp = self.client.get(
+            reverse('locality-create', kwargs={'domain': 'test'})
+        )
+        self.assertRedirects(
+            resp, '/signin/?next=/localities/form/test',
+            status_code=302, target_status_code=200
+        )
+
     def test_localitiesCreate_form_get(self):
+        UserF(username='test', password='test')
         test_attr = AttributeF.create(key='test')
         DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
+        self.client.login(username='test', password='test')
         resp = self.client.get(
             reverse('locality-create', kwargs={'domain': 'test'})
         )
@@ -158,9 +396,11 @@ class TestViews(TestCase):
         )
 
     def test_localitiesCreate_form_post(self):
+        UserF(username='test', password='test')
         test_attr = AttributeF.create(key='test')
         DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
             {'test': 'new_osm', 'lon': 10, 'lat': 35}
@@ -181,10 +421,16 @@ class TestViews(TestCase):
             ['new_osm']
         )
 
+        # test version
+        self.assertEqual(loc.version, 1)
+
     def test_localitiesCreate_form_post_fail(self):
+        UserF(username='test', password='test')
+
         test_attr = AttributeF.create(key='test')
         DomainSpecification1AF(name='test', spec1__attribute=test_attr)
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
             {'test': 'new_osm'}
@@ -204,11 +450,14 @@ class TestViews(TestCase):
         )
 
     def test_localitiesCreate_form_post_required_attr(self):
+        UserF(username='test', password='test')
+
         test_attr = AttributeF.create(key='test')
         DomainSpecification1AF(
             name='test', spec1__attribute=test_attr, spec1__required=True
         )
 
+        self.client.login(username='test', password='test')
         resp = self.client.post(
             reverse('locality-create', kwargs={'domain': 'test'}),
             {'test': ''}
