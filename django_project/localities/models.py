@@ -30,24 +30,23 @@ class UpdateMixin(models.Model):
     def before_save(self, *args, **kwargs):
         """
         Executed before actually saving the model, should be overridden
-
-        WARNING: this method might not execute if there are no changed
-        attributes on update
         """
         pass
 
     def save(self, *args, **kwargs):
         # update
         if self.pk and not(kwargs.get('force_insert')):
+            # execute any model specific changes
+            self.before_save(*args, update=True, **kwargs)
+
             if self.tracker.changed():
                 # increase version and save if there are more changed attrs
                 self.inc_version()
-                self.before_save(*args, update=True, **kwargs)
                 super(UpdateMixin, self).save(*args, **kwargs)
         # create
         else:
-            self.inc_version()
             self.before_save(*args, create=True, **kwargs)
+            self.inc_version()
             super(UpdateMixin, self).save(*args, **kwargs)
 
 
