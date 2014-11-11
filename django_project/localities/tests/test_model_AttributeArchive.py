@@ -7,7 +7,7 @@ from ..models import AttributeArchive
 
 
 class TestModelAttributeArchive(TestCase):
-    def test_archiving_attrbute(self):
+    def test_archiving_attribute(self):
         attribute = AttributeF.create(key='A key')
 
         attribute.description = 'a new descritpion'
