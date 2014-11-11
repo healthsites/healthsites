@@ -21,3 +21,13 @@ body {
     right:30px;
     left:auto !important;
 }
+
+.marker-icon {
+    width: 46;
+    height: 42;
+    background: url("/static/img/healthsite-cluster-marker.png");
+    line-height: 42px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 11px;
+}
