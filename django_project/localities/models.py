@@ -207,6 +207,21 @@ class Specification(UpdateMixin, ChangesetMixin):
         return u'{} {}'.format(self.domain.name, self.attribute.key)
 
 
+class SpecificationArchive(ArchiveMixin):
+    """
+    Archive for Specification model
+
+    We need to use simple IntegerFields instead of ForeignKey fields for
+    relations as deletion of a related model triggers on_delete action, which
+    can't preserve relation to a missing object.
+
+    https://docs.djangoproject.com/en/1.7/ref/models/fields/#django.db.models.ForeignKey.on_delete  # noqa
+    """
+    domain_id = models.IntegerField()
+    attribute_id = models.IntegerField()
+    required = models.BooleanField(default=False)
+
+
 class Changeset(models.Model):
     social_user = models.ForeignKey(settings.AUTH_USER_MODEL)
     created = models.DateTimeField()
