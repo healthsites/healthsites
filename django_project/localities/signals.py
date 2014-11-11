@@ -10,7 +10,8 @@ from django.contrib.contenttypes.models import ContentType
 from .models import (
     Domain, DomainArchive,
     Attribute, AttributeArchive,
-    Specification, SpecificationArchive
+    Specification, SpecificationArchive,
+    Locality, LocalityArchive
 )
 
 
@@ -60,5 +61,23 @@ def specification_archive_handler(sender, instance, created, raw, **kwargs):
     archive.domain_id = instance.domain.pk
     archive.attribute_id = instance.attribute.pk
     archive.required = instance.required
+
+    archive.save()
+
+
+@receiver(post_save, sender=Locality)
+def locality_archive_handler(sender, instance, created, raw, **kwargs):
+    ct = ContentType.objects.get(app_label='localities', model='locality')
+    archive = LocalityArchive()
+    archive.content_type = ct
+    archive.object_id = instance.pk
+
+    archive.version = instance.version
+    archive.changeset = instance.changeset
+
+    archive.domain_id = instance.domain.pk
+    archive.uuid = instance.uuid
+    archive.upstream_id = instance.upstream_id
+    archive.geom = instance.geom
 
     archive.save()

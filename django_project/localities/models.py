@@ -158,6 +158,16 @@ class Locality(UpdateMixin, ChangesetMixin):
         return u'{}'.format(self.id)
 
 
+class LocalityArchive(ArchiveMixin):
+    """
+    Archive for the Locality model
+    """
+    domain_id = models.IntegerField()
+    uuid = models.TextField()
+    upstream_id = models.TextField(null=True)
+    geom = models.PointField(srid=4326)
+
+
 class Value(UpdateMixin, ChangesetMixin):
     locality = models.ForeignKey('Locality')
     specification = models.ForeignKey('Specification')
@@ -209,7 +219,7 @@ class Specification(UpdateMixin, ChangesetMixin):
 
 class SpecificationArchive(ArchiveMixin):
     """
-    Archive for Specification model
+    Archive for the Specification model
 
     We need to use simple IntegerFields instead of ForeignKey fields for
     relations as deletion of a related model triggers on_delete action, which
