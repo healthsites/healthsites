@@ -52,7 +52,7 @@ class UpdateMixin(models.Model):
 
 class ArchiveMixin(ChangesetMixin):
     content_type = models.ForeignKey('contenttypes.ContentType')
-    object_id = models.PositiveIntegerField()
+    object_id = models.IntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
     class Meta:
