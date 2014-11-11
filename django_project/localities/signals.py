@@ -11,7 +11,8 @@ from .models import (
     Domain, DomainArchive,
     Attribute, AttributeArchive,
     Specification, SpecificationArchive,
-    Locality, LocalityArchive
+    Locality, LocalityArchive,
+    Value, ValueArchive
 )
 
 
@@ -79,5 +80,22 @@ def locality_archive_handler(sender, instance, created, raw, **kwargs):
     archive.uuid = instance.uuid
     archive.upstream_id = instance.upstream_id
     archive.geom = instance.geom
+
+    archive.save()
+
+
+@receiver(post_save, sender=Value)
+def value_archive_handler(sender, instance, created, raw, **kwargs):
+    ct = ContentType.objects.get(app_label='localities', model='value')
+    archive = ValueArchive()
+    archive.content_type = ct
+    archive.object_id = instance.pk
+
+    archive.version = instance.version
+    archive.changeset = instance.changeset
+
+    archive.locality_id = instance.locality.pk
+    archive.specification_id = instance.specification.pk
+    archive.data = instance.data
 
     archive.save()

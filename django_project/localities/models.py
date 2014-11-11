@@ -184,6 +184,15 @@ class Value(UpdateMixin, ChangesetMixin):
         )
 
 
+class ValueArchive(ArchiveMixin):
+    """
+    Archive for the Value model
+    """
+    locality_id = models.IntegerField()
+    specification_id = models.IntegerField()
+    data = models.TextField(blank=True)
+
+
 class Attribute(UpdateMixin, ChangesetMixin):
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
