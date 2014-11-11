@@ -16,15 +16,23 @@ from .models import (
 )
 
 
-@receiver(post_save, sender=Domain)
-def domain_archive_handler(sender, instance, created, raw, **kwargs):
-    ct = ContentType.objects.get(app_label='localities', model='domain')
-    archive = DomainArchive()
-    archive.content_type = ct
+def archive_basic_info(archive, instance, content_type):
+    """
+    Helper function for handling archival of basic information
+    """
+    archive.content_type = content_type
     archive.object_id = instance.pk
 
     archive.version = instance.version
     archive.changeset = instance.changeset
+
+
+@receiver(post_save, sender=Domain)
+def domain_archive_handler(sender, instance, created, raw, **kwargs):
+    ct = ContentType.objects.get(app_label='localities', model='domain')
+    archive = DomainArchive()
+
+    archive_basic_info(archive, instance, ct)
 
     archive.name = instance.name
     archive.description = instance.description
@@ -37,11 +45,8 @@ def domain_archive_handler(sender, instance, created, raw, **kwargs):
 def attribute_archive_handler(sender, instance, created, raw, **kwargs):
     ct = ContentType.objects.get(app_label='localities', model='attribute')
     archive = AttributeArchive()
-    archive.content_type = ct
-    archive.object_id = instance.pk
 
-    archive.version = instance.version
-    archive.changeset = instance.changeset
+    archive_basic_info(archive, instance, ct)
 
     archive.key = instance.key
     archive.description = instance.description
@@ -53,11 +58,8 @@ def attribute_archive_handler(sender, instance, created, raw, **kwargs):
 def specification_archive_handler(sender, instance, created, raw, **kwargs):
     ct = ContentType.objects.get(app_label='localities', model='specification')
     archive = SpecificationArchive()
-    archive.content_type = ct
-    archive.object_id = instance.pk
 
-    archive.version = instance.version
-    archive.changeset = instance.changeset
+    archive_basic_info(archive, instance, ct)
 
     archive.domain_id = instance.domain.pk
     archive.attribute_id = instance.attribute.pk
@@ -70,11 +72,8 @@ def specification_archive_handler(sender, instance, created, raw, **kwargs):
 def locality_archive_handler(sender, instance, created, raw, **kwargs):
     ct = ContentType.objects.get(app_label='localities', model='locality')
     archive = LocalityArchive()
-    archive.content_type = ct
-    archive.object_id = instance.pk
 
-    archive.version = instance.version
-    archive.changeset = instance.changeset
+    archive_basic_info(archive, instance, ct)
 
     archive.domain_id = instance.domain.pk
     archive.uuid = instance.uuid
@@ -88,11 +87,8 @@ def locality_archive_handler(sender, instance, created, raw, **kwargs):
 def value_archive_handler(sender, instance, created, raw, **kwargs):
     ct = ContentType.objects.get(app_label='localities', model='value')
     archive = ValueArchive()
-    archive.content_type = ct
-    archive.object_id = instance.pk
 
-    archive.version = instance.version
-    archive.changeset = instance.changeset
+    archive_basic_info(archive, instance, ct)
 
     archive.locality_id = instance.locality.pk
     archive.specification_id = instance.specification.pk
