@@ -28,12 +28,12 @@ window.MAP = (function () {
         L.control.layers(baseLayers).addTo(this.MAP);
 
         this.redIcon = L.icon({
-            iconUrl:'/static/js/images/marker-icon-red.png',
-            iconRetinaUrl:'/static/js/images/marker-icon-2x-red.png',
-            iconSize: [25, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
+            iconUrl: '/static/img/healthsite-marker-red-21x36.png',
+            iconRetinaUrl: '/static/img/healthsite-marker-red-35x60.png',
+            iconSize: [21, 36],
+            iconAnchor: [15, 36],
+            popupAnchor: [1, -36],
+            shadowSize: [21, 36]
         });
 
         this.MAP.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text.

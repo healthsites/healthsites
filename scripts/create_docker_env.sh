@@ -1,17 +1,11 @@
 #!/bin/bash
 
+
 # First lets get Postgis going
 source ${BASH_SOURCE%/*}/functions.sh
 
-docker build -t kartoza/postgis git://github.com/kartoza/docker-postgis
-
 restart_postgis_server
-
-# Now build the django image
-
-cd ${BASH_SOURCE%/*}/../docker-prod
-./build.sh
-cd -
+restart_qgis_server
 
 # Now collect migrate and collect static
 manage migrate

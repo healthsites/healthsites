@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker build -t konektaz/healthsitesdev .
+docker build -t konektaz/healthsites-dev .
