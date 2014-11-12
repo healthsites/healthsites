@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Healthsites{% endblock %}
+
+{% block content %}
+<nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation" xmlns="http://www.w3.org/1999/html">
+<div class="container-fluid">
+  <img height="40px" class="pull-left" style="padding-top: 8px; padding-right: 8px;" src="/static/js/images/marker-icon.png"/>
+  <a id="about" class="navbar-brand"
+          data-toggle="modal"
+          href="about"
+          data-target="#about-modal"
+          >Healthsites.io</a>
+</div>
+</nav>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Sign in</h2>
+            <h4>Please sign in with one of your existing third party accounts.</h4>
+            <p class="text-warning"><span class="label label-warning">Important!</span> If you already connected one 3rd party service, first login using that service and add more authorisation options on profile page</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <a href="{% url 'social:begin' 'openstreetmap' %}" class="btn btn-primary">OSM</a>
+            <a href="{% url 'social:begin' 'github' %}" class="btn btn-primary">Github</a>
+            <a href="{% url 'social:begin' 'twitter' %}" class="btn btn-primary">Twitter</a>
+            <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-primary">Google</a>
+            <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-primary">Facebook</a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

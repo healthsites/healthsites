@@ -1,34 +1,26 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 
-from .models import Domain, Locality, Value, Attribute, Specification
+from .models import (
+    Domain,
+    Attribute,
+    Specification
+)
 
 
 class DomainMA(admin.ModelAdmin):
-    pass
+    fields = ('name', 'description', 'template_fragment')
 
 admin.site.register(Domain, DomainMA)
 
 
-class LocalityMA(admin.ModelAdmin):
-    pass
-
-admin.site.register(Locality, LocalityMA)
-
-
-class ValueMA(admin.ModelAdmin):
-    pass
-
-admin.site.register(Value, ValueMA)
-
-
 class AttributeMA(admin.ModelAdmin):
-    pass
+    fields = ('key', 'description')
 
 admin.site.register(Attribute, AttributeMA)
 
 
 class SpecificationMA(admin.ModelAdmin):
-    pass
+    fields = ('domain', 'attribute', 'required')
 
 admin.site.register(Specification, SpecificationMA)

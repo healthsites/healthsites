@@ -8,10 +8,11 @@ from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
 from django.contrib.gis.geos import Point
+from django.db import transaction
 
-from braces.views import JSONResponseMixin
+from braces.views import JSONResponseMixin, LoginRequiredMixin
 
-from .models import Locality, Domain
+from .models import Locality, Domain, Changeset
 from .utils import render_fragment
 from .forms import LocalityForm, DomainForm
 
@@ -49,7 +50,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
         return self.render_json_response(obj_repr)
 
 
-class LocalityUpdate(SingleObjectMixin, FormView):
+class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
     form_class = LocalityForm
     template_name = 'updateform.html'
 
@@ -68,19 +69,33 @@ class LocalityUpdate(SingleObjectMixin, FormView):
         return super(LocalityUpdate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
-        self.object.set_geom(
-            form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
-        )
-        self.object.save()
-        self.object.set_values(form.cleaned_data)
+        # update everything in one transaction
+        with transaction.atomic():
+            self.object.set_geom(
+                form.cleaned_data.pop('lon'),
+                form.cleaned_data.pop('lat')
+            )
+            if self.object.tracker.changed():
+                # there are some changes so create a new changeset
+                tmp_changeset = Changeset.objects.create(
+                    social_user=self.request.user
+                )
+                self.object.changeset = tmp_changeset
+            self.object.save()
+            self.object.set_values(
+                form.cleaned_data, social_user=self.request.user
+            )
 
-        return HttpResponse('OK')
+            return HttpResponse('OK')
+
+        # transaction failed
+        return HttpResponse('ERROR updating Locality and values')
 
     def get_form(self, form_class):
         return form_class(locality=self.object, **self.get_form_kwargs())
 
 
-class LocalityCreate(SingleObjectMixin, FormView):
+class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
     form_class = DomainForm
     template_name = 'updateform.html'
 
@@ -105,21 +120,30 @@ class LocalityCreate(SingleObjectMixin, FormView):
         return super(LocalityCreate, self).post(request, *args, **kwargs)
 
     def form_valid(self, form):
-        tmp_uuid = uuid.uuid4().hex
+        # create new as a single transaction
+        with transaction.atomic():
+            tmp_changeset = Changeset.objects.create(
+                social_user=self.request.user
+            )
 
-        loc = Locality()
-        loc.domain = self.object
-        loc.uuid = tmp_uuid
-        # generate unique upstream_id
-        loc.upstream_id = u'web¶{}'.format(tmp_uuid)
+            tmp_uuid = uuid.uuid4().hex
 
-        loc.geom = Point(
-            form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
-        )
-        loc.save()
-        loc.set_values(form.cleaned_data)
+            loc = Locality()
+            loc.changeset = tmp_changeset
+            loc.domain = self.object
+            loc.uuid = tmp_uuid
+            # generate unique upstream_id
+            loc.upstream_id = u'web¶{}'.format(tmp_uuid)
 
-        return HttpResponse(loc.pk)
+            loc.geom = Point(
+                form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
+            )
+            loc.save()
+            loc.set_values(form.cleaned_data, social_user=self.request.user)
+
+            return HttpResponse(loc.pk)
+        # transaction failed
+        return HttpResponse('ERROR creating Locality and values')
 
     def get_form(self, form_class):
         return form_class(domain=self.object, **self.get_form_kwargs())

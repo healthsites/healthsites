@@ -2,7 +2,7 @@
 from django.test import TestCase
 
 from .model_factories import (
-    LocalityValueF,
+    LocalityValue1F,
     AttributeF,
     LocalityF,
     DomainSpecification2AF,
@@ -44,7 +44,7 @@ class TestLocalityForms(TestCase):
             spec1__attribute=test_attr
         )
 
-        loc = LocalityValueF.create(
+        loc = LocalityValue1F.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
             val1__specification__attribute=test_attr, val1__data='osm',
             domain=dom
