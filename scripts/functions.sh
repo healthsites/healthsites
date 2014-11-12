@@ -1,26 +1,59 @@
 #!/bin/bash
 
-ORGANISATION=konektaz
-PROJECT=healthsites
-
-# Configurable options (though we recommend not changing these)
-POSTGIS_PORT=49361
-POSTGIS_CONTAINER_NAME=${PROJECT}-postgis
-
-QGIS_SERVER_PORT=49362
-QGIS_SERVER_CONTAINER_NAME=${PROJECT}-qgis-server
-
-DJANGO_SERVER_PORT=49360
-DJANGO_CONTAINER_NAME=${PROJECT}-django
-
-DJANGO_DEV_SERVER_SSH_PORT=1122
-DJANGO_DEV_SERVER_HTTP_PORT=1180
-DJANGO_DEV_CONTAINER_NAME=${PROJECT}-django-dev
 # Configurable options you probably want to change
-
+ORGANISATION=konexktaz
+PROJECT=healthsites
 PG_USER=docker
 PG_PASS=docker
+BASE_PORT=1519
+
+# Configurable options (though we recommend not changing these)
+TEST_BASE_PORT=$((BASE_PORT + 100))
+# Root directory of this git project
+PROJECT_DIR=$(readlink -fn -- "${BASH_SOURCE%/*}/..")
+
+if [[ -z "S{TEST}" ]]
+then
+    # If the TEST env var is set we run on different ports etc.
+    POSTGIS_PORT=${TEST_BASE_PORT}
+    POSTGIS_CONTAINER_NAME=test-${PROJECT}-postgis
+    BASE_PORT=$((BASE_PORT + 1))
+
+    QGIS_SERVER_PORT=${TEST_BASE_PORT}
+    QGIS_SERVER_CONTAINER_NAME=test-${PROJECT}-qgis-server
+    BASE_PORT=$((BASE_PORT + 1))
+
+    DJANGO_SERVER_PORT=${TEST_BASE_PORT}
+    DJANGO_CONTAINER_NAME=test-${PROJECT}
+    BASE_PORT=$((BASE_PORT + 1))
+else
+    # Production mode
+    POSTGIS_PORT=${BASE_PORT}
+    POSTGIS_CONTAINER_NAME=${PROJECT}-postgis
+    BASE_PORT=$((BASE_PORT + 1))
+
+    QGIS_SERVER_PORT=${BASE_PORT}
+    QGIS_SERVER_CONTAINER_NAME=${PROJECT}-qgis-server
+    BASE_PORT=$((BASE_PORT + 1))
+
+    DJANGO_SERVER_PORT=${BASE_PORT}
+    DJANGO_CONTAINER_NAME=${PROJECT}
+fi
+
+DJANGO_DEV_SERVER_SSH_PORT=${BASE_PORT}
+DJANGO_DEV_SERVER_HTTP_PORT=${BASE_PORT}
+DJANGO_DEV_CONTAINER_NAME=${PROJECT}-dev
+
 OPTIONS="-e DATABASE_NAME=gis -e DATABASE_USERNAME=${PG_USER} -e DATABASE_PASSWORD=${PG_PASS} -e DATABASE_HOST=${POSTGIS_CONTAINER_NAME} -e DJANGO_SETTINGS_MODULE=core.settings.prod_docker"
+
+function clean {
+    echo "Cleaning away old pyc etc files."
+    echo "-------------------------------------------------"
+    find . -name '*~' -exec rm {} \;
+    find . -name '*.pyc' -exec rm {} \;
+    find . -name '*.pyo' -exec rm {} \;
+    find . -name '*.orig' -exec rm {} \;
+}
 
 # -------------------------
 function restart_postgis_server {
@@ -47,7 +80,6 @@ function restart_postgis_server {
     sleep 20
 
 }
-
 
 function restart_qgis_server {
 
@@ -81,7 +113,8 @@ function manage {
         --hostname="${PROJECT}-manage" \
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
-        -v /home/${USER}/production-sites/${PROJECT}:/home/web \
+        -v ${PROJECT_DIR}:/home/web \
+        -v /tmp/${PROJECT}-tmp:/tmp/${PROJECT}-tmp \
         --entrypoint="/usr/bin/python" \
         -i -t ${ORGANISATION}/${PROJECT} \
          /home/web/django_project/manage.py "$@"
@@ -97,7 +130,7 @@ function bash_prompt {
         --hostname="${PROJECT}-bash" \
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
-        -v /home/${USER}/production-sites/${PROJECT}:/home/web \
+        -v ${PROJECT_DIR}:/home/web \
         --entrypoint="/bin/bash" \
         -i -t ${ORGANISATION}/${PROJECT} \
         -s
@@ -108,6 +141,7 @@ function run_django_server {
     echo "${@}"
     echo "------------------------------------------"
 
+    mkdir /tmp/${PROJECT}-tmp
     docker kill ${DJANGO_CONTAINER_NAME}
     docker rm ${DJANGO_CONTAINER_NAME}
     docker run \
@@ -116,9 +150,9 @@ function run_django_server {
         --hostname="${DJANGO_CONTAINER_NAME}" \
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
-        -v /home/${USER}/production-sites/${PROJECT}:/home/web \
+        -v ${PROJECT_DIR}:/home/web \
         -v /tmp/${PROJECT}-tmp:/tmp/${PROJECT}-tmp \
-        -p 49360:49360 \
+        -p ${DJANGO_SERVER_PORT}:${DJANGO_SERVER_PORT} \
         -d -t ${ORGANISATION}/${PROJECT} $@
 }
 
@@ -140,7 +174,7 @@ function run_django_dev_server {
     echo "python manage.py runserver 0.0.0.0:${DJANGO_DEV_SERVER_HTTP_PORT}"
     echo "------------------------------------------"
 
-    PROJECT_DIR=$(readlink -fn -- "${BASH_SOURCE%/*}/..")
+    mkdir /tmp/${PROJECT}-tmp
     docker kill ${DJANGO_DEV_CONTAINER_NAME}
     docker rm ${DJANGO_DEV_CONTAINER_NAME}
     docker run \
