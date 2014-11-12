@@ -4,14 +4,14 @@
 
 {% block content %}
 
-<nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation" xmlns="http://www.w3.org/1999/html">
+<nav class="navbar-custom navbar navbar-fixed-top" role="navigation" xmlns="http://www.w3.org/1999/html">
 <div class="container-fluid">
   <img height="40px" class="pull-left" style="padding-top: 8px; padding-right: 8px;" src="/static/js/images/marker-icon.png"/>
   <a id="about" class="navbar-brand"
           data-toggle="modal"
           href="about"
           data-target="#about-modal"
-          >Healthsites.io</a>
+          >HEALTHSITES.IO <i class="mdi-social-share"></i></a>
 <!--
   <button id="new_locality" type="button" class="btn btn-default navbar-btn"
           data-mapclick-text="Click on the map"
@@ -19,15 +19,15 @@
 -->
   <div class="navbar-right">
   {% if user.is_authenticated %}
-    <a id="profile" href="{% url 'userprofilepage' %}" class="btn btn-default navbar-btn">Profile</a>
-    <a class="btn btn-default navbar-btn" href="{% url 'logout_user' %}">Logout</a>
+    <a id="profile" href="{% url 'userprofilepage' %}" class="custom-navbar-item"><i class="mdi-social-person"></i> {{ user.username }}</a>
+    <a class="custom-navbar-item" href="{% url 'logout_user' %}"><i class="mdi-action-exit-to-app"></i> Logout</a>
   {% else %}
-    <a id="signin" href="{% url 'usersignpage' %}" class="btn btn-default navbar-btn">Sign in</a>
+    <a id="signin" href="{% url 'usersignpage' %}" class="custom-navbar-item"><i class="mdi-action-exit-to-app"></i> Sign in</a>
   {% endif %}
-  <a id="help-button" class="btn btn-default navbar-btn"
+  <a id="help-button" class="custom-navbar-item"
           data-toggle="modal"
           href="help"
-          data-target="#help-modal">Help</a>
+          data-target="#help-modal"><i class="mdi-action-info-outline"></i> Help</a>
   </div>
 </div>
 </nav>

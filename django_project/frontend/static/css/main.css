@@ -31,3 +31,25 @@ body {
     font-weight: bold;
     font-size: 11px;
 }
+
+.custom-navbar-item {
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #3f3f3f;
+    margin-right: 15px;
+    padding-top: 10px;
+    line-height: 50px;
+}
+
+.custom-navbar-item:hover {
+    text-decoration: none;
+}
+
+.navbar-custom {
+    background-color: #e5e5e5 !important;
+}
+
+.navbar .navbar-brand {
+    color: #3f3f3f !important;
+    height: 50px !important;
+}

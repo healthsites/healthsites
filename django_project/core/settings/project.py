@@ -36,7 +36,9 @@ PIPELINE_JS = {
             'js/PruneCluster.js',
             'js/leaflet.draw-src.js',
             'js/jquery-1.11.1.min.js',
-            'js/bootstrap.js'
+            'js/bootstrap.js',
+            'js/material.min.js',
+            'js/ripples.min.js'
         ),
         'output_filename': 'js/contrib.js',
     },
@@ -59,7 +61,10 @@ PIPELINE_CSS = {
             'css/leaflet.draw.css',
             'css/bootstrap.min.css',
             'css/main.css',
-            'css/github-ribbon.css'
+            'css/github-ribbon.css',
+            'css/material.min.css',
+            'css/ripples.min.css',
+            'css/material-wfont.min.css'
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {
