@@ -29,62 +29,14 @@ Out intention is to foster wide spread usage of the data and the code that we pr
 
 # Setup instructions
 
-## Simple deployment under docker
-
-### Overview
-
-You need two docker containers:
-
-* A postgis container
-* A uwsgi container
-
-We assume you are running nginx on the host and we will set up a reverse
-proxy to pass django requests into the uwsgi container. Static files will
-be served directly using nginx on the host.
-
-A convenience script is provided under ``scripts\create_docker_env.sh`` which
-should get everything set up for you. Note you need at least docker 1.2 - use
-the [installation notes](http://docs.docker.com/installation/ubuntulinux/) 
-on the official docker page to get it set up.
-
 ### Check out the source
 
 
 First checkout out the source tree:
 
 ```
-mkdir -p ~/production-sites
-mkdir /tmp/healthsites-tmp
-cd ~/production-sites
 git clone git://github.com/konektaz/healthsites.git
 ```
-
-### Build your docker images and run them
-
-You can simply run the provided script and it will build and deploy the docker
-images for you in **production mode**.
-
-``
-cd healthsites
-scripts\create_docker_env.sh
-``
-
-To create a test site (or run any of the provided management scripts in test
-mode), its the same procedure except you need to export the ``TEST_MODE``
-environment variable e.g.::
-
-``
-cd healthsites
-TEST_MODE=1 scripts\create_docker_env.sh
-``
-
-### Setup nginx reverse proxy
-
-You should create a new nginx virtual host - please see 
-``healthsites-nginx.conf`` in the root directory of the source for an example.
-
-
-## For local development
 
 ### Install dependencies
 

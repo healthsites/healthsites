@@ -1,11 +1,7 @@
 #!/bin/bash
 
-# Configurable options you probably want to change
-ORGANISATION=konektaz
-PROJECT=healthsites
-PG_USER=docker
-PG_PASS=docker
-BASE_PORT=49361
+# Configurable options you probably want to change are stored in config.sh
+source ${BASH_SOURCE%/*}/config.sh
 
 # Configurable options (though we recommend not changing these)
 # Root directory of this git project
