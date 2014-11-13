@@ -218,7 +218,6 @@ function manage {
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
         -v ${PROJECT_DIR}:/home/web \
-        -v /tmp/${PROJECT}-tmp:/tmp/${PROJECT}-tmp \
         --entrypoint="/usr/bin/python" \
         -i -t ${ORGANISATION}/${PROJECT} \
          /home/web/django_project/manage.py "$@"
@@ -247,7 +246,6 @@ function run_django_server {
     echo "------------------------------------------"
     build_django_image
 
-    mkdir /tmp/${PROJECT}-tmp
     docker kill ${DJANGO_CONTAINER_NAME}
     docker rm ${DJANGO_CONTAINER_NAME}
     docker run \
@@ -257,7 +255,6 @@ function run_django_server {
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
         -v ${PROJECT_DIR}:/home/web \
-        -v /tmp/${PROJECT}-tmp:/tmp/${PROJECT}-tmp \
         -p ${DJANGO_SERVER_PORT}:${DJANGO_UWSGI_INTERNAL_PORT} \
         -d -t ${ORGANISATION}/${PROJECT} $@
 }
@@ -280,7 +277,6 @@ function run_django_dev_server {
     echo "python manage.py runserver 0.0.0.0:${DJANGO_DEV_SERVER_HTTP_PORT}"
     echo "------------------------------------------"
 
-    mkdir /tmp/${PROJECT}-tmp
     docker kill ${DJANGO_DEV_CONTAINER_NAME}
     docker rm ${DJANGO_DEV_CONTAINER_NAME}
     docker run \
@@ -290,7 +286,6 @@ function run_django_dev_server {
         ${OPTIONS} \
         --link ${POSTGIS_CONTAINER_NAME}:${POSTGIS_CONTAINER_NAME} \
         -v ${PROJECT_DIR}:/home/web \
-        -v /tmp/${PROJECT}-tmp:/tmp/${PROJECT}-tmp \
         -p ${DJANGO_DEV_SERVER_SSH_PORT}:22 \
         -p ${DJANGO_DEV_SERVER_HTTP_PORT}:${DJANGO_DEV_SERVER_HTTP_PORT} \
         -d -t ${ORGANISATION}/${PROJECT}-dev $@
