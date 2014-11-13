@@ -110,6 +110,11 @@ window.LocalityModal = (function () {
 
             // 'remove' modal window backdrop
             $('.modal-backdrop').css('position', 'relative');
+
+            this.$modal_body.find('input:text').filter(function() { return $(this).val() == ""; }).each(function() {
+                $(this).parents('.form-group').detach().appendTo('#empty-form-tab');
+            });
+
         },
 
         showCreate: function(evt, payload) {
@@ -128,6 +133,7 @@ window.LocalityModal = (function () {
 
             // 'remove' modal window backdrop
             $('.modal-backdrop').css('position', 'relative');
+
         },
 
         showEditForm: function(evt) {
