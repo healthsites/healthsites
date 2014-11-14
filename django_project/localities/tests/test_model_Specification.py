@@ -9,8 +9,18 @@ from .model_factories import (
     AttributeF
 )
 
+from ..models import Specification
+
 
 class TestModelSpecification(TestCase):
+    def test_Specification_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in Specification._meta.fields], [
+                u'id', 'changeset', 'version', 'domain', 'attribute',
+                'required', 'fts_rank'
+            ]
+        )
+
     def test_model_repr(self):
         dom = DomainF.create(id=1, name='A domain')
         attr = AttributeF.create(key='An attribute')

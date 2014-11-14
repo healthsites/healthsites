@@ -7,6 +7,14 @@ from ..models import ValueArchive
 
 
 class TestModelLocalityArchive(TestCase):
+    def test_valueArchive_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in ValueArchive._meta.fields], [
+                u'id', 'changeset', 'version', 'content_type', 'object_id',
+                'locality_id', 'specification_id', 'data'
+            ]
+        )
+
     def test_archiving_locality(self):
         specification = SpecificationF.create()
         locality = LocalityF.create()

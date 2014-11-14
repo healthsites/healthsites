@@ -5,8 +5,18 @@ from django.db import IntegrityError
 
 from .model_factories import DomainF
 
+from ..models import Domain
+
 
 class TestModelDomain(TestCase):
+    def test_Domain_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in Domain._meta.fields], [
+                u'id', 'changeset', 'version', 'name', 'description',
+                'template_fragment'
+            ]
+        )
+
     def test_model_repr(self):
         domain = DomainF.create(name='A domain')
 

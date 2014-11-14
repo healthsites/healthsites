@@ -8,6 +8,14 @@ from ..models import LocalityArchive
 
 
 class TestModelLocalityArchive(TestCase):
+    def test_LocalityArchive_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in LocalityArchive._meta.fields], [
+                u'id', 'changeset', 'version', 'content_type', 'object_id',
+                'domain_id', 'uuid', 'upstream_id', 'geom'
+            ]
+        )
+
     def test_archiving_locality(self):
         domain = DomainF(id=1, name='A domain')
         locality = LocalityF.create(domain=domain)

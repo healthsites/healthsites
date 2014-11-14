@@ -14,8 +14,18 @@ from .model_factories import (
     ChangesetF
 )
 
+from ..models import Locality
+
 
 class TestModelLocality(TestCase):
+    def test_Locality_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in Locality._meta.fields], [
+                u'id', 'changeset', 'version', 'domain', 'uuid',
+                'upstream_id', 'geom'
+            ]
+        )
+
     def test_model_repr(self):
         locality = LocalityF.create(pk=1)
 

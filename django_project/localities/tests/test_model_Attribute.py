@@ -5,8 +5,18 @@ from django.db import IntegrityError
 
 from .model_factories import AttributeF, DomainSpecification1AF
 
+from ..models import Attribute
+
 
 class TestModelAttribute(TestCase):
+
+    def test_Attribute_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in Attribute._meta.fields], [
+                u'id', 'changeset', 'version', 'key', 'description'
+            ]
+        )
+
     def test_model_repr(self):
         attr = AttributeF.create(key='An attribute')
 

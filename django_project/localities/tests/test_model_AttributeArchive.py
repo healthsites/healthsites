@@ -7,6 +7,15 @@ from ..models import AttributeArchive
 
 
 class TestModelAttributeArchive(TestCase):
+
+    def test_attributeArchive_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in AttributeArchive._meta.fields], [
+                u'id', 'changeset', 'version', 'content_type', 'object_id',
+                'key', 'description'
+            ]
+        )
+
     def test_archiving_attribute(self):
         attribute = AttributeF.create(key='A key')
 

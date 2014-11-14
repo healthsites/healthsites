@@ -10,8 +10,18 @@ from .model_factories import (
     SpecificationF
 )
 
+from ..models import Value
+
 
 class TestModelValue(TestCase):
+    def test_Value_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in Value._meta.fields], [
+                u'id', 'changeset', 'version', 'locality', 'specification',
+                'data'
+            ]
+        )
+
     def test_model_repr(self):
         loc = LocalityF.create(id=1)
         attr = AttributeF.create(key='An attribute')
