@@ -146,6 +146,11 @@ class Locality(UpdateMixin, ChangesetMixin):
                     'Locality %s has no attribute key %s', self.pk, key
                 )
 
+        # send values_updated signal
+        signals.SIG_locality_values_updated.send(
+            sender=self.__class__, instance=self
+        )
+
         return changed_values
 
     def repr_simple(self):
@@ -286,13 +291,13 @@ class Changeset(models.Model):
 
 
 class LocalityIndex(models.Model):
-    locality = models.ForeignKey('Locality')
-    rankA = models.TextField(null=True)
-    rankB = models.TextField(null=True)
-    rankC = models.TextField(null=True)
-    rankD = models.TextField(null=True)
+    locality = models.OneToOneField('Locality')
+    ranka = models.TextField(null=True)
+    rankb = models.TextField(null=True)
+    rankc = models.TextField(null=True)
+    rankd = models.TextField(null=True)
     fts_index = TSVectorField((
-        ('rankA', 'A'), ('rankB', 'B'), ('rankC', 'C'), ('rankD', 'D')
+        ('ranka', 'A'), ('rankb', 'B'), ('rankc', 'C'), ('rankd', 'D')
     ))
 
 # register signals

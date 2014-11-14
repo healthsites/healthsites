@@ -2,18 +2,27 @@
 import logging
 LOG = logging.getLogger(__name__)
 
-from django.dispatch import receiver
+from django.dispatch import receiver, Signal
 from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
 
 
 from .models import (
-    Domain, DomainArchive,
-    Attribute, AttributeArchive,
-    Specification, SpecificationArchive,
-    Locality, LocalityArchive,
-    Value, ValueArchive
+    Domain,
+    DomainArchive,
+    Attribute,
+    AttributeArchive,
+    Specification,
+    SpecificationArchive,
+    Locality,
+    LocalityArchive,
+    LocalityIndex,
+    Value,
+    ValueArchive
 )
+
+# define custom signals
+SIG_locality_values_updated = Signal()
 
 
 def archive_basic_info(archive, instance, content_type):
@@ -95,3 +104,19 @@ def value_archive_handler(sender, instance, created, raw, **kwargs):
     archive.data = instance.data
 
     archive.save()
+
+
+@receiver(SIG_locality_values_updated, sender=Locality)
+def values_updated_handler(sender, instance, **kwargs):
+    LOG.debug('Updating LocalityIndex for Locality: %s', instance.pk)
+
+    loc_fts = instance.prepare_for_fts()
+
+    locind = LocalityIndex.objects.get_or_create(locality=instance)[0]
+
+    locind.ranka = loc_fts.get('A', '')
+    locind.rankb = loc_fts.get('B', '')
+    locind.rankc = loc_fts.get('C', '')
+    locind.rankd = loc_fts.get('D', '')
+
+    locind.save()
