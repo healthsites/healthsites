@@ -114,6 +114,7 @@ window.LocalityModal = (function () {
             this.$modal_body.find('input:text').filter(function() { return $(this).val() == ""; }).each(function() {
                 $(this).parents('.form-group').detach().appendTo('#empty-form-tab');
             });
+            $.material.init();
 
         },
 

@@ -53,3 +53,12 @@ body {
     color: #3f3f3f !important;
     height: 50px !important;
 }
+
+.tab-pane {
+padding-top: 15px;
+}
+
+
+.control-label {
+    text-transform: uppercase;
+}
