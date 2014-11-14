@@ -6,6 +6,7 @@ INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',  # enable Raven plugin
     'pipeline',
     'social.apps.django_app.default',
+    'pg_fts',
 )
 
 # define template function (example for underscore)

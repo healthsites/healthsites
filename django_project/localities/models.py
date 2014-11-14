@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from model_utils import FieldTracker
+from pg_fts.fields import TSVectorField
 
 
 class ChangesetMixin(models.Model):
@@ -261,6 +262,17 @@ class Changeset(models.Model):
 
     def __unicode__(self):
         return u'{}'.format(self.pk)
+
+
+class LocalityIndex(models.Model):
+    locality = models.ForeignKey('Locality')
+    rankA = models.TextField(null=True)
+    rankB = models.TextField(null=True)
+    rankC = models.TextField(null=True)
+    rankD = models.TextField(null=True)
+    fts_index = TSVectorField((
+        ('rankA', 'A'), ('rankB', 'B'), ('rankC', 'C'), ('rankD', 'D')
+    ))
 
 # register signals
 import signals  # noqa

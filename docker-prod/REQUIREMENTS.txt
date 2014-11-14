@@ -7,3 +7,4 @@ django-pipeline
 nodeenv
 raven
 python-social-auth
+django-pg-fts
