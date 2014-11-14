@@ -8,9 +8,11 @@ from social_users.tests.model_factories import UserF
 from .model_factories import (
     LocalityF,
     LocalityValue1F,
+    LocalityValue4F,
     AttributeF,
     DomainSpecification1AF,
     DomainSpecification2AF,
+    DomainSpecification4AF,
     ChangesetF
 )
 
@@ -198,4 +200,56 @@ class TestModelLocality(TestCase):
 
         self.assertDictEqual(loc.repr_simple(), {
             u'i': 1, u'g': [10.0, 35.0]
+        })
+
+    def test_prepare_for_fts(self):
+        attr1 = AttributeF.create(id=1, key='test1')
+        attr2 = AttributeF.create(id=2, key='test2')
+        attr3 = AttributeF.create(id=3, key='test3')
+        attr4 = AttributeF.create(id=4, key='test4')
+
+        dom = DomainSpecification4AF.create(
+            name='a domain', spec1__attribute=attr1, spec1__fts_rank='A',
+            spec2__attribute=attr2, spec2__fts_rank='B',
+            spec3__attribute=attr3, spec3__fts_rank='C',
+            spec4__attribute=attr4, spec4__fts_rank='D'
+        )
+
+        locality = LocalityValue4F.create(
+            domain=dom, val1__data='1test', val2__data='2test',
+            val3__data='3test', val4__data='4test',
+            val1__specification=attr1.specification_set.all()[0],
+            val2__specification=attr2.specification_set.all()[0],
+            val3__specification=attr3.specification_set.all()[0],
+            val4__specification=attr4.specification_set.all()[0]
+        )
+
+        self.assertEqual(locality.prepare_for_fts(), {
+            u'A': u'1test', u'C': u'3test', u'B': u'2test', u'D': u'4test'
+        })
+
+    def test_prepare_for_fts_grouping(self):
+        attr1 = AttributeF.create(id=1, key='test1')
+        attr2 = AttributeF.create(id=2, key='test2')
+        attr3 = AttributeF.create(id=3, key='test3')
+        attr4 = AttributeF.create(id=4, key='test4')
+
+        dom = DomainSpecification4AF.create(
+            name='a domain', spec1__attribute=attr1, spec1__fts_rank='A',
+            spec2__attribute=attr2, spec2__fts_rank='A',
+            spec3__attribute=attr3, spec3__fts_rank='D',
+            spec4__attribute=attr4, spec4__fts_rank='D'
+        )
+
+        locality = LocalityValue4F.create(
+            domain=dom, val1__data='1test', val2__data='2test',
+            val3__data='3test', val4__data='4test',
+            val1__specification=attr1.specification_set.all()[0],
+            val2__specification=attr2.specification_set.all()[0],
+            val3__specification=attr3.specification_set.all()[0],
+            val4__specification=attr4.specification_set.all()[0]
+        )
+
+        self.assertEqual(locality.prepare_for_fts(), {
+            u'A': u'1test 2test', u'D': u'3test 4test'
         })

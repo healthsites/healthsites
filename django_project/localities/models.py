@@ -2,6 +2,8 @@
 import logging
 LOG = logging.getLogger(__name__)
 
+import itertools
+
 from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.gis.db import models
@@ -160,6 +162,15 @@ class Locality(UpdateMixin, ChangesetMixin):
             u'geom': (self.geom.x, self.geom.y)
         }
 
+    def prepare_for_fts(self):
+        data_values = itertools.groupby(
+            self.value_set.order_by('specification__fts_rank')
+            .values_list('specification__fts_rank', 'data'),
+            lambda x: x[0]
+        )
+
+        return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
+
     def __unicode__(self):
         return u'{}'.format(self.id)
 
@@ -218,10 +229,19 @@ class AttributeArchive(ArchiveMixin):
     description = models.TextField(null=True, blank=True)
 
 
+FTS_RANK = (
+    ('A', 'Rank A'),
+    ('B', 'Rank B'),
+    ('C', 'Rank C'),
+    ('D', 'Rank D')
+)
+
+
 class Specification(UpdateMixin, ChangesetMixin):
     domain = models.ForeignKey('Domain')
     attribute = models.ForeignKey('Attribute')
     required = models.BooleanField(default=False)
+    fts_rank = models.CharField(max_length=1, default='D', choices=FTS_RANK)
 
     tracker = FieldTracker()
 
@@ -245,6 +265,7 @@ class SpecificationArchive(ArchiveMixin):
     domain_id = models.IntegerField()
     attribute_id = models.IntegerField()
     required = models.BooleanField(default=False)
+    fts_rank = models.CharField(max_length=1)
 
 
 class Changeset(models.Model):
