@@ -1,3 +1,18 @@
+@font-face {
+    font-family: 'socicon';
+    src: url('/static/fonts/socicon-webfont.eot');
+    src: url('/static/fonts/socicon-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/static/fonts/socicon-webfont.woff') format('woff'),
+         url('/static/fonts/socicon-webfont.ttf') format('truetype'),
+         url('/static/fonts/socicon-webfont.svg#sociconregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.socicon {
+    font-family: 'socicon' !important;
+}
+
 html {
     height: 100%;
     width: 100%;
@@ -61,4 +76,56 @@ padding-top: 15px;
 
 .control-label {
     text-transform: uppercase;
+}
+
+.medium-size-icon {
+    font-size: 22px;
+    margin-right: 5px;
+}
+
+.medium-size-icon:hover {
+    color: #3f3f3f;
+    cursor: pointer;
+}
+
+.modal-body-info {
+    min-height: 300px;
+}
+
+.modal-info-information {
+    position: absolute;
+    top: 50px;
+    left: 15px;
+    right: 15px;
+    border-bottom: 1px solid #333;
+    height: 1px;
+    margin: 0px 10px 0 10px;
+    background-color: #FFF;
+    overflow: hidden;
+    z-index: 10000;
+    padding-left: 15px;
+    line-height: 14px;
+}
+
+.modal-info-social {
+    width: 22px;
+    height: 25px;
+    overflow: hidden;
+}
+
+.modal-info-social img{
+    vertical-align: top;
+}
+
+.modal-info-expanded {
+    border-bottom: 1px solid #333;
+    z-index: 10000;
+}
+
+.modal-info-status {
+    margin-bottom: 10px;
+}
+
+.label-status {
+    border-bottom: dotted 1px;
 }

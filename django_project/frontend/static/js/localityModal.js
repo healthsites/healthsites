@@ -6,7 +6,6 @@ window.LocalityModal = (function () {
     var module = function () {
 
         this.$modal = $(this.template).modal({'backdrop': 'static', 'show':false, 'keyboard': false});
-        this.$modal_title = this.$modal.find('.modal-title');
         this.$modal_body = this.$modal.find('.modal-body');
         this.$modal_footer = this.$modal.find('.modal-footer');
 
@@ -24,7 +23,7 @@ window.LocalityModal = (function () {
             '<div id="localityModal" class="modal fade">',
             '<div class="modal-dialog">',
             '<div class="modal-content">',
-                '<div class="modal-body">',
+                '<div class="modal-body modal-body-info">',
                 '</div>',
                 '<div class="modal-footer">',
                 '</div>',
@@ -61,6 +60,19 @@ window.LocalityModal = (function () {
             this.$modal_footer.on('click', '.close-modal', function (evt) {
                 self.$modal.modal('hide');
             });
+
+            this.$modal_body.on('mouseover', '.label-status', function() {
+                self.$modal_body.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
+            });
+
+            this.$modal_body.on('mouseout', '.label-status', function() {
+                self.$modal_body.find('.modal-info-information').animate({height: "1px"}, 100).removeClass('modal-info-expanded');
+            });
+
+            this.$modal_body.on('click', '.mdi-social-share', function() {
+                console.log(self.$modal_body.find('.modal-info-social'))
+                self.$modal_body.find('.modal-info-social').animate({width: "115px"}, 500);
+            });
         },
 
         updateCoordinates: function (evt, payload) {
@@ -81,13 +93,33 @@ window.LocalityModal = (function () {
 
         showInfo: function(evt) {
             $('.modal-backdrop').css('position', 'absolute');
-            this.$modal_body.html(this.locality_data.repr);
+            var modal_head = [
+                '<div class="modal-info-status">',
+                    'This information is considered ',
+                    '<span class="label label-success">current</span>. ',
+                    '<span class="label-status">Why</span>?',
+                    '<div class="modal-info-social pull-right">',
+                        '<i class="mdi-social-share medium-size-icon"></i>',
+                        '<span class="socicon medium-size-icon">a</span>',
+                        '<span class="socicon medium-size-icon">b</span>',
+                        '<span class="socicon medium-size-icon">c</span>',
+                    '</div>',
+                '</div>',
+                '<div class="modal-info-information">',
+                    '<p>- It was manualy verified by trusted user</p>',
+                    '<p>- It was been verified using social harvesting</p>',
+                    '<p>- 13 people have verfified its existance in last 3 months</p>',
+                '</div>',
+            ].join('');
+            this.$modal_body.html(modal_head);
+            this.$modal_body.append(this.locality_data.repr);
             this.$modal.modal('show');
 
             // buttons
             this.$modal_footer.html([
-                '<button type="button" class="btn btn-default close-modal">Close</button>',
-                '<button type="button" class="btn btn-primary edit">Edit Locality</button>'
+                '<button type="button" class="btn btn-default close-modal"><i class="mdi-navigation-close"></i> Close</button>',
+                '<button type="button" class="btn btn-success"><i class="mdi-action-thumb-up"></i> Verify</button>',
+                '<button type="button" class="btn btn-primary edit"><i class="mdi-content-create"></i> Edit Locality</button>'
             ].join(''))
         },
 
