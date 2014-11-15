@@ -9,14 +9,14 @@
   <img height="40px" class="pull-left" style="padding-top: 8px; padding-right: 8px;" src="/static/js/images/marker-icon.png"/>
   <span id="about" class="navbar-brand">
     HEALTHSITES.IO
-    <div id="site-social">
-      <i id="site-social-icon-open" class="mdi-social-share medium-size-icon"></i>
-      <a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20check%20this%20site%20out&url=http://healthsites.io/">
-        <span class="socicon">a</span>
-      </a>
-      <i id="site-social-icon-close" class="mdi-content-clear"></i>
-    </div>
   </span>
+  <div id="site-social">
+    <i id="site-social-icon-open" class="mdi-social-share medium-size-icon"></i>
+    <a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20check%20this%20site%20out&url=http://healthsites.io/">
+      <span class="socicon">a</span>
+    </a>
+    <i id="site-social-icon-close" class="mdi-content-clear"></i>
+  </div>
 <!--
   <button id="new_locality" type="button" class="btn btn-default navbar-btn"
           data-mapclick-text="Click on the map"
@@ -29,6 +29,10 @@
   {% else %}
     <a id="signin" href="{% url 'usersignpage' %}" class="custom-navbar-item"><i class="mdi-action-exit-to-app"></i> Sign in</a>
   {% endif %}
+  <a id="about-button" class="custom-navbar-item"
+          data-toggle="modal"
+          href="about"
+          data-target="#about-modal"><i class="mdi-action-face-unlock"></i> About</a>
   <a id="help-button" class="custom-navbar-item"
           data-toggle="modal"
           href="help"

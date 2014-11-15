@@ -141,4 +141,6 @@ padding-top: 15px;
     overflow: hidden;
     display: inline-block;
     cursor: pointer;
+    margin-top: 15px;
+    font-size: 18px;
 }
