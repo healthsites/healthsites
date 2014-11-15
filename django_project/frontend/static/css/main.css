@@ -67,6 +67,7 @@ body {
 .navbar .navbar-brand {
     color: #3f3f3f !important;
     height: 50px !important;
+    line-height: 28px !important
 }
 
 .tab-pane {
@@ -128,4 +129,16 @@ padding-top: 15px;
 
 .label-status {
     border-bottom: dotted 1px;
+}
+
+.navbar-brand a {
+    text-decoration: none;
+}
+
+#site-social {
+    width: 22px;
+    height: 23px;
+    overflow: hidden;
+    display: inline-block;
+    cursor: pointer;
 }

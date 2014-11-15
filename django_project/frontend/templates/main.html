@@ -7,11 +7,16 @@
 <nav class="navbar-custom navbar navbar-fixed-top" role="navigation" xmlns="http://www.w3.org/1999/html">
 <div class="container-fluid">
   <img height="40px" class="pull-left" style="padding-top: 8px; padding-right: 8px;" src="/static/js/images/marker-icon.png"/>
-  <a id="about" class="navbar-brand"
-          data-toggle="modal"
-          href="about"
-          data-target="#about-modal"
-          >HEALTHSITES.IO <i class="mdi-social-share"></i></a>
+  <span id="about" class="navbar-brand">
+    HEALTHSITES.IO
+    <div id="site-social">
+      <i id="site-social-icon-open" class="mdi-social-share medium-size-icon"></i>
+      <a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20check%20this%20site%20out&url=http://healthsites.io/">
+        <span class="socicon">a</span>
+      </a>
+      <i id="site-social-icon-close" class="mdi-content-clear"></i>
+    </div>
+  </span>
 <!--
   <button id="new_locality" type="button" class="btn btn-default navbar-btn"
           data-mapclick-text="Click on the map"

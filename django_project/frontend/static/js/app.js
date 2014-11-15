@@ -63,6 +63,13 @@ window.APP = (function () {
                     $APP.trigger('button.new_locality.save');
                 }
             });
+
+            $('#site-social-icon-open').on('click', function (evt) {
+                $('#site-social').animate({width: '115px'}, 500);
+            });
+            $('#site-social-icon-close').on('click', function (evt) {
+                $('#site-social').animate({width: '24px'}, 100);
+            });
         }
     }
 
