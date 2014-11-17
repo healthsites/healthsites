@@ -70,7 +70,6 @@ window.LocalityModal = (function () {
             });
 
             this.$modal_body.on('click', '.mdi-social-share', function() {
-                console.log(self.$modal_body.find('.modal-info-social'))
                 self.$modal_body.find('.modal-info-social').animate({width: "115px"}, 500);
             });
         },

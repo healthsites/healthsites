@@ -75,9 +75,12 @@ window.MAP = (function () {
 
             $APP.on('map.update-maker.location', function (evt, payload) {
                 // update marker position
-                self.lastClickedMarker.position['lat'] = payload.latlng[0];
-                self.lastClickedMarker.position['lng'] = payload.latlng[1];
+                if (self.lastClickedMarker) {
+                    self.lastClickedMarker.position['lat'] = payload.latlng[0];
+                    self.lastClickedMarker.position['lng'] = payload.latlng[1];
+                }
             });
+
 
             $APP.on('locality.created', function (evt, payload) {
                 var marker = new PruneCluster.Marker(
@@ -94,6 +97,7 @@ window.MAP = (function () {
 
                 self.pointLayer.setLatLng(self.original_marker_position);
                 self.MAP.addLayer(self.pointLayer);
+                self.MAP.panTo(self.original_marker_position)
 
                 // remove maker and processView
                 if (self.lastClickedMarker) {

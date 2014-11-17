@@ -18,6 +18,13 @@ window.APP = (function () {
         this._initAPPEvents();
 
         this._bindExternalEvents();
+
+        var myRe = /\/(\d+)\//i;
+        var id = window.location.pathname.match(/\/([0-9]+)\//i);
+        if (id) {
+            $APP.trigger('locality.map.click', {'locality_id': id[1]});
+        }
+
     };
 
     // prototype
