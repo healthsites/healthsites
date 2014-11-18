@@ -68,33 +68,12 @@ window.MAP = (function () {
         _bindExternalEvents:function () {
             var self = this;
 
-            $APP.on('map.update-maker.location', function (evt, payload) {
-                // update marker position
-                self.lastClickedMarker.position['lat'] = payload.latlng[0];
-                self.lastClickedMarker.position['lng'] = payload.latlng[1];
-            });
-
-            $APP.on('locality.created', function (evt, payload) {
-                var marker = new PruneCluster.Marker(
-                    payload.latlng[0], payload.latlng[1],
-                    {'id': payload.loc_id}
-                );
-
-                self.localitiesLayer.RegisterMarker(marker);
-                self.localitiesLayer.ProcessView();
-            });
-
             $APP.on('map.show.point', function (evt, payload) {
                 self.original_marker_position = [payload.geom[0], payload.geom[1]];
 
                 self.pointLayer.setLatLng(self.original_marker_position);
                 self.MAP.addLayer(self.pointLayer);
 
-                // remove maker and processView
-                if (self.lastClickedMarker) {
-                    self.localitiesLayer.RemoveMarkers([self.lastClickedMarker]);
-                    self.localitiesLayer.ProcessView();
-                }
             });
 
             $APP.on('map.cancel.edit', function (evt) {
@@ -103,12 +82,6 @@ window.MAP = (function () {
             });
 
             $APP.on('map.remove.point', function (evt) {
-                if (self.lastClickedMarker) {
-                    self.localitiesLayer.RegisterMarker(self.lastClickedMarker);
-                    self.localitiesLayer.ProcessView();
-                    self.lastClickedMarker = undefined;
-                }
-
                 self.MAP.removeLayer(self.pointLayer);
                 self.pointLayer.setLatLng([0,0]);
             });

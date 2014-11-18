@@ -18,6 +18,7 @@ L.ClusterLayer = L.LayerGroup.extend({
         this._center = null;
         this._maxBounds = null;
 
+        this._bindExternalEvents();
     },
 
     onAdd: function(map) {
@@ -44,6 +45,20 @@ L.ClusterLayer = L.LayerGroup.extend({
             }
         }
     },
+
+    _bindExternalEvents: function() {
+        var self = this;
+        $APP.on('locality.created', function (evt, payload) {
+            // simply fetch new data from the server
+            self.update();
+        });
+
+        $APP.on('map.remove.point', function (evt) {
+            // simply fetch new data from the server
+            self.update()
+        });
+    },
+
 
     update: function() {
         var self = this;
@@ -96,6 +111,8 @@ L.ClusterLayer = L.LayerGroup.extend({
                 mrk.on('click', function (evt) {
                     if (evt.target.data['count'] === 1) {
                         $APP.trigger('locality.map.click', {'locality_id': evt.target.data['id']});
+                        self.clickedPoint = evt.target;
+                        L.LayerGroup.prototype.removeLayer.call(self, self.clickedPoint);
                     }
                     else {
                         var bounds = L.latLngBounds(
