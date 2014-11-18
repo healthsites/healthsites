@@ -6,7 +6,7 @@ import uuid
 
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.contrib.gis.geos import Point, Polygon
 from django.db import transaction
 
@@ -20,11 +20,26 @@ from .map_clustering import cluster
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
-    def get(self, request, *args, **kwargs):
-        bbox = request.GET.get('bbox')
-        zoom = int(request.GET.get('zoom'))
 
-        bbox_poly = Polygon.from_bbox(bbox.split(','))
+    def get_request_params(self, request):
+        if not(all(param in request.GET for param in ['bbox', 'zoom'])):
+            raise Http404
+
+        try:
+            bbox = map(float, request.GET.get('bbox').split(','))
+            zoom = int(request.GET.get('zoom'))
+
+        except:
+            # return 404 if any of parameters are missing or not parsable
+            raise Http404
+
+        return (bbox, zoom)
+
+    def get(self, request, *args, **kwargs):
+        # parse request params
+        bbox, zoom = self.get_request_params(request)
+
+        bbox_poly = Polygon.from_bbox(bbox)
 
         object_list = cluster(
             Locality.objects.filter(geom__contained=bbox_poly),

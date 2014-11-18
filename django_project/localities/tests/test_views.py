@@ -23,12 +23,40 @@ class TestViews(TestCase):
 
     def test_localities_view(self):
         LocalityF.create(id=1, geom='POINT(16 45)')
-        resp = self.client.get(reverse('localities'))
+        resp = self.client.get(reverse('localities'), data={
+            'zoom': 1,
+            'bbox': '-180,-90,180,90'
+        })
 
         self.assertEqual(resp.status_code, 200)
 
         self.assertEqual(resp['Content-Type'], 'application/json')
-        self.assertEqual(resp.content, '[{"i": 1, "g": [16.0, 45.0]}]')
+        self.assertEqual(
+            resp.content, (
+                u'[{"count": 1, "geom": [16.0, 45.0], "id": 1, "bbox": [-15.32'
+                u'262069787285, 10.694272568996404, 47.32262069787285, 79.3057'
+                u'2743100359]}]'
+            )
+        )
+
+    def test_localities_view_bad_params(self):
+        resp = self.client.get(reverse('localities'), data={})
+
+        self.assertEqual(resp.status_code, 404)
+
+        resp = self.client.get(reverse('localities'), data={
+            'zoom': 'a',
+            'bbox': '-180,-90,180,90'
+        })
+
+        self.assertEqual(resp.status_code, 404)
+
+        resp = self.client.get(reverse('localities'), data={
+            'zoom': '1',
+            'bbox': 'a,34,c;d'
+        })
+
+        self.assertEqual(resp.status_code, 404)
 
     def test_localitiesInfo_view(self):
         test_attr = AttributeF.create(key='test')

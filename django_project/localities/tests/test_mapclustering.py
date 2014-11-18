@@ -6,6 +6,8 @@ from .model_factories import LocalityF
 
 from ..map_clustering import within_bbox, cluster, overlapping_area
 
+from ..models import Locality
+
 
 class TestMapClustering(TestCase):
     def test_within_bbox(self):
@@ -46,17 +48,19 @@ class TestMapClustering(TestCase):
 
         LocalityF.create(id=8, geom='POINT(45 45)')
 
-        dict_cluster = cluster(3, 40, 40)
+        queryset = Locality.objects.all()
+
+        dict_cluster = cluster(queryset, 3, 40, 40)
 
         self.assertListEqual(dict_cluster, [
             {'count': 5, 'geom': (0.0, 0.0), 'id': 1,
-                'bbox': (-4.6875, -4.6875, 4.6875, 4.6875)},
+                'bbox': (-10.546875, -10.546875, 10.546875, 10.546875)},
             {'count': 2, 'geom': (30.0, 30.0), 'id': 6,
                 'bbox': (
-                    25.940505919760444, 25.940505919760444,
-                    34.05949408023956, 34.05949408023956)},
+                    20.866138319460998, 20.866138319460998,
+                    39.133861680539, 39.133861680539)},
             {'count': 1, 'geom': (45.0, 45.0), 'id': 8,
                 'bbox': (
-                    41.68543696318806, 41.68543696318806,
-                    48.31456303681194, 48.31456303681194)}
+                    37.54223316717313, 37.54223316717313,
+                    52.45776683282687, 52.45776683282687)}
             ])
