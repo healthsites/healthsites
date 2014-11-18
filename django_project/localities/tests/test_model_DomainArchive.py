@@ -7,6 +7,14 @@ from ..models import DomainArchive
 
 
 class TestModelDomainArchive(TestCase):
+    def test_domainArchive_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in DomainArchive._meta.fields], [
+                u'id', 'changeset', 'version', 'content_type', 'object_id',
+                'name', 'description', 'template_fragment'
+            ]
+        )
+
     def test_archiving(self):
         domain = DomainF.create(name='A domain')
 

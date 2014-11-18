@@ -2,6 +2,8 @@
 import logging
 LOG = logging.getLogger(__name__)
 
+import itertools
+
 from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.gis.db import models
@@ -10,6 +12,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from model_utils import FieldTracker
+from pg_fts.fields import TSVectorField
 
 
 class ChangesetMixin(models.Model):
@@ -143,6 +146,11 @@ class Locality(UpdateMixin, ChangesetMixin):
                     'Locality %s has no attribute key %s', self.pk, key
                 )
 
+        # send values_updated signal
+        signals.SIG_locality_values_updated.send(
+            sender=self.__class__, instance=self
+        )
+
         return changed_values
 
     def repr_simple(self):
@@ -158,6 +166,15 @@ class Locality(UpdateMixin, ChangesetMixin):
             },
             u'geom': (self.geom.x, self.geom.y)
         }
+
+    def prepare_for_fts(self):
+        data_values = itertools.groupby(
+            self.value_set.order_by('specification__fts_rank')
+            .values_list('specification__fts_rank', 'data'),
+            lambda x: x[0]
+        )
+
+        return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
     def __unicode__(self):
         return u'{}'.format(self.id)
@@ -217,10 +234,19 @@ class AttributeArchive(ArchiveMixin):
     description = models.TextField(null=True, blank=True)
 
 
+FTS_RANK = (
+    ('A', 'Rank A'),
+    ('B', 'Rank B'),
+    ('C', 'Rank C'),
+    ('D', 'Rank D')
+)
+
+
 class Specification(UpdateMixin, ChangesetMixin):
     domain = models.ForeignKey('Domain')
     attribute = models.ForeignKey('Attribute')
     required = models.BooleanField(default=False)
+    fts_rank = models.CharField(max_length=1, default='D', choices=FTS_RANK)
 
     tracker = FieldTracker()
 
@@ -244,6 +270,7 @@ class SpecificationArchive(ArchiveMixin):
     domain_id = models.IntegerField()
     attribute_id = models.IntegerField()
     required = models.BooleanField(default=False)
+    fts_rank = models.CharField(max_length=1)
 
 
 class Changeset(models.Model):
@@ -261,6 +288,17 @@ class Changeset(models.Model):
 
     def __unicode__(self):
         return u'{}'.format(self.pk)
+
+
+class LocalityIndex(models.Model):
+    locality = models.OneToOneField('Locality')
+    ranka = models.TextField(null=True)
+    rankb = models.TextField(null=True)
+    rankc = models.TextField(null=True)
+    rankd = models.TextField(null=True)
+    fts_index = TSVectorField((
+        ('ranka', 'A'), ('rankb', 'B'), ('rankc', 'C'), ('rankd', 'D')
+    ))
 
 # register signals
 import signals  # noqa

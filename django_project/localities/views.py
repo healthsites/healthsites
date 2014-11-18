@@ -6,8 +6,8 @@ import uuid
 
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
-from django.http import HttpResponse
-from django.contrib.gis.geos import Point
+from django.http import HttpResponse, Http404
+from django.contrib.gis.geos import Point, Polygon
 from django.db import transaction
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
@@ -16,16 +16,37 @@ from .models import Locality, Domain, Changeset
 from .utils import render_fragment
 from .forms import LocalityForm, DomainForm
 
+from .map_clustering import cluster
+
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
-    def get_queryset(self):
-        queryset = (
-            Locality.objects.all()
-        )
-        return queryset
+
+    def get_request_params(self, request):
+        if not(all(param in request.GET for param in [
+                'bbox', 'zoom', 'iconsize'])):
+            raise Http404
+
+        try:
+            bbox = map(float, request.GET.get('bbox').split(','))
+            zoom = int(request.GET.get('zoom'))
+            icon_size = map(int, request.GET.get('iconsize').split(','))
+
+        except:
+            # return 404 if any of parameters are missing or not parsable
+            raise Http404
+
+        return (bbox, zoom, icon_size)
 
     def get(self, request, *args, **kwargs):
-        object_list = [row.repr_simple() for row in self.get_queryset()]
+        # parse request params
+        bbox, zoom, iconsize = self.get_request_params(request)
+
+        bbox_poly = Polygon.from_bbox(bbox)
+
+        object_list = cluster(
+            Locality.objects.filter(geom__contained=bbox_poly),
+            zoom, *iconsize
+        )
 
         return self.render_json_response(object_list)
 

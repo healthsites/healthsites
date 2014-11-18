@@ -7,14 +7,23 @@ from ..models import SpecificationArchive
 
 
 class TestModelSpecificationArchive(TestCase):
+    def test_specificationArchive_fields(self):
+        self.assertListEqual(
+            [fld.name for fld in SpecificationArchive._meta.fields], [
+                u'id', 'changeset', 'version', 'content_type', 'object_id',
+                'domain_id', 'attribute_id', 'required', 'fts_rank'
+            ]
+        )
+
     def test_archiving_specification(self):
         attribute = AttributeF(id=1, key='A key')
         domain = DomainF(id=1, name='A domain')
         specification = SpecificationF.create(
-            attribute=attribute, domain=domain
+            attribute=attribute, domain=domain, fts_rank='A'
         )
 
         specification.required = True
+        specification.fts_rank = 'B'
         specification.save()
 
         attribute2 = AttributeF(id=2, key='A new key')

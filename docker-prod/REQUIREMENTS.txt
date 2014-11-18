@@ -1,4 +1,5 @@
 Django>=1.7,<1.8
+psycopg2
 pytz
 django-braces
 django-model-utils
@@ -6,3 +7,4 @@ django-pipeline
 nodeenv
 raven
 python-social-auth
+django-pg-fts

@@ -23,10 +23,10 @@ body {
 }
 
 .marker-icon {
-    width: 46;
-    height: 42;
+    width: 48;
+    height: 46;
     background: url("/static/img/healthsite-cluster-marker.png");
-    line-height: 42px;
+    line-height: 46px;
     text-align: center;
     font-weight: bold;
     font-size: 11px;

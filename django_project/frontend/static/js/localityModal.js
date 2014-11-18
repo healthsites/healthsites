@@ -163,7 +163,6 @@ window.LocalityModal = (function () {
                         // there were some form processing errors
                         self.$modal.trigger('show-edit', {'data': data});
                     } else {
-                        $APP.trigger('map.update-maker.location', {'latlng': latlng});
                         self.$modal.trigger('get-info');
                     }
                 },

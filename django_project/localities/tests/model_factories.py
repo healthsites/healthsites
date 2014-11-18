@@ -65,6 +65,21 @@ class LocalityValue2F(LocalityF):
     )
 
 
+class LocalityValue4F(LocalityF):
+    val1 = factory.RelatedFactory(
+        'localities.tests.model_factories.ValueF', 'locality'
+    )
+    val2 = factory.RelatedFactory(
+        'localities.tests.model_factories.ValueF', 'locality'
+    )
+    val3 = factory.RelatedFactory(
+        'localities.tests.model_factories.ValueF', 'locality'
+    )
+    val4 = factory.RelatedFactory(
+        'localities.tests.model_factories.ValueF', 'locality'
+    )
+
+
 class ValueF(factory.django.DjangoModelFactory):
     locality = factory.SubFactory('localities.tests.model_factories.LocalityF')
     specification = factory.SubFactory(
@@ -86,6 +101,7 @@ class SpecificationF(factory.django.DjangoModelFactory):
         'localities.tests.model_factories.AttributeF',
     )
     required = False
+    fts_rank = 'D'
     changeset = factory.SubFactory(
         'localities.tests.model_factories.ChangesetF'
     )
@@ -118,6 +134,21 @@ class DomainSpecification3AF(DomainF):
         'localities.tests.model_factories.SpecificationF', 'domain'
     )
     spec3 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )
+
+
+class DomainSpecification4AF(DomainF):
+    spec1 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )
+    spec2 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )
+    spec3 = factory.RelatedFactory(
+        'localities.tests.model_factories.SpecificationF', 'domain'
+    )
+    spec4 = factory.RelatedFactory(
         'localities.tests.model_factories.SpecificationF', 'domain'
     )
 

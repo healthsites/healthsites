@@ -33,7 +33,6 @@ PIPELINE_JS = {
     'contrib': {
         'source_filenames': (
             'js/leaflet.js',
-            'js/PruneCluster.js',
             'js/leaflet.draw-src.js',
             'js/jquery-1.11.1.min.js',
             'js/bootstrap.js'
@@ -42,6 +41,7 @@ PIPELINE_JS = {
     },
     'appjs': {
         'source_filenames': (
+            'js/clusterLayer.js',
             'js/csrf-ajax.js',
             'js/app.js',
             'js/map.js',
@@ -55,7 +55,6 @@ PIPELINE_CSS = {
     'contrib': {
         'source_filenames': (
             'css/leaflet.css',
-            'css/PruneCluster.css',
             'css/leaflet.draw.css',
             'css/bootstrap.min.css',
             'css/main.css',
