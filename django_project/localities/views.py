@@ -43,7 +43,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
 
         object_list = cluster(
             Locality.objects.filter(geom__contained=bbox_poly),
-            zoom, 46, 42
+            zoom, 48, 46
         )
 
         return self.render_json_response(object_list)

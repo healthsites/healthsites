@@ -2,9 +2,6 @@ window.MAP = (function () {
     "use strict";
     // private variables and functions
 
-    // Fix for https://github.com/Leaflet/Leaflet/issues/766
-    L.Icon.Default.imagePath = '/static/js/images/';
-
     // constructor
     var module = function () {
         // create a map in the "map" div, set the view to a given place and zoom
@@ -28,18 +25,15 @@ window.MAP = (function () {
         L.control.layers(baseLayers).addTo(this.MAP);
 
         this.redIcon = L.icon({
-            iconUrl: '/static/img/healthsite-marker-red-21x36.png',
-            iconRetinaUrl: '/static/img/healthsite-marker-red-35x60.png',
-            iconSize: [21, 36],
-            iconAnchor: [15, 36],
-            popupAnchor: [1, -36],
-            shadowSize: [21, 36]
+            iconUrl: '/static/img/healthsite-marker-red.png',
+            iconRetinaUrl: '/static/img/healthsite-marker-red-2x.png',
+            iconSize: [26, 46],
+            iconAnchor: [13, 46]
         });
 
         this.MAP.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text.
 
         // add markers layer
-        // this._setupMakersLayer();
         this._setupClusterLayer();
 
         // add point layer
@@ -186,45 +180,6 @@ window.MAP = (function () {
                 'url': '/localities.json'
               });
               self.MAP.addLayer(clusterLayer);
-        },
-
-        _setupMakersLayer: function () {
-            var self = this;
-
-            var geojsonSingleURL = '/localities.json';
-            // read localities data
-            $.getJSON(geojsonSingleURL, function (data) {
-                self.localitiesLayer = new PruneClusterForLeaflet();
-
-                self.localitiesLayer.BuildLeafletClusterIcon = function(cluster) {
-                    var icon = L.divIcon({
-                        className: 'marker-icon',
-                        html: cluster.population,
-                        iconAnchor: [23,21],
-                        iconSize: [46, 42]
-                    });
-                    return icon;
-                };
-
-                self.localitiesLayer.PrepareLeafletMarker = function(leafletMarker, data, category, original_marker) {
-                    leafletMarker.on('click', function () {
-                        self.lastClickedMarker = original_marker;
-                        $APP.trigger('locality.map.click', {'locality_id': data.id});
-                    });
-                };
-
-                for (var i = data.length - 1; i >= 0; i--) {
-                    var marker = new PruneCluster.Marker(
-                        parseFloat(data[i]['g'][1]), parseFloat(data[i]['g'][0]),
-                        {'id': data[i]['i']}
-                    );
-
-                    self.localitiesLayer.RegisterMarker(marker);
-
-                };
-
-                self.MAP.addLayer(self.localitiesLayer);
-            })
         }
     }
 
