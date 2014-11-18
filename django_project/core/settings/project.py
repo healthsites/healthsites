@@ -42,6 +42,7 @@ PIPELINE_JS = {
     },
     'appjs': {
         'source_filenames': (
+            'js/clusterLayer.js',
             'js/csrf-ajax.js',
             'js/app.js',
             'js/map.js',
