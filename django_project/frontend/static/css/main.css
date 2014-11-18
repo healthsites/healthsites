@@ -127,6 +127,12 @@ padding-top: 15px;
     margin-bottom: 10px;
 }
 
+.modal-info-status a {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+
 .label-status {
     border-bottom: dotted 1px;
 }
@@ -144,3 +150,102 @@ padding-top: 15px;
     margin-top: 15px;
     font-size: 18px;
 }
+
+
+.nl-form {
+    margin-right: 15px;
+    text-transform: uppercase;
+}
+
+.nl-form a:hover {
+    text-decoration: none;
+    color: #3f3f3f;
+}
+
+.nl-form ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nl-form input,
+.nl-form select,
+.nl-form button {
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+
+.nl-form input:focus {
+    outline: none;
+}
+
+.nl-field {
+    display: inline-block;
+    position: relative;
+}
+
+.nl-field.nl-field-open {
+    z-index: 10000;
+}
+
+
+.nl-field-toggle,
+.nl-form input,
+.nl-form select  {
+    line-height: inherit;
+    display: inline-block;
+    color: #b14943;
+    cursor: pointer;
+    border-bottom: 1px dashed #b14943;
+}
+
+.nl-field ul {
+    position: absolute;
+    visibility: hidden;
+    background: #e5e5e5;
+    left: -0.5em;
+    top: 50%;
+    font-size: 80%;
+    opacity: 0;
+    transform: translateY(-40%) scale(0.9);
+    transition: visibility 0s 0.3s, opacity 0.3s, transform 0.3s;
+}
+
+.nl-field.nl-field-open ul {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(-50%) scale(1.5);
+    transition: visibility 0s 0s, opacity 0.3s, transform 0.3s;
+}
+
+.nl-field ul li {
+    color: #3f3f3f;
+    position: relative;
+}
+
+.nl-dd ul li {
+    padding: 0 1.5em 0 0.5em;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.nl-dd ul li.nl-dd-checked {
+    color: #000;
+}
+
+.no-touch .nl-dd ul li:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+.no-touch .nl-dd ul li:hover:active {
+    color: #478982;
+}
+

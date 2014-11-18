@@ -54,10 +54,32 @@ window.LocalityModal = (function () {
             this.$modal_footer.on('click', '.save', this.saveForm.bind(this));
             this.$modal_footer.on('click', '.cancel', this.cancelEdit.bind(this));
 
+            this.$modal_footer.on('click', '.nl-execute', function() {
+                var val = $('#nl-form-1').val();
+                if (val === '1') {
+                    self.showEditForm.call(self);
+                }
+                if (val === '2') {
+                    var val2 = $('#nl-form-2').val();
+                    if (val2 === '1') {
+                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'.%20Please%20validate&url=http://healthsites.io/'+ self.locality_id +'/';
+                        self.sendTweet(loc);
+                    }
+                }
+                if (val === '3') {
+                    var val2 = $('#nl-form-2').val();
+                    if (val2 === '1') {
+                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'&url=http://healthsites.io/'+ self.locality_id +'/';
+                        self.sendTweet(loc);
+                    }
+                }
+            })
+
+
             this.$modal_footer.on('click', '.save-create', this.saveCreateForm.bind(this));
             this.$modal_footer.on('click', '.cancel-create', this.cancelCreate.bind(this));
 
-            this.$modal_footer.on('click', '.close-modal', function (evt) {
+            this.$modal_body.on('click', '.close-modal', function (evt) {
                 self.$modal.modal('hide');
             });
 
@@ -80,6 +102,20 @@ window.LocalityModal = (function () {
             $('#id_lat').val(payload.latlng.lat);
         },
 
+        sendTweet: function(text) {
+            var windowOptions = 'scrollbars=yes,resizable=yes,toolbar=no,location=yes';
+            var width = 550;
+            var height = 420;
+            var winHeight = screen.height;
+            var winWidth = screen.width;
+            var left = Math.round((winWidth / 2) - (width / 2));
+            var top = 0;
+            if (winHeight > height) {
+                top = Math.round((winHeight / 2) - (height / 2));
+            }
+            window.open(text, 'intent', windowOptions + ',width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+        },
+
         cancelEdit: function(evt) {
             $APP.trigger('map.cancel.edit');
             // 'show' modal window backdrop
@@ -97,14 +133,7 @@ window.LocalityModal = (function () {
                     'This information is considered ',
                     '<span class="label label-success">current</span>. ',
                     '<span class="label-status">Why</span>?',
-                    '<div class="modal-info-social pull-right">',
-                        '<i class="mdi-social-share medium-size-icon"></i>',
-                        '<a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20I%20want%20tp%20share&url=http://healthsites.io/'+ this.locality_id +'/">',
-                            '<span class="socicon medium-size-icon">a</span>',
-                        '</a>',
-                        '<span class="socicon medium-size-icon">b</span>',
-                        '<span class="socicon medium-size-icon">c</span>',
-                    '</div>',
+                    '<a class="close-modal pull-right"><i class="mdi-navigation-close"></i> Close</a>',
                 '</div>',
                 '<div class="modal-info-information">',
                     '<p>- It was manualy verified by trusted user</p>',
@@ -117,11 +146,17 @@ window.LocalityModal = (function () {
             this.$modal.modal('show');
 
             // buttons
-            this.$modal_footer.html([
+            /*this.$modal_footer.html([
                 '<button type="button" class="btn btn-default close-modal"><i class="mdi-navigation-close"></i> Close</button>',
                 '<button type="button" class="btn btn-success"><i class="mdi-action-thumb-up"></i> Verify</button>',
                 '<button type="button" class="btn btn-primary edit"><i class="mdi-content-create"></i> Edit Locality</button>'
             ].join(''))
+            */
+            this.$modal_footer.html([
+                '<span id="nl-form" class="nl-form"></span>',
+                '<button type="button" id="nl-execute" class="btn btn-xs btn-success nl-execute"> GO <i class="mdi-av-play-arrow"></i></button>',
+            ].join(''));
+            var form = new NLForm( document.getElementById( 'nl-form' ) );
         },
 
         getInfo: function(evt) {
