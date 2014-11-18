@@ -7,7 +7,7 @@ import uuid
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, Polygon
 from django.db import transaction
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
@@ -16,16 +16,20 @@ from .models import Locality, Domain, Changeset
 from .utils import render_fragment
 from .forms import LocalityForm, DomainForm
 
+from .map_clustering import cluster
+
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
-    def get_queryset(self):
-        queryset = (
-            Locality.objects.all()
-        )
-        return queryset
-
     def get(self, request, *args, **kwargs):
-        object_list = [row.repr_simple() for row in self.get_queryset()]
+        bbox = request.GET.get('bbox')
+        zoom = int(request.GET.get('zoom'))
+
+        bbox_poly = Polygon.from_bbox(bbox.split(','))
+
+        object_list = cluster(
+            Locality.objects.filter(geom__contained=bbox_poly),
+            zoom, 46, 42
+        )
 
         return self.render_json_response(object_list)
 

@@ -39,7 +39,8 @@ window.MAP = (function () {
         this.MAP.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text.
 
         // add markers layer
-        this._setupMakersLayer();
+        // this._setupMakersLayer();
+        this._setupClusterLayer();
 
         // add point layer
         this._setupPointLayer();
@@ -177,6 +178,14 @@ window.MAP = (function () {
             this.pointLayer.on('dragend', function (evt) {
                 $APP.trigger('locality.map.move', {'latlng': evt.target._latlng});
             });
+        },
+
+        _setupClusterLayer: function() {
+              var self = this;
+              var clusterLayer = L.clusterLayer({
+                'url': '/localities.json'
+              });
+              self.MAP.addLayer(clusterLayer);
         },
 
         _setupMakersLayer: function () {

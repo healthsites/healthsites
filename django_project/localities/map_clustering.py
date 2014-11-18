@@ -4,8 +4,6 @@ LOG = logging.getLogger(__name__)
 
 import math
 
-from .models import Locality
-
 
 def within_bbox(bbox, geomx, geomy):
     if bbox[0] < geomx < bbox[2] and bbox[1] < geomy < bbox[3]:
@@ -26,11 +24,11 @@ def overlapping_area(zoom, pix_x, pix_y, lat):
     return (lat_deg, lng_deg)
 
 
-def cluster(zoom, pix_x, pix_y):
+def cluster(query_set, zoom, pix_x, pix_y):
     cluster_points = []
 
     localites = (
-        Locality.objects
+        query_set
         .extra(select={'xy': 'st_x(geom)||$$,$$||st_y(geom)'})
         .values('id', 'xy')
     )
@@ -46,8 +44,8 @@ def cluster(zoom, pix_x, pix_y):
             x_range, y_range = overlapping_area(zoom, pix_x, pix_y, geomy)
 
             bbox = (
-                geomx - x_range/1.5, geomy - y_range/1.5,
-                geomx + x_range/1.5, geomy + y_range/1.5
+                geomx - x_range*1.5, geomy - y_range*1.5,
+                geomx + x_range*1.5, geomy + y_range*1.5
             )
             cluster_points.append({
                 'id': locality['id'],
