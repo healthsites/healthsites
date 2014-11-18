@@ -55,7 +55,8 @@ L.ClusterLayer = L.LayerGroup.extend({
 
         var url = this.options.url + L.Util.getParamString({
             'bbox': bb.toBBoxString(),
-            'zoom': this._map.getZoom()
+            'zoom': this._map.getZoom(),
+            'iconsize': [48, 46]
         });
 
         this._curReq = this.getAjax(url, function(response) {
