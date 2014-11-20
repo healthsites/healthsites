@@ -1,0 +1,42 @@
+.custom-navbar-item {
+    font-size: 16px;
+    text-transform: uppercase;
+    color: #3f3f3f !important;
+    line-height: 50px;
+    margin: 0 10px 0 0;
+}
+
+.icon-bar {
+    background-color: #3f3f3f !important;
+}
+
+.navbar-custom {
+    background-color: #e5e5e5 !important;
+}
+
+.navbar .navbar-brand {
+    color: #3f3f3f !important;
+    height: 50px !important;
+    line-height: 28px !important
+}
+
+.panel-body {
+    padding: 0;
+}
+
+@media screen and (max-width: 767px) {
+    .navbar-header {
+        margin: 0;
+        padding: 0;
+        float: left;
+    }
+
+    .navbar-right {
+        float: right !important;
+    }
+
+    .custom-navbar-item {
+        font-size: 24px;
+        line-height: 30px;
+    }
+}

@@ -65,7 +65,10 @@ PIPELINE_CSS = {
             'css/github-ribbon.css',
             'css/material.min.css',
             'css/ripples.min.css',
-            'css/material-wfont.min.css'
+            'css/material-wfont.min.css',
+            'css/navbar.css',
+            'css/sidebar.css',
+            'css/nlf.css'
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {

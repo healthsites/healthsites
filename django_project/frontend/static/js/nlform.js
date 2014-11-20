@@ -35,7 +35,7 @@
                     '<option value="2">ask validation for</option>',
                     '<option value="3">share</option>',
                 '</select>',
-                ' locality'
+                ' this locality'
             ];
             if (option === '3' || option ==='2') {
                 html.push(

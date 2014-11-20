@@ -77,6 +77,15 @@ window.APP = (function () {
             $('#site-social-icon-close').on('click', function (evt) {
                 $('#site-social').animate({width: '24px'}, 100);
             });
+        },
+
+        _openSidebar: function() {
+            $('#sidebar').addClass('active');
+            $('#sidebar-helper').addClass('active');
+        },
+
+        _closeSidebar: function() {
+
         }
     }
 

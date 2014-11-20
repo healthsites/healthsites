@@ -6,45 +6,97 @@
 
 <nav class="navbar-custom navbar navbar-fixed-top" role="navigation" xmlns="http://www.w3.org/1999/html">
 <div class="container-fluid">
+<div class="navbar-header">
+  <button type="button" class="navbar-toggle collapsed sidebar-toggle">
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+    <span class="icon-bar"></span>
+  </button>
   <img height="40px" class="pull-left" style="padding-top: 8px; padding-right: 8px;" src="/static/js/images/marker-icon.png"/>
   <span id="about" class="navbar-brand">
     HEALTHSITES.IO
   </span>
-  <div id="site-social">
+  <!--<div id="site-social">
     <i id="site-social-icon-open" class="mdi-social-share medium-size-icon"></i>
     <a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20check%20this%20site%20out&url=http://healthsites.io/">
       <span class="socicon">a</span>
     </a>
     <i id="site-social-icon-close" class="mdi-content-clear"></i>
+  </div>-->
   </div>
 <!--
   <button id="new_locality" type="button" class="btn btn-default navbar-btn"
           data-mapclick-text="Click on the map"
           data-savelocality-text="Save Locality">Add a new Locality</button>
 -->
-  <div class="navbar-right">
-  {% if user.is_authenticated %}
-    <a id="profile" href="{% url 'userprofilepage' %}" class="custom-navbar-item"><i class="mdi-social-person"></i> {{ user.username }}</a>
-    <a class="custom-navbar-item" href="{% url 'logout_user' %}"><i class="mdi-action-exit-to-app"></i> Logout</a>
-  {% else %}
-    <a id="signin" href="{% url 'usersignpage' %}" class="custom-navbar-item"><i class="mdi-action-exit-to-app"></i> Sign in</a>
-  {% endif %}
-  <a id="about-button" class="custom-navbar-item"
-          data-toggle="modal"
-          href="about"
-          data-target="#about-modal"><i class="mdi-action-face-unlock"></i> About</a>
-  <a id="help-button" class="custom-navbar-item"
-          data-toggle="modal"
-          href="help"
-          data-target="#help-modal"><i class="mdi-action-info-outline"></i> Help</a>
+  <div class="navbar-right nav navbar-nav">
+    <a id="about-button" class="custom-navbar-item"
+            data-toggle="modal"
+            href="about"
+            data-target="#about-modal"><i class="mdi-action-face-unlock"></i> <span class="hidden-xs">About</span></a>
+    <a id="help-button" class="custom-navbar-item"
+            data-toggle="modal"
+            href="help"
+            data-target="#help-modal"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> <span class="hidden-xs">Help</span></a>
   </div>
 </div>
 </nav>
-<div id="map"></div>
 
-<div class="github-fork-ribbon-wrapper left-bottom">
-  <div class="github-fork-ribbon">
-      <a href="https://github.com/konektaz/healthsites">Fork me on GitHub</a>
+<div class="container-fluid height100 nopadding">
+  <div id="sidebar">
+    <div id="sidebar-profile">
+    {% if user.is_authenticated %}
+      <a href="{% url 'userprofilepage' %}">
+        <img src="/static/img/place-holder.png">
+      </a>
+      <a href="{% url 'userprofilepage' %}" class="profile-name">{{ user.username }}</a>
+      <a href="{% url 'logout_user' %}" class="profile-logout"><i class="mdi-action-exit-to-app"></i></a>
+    {% else %}
+      <a href="{% url 'usersignpage' %}" class="profile-signin"><i class="mdi-action-exit-to-app"></i> </a>
+      <a href="{% url 'usersignpage' %}" class="profile-name">SIGN IN</a>
+    {% endif %}
+    </div>
+    <div class="panel-group" id="sidebar-accordion" role="tablist" aria-multiselectable="true">
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingSearch">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseSearch" aria-expanded="true" aria-controls="collapseSearch">
+              <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
+            </a>
+          </h4>
+        </div>
+        <div id="collapseSearch" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseSearch">
+          <div class="panel-body">
+            Search
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="headingInfo">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseInfo" aria-expanded="true" aria-controls="collapseInfo">
+              <i class="mdi-action-info-outline"></i> Locality info
+            </a>
+          </h4>
+        </div>
+        <div id="collapseInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseInfo">
+          <div class="panel-body">
+            <div id="sidebar-info"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="sidebar-helper">
+  </div>
+  <div class="height100" id="main-content">
+    <div id="map"></div>
+
+    <div class="github-fork-ribbon-wrapper left-bottom hidden-xs">
+      <div class="github-fork-ribbon">
+          <a href="https://github.com/konektaz/healthsites">Fork me on GitHub</a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -74,5 +126,20 @@
 <script type="text/javascript">
 new APP();
 $.material.init();
+$(document).ready(function() {
+  $('.sidebar-toggle').click(function() {
+    if ($('#sidebar').hasClass('active')) {
+      $('#sidebar').removeClass('active');
+      $('#sidebar-helper').removeClass('active');
+    } else {
+      $('#sidebar').addClass('active');
+      $('#sidebar-helper').addClass('active');
+    }
+  });
+  $('#sidebar-helper').click(function() {
+    $('#sidebar').removeClass('active');
+    $('#sidebar-helper').removeClass('active');
+  });
+});
 </script>
 {% endblock %}

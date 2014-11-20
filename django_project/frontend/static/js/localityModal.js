@@ -5,11 +5,11 @@ window.LocalityModal = (function () {
     // constructor
     var module = function () {
 
-        this.$modal = $(this.template).modal({'backdrop': 'static', 'show':false, 'keyboard': false});
-        this.$modal_body = this.$modal.find('.modal-body');
-        this.$modal_footer = this.$modal.find('.modal-footer');
-
-        this.$modal.appendTo('body');
+        this.$modal = $('#sidebar-info');
+        this.$modal.html(this.template);
+        this.$modal_head = this.$modal.find('.sidebar-info-header');
+        this.$modal_body = this.$modal.find('.sidebar-info-body');
+        this.$modal_footer = this.$modal.find('.sidebar-info-footer');
 
         this._bindExternalEvents();
         this._bindInternalEvents();
@@ -20,16 +20,9 @@ window.LocalityModal = (function () {
     module.prototype = {
         constructor: module,
         template : [
-            '<div id="localityModal" class="modal fade">',
-            '<div class="modal-dialog">',
-            '<div class="modal-content">',
-                '<div class="modal-body modal-body-info">',
-                '</div>',
-                '<div class="modal-footer">',
-                '</div>',
-            '</div>',
-            '</div>',
-            '</div>'
+            '<div class="sidebar-info-header"></div>',
+            '<div class="sidebar-info-body"></div>',
+            '<div class="sidebar-info-footer"></div>',
         ].join(''),
 
         // HARDCODED DOMAIN NAME
@@ -83,16 +76,12 @@ window.LocalityModal = (function () {
                 self.$modal.modal('hide');
             });
 
-            this.$modal_body.on('mouseover', '.label-status', function() {
-                self.$modal_body.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
+            this.$modal_head.on('mouseover', '.label-status', function() {
+                self.$modal_head.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
             });
 
-            this.$modal_body.on('mouseout', '.label-status', function() {
-                self.$modal_body.find('.modal-info-information').animate({height: "1px"}, 100).removeClass('modal-info-expanded');
-            });
-
-            this.$modal_body.on('click', '.mdi-social-share', function() {
-                self.$modal_body.find('.modal-info-social').animate({width: "115px"}, 500);
+            this.$modal_head.on('mouseout', '.label-status', function() {
+                self.$modal_head.find('.modal-info-information').animate({height: "1px"}, 100).removeClass('modal-info-expanded');
             });
         },
 
@@ -127,13 +116,12 @@ window.LocalityModal = (function () {
         },
 
         showInfo: function(evt) {
-            $('.modal-backdrop').css('position', 'absolute');
             var modal_head = [
                 '<div class="modal-info-status">',
                     'This information is considered ',
                     '<span class="label label-success">current</span>. ',
                     '<span class="label-status">Why</span>?',
-                    '<a class="close-modal pull-right"><i class="mdi-navigation-close"></i> Close</a>',
+                    //'<a class="close-modal pull-right"><i class="mdi-navigation-close"></i></a>',
                 '</div>',
                 '<div class="modal-info-information">',
                     '<p>- It was manualy verified by trusted user</p>',
@@ -141,22 +129,16 @@ window.LocalityModal = (function () {
                     '<p>- 13 people have verfified its existance in last 3 months</p>',
                 '</div>',
             ].join('');
-            this.$modal_body.html(modal_head);
-            this.$modal_body.append(this.locality_data.repr);
-            this.$modal.modal('show');
-
-            // buttons
-            /*this.$modal_footer.html([
-                '<button type="button" class="btn btn-default close-modal"><i class="mdi-navigation-close"></i> Close</button>',
-                '<button type="button" class="btn btn-success"><i class="mdi-action-thumb-up"></i> Verify</button>',
-                '<button type="button" class="btn btn-primary edit"><i class="mdi-content-create"></i> Edit Locality</button>'
-            ].join(''))
-            */
+            this.$modal_head.html(modal_head);
+            this.$modal_body.html(this.locality_data.repr);
             this.$modal_footer.html([
                 '<span id="nl-form" class="nl-form"></span>',
                 '<button type="button" id="nl-execute" class="btn btn-xs btn-success nl-execute"> GO <i class="mdi-av-play-arrow"></i></button>',
             ].join(''));
             var form = new NLForm( document.getElementById( 'nl-form' ) );
+            $('#sidebar').addClass('active');
+            $('#sidebar-helper').addClass('active');
+            $('#collapseInfo').collapse('show')
         },
 
         getInfo: function(evt) {
