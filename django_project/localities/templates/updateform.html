@@ -1,3 +1,23 @@
-<form>
-{{ form.as_p }}
+<!-- Nav tabs -->
+<form class="form-horizontal" role="form">
+<ul class="nav nav-pills" role="tablist">
+  <li role="presentation" class="active"><a href="#filled" role="tab" data-toggle="tab">Filled attributes</a></li>
+  <li role="presentation"><a href="#empty-form-tab" role="tab" data-toggle="tab">Empty attributes</a></li>
+</ul>
+
+<!-- Tab panes -->
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="filled">
+        {% for elem in form %}
+        <div class="form-group">
+            <label class="col-sm-2 control-label">{{ elem.label }}</label>
+            <div class="col-sm-10">
+                {{ elem }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div role="tabpanel" class="tab-pane" id="empty-form-tab">
+    </div>
+</div>
 </form>

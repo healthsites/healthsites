@@ -2,6 +2,9 @@ window.MAP = (function () {
     "use strict";
     // private variables and functions
 
+    // Fix for https://github.com/Leaflet/Leaflet/issues/766
+    L.Icon.Default.imagePath = '/static/js/images/';
+
     // constructor
     var module = function () {
         // create a map in the "map" div, set the view to a given place and zoom
@@ -29,6 +32,12 @@ window.MAP = (function () {
             iconRetinaUrl: '/static/img/healthsite-marker-red-2x.png',
             iconSize: [26, 46],
             iconAnchor: [13, 46]
+            iconUrl:'/static/js/images/marker-icon-red.png',
+            iconRetinaUrl:'/static/js/images/marker-icon-2x-red.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
         });
 
         this.MAP.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text.
@@ -68,12 +77,37 @@ window.MAP = (function () {
         _bindExternalEvents:function () {
             var self = this;
 
+            $APP.on('map.update-maker.location', function (evt, payload) {
+                // update marker position
+                if (self.lastClickedMarker) {
+                    self.lastClickedMarker.position['lat'] = payload.latlng[0];
+                    self.lastClickedMarker.position['lng'] = payload.latlng[1];
+                }
+            });
+
+
+            $APP.on('locality.created', function (evt, payload) {
+                var marker = new PruneCluster.Marker(
+                    payload.latlng[0], payload.latlng[1],
+                    {'id': payload.loc_id}
+                );
+
+                self.localitiesLayer.RegisterMarker(marker);
+                self.localitiesLayer.ProcessView();
+            });
+
             $APP.on('map.show.point', function (evt, payload) {
                 self.original_marker_position = [payload.geom[0], payload.geom[1]];
 
                 self.pointLayer.setLatLng(self.original_marker_position);
                 self.MAP.addLayer(self.pointLayer);
+                self.MAP.panTo(self.original_marker_position)
 
+                // remove maker and processView
+                if (self.lastClickedMarker) {
+                    self.localitiesLayer.RemoveMarkers([self.lastClickedMarker]);
+                    self.localitiesLayer.ProcessView();
+                }
             });
 
             $APP.on('map.cancel.edit', function (evt) {
@@ -82,6 +116,12 @@ window.MAP = (function () {
             });
 
             $APP.on('map.remove.point', function (evt) {
+                if (self.lastClickedMarker) {
+                    self.localitiesLayer.RegisterMarker(self.lastClickedMarker);
+                    self.localitiesLayer.ProcessView();
+                    self.lastClickedMarker = undefined;
+                }
+
                 self.MAP.removeLayer(self.pointLayer);
                 self.pointLayer.setLatLng([0,0]);
             });
@@ -153,6 +193,43 @@ window.MAP = (function () {
                 'url': '/localities.json'
               });
               self.MAP.addLayer(clusterLayer);
+        _setupMakersLayer: function () {
+            var self = this;
+
+            var geojsonSingleURL = '/localities.json';
+            // read localities data
+            $.getJSON(geojsonSingleURL, function (data) {
+                self.localitiesLayer = new PruneClusterForLeaflet();
+
+                self.localitiesLayer.BuildLeafletClusterIcon = function(cluster) {
+                    var icon = L.divIcon({
+                        className: 'marker-icon',
+                        html: cluster.population,
+                        iconAnchor: [23,21],
+                        iconSize: [46, 42]
+                    });
+                    return icon;
+                };
+
+                self.localitiesLayer.PrepareLeafletMarker = function(leafletMarker, data, category, original_marker) {
+                    leafletMarker.on('click', function () {
+                        self.lastClickedMarker = original_marker;
+                        $APP.trigger('locality.map.click', {'locality_id': data.id});
+                    });
+                };
+
+                for (var i = data.length - 1; i >= 0; i--) {
+                    var marker = new PruneCluster.Marker(
+                        parseFloat(data[i]['g'][1]), parseFloat(data[i]['g'][0]),
+                        {'id': data[i]['i']}
+                    );
+
+                    self.localitiesLayer.RegisterMarker(marker);
+
+                };
+
+                self.MAP.addLayer(self.localitiesLayer);
+            })
         }
     }
 

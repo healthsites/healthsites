@@ -49,3 +49,5 @@ class LocalityForm(forms.Form):
                 label=spec.attribute.key, required=spec.required
             )
             self.fields[spec.attribute.key] = field
+            self.fields[spec.attribute.key].widget.attrs.update(
+                {'class': 'form-control'})

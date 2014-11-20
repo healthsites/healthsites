@@ -35,7 +35,9 @@ PIPELINE_JS = {
             'js/leaflet.js',
             'js/leaflet.draw-src.js',
             'js/jquery-1.11.1.min.js',
-            'js/bootstrap.js'
+            'js/bootstrap.js',
+            'js/material.min.js',
+            'js/ripples.min.js'
         ),
         'output_filename': 'js/contrib.js',
     },
@@ -45,7 +47,8 @@ PIPELINE_JS = {
             'js/csrf-ajax.js',
             'js/app.js',
             'js/map.js',
-            'js/localityModal.js'
+            'js/localityModal.js',
+            'js/nlform.js'
         ),
         'output_filename': 'js/appjs.js'
     }
@@ -58,7 +61,13 @@ PIPELINE_CSS = {
             'css/leaflet.draw.css',
             'css/bootstrap.min.css',
             'css/main.css',
-            'css/github-ribbon.css'
+            'css/github-ribbon.css',
+            'css/material.min.css',
+            'css/ripples.min.css',
+            'css/material-wfont.min.css',
+            'css/navbar.css',
+            'css/sidebar.css',
+            'css/nlf.css'
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {

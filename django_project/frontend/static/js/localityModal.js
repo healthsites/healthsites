@@ -5,12 +5,11 @@ window.LocalityModal = (function () {
     // constructor
     var module = function () {
 
-        this.$modal = $(this.template).modal({'backdrop': 'static', 'show':false, 'keyboard': false});
-        this.$modal_title = this.$modal.find('.modal-title');
-        this.$modal_body = this.$modal.find('.modal-body');
-        this.$modal_footer = this.$modal.find('.modal-footer');
-
-        this.$modal.appendTo('body');
+        this.$modal = $('#sidebar-info');
+        this.$modal.html(this.template);
+        this.$modal_head = this.$modal.find('.sidebar-info-header');
+        this.$modal_body = this.$modal.find('.sidebar-info-body');
+        this.$modal_footer = this.$modal.find('.sidebar-info-footer');
 
         this._bindExternalEvents();
         this._bindInternalEvents();
@@ -21,20 +20,9 @@ window.LocalityModal = (function () {
     module.prototype = {
         constructor: module,
         template : [
-            '<div id="localityModal" class="modal fade">',
-            '<div class="modal-dialog">',
-            '<div class="modal-content">',
-                '<div class="modal-header">',
-                    '<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>',
-                    '<h4 class="modal-title">Modal title</h4>',
-                '</div>',
-                '<div class="modal-body">',
-                '</div>',
-                '<div class="modal-footer">',
-                '</div>',
-            '</div>',
-            '</div>',
-            '</div>'
+            '<div class="sidebar-info-header"></div>',
+            '<div class="sidebar-info-body"></div>',
+            '<div class="sidebar-info-footer"></div>',
         ].join(''),
 
         // HARDCODED DOMAIN NAME
@@ -59,11 +47,41 @@ window.LocalityModal = (function () {
             this.$modal_footer.on('click', '.save', this.saveForm.bind(this));
             this.$modal_footer.on('click', '.cancel', this.cancelEdit.bind(this));
 
+            this.$modal_footer.on('click', '.nl-execute', function() {
+                var val = $('#nl-form-1').val();
+                if (val === '1') {
+                    self.showEditForm.call(self);
+                }
+                if (val === '2') {
+                    var val2 = $('#nl-form-2').val();
+                    if (val2 === '1') {
+                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'.%20Please%20validate&url=http://healthsites.io/'+ self.locality_id +'/';
+                        self.sendTweet(loc);
+                    }
+                }
+                if (val === '3') {
+                    var val2 = $('#nl-form-2').val();
+                    if (val2 === '1') {
+                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'&url=http://healthsites.io/'+ self.locality_id +'/';
+                        self.sendTweet(loc);
+                    }
+                }
+            })
+
+
             this.$modal_footer.on('click', '.save-create', this.saveCreateForm.bind(this));
             this.$modal_footer.on('click', '.cancel-create', this.cancelCreate.bind(this));
 
-            this.$modal_footer.on('click', '.close-modal', function (evt) {
+            this.$modal_body.on('click', '.close-modal', function (evt) {
                 self.$modal.modal('hide');
+            });
+
+            this.$modal_head.on('mouseover', '.label-status', function() {
+                self.$modal_head.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
+            });
+
+            this.$modal_head.on('mouseout', '.label-status', function() {
+                self.$modal_head.find('.modal-info-information').animate({height: "1px"}, 100).removeClass('modal-info-expanded');
             });
         },
 
@@ -71,6 +89,20 @@ window.LocalityModal = (function () {
             // set new values
             $('#id_lon').val(payload.latlng.lng);
             $('#id_lat').val(payload.latlng.lat);
+        },
+
+        sendTweet: function(text) {
+            var windowOptions = 'scrollbars=yes,resizable=yes,toolbar=no,location=yes';
+            var width = 550;
+            var height = 420;
+            var winHeight = screen.height;
+            var winWidth = screen.width;
+            var left = Math.round((winWidth / 2) - (width / 2));
+            var top = 0;
+            if (winHeight > height) {
+                top = Math.round((winHeight / 2) - (height / 2));
+            }
+            window.open(text, 'intent', windowOptions + ',width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
         },
 
         cancelEdit: function(evt) {
@@ -84,15 +116,29 @@ window.LocalityModal = (function () {
         },
 
         showInfo: function(evt) {
-            $('.modal-backdrop').css('position', 'absolute');
+            var modal_head = [
+                '<div class="modal-info-status">',
+                    'This information is considered ',
+                    '<span class="label label-success">current</span>. ',
+                    '<span class="label-status">Why</span>?',
+                    //'<a class="close-modal pull-right"><i class="mdi-navigation-close"></i></a>',
+                '</div>',
+                '<div class="modal-info-information">',
+                    '<p>- It was manualy verified by trusted user</p>',
+                    '<p>- It was been verified using social harvesting</p>',
+                    '<p>- 13 people have verfified its existance in last 3 months</p>',
+                '</div>',
+            ].join('');
+            this.$modal_head.html(modal_head);
             this.$modal_body.html(this.locality_data.repr);
-            this.$modal.modal('show');
-
-            // buttons
             this.$modal_footer.html([
-                '<button type="button" class="btn btn-default close-modal">Close</button>',
-                '<button type="button" class="btn btn-primary edit">Edit Locality</button>'
-            ].join(''))
+                '<span id="nl-form" class="nl-form"></span>',
+                '<button type="button" id="nl-execute" class="btn btn-xs btn-success nl-execute"> GO <i class="mdi-av-play-arrow"></i></button>',
+            ].join(''));
+            var form = new NLForm( document.getElementById( 'nl-form' ) );
+            $('#sidebar').addClass('active');
+            $('#sidebar-helper').addClass('active');
+            $('#collapseInfo').collapse('show')
         },
 
         getInfo: function(evt) {
@@ -114,6 +160,12 @@ window.LocalityModal = (function () {
 
             // 'remove' modal window backdrop
             $('.modal-backdrop').css('position', 'relative');
+
+            this.$modal_body.find('input:text').filter(function() { return $(this).val() == ""; }).each(function() {
+                $(this).parents('.form-group').detach().appendTo('#empty-form-tab');
+            });
+            $.material.init();
+
         },
 
         showCreate: function(evt, payload) {
@@ -132,6 +184,7 @@ window.LocalityModal = (function () {
 
             // 'remove' modal window backdrop
             $('.modal-backdrop').css('position', 'relative');
+
         },
 
         showEditForm: function(evt) {
