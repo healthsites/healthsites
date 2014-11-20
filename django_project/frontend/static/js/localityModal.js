@@ -72,10 +72,6 @@ window.LocalityModal = (function () {
             this.$modal_footer.on('click', '.save-create', this.saveCreateForm.bind(this));
             this.$modal_footer.on('click', '.cancel-create', this.cancelCreate.bind(this));
 
-            this.$modal_body.on('click', '.close-modal', function (evt) {
-                self.$modal.modal('hide');
-            });
-
             this.$modal_head.on('mouseover', '.label-status', function() {
                 self.$modal_head.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
             });
@@ -158,9 +154,6 @@ window.LocalityModal = (function () {
                 '<button type="button" class="btn btn-warning save">Save changes</button>'
             ].join(''))
 
-            // 'remove' modal window backdrop
-            $('.modal-backdrop').css('position', 'relative');
-
             this.$modal_body.find('input:text').filter(function() { return $(this).val() == ""; }).each(function() {
                 $(this).parents('.form-group').detach().appendTo('#empty-form-tab');
             });
@@ -179,11 +172,6 @@ window.LocalityModal = (function () {
                 '<button type="button" class="btn btn-default cancel-create">Cancel</button>',
                 '<button type="button" class="btn btn-warning save-create">Create</button>'
             ].join(''))
-            // show modal create
-            this.$modal.modal('show');
-
-            // 'remove' modal window backdrop
-            $('.modal-backdrop').css('position', 'relative');
 
         },
 
