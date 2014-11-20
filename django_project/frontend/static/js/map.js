@@ -28,10 +28,6 @@ window.MAP = (function () {
         L.control.layers(baseLayers).addTo(this.MAP);
 
         this.redIcon = L.icon({
-            iconUrl: '/static/img/healthsite-marker-red.png',
-            iconRetinaUrl: '/static/img/healthsite-marker-red-2x.png',
-            iconSize: [26, 46],
-            iconAnchor: [13, 46]
             iconUrl:'/static/js/images/marker-icon-red.png',
             iconRetinaUrl:'/static/js/images/marker-icon-2x-red.png',
             iconSize: [25, 41],
@@ -193,6 +189,8 @@ window.MAP = (function () {
                 'url': '/localities.json'
               });
               self.MAP.addLayer(clusterLayer);
+        },
+
         _setupMakersLayer: function () {
             var self = this;
 
