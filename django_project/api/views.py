@@ -35,9 +35,9 @@ class LocalitiesAPI(JSONResponseMixin, View):
         }
         object_list = [
             remap_dict(loc, transform)
-            for loc in Locality.objects.filter(geom__contained=bbox)
+            for loc in Locality.objects.in_bbox(bbox)
             .select_related('changeset')
-            .extra(select={'lnglat': 'st_x(geom)||$$,$$||st_y(geom)'})
+            .get_lnglat()
             .values(
                 'uuid', 'lnglat', 'version', 'changeset__social_user_id',
                 # 'changeset__created'

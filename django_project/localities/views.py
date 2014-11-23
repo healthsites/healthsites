@@ -49,7 +49,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         bbox, zoom, iconsize = self._parse_request_params(request)
 
         object_list = cluster(
-            Locality.objects.filter(geom__contained=bbox),
+            Locality.objects.in_bbox(bbox),
             zoom, *iconsize
         )
 

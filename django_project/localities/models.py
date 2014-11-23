@@ -14,6 +14,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from model_utils import FieldTracker
 from pg_fts.fields import TSVectorField
 
+from .querysets import PassThroughGeoManager, LocalitiesQuerySet
+
 
 class ChangesetMixin(models.Model):
     changeset = models.ForeignKey('Changeset')
@@ -88,7 +90,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     geom = models.PointField(srid=4326)
     specifications = models.ManyToManyField('Specification', through='Value')
 
-    objects = models.GeoManager()
+    objects = PassThroughGeoManager.for_queryset_class(LocalitiesQuerySet)()
 
     tracker = FieldTracker()
 

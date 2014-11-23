@@ -44,12 +44,12 @@ def cluster(query_set, zoom, pix_x, pix_y):
 
     localites = (
         query_set
-        .extra(select={'xy': 'st_x(geom)||$$,$$||st_y(geom)'})
-        .values('id', 'xy')
+        .get_lnglat()
+        .values('id', 'lnglat')
     )
 
     for locality in localites.iterator():
-        geomx, geomy = map(float, locality['xy'].split(','))
+        geomx, geomy = map(float, locality['lnglat'].split(','))
         for pt in cluster_points:
             if within_bbox(pt['bbox'], geomx, geomy):
                 pt['count'] += 1
