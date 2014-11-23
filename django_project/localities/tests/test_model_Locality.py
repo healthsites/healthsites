@@ -184,22 +184,14 @@ class TestModelLocality(TestCase):
             u'uuid': '93b7e8c4621a4597938dfd3d27659162'
         })
 
-    def test_repr_simple_method(self):
-
-        locality = LocalityF.create(pk=1, geom='POINT (16 45)')
-
-        self.assertDictEqual(locality.repr_simple(), {
-            u'i': 1, u'g': [16, 45]
-        })
-
     def test_set_geom_method(self):
         loc = LocalityF.create(pk=1, geom='POINT (16 45)')
         loc.set_geom(10.0, 35.0)
         loc.save()
 
-        self.assertDictEqual(loc.repr_simple(), {
-            u'i': 1, u'g': [10.0, 35.0]
-        })
+        self.assertEqual(
+            loc.geom.wkt, 'POINT (10.0000000000000000 35.0000000000000000)'
+        )
 
     def test_prepare_for_fts(self):
         attr1 = AttributeF.create(id=1, key='test1')

@@ -153,9 +153,6 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return changed_values
 
-    def repr_simple(self):
-        return {u'i': self.pk, u'g': [self.geom.x, self.geom.y]}
-
     def repr_dict(self):
         return {
             u'uuid': self.uuid,
