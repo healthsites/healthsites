@@ -36,3 +36,9 @@ class LocalitiesAPI(JSONResponseMixin, View):
 
 class LocalityAPI(JSONResponseMixin, SingleObjectMixin, View):
     model = Locality
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return self.render_json_response(self.object.repr_dict())

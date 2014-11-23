@@ -64,6 +64,8 @@ class TestViews(TestCase):
         self.assertEqual(resp.status_code, 404)
 
     def test_localitiesInfo_view(self):
+        chgset = ChangesetF.create(id=1)
+
         test_attr = AttributeF.create(key='test')
 
         dom = DomainSpecification1AF(
@@ -73,7 +75,7 @@ class TestViews(TestCase):
         LocalityValue1F.create(
             id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
             val1__specification__attribute=test_attr, val1__data='osm',
-            domain=dom
+            domain=dom, changeset=chgset
         )
 
         resp = self.client.get(reverse('locality-info', kwargs={'pk': 1}))
@@ -83,9 +85,9 @@ class TestViews(TestCase):
         self.assertEqual(resp['Content-Type'], 'application/json')
         self.assertEqual(
             resp.content, (
-                '{"geom": [16.0, 45.0], "values": {"test": "osm"}, "id": 1, '
-                '"repr": "Test value: osm", "uuid": "93b7e8c4621a4597938dfd3d'
-                '27659162"}'
+                u'{"changeset": 1, "version": 1, "geom": [16.0, 45.0], "uuid":'
+                u' "93b7e8c4621a4597938dfd3d27659162", "values": {"test": "osm'
+                u'"}, "repr": "Test value: osm"}'
             )
         )
 

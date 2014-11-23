@@ -156,6 +156,7 @@ class TestModelLocality(TestCase):
 
     def test_repr_dict_method(self):
         user = UserF(username='test', password='test')
+        chgset = ChangesetF.create(id=1, social_user=user)
         attr1 = AttributeF.create(key='test')
         attr2 = AttributeF.create(key='osm')
 
@@ -169,8 +170,6 @@ class TestModelLocality(TestCase):
             name='a new domain', spec1__attribute=attr3
         )
 
-        chgset = ChangesetF.create(social_user=user)
-
         locality = LocalityF.create(
             pk=1, domain=dom, uuid='93b7e8c4621a4597938dfd3d27659162',
             geom='POINT (16 45)', changeset=chgset
@@ -180,9 +179,9 @@ class TestModelLocality(TestCase):
         locality.set_values(value_map, social_user=user)
 
         self.assertDictEqual(locality.repr_dict(), {
-            u'id': 1, u'uuid': '93b7e8c4621a4597938dfd3d27659162',
-            u'geom': (16, 45),
-            u'values': {u'test': u'test val', u'osm': u'osm val'}
+            u'geom': (16.0, 45.0), u'version': 1, u'changeset': 1,
+            u'values': {u'test': u'test val', u'osm': u'osm val'},
+            u'uuid': '93b7e8c4621a4597938dfd3d27659162'
         })
 
     def test_repr_simple_method(self):
