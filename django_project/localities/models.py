@@ -18,6 +18,10 @@ from .querysets import PassThroughGeoManager, LocalitiesQuerySet
 
 
 class ChangesetMixin(models.Model):
+    """
+    This mixin facilitates defines common attributes and methods for models
+    that will record and track changes
+    """
     changeset = models.ForeignKey('Changeset')
     version = models.IntegerField()
 
@@ -25,10 +29,23 @@ class ChangesetMixin(models.Model):
         abstract = True
 
     def inc_version(self):
+        """
+        Common method to increase version of a tracked object
+        """
         self.version = (self.version or 0) + 1
 
 
 class UpdateMixin(models.Model):
+    """
+    This mixin defines common methods for models that are tracked using
+    changeset and version
+
+    *save* method will increase version of an 'object' if there are changes
+
+    Models that use this mixin should be extra careful when overriding save,
+    in case they just need to change some fields, 'before_save' should be
+    overridden instead
+    """
     class Meta:
         abstract = True
 
@@ -39,16 +56,16 @@ class UpdateMixin(models.Model):
         pass
 
     def save(self, *args, **kwargs):
-        # update
+        # object exists - update
         if self.pk and not(kwargs.get('force_insert')):
             # execute any model specific changes
             self.before_save(*args, update=True, **kwargs)
 
             if self.tracker.changed():
-                # increase version and save if there are more changed attrs
+                # increase version and save in case there are changed attrs
                 self.inc_version()
                 super(UpdateMixin, self).save(*args, **kwargs)
-        # create
+        # object does not exist - create
         else:
             self.before_save(*args, create=True, **kwargs)
             self.inc_version()
@@ -56,6 +73,14 @@ class UpdateMixin(models.Model):
 
 
 class ArchiveMixin(ChangesetMixin):
+    """
+    This mixin defines common attributes for Object archival
+
+    We opted to use ContentType framework in order to delete referenced
+    objects without depending on *on_delete* support in Django
+
+    Object archival is facilitated by Django signal framework
+    """
     content_type = models.ForeignKey('contenttypes.ContentType')
     object_id = models.IntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
@@ -65,6 +90,17 @@ class ArchiveMixin(ChangesetMixin):
 
 
 class Domain(UpdateMixin, ChangesetMixin):
+    """
+    Domain defines a common theme for the data, for example: Health,
+    Sanitation and House, might be considered as unique domains
+
+    Domain is defined by a *name* and an optional *description*. Every domain
+    might have different attributes so we can define it's representation using
+    the *template_fragment*.
+
+    Connection between a Domain and Attributes is defined though the
+    *Specification* model
+    """
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(null=True, blank=True, default='')
     template_fragment = models.TextField(null=True, blank=True, default='')
@@ -78,12 +114,24 @@ class Domain(UpdateMixin, ChangesetMixin):
 
 
 class DomainArchive(ArchiveMixin):
+    """
+    Defines Archive model for the Domain
+    """
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
     template_fragment = models.TextField(null=True, blank=True)
 
 
 class Locality(UpdateMixin, ChangesetMixin):
+    """
+    A Locality is uniquely defined by an *uuid* attribute. Attribute *geom*
+    stores geometry as a point object. *upstream_id* is used to preserve link
+    to the originating dataset which is used to find and update a Locality on
+    any reoccurring data imports.
+
+    A Locality is in a *Domain* and data values for Attributes, to be exact,
+    their Specifications, are defined through *Value*
+    """
     domain = models.ForeignKey('Domain')
     uuid = models.TextField(unique=True)
     upstream_id = models.TextField(null=True, unique=True)
