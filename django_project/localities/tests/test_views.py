@@ -34,9 +34,9 @@ class TestViews(TestCase):
         self.assertEqual(resp['Content-Type'], 'application/json')
         self.assertEqual(
             resp.content, (
-                u'[{"count": 1, "geom": [16.0, 45.0], "id": 1, "bbox": [-13.83'
-                u'1067331307473, 15.168932668692527, 45.83106733130747, 74.831'
-                u'06733130748]}]'
+                u'[{"count": 1, "minbbox": [16.0, 45.0, 16.0, 45.0], "geom": ['
+                u'16.0, 45.0], "id": 1, "bbox": [-13.831067331307473, 15.16893'
+                u'2668692527, 45.83106733130747, 74.83106733130748]}]'
             )
         )
 
