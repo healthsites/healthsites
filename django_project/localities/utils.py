@@ -1,8 +1,19 @@
 # -*- coding: utf-8 -*-
 from django.template import Template, Context
+from django.contrib.gis.geos import Polygon
 
 
 def render_fragment(template, context):
     t = Template(template)
     c = Context(context)
     return t.render(c)
+
+
+def parse_bbox(bbox):
+    tmp_bbox = map(float, bbox.split(','))
+
+    if tmp_bbox[0] > tmp_bbox[2] or tmp_bbox[1] > tmp_bbox[3]:
+            # bbox is not properly formatted minLng, minLat, maxLng, maxLat
+            raise ValueError
+    # create polygon from bbox
+    return Polygon.from_bbox(tmp_bbox)

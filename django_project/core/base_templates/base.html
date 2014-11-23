@@ -1,4 +1,4 @@
-{% load compressed %}
+{% load pipeline %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +14,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    {% compressed_css 'contrib' %}
+    {% stylesheet 'contrib' %}
     <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
 </head>
@@ -24,8 +24,8 @@
 
 {% endblock content %}
 
-{% compressed_js 'contrib' %}
-{% compressed_js 'appjs' %}
+{% javascript 'contrib' %}
+{% javascript 'appjs' %}
 
 {% block extra_js %}
 

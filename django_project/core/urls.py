@@ -18,6 +18,7 @@ urlpatterns = patterns(
     url(r'', include('frontend.urls')),
     url(r'', include('localities.urls')),
     url(r'', include('social_users.urls')),
+    url(r'api/', include('api.urls')),
 
 )
 

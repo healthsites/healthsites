@@ -153,18 +153,16 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return changed_values
 
-    def repr_simple(self):
-        return {u'i': self.pk, u'g': [self.geom.x, self.geom.y]}
-
     def repr_dict(self):
         return {
-            u'id': self.pk,
             u'uuid': self.uuid,
             u'values': {
                 val.specification.attribute.key: val.data
                 for val in self.value_set.select_related('attribute').all()
             },
-            u'geom': (self.geom.x, self.geom.y)
+            u'geom': (self.geom.x, self.geom.y),
+            u'version': self.version,
+            u'changeset': self.changeset_id
         }
 
     def prepare_for_fts(self):
