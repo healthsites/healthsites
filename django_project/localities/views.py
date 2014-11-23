@@ -21,7 +21,7 @@ from .map_clustering import cluster
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
 
-    def get_request_params(self, request):
+    def _parse_request_params(self, request):
         if not(all(param in request.GET for param in [
                 'bbox', 'zoom', 'iconsize'])):
             raise Http404
@@ -39,7 +39,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
 
     def get(self, request, *args, **kwargs):
         # parse request params
-        bbox, zoom, iconsize = self.get_request_params(request)
+        bbox, zoom, iconsize = self._parse_request_params(request)
 
         bbox_poly = Polygon.from_bbox(bbox)
 
