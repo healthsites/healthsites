@@ -3,7 +3,7 @@ psycopg2
 pytz
 django-braces
 django-model-utils
-django-pipeline
+django-pipeline>=1.4
 nodeenv
 raven
 python-social-auth
