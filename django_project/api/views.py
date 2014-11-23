@@ -2,28 +2,41 @@
 import logging
 LOG = logging.getLogger(__name__)
 
+from django.http import Http404
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
 
 from braces.views import JSONResponseMixin
 
 from localities.models import Locality
+from localities.utils import parse_bbox
 
 from .utils import remap_dict
 
 
 class LocalitiesAPI(JSONResponseMixin, View):
-    model = Locality
+    def _parse_request_params(self, request):
+        if not(all(param in request.GET for param in ['bbox'])):
+            raise Http404
+
+        try:
+            bbox_poly = parse_bbox(request.GET.get('bbox'))
+        except:
+            # return 404 if any of parameters are missing or not parsable
+            raise Http404
+
+        return bbox_poly
 
     def get(self, request, *args, **kwargs):
-
+        bbox = self._parse_request_params(request)
         # iterate thorugh queryset and remap keys
         transform = {
             'changeset__social_user_id': 'user_id'
         }
         object_list = [
             remap_dict(loc, transform)
-            for loc in Locality.objects.select_related('changeset')
+            for loc in Locality.objects.filter(geom__contained=bbox)
+            .select_related('changeset')
             .extra(select={'lnglat': 'st_x(geom)||$$,$$||st_y(geom)'})
             .values(
                 'uuid', 'lnglat', 'version', 'changeset__social_user_id',

@@ -49,6 +49,14 @@ class TestViews(TestCase):
 
         resp = self.client.get(reverse('localities'), data={
             'zoom': 'a',
+            'bbox': 'b,c,d,e',
+            'iconsize': 'f,g'
+        })
+
+        self.assertEqual(resp.status_code, 404)
+
+        resp = self.client.get(reverse('localities'), data={
+            'zoom': '21',
             'bbox': '-180,-90,180,90',
             'iconsize': '34,34'
         })
@@ -57,8 +65,8 @@ class TestViews(TestCase):
 
         resp = self.client.get(reverse('localities'), data={
             'zoom': '1',
-            'bbox': 'a,34,c;d',
-            'iconsize': '34,34'
+            'bbox': '-180,-90,180,90',
+            'iconsize': '-34,34'
         })
 
         self.assertEqual(resp.status_code, 404)
