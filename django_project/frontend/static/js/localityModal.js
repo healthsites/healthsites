@@ -21,7 +21,7 @@ window.LocalityModal = (function () {
         constructor: module,
         template : [
             '<div class="sidebar-info-header"></div>',
-            '<div class="sidebar-info-body"></div>',
+            '<div class="sidebar-info-body">Click a marker on the map to load locality info</div>',
             '<div class="sidebar-info-footer"></div>',
         ].join(''),
 
