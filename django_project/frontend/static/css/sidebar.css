@@ -1,0 +1,211 @@
+#sidebar {
+  height: 100%;
+  background-color: #e5e5e5;
+  position: relative;
+  float:left;
+}
+
+#main-content {
+    height: 100%;
+    position: relative;
+    float: left;
+  }
+
+#sidebar-helper {
+  height: 100%;
+  display: none;
+  position: relative;
+  float: left;
+}
+
+.sidebar-toggle {
+  float: left;
+}
+
+.sidebar-icon {
+  font-size: 32px;
+  margin: 5px 15px;
+  padding: 0;
+}
+
+#sidebar-profile {
+  width: 100%;
+  height: 60px;
+  background-color: rgba(250,36,24, 0.7);
+  padding: 5px;
+  position: relative;
+  float: left;
+}
+
+#sidebar-profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  border: 1px solid rgb(250,36,24);
+  margin-left: 10px;
+}
+
+#sidebar-profile .profile-name {
+  margin-left: 20px;
+  text-transform: uppercase;
+  color: #FFF;
+  font-size: 16px;
+  width: 50%;
+  overflow: hidden;
+  line-height: 50px;
+}
+
+#sidebar-info {
+  position: relative;
+  float: left;
+  width: 100%;
+}
+
+.sidebar-info-header {
+  height: 30px;
+  margin: 5px 10px;
+  font-size: 12px;
+}
+
+.sidebar-info-body {
+  height: 300px;
+  margin: 5px 10px;
+}
+
+.sidebar-info-footer {
+  margin: 5px 10px;
+}
+
+.profile-logout {
+  font-size: 32px;
+  position: relative;
+  float: right;
+  line-height: 50px;
+  color: #FFF;
+  margin: 0px 10px;
+}
+
+.profile-signin {
+  font-size: 32px;
+  position: relative;
+  float: left;
+  line-height: 50px;
+  color: #FFF;
+  margin: 0px 10px;
+}
+
+.profile-logout:hover {
+  color: #000;
+}
+
+@media screen and (max-width: 767px) {
+  .navbar-brand {
+    padding: 10px 0px !important;
+  }
+
+  #sidebar {
+    display: none;
+    z-index: 1100;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 90%
+  }
+
+  #main-content {
+    width: 100%
+  }
+
+  #sidebar-helper {
+    display: none;
+    z-index: 1100;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    background-color: rgba(33,33,33,0.5);
+    width: 10%;
+  }
+
+  #sidebar.active,  #sidebar-helper.active{
+    display: block;
+  }
+
+  .sidebar-info-body {
+    height: 150px;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 979px) {
+  .sidebar-toggle {
+    display: inherit;
+  }
+
+  .sidebar-icon {
+    margin: 5px 5px;
+  }
+
+  #sidebar {
+    display: none;
+    width: 40%;
+    z-index: 1100;
+    position: absolute;
+    left: 0px;
+    top: 50px;
+  }
+
+  #sidebar.active {
+    display: block;
+  }
+
+  #main-content {
+    width: 100%;
+  }
+
+  .sidebar-info-body {
+    height: 225px;
+  }
+}
+
+@media screen and (min-width: 980px) and (max-width: 1199px) {
+  #sidebar {
+    width: 30%;
+  }
+
+  #main-content {
+    width: 70%;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  #sidebar {
+    width: 25%;
+    padding-top: 10px;
+  }
+
+  #main-content {
+    width: 75%;
+  }
+}
+
+
+#sidebar-accordion {
+  position: relative;
+  float: left;
+  width: 100%;
+  margin-top: 5px;
+}
+
+
+.panel-heading {
+  text-transform: uppercase;
+}
+
+#headingSearch {
+  background-color: #FFFBD0 !important;
+}
+
+#headingInfo {
+  background-color: #D6BF86;
+}

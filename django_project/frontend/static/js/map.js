@@ -73,6 +73,7 @@ window.MAP = (function () {
 
                 self.pointLayer.setLatLng(self.original_marker_position);
                 self.MAP.addLayer(self.pointLayer);
+                self.MAP.panTo(self.original_marker_position)
 
             });
 

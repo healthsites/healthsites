@@ -125,14 +125,23 @@ class TestViews(TestCase):
 
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
 
-        self.assertEqual(
-            resp.content,
-            u'<form>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" n'
-            u'ame="lon" step="any" type="number" value="16.0" /></p>\n<p><labe'
-            u'l for="id_lat">Lat:</label> <input id="id_lat" name="lat" step="'
-            u'any" type="number" value="45.0" /></p>\n<p><label for="id_test">'
-            u'test:</label> <input id="id_test" name="test" type="text" value='
-            u'"osm" /></p>\n</form>'
+        self.assertContains(
+            resp,
+            '<input id="id_lon" name="lon" step="any" type="number" value="16.'
+            '0" />',
+            html=True
+        )
+        self.assertContains(
+            resp,
+            '<input id="id_lat" name="lat" step="any" type="number" value="45.'
+            '0" />',
+            html=True
+        )
+        self.assertContains(
+            resp,
+            '<input class="form-control" id="id_test" name="test" type="text" '
+            'value="osm" />',
+            html=True
         )
 
     def test_localitiesUpdate_form_post(self):
@@ -395,16 +404,8 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(
-            resp.content,
-            u'<form>\n<ul class="errorlist"><li>This field is required.</li></'
-            u'ul>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" name'
-            u'="lon" step="any" type="number" /></p>\n<ul class="errorlist"><l'
-            u'i>This field is required.</li></ul>\n<p><label for="id_lat">Lat:'
-            u'</label> <input id="id_lat" name="lat" step="any" type="number" '
-            u'/></p>\n<p><label for="id_test">test:</label> <input id="id_test'
-            u'" name="test" type="text" value="new_osm" /></p>\n</form>'
-        )
+        self.assertFormError(resp, 'form', 'lat', [u'This field is required.'])
+        self.assertFormError(resp, 'form', 'lon', [u'This field is required.'])
 
     def test_localitiesCreate_form_get_no_user(self):
         resp = self.client.get(
@@ -429,13 +430,20 @@ class TestViews(TestCase):
 
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
 
-        self.assertEqual(
-            resp.content,
-            u'<form>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" n'
-            u'ame="lon" step="any" type="number" /></p>\n<p><label for="id_lat'
-            u'">Lat:</label> <input id="id_lat" name="lat" step="any" type="nu'
-            u'mber" /></p>\n<p><label for="id_test">test:</label> <input id="i'
-            u'd_test" name="test" type="text" /></p>\n</form>'
+        self.assertContains(
+            resp,
+            '<input id="id_lon" name="lon" step="any" type="number" />',
+            html=True
+        )
+        self.assertContains(
+            resp,
+            '<input id="id_lat" name="lat" step="any" type="number" />',
+            html=True
+        )
+        self.assertContains(
+            resp,
+            '<input id="id_test" name="test" type="text" />',
+            html=True
         )
 
     def test_localitiesCreate_form_post(self):
@@ -481,16 +489,8 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(
-            resp.content,
-            u'<form>\n<ul class="errorlist"><li>This field is required.</li></'
-            u'ul>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" name'
-            u'="lon" step="any" type="number" /></p>\n<ul class="errorlist"><l'
-            u'i>This field is required.</li></ul>\n<p><label for="id_lat">Lat:'
-            u'</label> <input id="id_lat" name="lat" step="any" type="number" '
-            u'/></p>\n<p><label for="id_test">test:</label> <input id="id_test'
-            u'" name="test" type="text" value="new_osm" /></p>\n</form>'
-        )
+        self.assertFormError(resp, 'form', 'lat', [u'This field is required.'])
+        self.assertFormError(resp, 'form', 'lon', [u'This field is required.'])
 
     def test_localitiesCreate_form_post_required_attr(self):
         UserF(username='test', password='test')
@@ -508,14 +508,5 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(
-            resp.content,
-            u'<form>\n<ul class="errorlist"><li>This field is required.</li></'
-            u'ul>\n<p><label for="id_lon">Lon:</label> <input id="id_lon" name'
-            u'="lon" step="any" type="number" /></p>\n<ul class="errorlist"><l'
-            u'i>This field is required.</li></ul>\n<p><label for="id_lat">Lat:'
-            u'</label> <input id="id_lat" name="lat" step="any" type="number" '
-            u'/></p>\n<ul class="errorlist"><li>This field is required.</li></'
-            u'ul>\n<p><label for="id_test">test:</label> <input id="id_test" n'
-            u'ame="test" type="text" /></p>\n</form>'
-        )
+        self.assertFormError(resp, 'form', 'lat', [u'This field is required.'])
+        self.assertFormError(resp, 'form', 'lon', [u'This field is required.'])
