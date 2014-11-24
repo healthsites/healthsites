@@ -24,18 +24,7 @@ class TestLocalityForms(TestCase):
         loc = LocalityF.create(geom='POINT(16 45)', domain=dom)
 
         frm = LocalityForm(locality=loc)
-
-        self.assertEqual(
-            frm.as_ul(), (
-                u'<li><label for="id_lon">Lon:</label> <input id="id_lon" name'
-                u'="lon" step="any" type="number" value="16.0" /></li>\n<li><l'
-                u'abel for="id_lat">Lat:</label> <input id="id_lat" name="lat"'
-                u' step="any" type="number" value="45.0" /></li>\n<li><label f'
-                u'or="id_test">test:</label> <input id="id_test" name="test" t'
-                u'ype="text" /></li>\n<li><label for="id_osm">osm:</label> <in'
-                u'put id="id_osm" name="osm" type="text" /></li>'
-            )
-        )
+        self.assertEqual(len(frm.fields), 4)
 
     def test_LocalityForm_initialdata(self):
         test_attr = AttributeF.create(key='test')
@@ -52,16 +41,9 @@ class TestLocalityForms(TestCase):
 
         frm = LocalityForm(locality=loc)
 
-        self.assertEqual(
-            frm.as_ul(), (
-                u'<li><label for="id_lon">Lon:</label> <input id="id_lon" name'
-                u'="lon" step="any" type="number" value="16.0" /></li>\n<li><l'
-                u'abel for="id_lat">Lat:</label> <input id="id_lat" name="lat"'
-                u' step="any" type="number" value="45.0" /></li>\n<li><label f'
-                u'or="id_test">test:</label> <input id="id_test" name="test" t'
-                u'ype="text" value="osm" /></li>'
-            )
-        )
+        self.assertEqual(frm['test'].value(), u'osm')
+        self.assertEqual(frm['lat'].value(), 45.0)
+        self.assertEqual(frm['lon'].value(), 16.0)
 
     def test_DomainForm(self):
         attr1 = AttributeF.create(key='test')
