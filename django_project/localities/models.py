@@ -147,7 +147,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         if self.tracker.previous('uuid') and self.tracker.has_changed('uuid'):
             self.uuid = self.tracker.previous('uuid')
 
-    def get_attr_map(self):
+    def _get_attr_map(self):
         return (
             self.domain.specification_set
             .order_by('id')
@@ -159,7 +159,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         self.geom.set_y(lat)
 
     def set_values(self, changed_data, social_user):
-        attrs = self.get_attr_map()
+        attrs = self._get_attr_map()
 
         changed_values = []
         for key, data in changed_data.iteritems():

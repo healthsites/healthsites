@@ -71,7 +71,7 @@ class TestModelLocality(TestCase):
         locality = LocalityF.create(domain=dom)
 
         self.assertEqual(
-            list(locality.get_attr_map()), [
+            list(locality._get_attr_map()), [
                 {'id': 1, 'attribute__key': u'test'},
                 {'id': 2, 'attribute__key': u'osm'}
             ]
