@@ -12,6 +12,7 @@ class PassThroughGeoManager(PassThroughManagerMixin, models.GeoManager):
     """
     https://django-model-utils.readthedocs.org/en/latest/managers.html#mixins
     """
+
     pass
 
 
@@ -20,6 +21,7 @@ class LocalitiesQuerySet(GeoQuerySet):
         """
         Filter Localities within a bbox
         """
+
         LOG.debug('Filtering Localities using bbox: %s', bbox.wkt)
         return self.filter(geom__contained=bbox)
 
@@ -29,4 +31,5 @@ class LocalitiesQuerySet(GeoQuerySet):
 
         Creating Python objects is expensive :)
         """
+
         return self.extra(select={'lnglat': 'st_x(geom)||$$,$$||st_y(geom)'})

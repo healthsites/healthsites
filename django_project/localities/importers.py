@@ -9,7 +9,6 @@ from django.contrib.gis.geos import Point
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
-
 from .models import Locality, Domain, Changeset
 
 from .exceptions import LocalityImportError
@@ -18,6 +17,16 @@ from ._csv_unicode import UnicodeDictReader
 
 
 class CSVImporter():
+    """
+    CSV based importer
+
+    Importing a CSV/TSV files requires a:
+    * domain name - used to find all associated Specifications
+    * name of the source - used to distinguish upstream_ids
+    * csv filename
+    * attribute mapping file (JSON) - maps csv column names to specifications
+    """
+
     parsed_data = {}
 
     def __init__(
@@ -38,6 +47,10 @@ class CSVImporter():
         self.save_localities()
 
     def _get_domain(self):
+        """
+        Retrieves a domain from the database
+        """
+
         try:
             self.domain = Domain.objects.filter(name=self.domain_name).get()
         except Domain.DoesNotExist:
@@ -46,6 +59,13 @@ class CSVImporter():
             raise LocalityImportError(msg)
 
     def _find_locality(self, uuid, upstream_id):
+        """
+        Tries to find a Locality in the database either by *uuid* or a
+        combination of *source_name* and *upstream_id*
+
+        If there are no results, just create a new Locality
+        """
+
         try:
             # try to find locality by uuid or upstream_id
             loc = Locality.objects.filter(uuid=uuid).get()
@@ -59,16 +79,24 @@ class CSVImporter():
             except Locality.DoesNotExist:
                 # create new Locality
                 loc = Locality()
-                LOG.debug('Creating new Locality')
+                LOG.debug('Creating a new Locality')
                 return (loc, True)
 
     def _read_attr(self, row, attr):
+        """
+        Try to read attribute from a row
+        """
+
         try:
             return row[attr]
         except KeyError:
             return None
 
     def parse_geom(self, lon, lat):
+        """
+        Parse geometry
+        """
+
         try:
             lon = float(lon)
             lat = float(lat)
@@ -77,6 +105,10 @@ class CSVImporter():
             return None
 
     def parse_row(self, row_num, row_data):
+        """
+        Parse row of data and add it to the *parsed_data* dictionary
+        """
+
         row_uuid = self._read_attr(row_data, self.attr_map['uuid'])
         row_upstream_id = self._read_attr(
             row_data, self.attr_map['upstream_id']
@@ -117,8 +149,13 @@ class CSVImporter():
         })
 
     def save_localities(self):
+        """
+        Save every locality in the parsed_data dictionary
+        """
+
         # generate a new changeset id
         User = get_user_model()
+
         # TODO: use real user for import, at the moment we use a dummy user
         dummy_user = User.objects.get(pk=-1)
         tmp_changeset = Changeset.objects.create(social_user=dummy_user)
@@ -149,6 +186,13 @@ class CSVImporter():
                 loc.set_values(values['values'], social_user=dummy_user)
 
     def parse_file(self):
+        """
+        Open a file and parse rows
+
+        All modifications to the database are going to be executed as a single
+        transaction to minimize inconsistent database state
+        """
+
         with open(self.csv_filename, 'rb') as csv_file:
             if self.use_tabs:
                 data_file = UnicodeDictReader(csv_file, delimiter='\t')

@@ -10,6 +10,11 @@ from .models import (
 
 
 class ChangesetMixin():
+    """
+    In order to create or update any model that uses models.ChangesetMixin we
+    need to override Django admin *save_model* and create a new changeset
+    """
+
     def save_model(self, request, obj, form, change):
         tmp_chgset = Changeset()
         tmp_chgset.social_user = request.user
