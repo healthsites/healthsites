@@ -16,6 +16,12 @@ INSTALLED_APPS += (
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder'
+)
+
 AUTHENTICATION_BACKENDS = (
     'social.backends.openstreetmap.OpenStreetMapOAuth',
     'social.backends.twitter.TwitterOAuth',

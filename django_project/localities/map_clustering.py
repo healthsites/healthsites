@@ -24,6 +24,21 @@ def overlapping_area(zoom, pix_x, pix_y, lat):
     return (lat_deg, lng_deg)
 
 
+def update_minbbox(point, minbbox):
+    new_minbbox = list(minbbox)
+
+    if point[0] < minbbox[0]:
+        new_minbbox[0] = point[0]
+    if point[0] > minbbox[2]:
+        new_minbbox[2] = point[0]
+    if point[1] < minbbox[1]:
+        new_minbbox[1] = point[1]
+    if point[1] > minbbox[3]:
+        new_minbbox[3] = point[1]
+
+    return new_minbbox
+
+
 def cluster(query_set, zoom, pix_x, pix_y):
     cluster_points = []
 
@@ -38,6 +53,7 @@ def cluster(query_set, zoom, pix_x, pix_y):
         for pt in cluster_points:
             if within_bbox(pt['bbox'], geomx, geomy):
                 pt['count'] += 1
+                pt['minbbox'] = update_minbbox((geomx, geomy), pt['minbbox'])
                 break
 
         else:
@@ -51,7 +67,8 @@ def cluster(query_set, zoom, pix_x, pix_y):
                 'id': locality['id'],
                 'count': 1,
                 'geom': (geomx, geomy),
-                'bbox': bbox
+                'bbox': bbox,
+                'minbbox': (geomx, geomy, geomx, geomy)
             })
 
     return cluster_points

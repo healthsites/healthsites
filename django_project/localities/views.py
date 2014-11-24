@@ -7,13 +7,13 @@ import uuid
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse, Http404
-from django.contrib.gis.geos import Point, Polygon
+from django.contrib.gis.geos import Point
 from django.db import transaction
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 
 from .models import Locality, Domain, Changeset
-from .utils import render_fragment
+from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm
 
 from .map_clustering import cluster
@@ -21,13 +21,13 @@ from .map_clustering import cluster
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
 
-    def get_request_params(self, request):
+    def _parse_request_params(self, request):
         if not(all(param in request.GET for param in [
                 'bbox', 'zoom', 'iconsize'])):
             raise Http404
 
         try:
-            bbox = map(float, request.GET.get('bbox').split(','))
+            bbox_poly = parse_bbox(request.GET.get('bbox'))
             zoom = int(request.GET.get('zoom'))
             icon_size = map(int, request.GET.get('iconsize').split(','))
 
@@ -35,16 +35,21 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             # return 404 if any of parameters are missing or not parsable
             raise Http404
 
-        return (bbox, zoom, icon_size)
+        if zoom < 0 or zoom > 20:
+            # zoom should be between 0 and 20
+            raise Http404
+        if any((size < 0 for size in icon_size)):
+            # icon sizes should be positive
+            raise Http404
+
+        return (bbox_poly, zoom, icon_size)
 
     def get(self, request, *args, **kwargs):
         # parse request params
-        bbox, zoom, iconsize = self.get_request_params(request)
-
-        bbox_poly = Polygon.from_bbox(bbox)
+        bbox, zoom, iconsize = self._parse_request_params(request)
 
         object_list = cluster(
-            Locality.objects.filter(geom__contained=bbox_poly),
+            Locality.objects.filter(geom__contained=bbox),
             zoom, *iconsize
         )
 
