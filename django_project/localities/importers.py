@@ -100,7 +100,11 @@ class CSVImporter():
         try:
             lon = float(lon)
             lat = float(lat)
-            return (lon, lat)
+            # we use EPSG:4326, coordinates are limited by -180/180 -90/90
+            if not(-180.0 < lon < 180 and -90 < lat < 90):
+                raise ValueError
+            else:
+                return (lon, lat)
         except ValueError:
             return None
 
