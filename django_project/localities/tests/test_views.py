@@ -101,10 +101,8 @@ class TestViews(TestCase):
 
     def test_localitiesUpdate_form_get_no_user(self):
         resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
-        self.assertRedirects(
-            resp, '/signin/?next=/localities/1/form',
-            status_code=302, target_status_code=200
-        )
+
+        self.assertEqual(resp.status_code, 403)
 
     def test_localitiesUpdate_form_get(self):
         UserF(username='test', password='test')
@@ -411,10 +409,7 @@ class TestViews(TestCase):
         resp = self.client.get(
             reverse('locality-create', kwargs={'domain': 'test'})
         )
-        self.assertRedirects(
-            resp, '/signin/?next=/localities/form/test',
-            status_code=302, target_status_code=200
-        )
+        self.assertEqual(resp.status_code, 403)
 
     def test_localitiesCreate_form_get(self):
         UserF(username='test', password='test')
