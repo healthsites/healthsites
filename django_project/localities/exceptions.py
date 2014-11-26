@@ -3,6 +3,6 @@
 
 class LocalityImportError(Exception):
     """
-    Handle Locality import errors
+    Locality import errors Exception
     """
     pass

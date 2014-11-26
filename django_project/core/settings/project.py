@@ -38,7 +38,8 @@ PIPELINE_JS = {
             'js/jquery-1.11.1.min.js',
             'js/bootstrap.js',
             'js/material.min.js',
-            'js/ripples.min.js'
+            'js/ripples.min.js',
+            'js/nlform.js'
         ),
         'output_filename': 'js/contrib.js',
     },
@@ -48,8 +49,7 @@ PIPELINE_JS = {
             'js/csrf-ajax.js',
             'js/app.js',
             'js/map.js',
-            'js/localityModal.js',
-            'js/nlform.js'
+            'js/localityModal.js'
         ),
         'output_filename': 'js/appjs.js'
     }

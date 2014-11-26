@@ -14,8 +14,15 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from model_utils import FieldTracker
 from pg_fts.fields import TSVectorField
 
+from .querysets import PassThroughGeoManager, LocalitiesQuerySet
+
 
 class ChangesetMixin(models.Model):
+    """
+    This mixin facilitates defines common attributes and methods for models
+    that will record and track changes
+    """
+
     changeset = models.ForeignKey('Changeset')
     version = models.IntegerField()
 
@@ -23,10 +30,25 @@ class ChangesetMixin(models.Model):
         abstract = True
 
     def inc_version(self):
+        """
+        Common method to increase version of a tracked object
+        """
+
         self.version = (self.version or 0) + 1
 
 
 class UpdateMixin(models.Model):
+    """
+    This mixin defines common methods for models that are tracked using
+    changeset and version
+
+    *save* method will increase version of an 'object' if there are changes
+
+    Models that use this mixin should be extra careful when overriding save,
+    in case they just need to change some fields, 'before_save' should be
+    overridden instead
+    """
+
     class Meta:
         abstract = True
 
@@ -34,19 +56,20 @@ class UpdateMixin(models.Model):
         """
         Executed before actually saving the model, should be overridden
         """
+
         pass
 
     def save(self, *args, **kwargs):
-        # update
+        # object exists - update
         if self.pk and not(kwargs.get('force_insert')):
             # execute any model specific changes
             self.before_save(*args, update=True, **kwargs)
 
             if self.tracker.changed():
-                # increase version and save if there are more changed attrs
+                # increase version and save in case there are changed attrs
                 self.inc_version()
                 super(UpdateMixin, self).save(*args, **kwargs)
-        # create
+        # object does not exist - create
         else:
             self.before_save(*args, create=True, **kwargs)
             self.inc_version()
@@ -54,6 +77,15 @@ class UpdateMixin(models.Model):
 
 
 class ArchiveMixin(ChangesetMixin):
+    """
+    This mixin defines common attributes for Object archival
+
+    We opted to use ContentType framework in order to delete referenced
+    objects without depending on *on_delete* support in Django
+
+    Object archival is facilitated by Django signal framework
+    """
+
     content_type = models.ForeignKey('contenttypes.ContentType')
     object_id = models.IntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
@@ -63,6 +95,18 @@ class ArchiveMixin(ChangesetMixin):
 
 
 class Domain(UpdateMixin, ChangesetMixin):
+    """
+    Domain defines a common theme for the data, for example: Health,
+    Sanitation and House, might be considered as unique domains
+
+    Domain is defined by a *name* and an optional *description*. Every domain
+    might have different attributes so we can define it's representation using
+    the *template_fragment*.
+
+    Connection between a Domain and Attributes is defined though the
+    *Specification* model
+    """
+
     name = models.CharField(max_length=50, unique=True)
     description = models.TextField(null=True, blank=True, default='')
     template_fragment = models.TextField(null=True, blank=True, default='')
@@ -76,19 +120,33 @@ class Domain(UpdateMixin, ChangesetMixin):
 
 
 class DomainArchive(ArchiveMixin):
+    """
+    Archive model for the Domain
+    """
+
     name = models.CharField(max_length=50)
     description = models.TextField(null=True, blank=True)
     template_fragment = models.TextField(null=True, blank=True)
 
 
 class Locality(UpdateMixin, ChangesetMixin):
+    """
+    A Locality is uniquely defined by an *uuid* attribute. Attribute *geom*
+    stores geometry as a point object. *upstream_id* is used to preserve link
+    to the originating dataset which is used to find and update a Locality on
+    any reoccurring data imports.
+
+    A Locality is in a *Domain* and data values for Attributes, to be exact,
+    their Specifications, are defined through *Value*
+    """
+
     domain = models.ForeignKey('Domain')
     uuid = models.TextField(unique=True)
     upstream_id = models.TextField(null=True, unique=True)
     geom = models.PointField(srid=4326)
     specifications = models.ManyToManyField('Specification', through='Value')
 
-    objects = models.GeoManager()
+    objects = PassThroughGeoManager.for_queryset_class(LocalitiesQuerySet)()
 
     tracker = FieldTracker()
 
@@ -97,7 +155,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         if self.tracker.previous('uuid') and self.tracker.has_changed('uuid'):
             self.uuid = self.tracker.previous('uuid')
 
-    def get_attr_map(self):
+    def _get_attr_map(self):
         return (
             self.domain.specification_set
             .order_by('id')
@@ -105,36 +163,57 @@ class Locality(UpdateMixin, ChangesetMixin):
         )
 
     def set_geom(self, lon, lat):
+        """
+        Helper method to set Locality geometry
+        """
+
         self.geom.set_x(lon)
         self.geom.set_y(lat)
 
     def set_values(self, changed_data, social_user):
-        attrs = self.get_attr_map()
+        """
+        Set values for a Locality which are defined by Specifications
+
+        Once all of values are set, 'SIG_locality_values_updated' signal will
+        be triggered to update FullTextSearch index for this Locality
+        """
+
+        attrs = self._get_attr_map()
+
+        tmp_changeset = None
 
         changed_values = []
         for key, data in changed_data.iteritems():
-            # get attribute_id
+            # try to match key from changed items with a key from attr_map
             attr_list = [
                 attr for attr in attrs if attr['attribute__key'] == key
             ]
 
             if attr_list:
+                # get specification id for specific key
                 spec_id = attr_list[0]['id']
+
                 # update or create new values
                 try:
                     obj = self.value_set.get(specification_id=spec_id)
                     _created = False
                 except Value.DoesNotExist:
+                    # in case there is no value for the specification, create
                     obj = Value()
                     obj.locality = self
                     obj.specification_id = spec_id
                     _created = True
 
+                # set data
                 obj.data = data
+
+                # check if Value.data actually changed, and save if it did
                 if obj.tracker.changed():
-                    obj.changeset = Changeset.objects.create(
-                        social_user=social_user
-                    )
+                    if not(tmp_changeset):
+                        tmp_changeset = Changeset.objects.create(
+                            social_user=social_user
+                        )
+                    obj.changeset = tmp_changeset
                     obj.save()
                     changed_values.append((obj, _created))
                 else:
@@ -154,6 +233,10 @@ class Locality(UpdateMixin, ChangesetMixin):
         return changed_values
 
     def repr_dict(self):
+        """
+        Basic locality representation, as a dictionary
+        """
+
         return {
             u'uuid': self.uuid,
             u'values': {
@@ -166,6 +249,11 @@ class Locality(UpdateMixin, ChangesetMixin):
         }
 
     def prepare_for_fts(self):
+        """
+        Retrieve and group *Value* objects, for this Locality, based on their
+        FTS ordering (defined by *Specification*)
+        """
+
         data_values = itertools.groupby(
             self.value_set.order_by('specification__fts_rank')
             .values_list('specification__fts_rank', 'data'),
@@ -180,8 +268,15 @@ class Locality(UpdateMixin, ChangesetMixin):
 
 class LocalityArchive(ArchiveMixin):
     """
-    Archive for the Locality model
+    Archive model for the Locality
+
+    We need to use simple IntegerFields instead of ForeignKey fields for
+    relations as deletion of a related model triggers on_delete action, which
+    can't preserve relation to a missing object.
+
+    https://docs.djangoproject.com/en/1.7/ref/models/fields/#django.db.models.ForeignKey.on_delete  # noqa
     """
+
     domain_id = models.IntegerField()
     uuid = models.TextField()
     upstream_id = models.TextField(null=True)
@@ -189,6 +284,12 @@ class LocalityArchive(ArchiveMixin):
 
 
 class Value(UpdateMixin, ChangesetMixin):
+    """
+    *Value* is the link between a *Locality*, *Specification* and it's *data*
+
+    All of the attributes are stored as textual data
+    """
+
     locality = models.ForeignKey('Locality')
     specification = models.ForeignKey('Specification')
     data = models.TextField(blank=True)
@@ -208,12 +309,20 @@ class ValueArchive(ArchiveMixin):
     """
     Archive for the Value model
     """
+
     locality_id = models.IntegerField()
     specification_id = models.IntegerField()
     data = models.TextField(blank=True)
 
 
 class Attribute(UpdateMixin, ChangesetMixin):
+    """
+    An Attribute is defined by a *key* and an optional *description*.
+
+    An Attribute can be a part of multiple Domains and it's behaviour can be
+    altered through *Specification* for a specific *Domain*.
+    """
+
     key = models.TextField(unique=True)
     description = models.TextField(null=True, blank=True, default='')
 
@@ -228,10 +337,15 @@ class Attribute(UpdateMixin, ChangesetMixin):
 
 
 class AttributeArchive(ArchiveMixin):
+    """
+    Archive for the Attribute model
+    """
+
     key = models.TextField()
     description = models.TextField(null=True, blank=True)
 
 
+# constant FTS ranks
 FTS_RANK = (
     ('A', 'Rank A'),
     ('B', 'Rank B'),
@@ -241,6 +355,15 @@ FTS_RANK = (
 
 
 class Specification(UpdateMixin, ChangesetMixin):
+    """
+    A Specification in an specialization of an Attribute for a particular
+    Domain. Specification defines *required* and *fts_rank* fields.
+
+    *required* - defines if an Attribute is mandatory for a Domain
+    *fts_rank* - priority for the FTS index, from the, highest, 'A' through 'D'
+
+    """
+
     domain = models.ForeignKey('Domain')
     attribute = models.ForeignKey('Attribute')
     required = models.BooleanField(default=False)
@@ -258,13 +381,8 @@ class Specification(UpdateMixin, ChangesetMixin):
 class SpecificationArchive(ArchiveMixin):
     """
     Archive for the Specification model
-
-    We need to use simple IntegerFields instead of ForeignKey fields for
-    relations as deletion of a related model triggers on_delete action, which
-    can't preserve relation to a missing object.
-
-    https://docs.djangoproject.com/en/1.7/ref/models/fields/#django.db.models.ForeignKey.on_delete  # noqa
     """
+
     domain_id = models.IntegerField()
     attribute_id = models.IntegerField()
     required = models.BooleanField(default=False)
@@ -272,12 +390,22 @@ class SpecificationArchive(ArchiveMixin):
 
 
 class Changeset(models.Model):
+    """
+    Changeset stores information about time of change *created* and user which
+    created the change *social_user*. Optional *comment* field might be used
+    to store more information about the context of the change
+    """
+
     social_user = models.ForeignKey(settings.AUTH_USER_MODEL)
     created = models.DateTimeField()
     comment = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        # update created and modified fields
+        """
+        Update created field when creating a new changeset, on update don't
+        change anything
+        """
+
         if self.pk and not(kwargs.get('force_insert')):
             super(Changeset, self).save(*args, **kwargs)
         else:
@@ -289,6 +417,14 @@ class Changeset(models.Model):
 
 
 class LocalityIndex(models.Model):
+    """
+    LocalityIndex enables FullTextSearch filtering for the *Locality* based on
+    its *Values* and *fts_rank* specified by a *Specification*
+
+    LocalityIndex will be autoupdated when 'SIG_locality_values_updated' is
+    triggered
+    """
+
     locality = models.OneToOneField('Locality')
     ranka = models.TextField(null=True)
     rankb = models.TextField(null=True)

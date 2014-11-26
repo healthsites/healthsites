@@ -71,7 +71,7 @@ class TestModelLocality(TestCase):
         locality = LocalityF.create(domain=dom)
 
         self.assertEqual(
-            list(locality.get_attr_map()), [
+            list(locality._get_attr_map()), [
                 {'id': 1, 'attribute__key': u'test'},
                 {'id': 2, 'attribute__key': u'osm'}
             ]
@@ -98,6 +98,10 @@ class TestModelLocality(TestCase):
         # both attributes are created
         self.assertEqual([val[1] for val in chg_values], [True, True])
 
+        # changesets should be the same for all changed values
+        self.assertEqual(
+            chg_values[0][0].changeset, chg_values[1][0].changeset
+        )
         value_map = {'osm': 'new osm val'}
         chg_values = locality.set_values(value_map, social_user=user)
 

@@ -6,6 +6,10 @@ import math
 
 
 def within_bbox(bbox, geomx, geomy):
+    """
+    Check if a point (geomx, geomy) is within a bbox (minx, miny, maxx, maxy)
+    """
+
     if bbox[0] < geomx < bbox[2] and bbox[1] < geomy < bbox[3]:
         return True
     else:
@@ -13,6 +17,12 @@ def within_bbox(bbox, geomx, geomy):
 
 
 def overlapping_area(zoom, pix_x, pix_y, lat):
+    """
+    Calculate an area (lng_deg, lat_deg) in degrees for an icon and a zoom
+
+    Since we are using a World Mercator projection deformation is uniform in
+    all directions and depends only on latitude
+    """
     C = (2 * 6378137.0 * math.pi) / 256.  # one pixel
     C2 = (2 * 6378137.0 * math.pi) / 360.  # one degree
 
@@ -21,10 +31,18 @@ def overlapping_area(zoom, pix_x, pix_y, lat):
     lat_deg = (lat_deformation * pix_y) / C2
     lng_deg = (lat_deformation * pix_x) / C2
 
-    return (lat_deg, lng_deg)
+    return (lng_deg, lat_deg)
 
 
 def update_minbbox(point, minbbox):
+    """
+    For every cluster we are calculating minimum bbox for Localities in the
+    cluster
+
+    This is required in order to have nicer click to zoom map behaviour
+    (fitBounds)
+    """
+
     new_minbbox = list(minbbox)
 
     if point[0] < minbbox[0]:
@@ -40,23 +58,33 @@ def update_minbbox(point, minbbox):
 
 
 def cluster(query_set, zoom, pix_x, pix_y):
+    """
+    Walk though a set of Localities and create point clusters
+
+    We use a simple method that for every point, that is not within any
+    cluster, calculate it's 'catchment' area and add it to the cluster
+
+    If a point is within a cluster 'catchment' area increase point count for
+    that cluster and recalculate clusters minimum bbox
+    """
+
     cluster_points = []
 
-    localites = (
-        query_set
-        .extra(select={'xy': 'st_x(geom)||$$,$$||st_y(geom)'})
-        .values('id', 'xy')
-    )
+    localites = query_set.get_lnglat().values('id', 'lnglat')
 
     for locality in localites.iterator():
-        geomx, geomy = map(float, locality['xy'].split(','))
+        geomx, geomy = map(float, locality['lnglat'].split(','))
+
+        # check every point in cluster_points
         for pt in cluster_points:
             if within_bbox(pt['bbox'], geomx, geomy):
+                # it's in the cluster 'catchment' area
                 pt['count'] += 1
                 pt['minbbox'] = update_minbbox((geomx, geomy), pt['minbbox'])
                 break
 
         else:
+            # point is not in the catchment area of any cluster
             x_range, y_range = overlapping_area(zoom, pix_x, pix_y, geomy)
 
             bbox = (

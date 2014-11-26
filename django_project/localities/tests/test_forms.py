@@ -9,7 +9,7 @@ from .model_factories import (
     DomainSpecification1AF
 )
 
-from ..forms import LocalityForm, DomainForm
+from ..forms import LocalityForm, DomainForm, DomainModelForm
 
 
 class TestLocalityForms(TestCase):
@@ -66,3 +66,22 @@ class TestLocalityForms(TestCase):
                 u' type="text" /></li>'
             )
         )
+
+    def test_DomainModelForm_bad_fragment(self):
+        frm = DomainModelForm(
+            {'name': 'Test', 'template_fragment': '{% bad_template %}'}
+        )
+        self.assertFalse(frm.is_valid())
+        self.assertDictEqual(
+            frm.errors, {
+                'template_fragment': [
+                    u"Template Syntax Error: Invalid block tag: 'bad_template'"
+                ]
+            }
+        )
+
+    def test_DomainModelForm_ok_data(self):
+        frm = DomainModelForm(
+            {'name': 'Test', 'template_fragment': '{{ test }}'}
+        )
+        self.assertTrue(frm.is_valid())

@@ -20,8 +20,18 @@ from .map_clustering import cluster
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
+    """
+    Returns JSON representation of clustered points for the current map view
+
+    Map view is defined by a *bbox*, *zoom* and *iconsize*
+    """
 
     def _parse_request_params(self, request):
+        """
+        Try to parse arguments for a request and any error during parsing will
+        raise Http404 exception
+        """
+
         if not(all(param in request.GET for param in [
                 'bbox', 'zoom', 'iconsize'])):
             raise Http404
@@ -48,15 +58,18 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         # parse request params
         bbox, zoom, iconsize = self._parse_request_params(request)
 
-        object_list = cluster(
-            Locality.objects.filter(geom__contained=bbox),
-            zoom, *iconsize
-        )
+        # cluster Localites for a view
+        object_list = cluster(Locality.objects.in_bbox(bbox), zoom, *iconsize)
 
         return self.render_json_response(object_list)
 
 
 class LocalityInfo(JSONResponseMixin, DetailView):
+    """
+    Returns JSON representation of an Locality object (repr_dict) and a
+    rendered template fragment (repr)
+    """
+
     model = Locality
 
     def get_queryset(self):
@@ -77,6 +90,11 @@ class LocalityInfo(JSONResponseMixin, DetailView):
 
 
 class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
+    """
+    Handles Locality updates, users need to be logged in order to update a
+    Locality
+    """
+
     form_class = LocalityForm
     template_name = 'updateform.html'
 
@@ -122,6 +140,11 @@ class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
 
 
 class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
+    """
+    Handles Locality creates, users need to be logged in order to create a
+    Locality
+    """
+
     form_class = DomainForm
     template_name = 'updateform.html'
 
@@ -152,12 +175,14 @@ class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
                 social_user=self.request.user
             )
 
+            # generate new uuid
             tmp_uuid = uuid.uuid4().hex
 
             loc = Locality()
             loc.changeset = tmp_changeset
             loc.domain = self.object
             loc.uuid = tmp_uuid
+
             # generate unique upstream_id
             loc.upstream_id = u'web¶{}'.format(tmp_uuid)
 

@@ -27,8 +27,10 @@ SIG_locality_values_updated = Signal()
 
 def archive_basic_info(archive, instance, content_type):
     """
-    Helper function for handling archival of basic information
+    Helper function that handles archival of basic object information, like
+    *content_type*, *object_id*, *version* and *changeset*
     """
+
     archive.content_type = content_type
     archive.object_id = instance.pk
 
@@ -38,6 +40,10 @@ def archive_basic_info(archive, instance, content_type):
 
 @receiver(post_save, sender=Domain)
 def domain_archive_handler(sender, instance, created, raw, **kwargs):
+    """
+    *post_save* triggered change archival for a Domain object
+    """
+
     ct = ContentType.objects.get(app_label='localities', model='domain')
     archive = DomainArchive()
 
@@ -52,6 +58,10 @@ def domain_archive_handler(sender, instance, created, raw, **kwargs):
 
 @receiver(post_save, sender=Attribute)
 def attribute_archive_handler(sender, instance, created, raw, **kwargs):
+    """
+    *post_save* triggered change archival for an Attribute object
+    """
+
     ct = ContentType.objects.get(app_label='localities', model='attribute')
     archive = AttributeArchive()
 
@@ -65,6 +75,10 @@ def attribute_archive_handler(sender, instance, created, raw, **kwargs):
 
 @receiver(post_save, sender=Specification)
 def specification_archive_handler(sender, instance, created, raw, **kwargs):
+    """
+    *post_save* triggered change archival for a Specification object
+    """
+
     ct = ContentType.objects.get(app_label='localities', model='specification')
     archive = SpecificationArchive()
 
@@ -79,6 +93,10 @@ def specification_archive_handler(sender, instance, created, raw, **kwargs):
 
 @receiver(post_save, sender=Locality)
 def locality_archive_handler(sender, instance, created, raw, **kwargs):
+    """
+    *post_save* triggered change archival for a Locality object
+    """
+
     ct = ContentType.objects.get(app_label='localities', model='locality')
     archive = LocalityArchive()
 
@@ -94,6 +112,10 @@ def locality_archive_handler(sender, instance, created, raw, **kwargs):
 
 @receiver(post_save, sender=Value)
 def value_archive_handler(sender, instance, created, raw, **kwargs):
+    """
+    *post_save* triggered change archival for a Value object
+    """
+
     ct = ContentType.objects.get(app_label='localities', model='value')
     archive = ValueArchive()
 
@@ -108,12 +130,19 @@ def value_archive_handler(sender, instance, created, raw, **kwargs):
 
 @receiver(SIG_locality_values_updated, sender=Locality)
 def values_updated_handler(sender, instance, **kwargs):
+    """
+    *SIG_locality_values_updated* triggered LocalityIndex update for a Locality
+    """
+
     LOG.debug('Updating LocalityIndex for Locality: %s', instance.pk)
 
+    # retrieve ranked attribute values for a Locality
     loc_fts = instance.prepare_for_fts()
 
+    # in case there is no index for the Locality, create one
     locind = LocalityIndex.objects.get_or_create(locality=instance)[0]
 
+    # either we got some data or set to ''
     locind.ranka = loc_fts.get('A', '')
     locind.rankb = loc_fts.get('B', '')
     locind.rankc = loc_fts.get('C', '')
