@@ -10,7 +10,7 @@ urlpatterns = patterns(
         name='api_localities'
     ),
     url(
-        r'^localitiy/(?P<uuid>\w{32})$', LocalityAPI.as_view(),
+        r'^locality/(?P<uuid>\w{32})$', LocalityAPI.as_view(),
         name='api_locality'
     )
 )
