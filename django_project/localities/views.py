@@ -39,7 +39,9 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         try:
             bbox_poly = parse_bbox(request.GET.get('bbox'))
             zoom = int(request.GET.get('zoom'))
-            icon_size = map(int, request.GET.get('iconsize').split(','))
+            icon_size = [
+                int(size) for size in request.GET.get('iconsize').split(',')
+            ]
 
         except:
             # return 404 if any of parameters are missing or not parsable
@@ -59,7 +61,9 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         bbox, zoom, iconsize = self._parse_request_params(request)
 
         # cluster Localites for a view
-        object_list = cluster(Locality.objects.in_bbox(bbox), zoom, *iconsize)
+        object_list = cluster(
+            Locality.objects.in_bbox(bbox), zoom, iconsize[0], iconsize[1]
+        )
 
         return self.render_json_response(object_list)
 

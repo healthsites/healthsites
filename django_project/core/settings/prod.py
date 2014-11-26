@@ -28,7 +28,6 @@ INSTALLED_APPS += (
 )
 
 if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
-    print '*********** Setting up sentry logging ************'
     SENTRY_DSN = (
         'http://ea65e461089d4fcda9d63696cd70fa50:9ba52586ab79479eba68'
         '9dbbad671149@sentry.linfiniti.com/12')

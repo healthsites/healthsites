@@ -31,7 +31,7 @@ class TestModelLocality(TestCase):
     def test_model_repr(self):
         locality = LocalityF.create(pk=1)
 
-        self.assertEqual(unicode(locality), u'1')
+        self.assertEqual(str(locality), u'1')
 
     def test_model_with_value(self):
         attr = AttributeF.create(key='test')
@@ -39,9 +39,9 @@ class TestModelLocality(TestCase):
             pk=1, val1__data='test', val1__specification__attribute=attr
         )
 
-        self.assertEqual(unicode(locality), u'1')
+        self.assertEqual(str(locality), u'1')
         self.assertEqual(
-            [unicode(val) for val in locality.value_set.all()],
+            [str(val) for val in locality.value_set.all()],
             [u'(1) test=test']
         )
 

@@ -20,7 +20,7 @@ class TestModelAttribute(TestCase):
     def test_model_repr(self):
         attr = AttributeF.create(key='An attribute')
 
-        self.assertEqual(unicode(attr), 'an_attribute')
+        self.assertEqual(str(attr), 'an_attribute')
 
     def test_relations(self):
         attr1 = AttributeF.create(id=1, key='test')

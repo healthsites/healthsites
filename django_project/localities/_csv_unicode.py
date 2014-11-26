@@ -32,7 +32,7 @@ class UnicodeDictReader:
 
     def next(self):
         row = self.reader.next()
-        vals = [unicode(s, "utf-8") for s in row]
+        vals = [str(s, "utf-8") for s in row]
         return dict((self.header[x], vals[x]) for x in range(len(self.header)))
 
     def __iter__(self):

@@ -115,7 +115,7 @@ class Domain(UpdateMixin, ChangesetMixin):
 
     tracker = FieldTracker()
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{}'.format(self.name)
 
 
@@ -183,7 +183,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         tmp_changeset = None
 
         changed_values = []
-        for key, data in changed_data.iteritems():
+        for key, data in changed_data.items():
             # try to match key from changed items with a key from attr_map
             attr_list = [
                 attr for attr in attrs if attr['attribute__key'] == key
@@ -262,7 +262,7 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{}'.format(self.id)
 
 
@@ -299,7 +299,7 @@ class Value(UpdateMixin, ChangesetMixin):
     class Meta:
         unique_together = ('locality', 'specification')
 
-    def __unicode__(self):
+    def __str__(self):
         return u'({}) {}={}'.format(
             self.locality.id, self.specification.attribute.key, self.data
         )
@@ -328,12 +328,12 @@ class Attribute(UpdateMixin, ChangesetMixin):
 
     tracker = FieldTracker()
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{}'.format(self.key)
 
     def before_save(self, *args, **kwargs):
         # make sure key has a slug-like representation
-        self.key = slugify(unicode(self.key)).replace('-', '_')
+        self.key = slugify(str(self.key)).replace('-', '_')
 
 
 class AttributeArchive(ArchiveMixin):
@@ -374,7 +374,7 @@ class Specification(UpdateMixin, ChangesetMixin):
     class Meta:
         unique_together = ('domain', 'attribute')
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{} {}'.format(self.domain.name, self.attribute.key)
 
 
@@ -412,7 +412,7 @@ class Changeset(models.Model):
             self.created = timezone.now()
         super(Changeset, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'{}'.format(self.pk)
 
 
@@ -435,4 +435,4 @@ class LocalityIndex(models.Model):
     ))
 
 # register signals
-import signals  # noqa
+import localities.signals as signals  # noqa

@@ -44,9 +44,9 @@ class TestViews(TestCase):
 
         self.assertEqual(
             resp.content,
-            u'[{"version": 1, "user_id": 1, "uuid": "35570d8b22494bb6a88487a81'
-            u'08ffd69", "lnglat": "16.9,45.4"}, {"version": 1, "user_id": 1, "'
-            u'uuid": "35570d8b22494bb6a88487a8108ffd68", "lnglat": "16,45"}]'
+            b'[{"version": 1, "user_id": 1, "uuid": "35570d8b22494bb6a88487a81'
+            b'08ffd69", "lnglat": "16.9,45.4"}, {"version": 1, "user_id": 1, "'
+            b'uuid": "35570d8b22494bb6a88487a8108ffd68", "lnglat": "16,45"}]'
         )
 
     def test_localities_api_view_nodata(self):
@@ -56,7 +56,7 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(resp.content, u'[]')
+        self.assertEqual(resp.content, b'[]')
 
     def test_localities_api_view_missing_param(self):
         resp = self.client.get(reverse('api_localities'))
@@ -105,8 +105,8 @@ class TestViews(TestCase):
 
         self.assertEqual(
             resp.content,
-            u'{"geom": [16.9, 45.4], "version": 1, "values": {"test": "test va'
-            u'l"}, "uuid": "35570d8b22494bb6a88487a8108ffd69", "changeset": 1}'
+            b'{"geom": [16.9, 45.4], "version": 1, "values": {"test": "test va'
+            b'l"}, "uuid": "35570d8b22494bb6a88487a8108ffd69", "changeset": 1}'
         )
 
     def test_locality_api_view_nodata(self):

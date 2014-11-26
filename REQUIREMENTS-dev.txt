@@ -12,7 +12,7 @@ django-devserver
 Sphinx
 
 # pdb plus plus
-pdbpp
+# pdbpp
 
 # hizashi-utils
 hizashi-utils

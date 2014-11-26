@@ -101,9 +101,9 @@ class TestViews(TestCase):
         self.assertEqual(resp['Content-Type'], 'application/json')
         self.assertEqual(
             resp.content, (
-                u'{"changeset": 1, "version": 1, "geom": [16.0, 45.0], "uuid":'
-                u' "93b7e8c4621a4597938dfd3d27659162", "values": {"test": "osm'
-                u'"}, "repr": "Test value: osm"}'
+                b'{"changeset": 1, "version": 1, "geom": [16.0, 45.0], "uuid":'
+                b' "93b7e8c4621a4597938dfd3d27659162", "values": {"test": "osm'
+                b'"}, "repr": "Test value: osm"}'
             )
         )
 
@@ -188,7 +188,7 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(resp.content, 'OK')
+        self.assertEqual(resp.content, b'OK')
 
         loc = Locality.objects.get(uuid='93b7e8c4621a4597938dfd3d27659162')
 
@@ -252,7 +252,7 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(resp.content, 'OK')
+        self.assertEqual(resp.content, b'OK')
 
         loc = Locality.objects.get(uuid='93b7e8c4621a4597938dfd3d27659162')
 
@@ -312,7 +312,7 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(resp.content, 'OK')
+        self.assertEqual(resp.content, b'OK')
 
         loc = Locality.objects.get(uuid='93b7e8c4621a4597938dfd3d27659162')
 
@@ -379,7 +379,7 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(resp.content, 'OK')
+        self.assertEqual(resp.content, b'OK')
 
         loc = Locality.objects.get(uuid='93b7e8c4621a4597938dfd3d27659162')
 

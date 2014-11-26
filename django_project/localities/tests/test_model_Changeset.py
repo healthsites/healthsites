@@ -18,7 +18,7 @@ class TestModelChangeset(TestCase):
     def test_model_repr(self):
         chgset = ChangesetF.create(pk=1)
 
-        self.assertEqual(unicode(chgset), '1')
+        self.assertEqual(str(chgset), '1')
         self.assertTrue(chgset.created is not None)
 
     def test_model_update(self):

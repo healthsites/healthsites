@@ -3,6 +3,7 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import django.forms as forms
+from django.template.base import TemplateSyntaxError
 
 from .models import Domain
 from .utils import render_fragment
@@ -22,9 +23,9 @@ class DomainModelForm(forms.ModelForm):
     def clean_template_fragment(self):
         try:
             render_fragment(self.cleaned_data['template_fragment'], {})
-        except Exception, e:
+        except TemplateSyntaxError as e:
             raise forms.ValidationError(
-                'Template Syntax Error: {}'.format(e.message)
+                'Template Syntax Error: {}'.format(e.args[0])
             )
 
         return self.cleaned_data['template_fragment']
