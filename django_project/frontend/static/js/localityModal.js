@@ -35,6 +35,8 @@ window.LocalityModal = (function () {
                 $APP.trigger('map.remove.point');
             })
 
+            this.$modal.on('handle-xhr-error', this.handleXHRError.bind(this));
+
             this.$modal.on('get-info', this.getInfo.bind(this));
             this.$modal.on('show-info', this.showInfo.bind(this));
             this.$modal.on('show-edit', this.showEdit.bind(this));
@@ -79,6 +81,17 @@ window.LocalityModal = (function () {
             this.$modal_head.on('mouseout', '.label-status', function() {
                 self.$modal_head.find('.modal-info-information').animate({height: "1px"}, 100).removeClass('modal-info-expanded');
             });
+        },
+
+        handleXHRError: function(evt, payload) {
+            var xhr = payload['xhr'];
+
+            // show error notification
+            if (xhr.status === 403 ) {
+                alert('Please login before continuing!');
+            } else {
+                alert('Error processing XHR request!');
+            }
         },
 
         updateCoordinates: function (evt, payload) {
@@ -179,6 +192,8 @@ window.LocalityModal = (function () {
             var self = this;
             $.get('/localities/'+this.locality_id+'/form', function (data) {
                 self.$modal.trigger('show-edit', {'data':data});
+            }).fail(function(xhr, status, error) {
+                self.$modal.trigger('handle-xhr-error', {'xhr': xhr});
             });
         },
 
@@ -208,7 +223,7 @@ window.LocalityModal = (function () {
                     }
                 },
                 'error': function (xhr, status, error) {
-                    console.log(xhr, status, error);
+                    self.$modal.trigger('handle-xhr-error', {'xhr': xhr});
                 }
             })
         },
@@ -237,7 +252,7 @@ window.LocalityModal = (function () {
                     }
                 },
                 'error': function (xhr, status, error) {
-                    console.log(xhr, status, error);
+                    self.$modal.trigger('handle-xhr-error', {'xhr': xhr});
                 }
             })
         },

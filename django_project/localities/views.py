@@ -95,6 +95,7 @@ class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
     Locality
     """
 
+    raise_exception = True
     form_class = LocalityForm
     template_name = 'updateform.html'
 
@@ -145,6 +146,7 @@ class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
     Locality
     """
 
+    raise_exception = True
     form_class = DomainForm
     template_name = 'updateform.html'
 
