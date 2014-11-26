@@ -37,6 +37,7 @@ window.LocalityModal = (function () {
 
             this.$modal.on('get-info', this.getInfo.bind(this));
             this.$modal.on('show-info', this.showInfo.bind(this));
+            this.$modal.on('show-info-adjust', this.setInfoWindowHeight.bind(this));
             this.$modal.on('show-edit', this.showEdit.bind(this));
 
             this.$modal.on('create-new', this.createNewLocality.bind(this));
@@ -66,7 +67,7 @@ window.LocalityModal = (function () {
                         self.sendTweet(loc);
                     }
                 }
-            })
+            });
 
 
             this.$modal_footer.on('click', '.save-create', this.saveCreateForm.bind(this));
@@ -134,7 +135,13 @@ window.LocalityModal = (function () {
             var form = new NLForm( document.getElementById( 'nl-form' ) );
             $('#sidebar').addClass('active');
             $('#sidebar-helper').addClass('active');
-            $('#collapseInfo').collapse('show')
+            $('#collapseInfo').collapse('show');
+            this.$modal.trigger('show-info-adjust');
+        },
+
+        setInfoWindowHeight: function() {
+            var nlfH =  this.$modal_footer.height();
+            this.$modal_body.height($(window).height() - this.$modal_body.offset().top - nlfH);
         },
 
         getInfo: function(evt) {
@@ -255,6 +262,9 @@ window.LocalityModal = (function () {
 
             $APP.on('locality.new.create', function (evt, payload) {
                 self.$modal.trigger('create-new', payload);
+            });
+            $APP.on('locality.show-info-adjust', function(evt, payload) {
+                self.$modal.trigger('show-info-adjust');
             });
         }
     }
