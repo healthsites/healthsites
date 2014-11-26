@@ -180,6 +180,8 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         attrs = self._get_attr_map()
 
+        tmp_changeset = None
+
         changed_values = []
         for key, data in changed_data.iteritems():
             # try to match key from changed items with a key from attr_map
@@ -207,9 +209,11 @@ class Locality(UpdateMixin, ChangesetMixin):
 
                 # check if Value.data actually changed, and save if it did
                 if obj.tracker.changed():
-                    obj.changeset = Changeset.objects.create(
-                        social_user=social_user
-                    )
+                    if not(tmp_changeset):
+                        tmp_changeset = Changeset.objects.create(
+                            social_user=social_user
+                        )
+                    obj.changeset = tmp_changeset
                     obj.save()
                     changed_values.append((obj, _created))
                 else:
