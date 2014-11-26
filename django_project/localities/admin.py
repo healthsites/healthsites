@@ -8,6 +8,8 @@ from .models import (
     Changeset
 )
 
+from .forms import DomainModelForm
+
 
 class ChangesetMixin():
     """
@@ -25,6 +27,7 @@ class ChangesetMixin():
 
 class DomainMA(ChangesetMixin, admin.ModelAdmin):
     fields = ('name', 'description', 'template_fragment')
+    form = DomainModelForm
 
 admin.site.register(Domain, DomainMA)
 

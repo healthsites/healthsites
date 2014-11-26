@@ -4,6 +4,31 @@ LOG = logging.getLogger(__name__)
 
 import django.forms as forms
 
+from .models import Domain
+from .utils import render_fragment
+
+
+class DomainModelForm(forms.ModelForm):
+    """
+    Used in django admin
+
+    Special validation rules for template_fragment field
+    """
+
+    class Meta:
+        model = Domain
+        fields = ('name', 'description', 'template_fragment')
+
+    def clean_template_fragment(self):
+        try:
+            render_fragment(self.cleaned_data['template_fragment'], {})
+        except Exception, e:
+            raise forms.ValidationError(
+                'Template Syntax Error: {}'.format(e.message)
+            )
+
+        return self.cleaned_data['template_fragment']
+
 
 class DomainForm(forms.Form):
     """
