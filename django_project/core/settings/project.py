@@ -62,7 +62,6 @@ PIPELINE_CSS = {
             'css/leaflet.draw.css',
             'css/bootstrap.min.css',
             'css/main.css',
-            'css/github-ribbon.css',
             'css/material.min.css',
             'css/ripples.min.css',
             'css/material-wfont.min.css',
