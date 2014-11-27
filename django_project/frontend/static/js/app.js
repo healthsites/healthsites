@@ -48,6 +48,10 @@ window.APP = (function () {
                 loc_button.button('toggle');
                 loc_button.button('reset');
             });
+
+            $(window).resize(function() {
+                $APP.trigger('locality.show-info-adjust');
+            });
         },
 
         _initAPPEvents: function () {

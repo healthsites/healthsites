@@ -16,13 +16,13 @@
   <span id="about" class="navbar-brand">
     HEALTHSITES.IO
   </span>
-  <!--<div id="site-social">
+  <div id="site-social" class="hidden-xs hidden-sm">
     <i id="site-social-icon-open" class="mdi-social-share medium-size-icon"></i>
     <a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20check%20this%20site%20out&url=http://healthsites.io/">
       <span class="socicon">a</span>
     </a>
     <i id="site-social-icon-close" class="mdi-content-clear"></i>
-  </div>-->
+  </div>
   </div>
 <!--
   <button id="new_locality" type="button" class="btn btn-default navbar-btn"
@@ -57,6 +57,7 @@
     {% endif %}
     </div>
     <div class="panel-group" id="sidebar-accordion" role="tablist" aria-multiselectable="true">
+      <!--
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="headingSearch">
           <h4 class="panel-title">
@@ -68,6 +69,25 @@
         <div id="collapseSearch" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseSearch">
           <div class="panel-body">
             Search
+          </div>
+        </div>
+      </div>
+      -->
+      <div class="panel panel-default visible-xs visible-sm">
+        <div class="panel-heading" role="tab" id="headingSocialDrawer">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseSocialDrawer" aria-expanded="true" aria-controls="collapseSocialDrawer">
+              <i class="mdi-social-share"></i> Share
+            </a>
+          </h4>
+        </div>
+        <div id="collapseSocialDrawer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseSocialDrawer">
+          <div class="panel-body">
+            <div id="sidebar-social">
+              <a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20check%20this%20site%20out&url=http://healthsites.io/">
+                <span class="socicon medium-size-icon">a</span>
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -91,12 +111,6 @@
   </div>
   <div class="height100" id="main-content">
     <div id="map"></div>
-
-    <div class="github-fork-ribbon-wrapper left-bottom hidden-xs">
-      <div class="github-fork-ribbon">
-          <a href="https://github.com/konektaz/healthsites">Fork me on GitHub</a>
-      </div>
-    </div>
   </div>
 </div>
 
