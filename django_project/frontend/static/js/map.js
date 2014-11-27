@@ -54,25 +54,29 @@ window.MAP = (function () {
         _bindExternalEvents:function () {
             var self = this;
 
-            $APP.on('map.show.point', function (evt, payload) {
-                self.original_marker_position = [payload.geom[0], payload.geom[1]];
-
+            $APP.on('locality.edit', function (evt, payload) {
                 self.pointLayer.setLatLng(self.original_marker_position);
                 self.MAP.addLayer(self.pointLayer);
-                self.MAP.panTo(self.original_marker_position)
 
             });
 
-            $APP.on('map.cancel.edit', function (evt) {
+            $APP.on('locality.cancel', function (evt) {
                 // user clicked cancel while updating Locality
-                self.pointLayer.setLatLng(self.original_marker_position);
-            });
-
-            $APP.on('map.remove.point', function (evt) {
                 self.MAP.removeLayer(self.pointLayer);
                 self.pointLayer.setLatLng([0,0]);
             });
 
+            $APP.on('locality.save', function (evt) {
+                // user clicked save while updating Locality
+                self.MAP.removeLayer(self.pointLayer);
+                self.pointLayer.setLatLng([0,0]);
+            });
+
+
+            $APP.on('locality.info', function (evt, payload) {
+                self.original_marker_position = [payload.geom[1], payload.geom[0]];
+                // move map to the marker
+                self.MAP.panTo(self.original_marker_position)
             });
         },
 

@@ -34,7 +34,7 @@ window.LocalityModal = (function () {
             this.$modal.on('show-info', this.showInfo.bind(this));
             this.$modal.on('show-info-adjust', this.setInfoWindowHeight.bind(this));
             this.$modal.on('show-edit', this.showEdit.bind(this));
-    
+
             this.$modal.on('update-coordinates', this.updateCoordinates.bind(this));
 
             this.$modal_footer.on('click', '.edit', this.showEditForm.bind(this));
@@ -104,8 +104,8 @@ window.LocalityModal = (function () {
         },
 
         cancelEdit: function(evt) {
-            $APP.trigger('map.cancel.edit');
-            // 'show' modal window backdrop
+            $APP.trigger('locality.cancel');
+            // show data
             this.showInfo();
         },
 
@@ -147,8 +147,7 @@ window.LocalityModal = (function () {
             $.getJSON('/localities/' + this.locality_id, function (data) {
                 self.locality_data = data;
                 self.$modal.trigger('show-info');
-                // show selected point on the map
-                $APP.trigger('map.show.point', {'geom':[data.geom[1], data.geom[0]]});
+                $APP.trigger('locality.info', {'geom': data.geom});
             });
         },
 
@@ -191,7 +190,10 @@ window.LocalityModal = (function () {
                         // there were some form processing errors
                         self.$modal.trigger('show-edit', {'data': data});
                     } else {
+                        // everything went ok, get new data from the server and show info
                         self.$modal.trigger('get-info');
+
+                        $APP.trigger('locality.save');
                     }
                 },
                 'error': function (xhr, status, error) {
