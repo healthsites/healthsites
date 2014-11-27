@@ -133,3 +133,9 @@ padding-top: 15px;
     margin-top: 15px;
     font-size: 18px;
 }
+
+#add-new-locality {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+}

@@ -4,40 +4,6 @@
 
 {% block content %}
 
-<nav class="navbar-custom navbar navbar-fixed-top" role="navigation" xmlns="http://www.w3.org/1999/html">
-<div class="container-fluid">
-<div class="navbar-header">
-  <button type="button" class="navbar-toggle collapsed sidebar-toggle">
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-  </button>
-  <img height="40px" class="pull-left" style="padding-top: 8px; padding-right: 8px;" src="/static/img/logo.png"/>
-  <span id="about" class="navbar-brand">
-    HEALTHSITES.IO
-  </span>
-  <div id="site-social" class="hidden-xs hidden-sm">
-    <i id="site-social-icon-open" class="mdi-social-share medium-size-icon"></i>
-    <a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20check%20this%20site%20out&url=http://healthsites.io/">
-      <span class="socicon">a</span>
-    </a>
-    <i id="site-social-icon-close" class="mdi-content-clear"></i>
-  </div>
-  </div>
-
-  <div class="navbar-right nav navbar-nav">
-    <a id="about-button" class="custom-navbar-item"
-            data-toggle="modal"
-            href="about"
-            data-target="#about-modal"><i class="mdi-action-face-unlock"></i> <span class="hidden-xs">About</span></a>
-    <a id="help-button" class="custom-navbar-item"
-            data-toggle="modal"
-            href="help"
-            data-target="#help-modal"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> <span class="hidden-xs">Help</span></a>
-  </div>
-</div>
-</nav>
-
 <div class="container-fluid height100 nopadding">
   <div id="sidebar">
     <div id="sidebar-profile">
@@ -108,26 +74,15 @@
   <div class="height100" id="main-content">
     <div id="map"></div>
   </div>
+  <!--
+  <div id="add-new-locality">
+    <button data-mapclick-text="Click on the map"
+            data-savelocality-text="Save Locality"
+            class="btn btn-success btn-fab btn-raised mdi-content-add">
+    </button>
+  </div>
+  -->
 </div>
-
-<!-- About Modal -->
-<div class="modal fade" id="about-modal" tabindex="-1" role="dialog"
-     aria-labelledby="about-modal" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div> <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
-</div> <!-- /.modal -->
-
-
-<!-- Help Modal -->
-<div class="modal fade" id="help-modal" tabindex="-1" role="dialog"
-     aria-labelledby="help-modal" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div> <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
-</div> <!-- /.modal -->
 
 {% endblock %}
 

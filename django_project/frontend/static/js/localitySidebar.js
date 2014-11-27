@@ -138,7 +138,7 @@ window.LocalityModal = (function () {
         },
 
         setInfoWindowHeight: function() {
-            var nlfH =  this.$sidebar_footer.height();
+            var nlfH =  this.$sidebar_footer.height() + 15;
             this.$sidebar_body.height($(window).height() - this.$sidebar_body.offset().top - nlfH);
         },
 
