@@ -3,7 +3,6 @@ from .base import *  # noqa
 
 # Extra installed apps
 INSTALLED_APPS += (
-    'raven.contrib.django.raven_compat',  # enable Raven plugin
     'pipeline',
     'social.apps.django_app.default',
     'pg_fts',
