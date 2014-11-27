@@ -126,7 +126,8 @@ window.LocalityModal = (function () {
                     '<p>- 13 people have verfified its existance in last 3 months</p>',
                 '</div>',
             ].join('');
-            this.$modal_head.html(modal_head);
+            // placeholder for info quality
+            //this.$modal_head.html(modal_head);
             this.$modal_body.html(this.locality_data.repr);
             this.$modal_footer.html([
                 '<span id="nl-form" class="nl-form"></span>',
