@@ -23,6 +23,10 @@ USE_X_FORWARDED_HOST = True
 # Set debug to false for production
 DEBUG = TEMPLATE_DEBUG = False
 
+INSTALLED_APPS += (
+    'raven.contrib.django.raven_compat',  # enable Raven plugin
+)
+
 if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
     print '*********** Setting up sentry logging ************'
     SENTRY_DSN = (
