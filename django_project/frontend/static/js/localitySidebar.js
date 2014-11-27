@@ -5,11 +5,11 @@ window.LocalityModal = (function () {
     // constructor
     var module = function () {
 
-        this.$modal = $('#sidebar-info');
-        this.$modal.html(this.template);
-        this.$modal_head = this.$modal.find('.sidebar-info-header');
-        this.$modal_body = this.$modal.find('.sidebar-info-body');
-        this.$modal_footer = this.$modal.find('.sidebar-info-footer');
+        this.$sidebar = $('#sidebar-info');
+        this.$sidebar.html(this.template);
+        this.$sidebar_head = this.$sidebar.find('.sidebar-info-header');
+        this.$sidebar_body = this.$sidebar.find('.sidebar-info-body');
+        this.$sidebar_footer = this.$sidebar.find('.sidebar-info-footer');
 
         this._bindExternalEvents();
         this._bindInternalEvents();
@@ -28,20 +28,20 @@ window.LocalityModal = (function () {
         _bindInternalEvents: function() {
             var self = this;
 
-            this.$modal.on('handle-xhr-error', this.handleXHRError.bind(this));
+            this.$sidebar.on('handle-xhr-error', this.handleXHRError.bind(this));
 
-            this.$modal.on('get-info', this.getInfo.bind(this));
-            this.$modal.on('show-info', this.showInfo.bind(this));
-            this.$modal.on('show-info-adjust', this.setInfoWindowHeight.bind(this));
-            this.$modal.on('show-edit', this.showEdit.bind(this));
+            this.$sidebar.on('get-info', this.getInfo.bind(this));
+            this.$sidebar.on('show-info', this.showInfo.bind(this));
+            this.$sidebar.on('show-info-adjust', this.setInfoWindowHeight.bind(this));
+            this.$sidebar.on('show-edit', this.showEdit.bind(this));
 
-            this.$modal.on('update-coordinates', this.updateCoordinates.bind(this));
+            this.$sidebar.on('update-coordinates', this.updateCoordinates.bind(this));
 
-            this.$modal_footer.on('click', '.edit', this.showEditForm.bind(this));
-            this.$modal_footer.on('click', '.save', this.saveForm.bind(this));
-            this.$modal_footer.on('click', '.cancel', this.cancelEdit.bind(this));
+            this.$sidebar_footer.on('click', '.edit', this.showEditForm.bind(this));
+            this.$sidebar_footer.on('click', '.save', this.saveForm.bind(this));
+            this.$sidebar_footer.on('click', '.cancel', this.cancelEdit.bind(this));
 
-            this.$modal_footer.on('click', '.nl-execute', function() {
+            this.$sidebar_footer.on('click', '.nl-execute', function() {
                 var val = $('#nl-form-1').val();
                 if (val === '1') {
                     self.showEditForm.call(self);
@@ -63,12 +63,12 @@ window.LocalityModal = (function () {
             });
 
 
-            this.$modal_head.on('mouseover', '.label-status', function() {
-                self.$modal_head.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
+            this.$sidebar_head.on('mouseover', '.label-status', function() {
+                self.$sidebar_head.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
             });
 
-            this.$modal_head.on('mouseout', '.label-status', function() {
-                self.$modal_head.find('.modal-info-information').animate({height: "1px"}, 100).removeClass('modal-info-expanded');
+            this.$sidebar_head.on('mouseout', '.label-status', function() {
+                self.$sidebar_head.find('.modal-info-information').animate({height: "1px"}, 100).removeClass('modal-info-expanded');
             });
         },
 
@@ -110,7 +110,7 @@ window.LocalityModal = (function () {
         },
 
         showInfo: function(evt) {
-            var modal_head = [
+            var sidebar_head = [
                 '<div class="modal-info-status">',
                     'This information is considered ',
                     '<span class="label label-success">current</span>. ',
@@ -124,9 +124,9 @@ window.LocalityModal = (function () {
                 '</div>',
             ].join('');
             // placeholder for info quality
-            //this.$modal_head.html(modal_head);
-            this.$modal_body.html(this.locality_data.repr);
-            this.$modal_footer.html([
+            //this.$sidebar_head.html(sidebar_head);
+            this.$sidebar_body.html(this.locality_data.repr);
+            this.$sidebar_footer.html([
                 '<span id="nl-form" class="nl-form"></span>',
                 '<button type="button" id="nl-execute" class="btn btn-xs btn-success nl-execute"> GO <i class="mdi-av-play-arrow"></i></button>',
             ].join(''));
@@ -134,31 +134,31 @@ window.LocalityModal = (function () {
             $('#sidebar').addClass('active');
             $('#sidebar-helper').addClass('active');
             $('#collapseInfo').collapse('show');
-            this.$modal.trigger('show-info-adjust');
+            this.$sidebar.trigger('show-info-adjust');
         },
 
         setInfoWindowHeight: function() {
-            var nlfH =  this.$modal_footer.height();
-            this.$modal_body.height($(window).height() - this.$modal_body.offset().top - nlfH);
+            var nlfH =  this.$sidebar_footer.height();
+            this.$sidebar_body.height($(window).height() - this.$sidebar_body.offset().top - nlfH);
         },
 
         getInfo: function(evt) {
             var self = this;
             $.getJSON('/localities/' + this.locality_id, function (data) {
                 self.locality_data = data;
-                self.$modal.trigger('show-info');
+                self.$sidebar.trigger('show-info');
                 $APP.trigger('locality.info', {'geom': data.geom});
             });
         },
 
         showEdit: function(evt, payload) {
-            this.$modal_body.html(payload.data);
-            this.$modal_footer.html([
+            this.$sidebar_body.html(payload.data);
+            this.$sidebar_footer.html([
                 '<button type="button" class="btn btn-default cancel">Cancel</button>',
                 '<button type="button" class="btn btn-warning save">Save changes</button>'
             ].join(''))
 
-            this.$modal_body.find('input:text').filter(function() { return $(this).val() == ""; }).each(function() {
+            this.$sidebar_body.find('input:text').filter(function() { return $(this).val() == ""; }).each(function() {
                 $(this).parents('.form-group').detach().appendTo('#empty-form-tab');
             });
 
@@ -168,17 +168,17 @@ window.LocalityModal = (function () {
         showEditForm: function(evt) {
             var self = this;
             $.get('/localities/'+this.locality_id+'/form', function (data) {
-                self.$modal.trigger('show-edit', {'data':data});
+                self.$sidebar.trigger('show-edit', {'data':data});
                 // show red-marker on the map
                 $APP.trigger('locality.edit', {'geom':[self.locality_data.geom[1], self.locality_data.geom[0]]});
             }).fail(function(xhr, status, error) {
-                self.$modal.trigger('handle-xhr-error', {'xhr': xhr});
+                self.$sidebar.trigger('handle-xhr-error', {'xhr': xhr});
             });
         },
 
         saveForm: function(evt) {
             var self = this;
-            var form = this.$modal_body.find('form');
+            var form = this.$sidebar_body.find('form');
             var latlng = [$('#id_lat').val(), $('#id_lon').val()];
             var data = form.serializeArray();
 
@@ -188,16 +188,16 @@ window.LocalityModal = (function () {
                 'success': function (data, status, xhr) {
                     if (data !== 'OK') {
                         // there were some form processing errors
-                        self.$modal.trigger('show-edit', {'data': data});
+                        self.$sidebar.trigger('show-edit', {'data': data});
                     } else {
                         // everything went ok, get new data from the server and show info
-                        self.$modal.trigger('get-info');
+                        self.$sidebar.trigger('get-info');
 
                         $APP.trigger('locality.save');
                     }
                 },
                 'error': function (xhr, status, error) {
-                    self.$modal.trigger('handle-xhr-error', {'xhr': xhr});
+                    self.$sidebar.trigger('handle-xhr-error', {'xhr': xhr});
                 }
             })
         },
@@ -207,15 +207,15 @@ window.LocalityModal = (function () {
 
             $APP.on('locality.map.click', function (evt, payload) {
                 self.locality_id = payload.locality_id;
-                self.$modal.trigger('get-info');
+                self.$sidebar.trigger('get-info');
             });
             $APP.on('locality.map.move', function (evt, payload) {
-                self.$modal.trigger('update-coordinates', payload);
+                self.$sidebar.trigger('update-coordinates', payload);
             });
 
-            });
             $APP.on('locality.show-info-adjust', function(evt, payload) {
-                self.$modal.trigger('show-info-adjust');
+                self.$sidebar.trigger('show-info-adjust');
+            });
         }
     }
 

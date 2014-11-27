@@ -49,7 +49,7 @@ PIPELINE_JS = {
             'js/csrf-ajax.js',
             'js/app.js',
             'js/map.js',
-            'js/localityModal.js'
+            'js/localitySidebar.js'
         ),
         'output_filename': 'js/appjs.js'
     }
