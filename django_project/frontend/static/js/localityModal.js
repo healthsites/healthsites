@@ -27,10 +27,6 @@ window.LocalityModal = (function () {
 
         _bindInternalEvents: function() {
             var self = this;
-            this.$modal.on('hide.bs.modal', function (evt) {
-                // remove marker layer from the map
-                $APP.trigger('map.remove.point');
-            })
 
             this.$modal.on('handle-xhr-error', this.handleXHRError.bind(this));
 
