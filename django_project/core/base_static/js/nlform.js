@@ -50,6 +50,7 @@
 
             this.el.innerHTML = html.join('');
             $('#nl-form-1').val(option);
+            $APP.trigger('locality.show-info-adjust');
         },
 
         _init : function() {

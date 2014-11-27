@@ -12,17 +12,9 @@ window.MAP = (function () {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(this.MAP);
 
-        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        });
-
         var baseLayers = {
-            "Humanitarian Style": hdm,
-            "OpenStreetMap": osm
+            "Humanitarian Style": hdm
         };
-
-        // enable Layer control
-        L.control.layers(baseLayers).addTo(this.MAP);
 
         this.redIcon = L.icon({
             iconUrl: '/static/img/healthsite-marker-red.png',
@@ -45,6 +37,10 @@ window.MAP = (function () {
         //bind external events
         this._bindExternalEvents();
         this._bindInternalEvents();
+
+        // hide zoom control on mobile and tablet7
+        $('.leaflet-control-zoom').addClass('hidden-xs');
+        $('.leaflet-control-zoom').addClass('hidden-sm');
 
     }
 

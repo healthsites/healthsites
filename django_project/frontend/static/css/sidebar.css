@@ -63,15 +63,22 @@
   width: 100%;
 }
 
+#sidebar-social {
+  position: relative;
+  float: left;
+  width: 100%;
+  padding: 5px 15px;
+}
+
 .sidebar-info-header {
-  height: 30px;
+  /* height: 30px; */
   margin: 5px 10px;
   font-size: 12px;
 }
 
 .sidebar-info-body {
-  height: 300px;
   margin: 5px 10px;
+  overflow: hidden;
 }
 
 .sidebar-info-footer {
@@ -132,9 +139,6 @@
     display: block;
   }
 
-  .sidebar-info-body {
-    height: 150px;
-  }
 }
 
 @media screen and (min-width: 768px) and (max-width: 979px) {
@@ -163,9 +167,6 @@
     width: 100%;
   }
 
-  .sidebar-info-body {
-    height: 225px;
-  }
 }
 
 @media screen and (min-width: 980px) and (max-width: 1199px) {
