@@ -83,31 +83,6 @@ window.MAP = (function () {
                 self.pointLayer.setLatLng([0,0]);
             });
 
-            $APP.on('button.new_locality.activate', function (evt) {
-                // enable markerDraw control
-                self.markerDrawControl.enable();
-            });
-
-            $APP.on('button.new_locality.deactivate', function (evt) {
-                // disable markerDraw control
-                self.markerDrawControl.disable();
-
-                // if edit was active revert and disable
-                if (self.markerEditControl) {
-                    self.markerEditControl.revertLayers();
-                    self.markerEditControl.disable();
-
-                    self.MAP.removeLayer(self.newLocalityLayerMarker);
-                }
-            });
-
-            $APP.on('button.new_locality.save', function (evt) {
-                self.markerEditControl.disable();
-                self.MAP.removeLayer(self.newLocalityLayerMarker);
-
-                $APP.trigger('locality.new.create', {
-                    data: self.newLocalityLayerMarker.getLatLng()
-                });
             });
         },
 

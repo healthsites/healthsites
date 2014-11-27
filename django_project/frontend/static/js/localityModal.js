@@ -25,9 +25,6 @@ window.LocalityModal = (function () {
             '<div class="sidebar-info-footer"></div>',
         ].join(''),
 
-        // HARDCODED DOMAIN NAME
-        DOMAIN: 'Health',
-
         _bindInternalEvents: function() {
             var self = this;
             this.$modal.on('hide.bs.modal', function (evt) {
@@ -41,9 +38,7 @@ window.LocalityModal = (function () {
             this.$modal.on('show-info', this.showInfo.bind(this));
             this.$modal.on('show-info-adjust', this.setInfoWindowHeight.bind(this));
             this.$modal.on('show-edit', this.showEdit.bind(this));
-
-            this.$modal.on('create-new', this.createNewLocality.bind(this));
-            this.$modal.on('show-create', this.showCreate.bind(this));
+    
             this.$modal.on('update-coordinates', this.updateCoordinates.bind(this));
 
             this.$modal_footer.on('click', '.edit', this.showEditForm.bind(this));
@@ -71,9 +66,6 @@ window.LocalityModal = (function () {
                 }
             });
 
-
-            this.$modal_footer.on('click', '.save-create', this.saveCreateForm.bind(this));
-            this.$modal_footer.on('click', '.cancel-create', this.cancelCreate.bind(this));
 
             this.$modal_head.on('mouseover', '.label-status', function() {
                 self.$modal_head.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
@@ -119,10 +111,6 @@ window.LocalityModal = (function () {
             $APP.trigger('map.cancel.edit');
             // 'show' modal window backdrop
             this.showInfo();
-        },
-
-        cancelCreate: function(evt) {
-            $APP.trigger('map.cancel.edit');
         },
 
         showInfo: function(evt) {
@@ -178,38 +166,18 @@ window.LocalityModal = (function () {
             this.$modal_body.find('input:text').filter(function() { return $(this).val() == ""; }).each(function() {
                 $(this).parents('.form-group').detach().appendTo('#empty-form-tab');
             });
-            $.material.init();
 
         },
 
-        showCreate: function(evt, payload) {
-            this.$modal_body.html(payload.data);
-            if (payload.geom) {
-                $('#id_lon').val(payload.geom[1]);
-                $('#id_lat').val(payload.geom[0]);
-            }
-
-            this.$modal_footer.html([
-                '<button type="button" class="btn btn-default cancel-create">Cancel</button>',
-                '<button type="button" class="btn btn-warning save-create">Create</button>'
-            ].join(''))
-
-        },
 
         showEditForm: function(evt) {
             var self = this;
             $.get('/localities/'+this.locality_id+'/form', function (data) {
                 self.$modal.trigger('show-edit', {'data':data});
+                // show red-marker on the map
+                $APP.trigger('locality.edit', {'geom':[self.locality_data.geom[1], self.locality_data.geom[0]]});
             }).fail(function(xhr, status, error) {
                 self.$modal.trigger('handle-xhr-error', {'xhr': xhr});
-            });
-        },
-
-        createNewLocality: function(evt, payload) {
-            var self = this;
-            $.get('/localities/form/'+this.DOMAIN, function (data) {
-                $APP.trigger('map.show.point', {'geom':[payload.data.lat, payload.data.lng]});
-                self.$modal.trigger('show-create', {'data':data, 'geom':[payload.data.lat, payload.data.lng] });
             });
         },
 
@@ -236,35 +204,6 @@ window.LocalityModal = (function () {
             })
         },
 
-        saveCreateForm: function(evt) {
-            var self = this;
-            var form = this.$modal_body.find('form');
-
-            $.ajax('/localities/form/'+this.DOMAIN, {
-                'type': 'POST',
-                'data': form.serializeArray(),
-                'success': function (data, status, xhr) {
-                    // try to parse data as an integer (ID)
-                    var new_loc_id = parseInt(data, 10);
-                    var latlng = [$('#id_lat').val(), $('#id_lon').val()];
-                    if (isNaN(new_loc_id)) {
-                        // there were some form processing errors
-                        self.$modal.trigger('show-create', {'data': data});
-                    } else {
-                        // hide form...
-                        // trigger create cleanup
-                        self.$modal.modal('hide');
-                        $APP.trigger('locality.created', {
-                            'loc_id': new_loc_id, 'latlng': latlng
-                        });
-                    }
-                },
-                'error': function (xhr, status, error) {
-                    self.$modal.trigger('handle-xhr-error', {'xhr': xhr});
-                }
-            })
-        },
-
         _bindExternalEvents: function () {
             var self = this;
 
@@ -276,12 +215,9 @@ window.LocalityModal = (function () {
                 self.$modal.trigger('update-coordinates', payload);
             });
 
-            $APP.on('locality.new.create', function (evt, payload) {
-                self.$modal.trigger('create-new', payload);
             });
             $APP.on('locality.show-info-adjust', function(evt, payload) {
                 self.$modal.trigger('show-info-adjust');
-            });
         }
     }
 
