@@ -49,16 +49,6 @@ window.MAP = (function () {
         constructor: module,
 
         _bindInternalEvents: function() {
-            var self = this;
-            this.MAP.on('draw:created', function (evt) {
-                self.newLocalityLayerMarker = evt.layer;
-                self.MAP.addLayer(self.newLocalityLayerMarker);
-                // activate edit state
-                self.markerEditControl = new L.Edit.Marker(evt.layer, self.drawControl.options);
-                self.markerEditControl.enable();
-
-                $APP.trigger('map.new_locality.point');
-            })
         },
 
         _bindExternalEvents:function () {
