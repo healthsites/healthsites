@@ -11,14 +11,11 @@ window.MAP = (function () {
             this.MAP.setView([0, 0], 3);
         }
 
-        // add an OpenStreetMap tile layer
-        var hdm = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+        var osm = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(this.MAP);
+        });
 
-        var baseLayers = {
-            "Humanitarian Style": hdm
-        };
+        this.MAP.addLayer(osm);
 
         this.redIcon = L.icon({
             iconUrl: '/static/img/healthsite-marker-red.png',
