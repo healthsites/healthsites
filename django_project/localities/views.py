@@ -71,6 +71,8 @@ class LocalityInfo(JSONResponseMixin, DetailView):
     """
 
     model = Locality
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
 
     def get_queryset(self):
         queryset = (
@@ -98,6 +100,8 @@ class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
     raise_exception = True
     form_class = LocalityForm
     template_name = 'updateform.html'
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
 
     def get_queryset(self):
         queryset = (

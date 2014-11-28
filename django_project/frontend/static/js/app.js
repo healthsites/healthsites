@@ -28,8 +28,8 @@ window.APP = (function () {
 
         _setupRouter: function() {
             //setup crossroads
-            crossroads.addRoute('/locality/{id}', function(id){
-                $APP.trigger('locality.map.click', {'locality_id': id, 'zoomto': true});
+            crossroads.addRoute('/locality/{uuid}', function(uuid){
+                $APP.trigger('locality.map.click', {'locality_uuid': uuid, 'zoomto': true});
             });
 
             //setup hasher

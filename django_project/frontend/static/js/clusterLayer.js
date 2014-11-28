@@ -55,7 +55,7 @@ L.ClusterLayer = L.LayerGroup.extend({
         $APP.on('locality.info', function (evt, payload) {
             self.editMode = false;
 
-            self.clickedPoint_id = parseInt(payload.locality_id, 10);
+            self.clickedPoint_uuid = payload.locality_uuid;
         });
 
         $APP.on('locality.edit', function (evt) {
@@ -92,8 +92,8 @@ L.ClusterLayer = L.LayerGroup.extend({
             var data = response[i];
 
             // check if marker was clicked and remove it
-            if (this.clickedPoint_id && this.editMode) {
-                if (data['id'] === this.clickedPoint_id) {
+            if (this.clickedPoint_uuid && this.editMode) {
+                if (data['uuid'] === this.clickedPoint_uuid) {
                     // skip processing of this point, don't render or add events
                     continue;
                 }
@@ -121,15 +121,15 @@ L.ClusterLayer = L.LayerGroup.extend({
 
             var mrk = new L.Marker(latlng, {icon: myIcon});
             mrk.data = {
-                'id': data['id'],
+                'uuid': data['uuid'],
                 'bbox': data['minbbox'],
                 'count': data['count']
             }
 
             mrk.on('click', function (evt) {
                 if (evt.target.data['count'] === 1) {
-                    $APP.trigger('locality.map.click', {'locality_id': evt.target.data['id']});
-                    $APP.trigger('set.hash.silent', {'locality': evt.target.data['id']});
+                    $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
+                    $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
                 }
                 else {
                     var bounds = L.latLngBounds(

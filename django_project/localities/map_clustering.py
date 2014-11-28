@@ -70,7 +70,7 @@ def cluster(query_set, zoom, pix_x, pix_y):
 
     cluster_points = []
 
-    localites = query_set.get_lnglat().values('id', 'lnglat')
+    localites = query_set.get_lnglat().values('id', 'uuid', 'lnglat')
 
     for locality in localites.iterator():
         geomx, geomy = map(float, locality['lnglat'].split(','))
@@ -92,7 +92,7 @@ def cluster(query_set, zoom, pix_x, pix_y):
                 geomx + x_range*1.5, geomy + y_range*1.5
             )
             cluster_points.append({
-                'id': locality['id'],
+                'uuid': locality['uuid'],
                 'count': 1,
                 'geom': (geomx, geomy),
                 'bbox': bbox,

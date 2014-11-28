@@ -15,8 +15,8 @@ window.LocalitySidebar = (function () {
         this._bindInternalEvents();
 
         // check if a locality was clicked, and restore it's view
-        if (sessionStorage.key('locality-id')) {
-            this.locality_id = sessionStorage.getItem('locality-id');
+        if (sessionStorage.key('locality-uuid')) {
+            this.locality_uuid = sessionStorage.getItem('locality-uuid');
             this.$sidebar.trigger('get-info');
         }
 
@@ -56,14 +56,14 @@ window.LocalitySidebar = (function () {
                 if (val === '2') {
                     var val2 = $('#nl-form-2').val();
                     if (val2 === '1') {
-                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'.%20Please%20validate&url=http://healthsites.io/%23!/locality/'+ self.locality_id;
+                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'.%20Please%20validate&url=http://healthsites.io/%23!/locality/'+ self.locality_uuid;
                         self.sendTweet(loc);
                     }
                 }
                 if (val === '3') {
                     var val2 = $('#nl-form-2').val();
                     if (val2 === '1') {
-                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'&url=http://healthsites.io/%23!/locality/'+ self.locality_id;
+                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'&url=http://healthsites.io/%23!/locality/'+ self.locality_uuid;
                         self.sendTweet(loc);
                     }
                 }
@@ -151,11 +151,11 @@ window.LocalitySidebar = (function () {
 
         getInfo: function(evt, payload) {
             var self = this;
-            $.getJSON('/localities/' + this.locality_id, function (data) {
+            $.getJSON('/localities/' + this.locality_uuid, function (data) {
                 self.locality_data = data;
 
                 // store lastClicked localityID to the session storage
-                sessionStorage.setItem('locality-id', self.locality_id);
+                sessionStorage.setItem('locality-uuid', self.locality_uuid);
 
                 self.$sidebar.trigger('show-info');
                 if (payload) {
@@ -163,7 +163,7 @@ window.LocalitySidebar = (function () {
                 } else {
                     var zoomto = false;
                 }
-                $APP.trigger('locality.info', {'locality_id': self.locality_id, 'geom': data.geom, 'zoomto': zoomto});
+                $APP.trigger('locality.info', {'locality_uuid': self.locality_uuid, 'geom': data.geom, 'zoomto': zoomto});
             });
         },
 
@@ -183,7 +183,7 @@ window.LocalitySidebar = (function () {
 
         showEditForm: function(evt) {
             var self = this;
-            $.get('/localities/'+this.locality_id+'/form', function (data) {
+            $.get('/localities/'+this.locality_uuid+'/form', function (data) {
                 self.$sidebar.trigger('show-edit', {'data':data});
                 // show red-marker on the map
                 $APP.trigger('locality.edit', {'geom':[self.locality_data.geom[1], self.locality_data.geom[0]]});
@@ -198,7 +198,7 @@ window.LocalitySidebar = (function () {
             var latlng = [$('#id_lat').val(), $('#id_lon').val()];
             var data = form.serializeArray();
 
-            $.ajax('/localities/'+this.locality_id+'/form', {
+            $.ajax('/localities/'+this.locality_uuid+'/form', {
                 'type': 'POST',
                 'data': data,
                 'success': function (data, status, xhr) {
@@ -222,7 +222,7 @@ window.LocalitySidebar = (function () {
             var self = this;
 
             $APP.on('locality.map.click', function (evt, payload) {
-                self.locality_id = payload.locality_id;
+                self.locality_uuid = payload.locality_uuid;
                 self.$sidebar.trigger('get-info', {'zoomto': payload.zoomto});
             });
             $APP.on('locality.map.move', function (evt, payload) {

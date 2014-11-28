@@ -22,7 +22,9 @@ class TestViews(TestCase):
         self.client = Client()
 
     def test_localities_view(self):
-        LocalityF.create(id=1, geom='POINT(16 45)')
+        LocalityF.create(
+            uuid='93b7e8c4621a4597938dfd3d27659162', geom='POINT(16 45)'
+        )
         resp = self.client.get(reverse('localities'), data={
             'zoom': 1,
             'bbox': '-180,-90,180,90',
@@ -35,8 +37,9 @@ class TestViews(TestCase):
         self.assertEqual(
             resp.content, (
                 u'[{"count": 1, "minbbox": [16.0, 45.0, 16.0, 45.0], "geom": ['
-                u'16.0, 45.0], "id": 1, "bbox": [-13.831067331307473, 15.16893'
-                u'2668692527, 45.83106733130747, 74.83106733130748]}]'
+                u'16.0, 45.0], "uuid": "93b7e8c4621a4597938dfd3d27659162", "bb'
+                u'ox": [-13.831067331307473, 15.168932668692527, 45.8310673313'
+                u'0747, 74.83106733130748]}]'
             )
         )
 
@@ -81,12 +84,17 @@ class TestViews(TestCase):
             spec1__attribute=test_attr
         )
         LocalityValue1F.create(
-            id=1, geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
+            geom='POINT(16 45)', uuid='93b7e8c4621a4597938dfd3d27659162',
             val1__specification__attribute=test_attr, val1__data='osm',
             domain=dom, changeset=chgset
         )
 
-        resp = self.client.get(reverse('locality-info', kwargs={'pk': 1}))
+        resp = self.client.get(reverse(
+            'locality-info', kwargs={
+                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+                }
+            )
+        )
 
         self.assertEqual(resp.status_code, 200)
 
@@ -100,7 +108,11 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_get_no_user(self):
-        resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
+        resp = self.client.get(reverse(
+            'locality-update', kwargs={
+                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+                }
+        ))
 
         self.assertEqual(resp.status_code, 403)
 
@@ -112,12 +124,17 @@ class TestViews(TestCase):
         dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
         LocalityValue1F.create(
-            id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
+            geom='POINT(16 45)', val1__data='osm', domain=dom,
+            uuid='93b7e8c4621a4597938dfd3d27659162',
             val1__specification__attribute=test_attr
         )
 
         self.client.login(username='test', password='test')
-        resp = self.client.get(reverse('locality-update', kwargs={'pk': 1}))
+        resp = self.client.get(reverse(
+            'locality-update', kwargs={
+                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+            }
+        ))
 
         self.assertEqual(resp.status_code, 200)
 
@@ -152,8 +169,9 @@ class TestViews(TestCase):
         spec = dom.specification_set.all()[0]
 
         org_loc = LocalityValue1F.create(
-            id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
-            val1__specification=spec, changeset=chgset, val1__changeset=chgset
+            geom='POINT(16 45)', val1__data='osm', domain=dom,
+            uuid='93b7e8c4621a4597938dfd3d27659162', val1__specification=spec,
+            changeset=chgset, val1__changeset=chgset
         )
         org_loc_version = org_loc.version
         org_value_versions = [
@@ -162,15 +180,17 @@ class TestViews(TestCase):
 
         self.client.login(username='test', password='test')
         resp = self.client.post(
-            reverse('locality-update', kwargs={'pk': 1}),
-            {'test': 'new_osm', 'lon': 10, 'lat': 35}
+            reverse('locality-update', kwargs={
+                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+                }
+            ), {'test': 'new_osm', 'lon': 10, 'lat': 35}
         )
 
         self.assertEqual(resp.status_code, 200)
 
         self.assertEqual(resp.content, 'OK')
 
-        loc = Locality.objects.get(pk=1)
+        loc = Locality.objects.get(uuid='93b7e8c4621a4597938dfd3d27659162')
 
         self.assertEqual(loc.geom.x, 10.0)
         self.assertEqual(loc.geom.y, 35.0)
@@ -213,7 +233,8 @@ class TestViews(TestCase):
         spec = dom.specification_set.all()[0]
 
         org_loc = LocalityValue1F.create(
-            id=1, geom='POINT(16 45)', val1__data='test_osm', domain=dom,
+            geom='POINT(16 45)', val1__data='test_osm', domain=dom,
+            uuid='93b7e8c4621a4597938dfd3d27659162',
             val1__specification=spec, changeset=chgset, val1__changeset=chgset
         )
 
@@ -224,15 +245,16 @@ class TestViews(TestCase):
 
         self.client.login(username='test', password='test')
         resp = self.client.post(
-            reverse('locality-update', kwargs={'pk': 1}),
-            {'test': 'test_osm', 'lon': 16, 'lat': 45}
+            reverse('locality-update', kwargs={
+                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+            }), {'test': 'test_osm', 'lon': 16, 'lat': 45}
         )
 
         self.assertEqual(resp.status_code, 200)
 
         self.assertEqual(resp.content, 'OK')
 
-        loc = Locality.objects.get(pk=1)
+        loc = Locality.objects.get(uuid='93b7e8c4621a4597938dfd3d27659162')
 
         self.assertEqual(loc.geom.x, 16.0)
         self.assertEqual(loc.geom.y, 45.0)
@@ -271,7 +293,8 @@ class TestViews(TestCase):
         spec = dom.specification_set.all()[0]
 
         org_loc = LocalityValue1F.create(
-            id=1, geom='POINT(16 45)', val1__data='test_osm', domain=dom,
+            geom='POINT(16 45)', val1__data='test_osm', domain=dom,
+            uuid='93b7e8c4621a4597938dfd3d27659162',
             val1__specification=spec, changeset=chgset, val1__changeset=chgset
         )
 
@@ -281,16 +304,17 @@ class TestViews(TestCase):
         ]
 
         self.client.login(username='test', password='test')
-        resp = self.client.post(
-            reverse('locality-update', kwargs={'pk': 1}),
-            {'test': 'test_osm', 'lon': 16, 'lat': 10}
+        resp = self.client.post(reverse(
+            'locality-update', kwargs={
+                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+            }), {'test': 'test_osm', 'lon': 16, 'lat': 10}
         )
 
         self.assertEqual(resp.status_code, 200)
 
         self.assertEqual(resp.content, 'OK')
 
-        loc = Locality.objects.get(pk=1)
+        loc = Locality.objects.get(uuid='93b7e8c4621a4597938dfd3d27659162')
 
         self.assertEqual(loc.geom.x, 16.0)
         self.assertEqual(loc.geom.y, 10.0)
@@ -331,7 +355,8 @@ class TestViews(TestCase):
         spec = [spec for spec in dom.specification_set.all()]
 
         org_loc = LocalityValue2F.create(
-            id=1, geom='POINT(16 45)', domain=dom, changeset=chgset,
+            geom='POINT(16 45)', domain=dom, changeset=chgset,
+            uuid='93b7e8c4621a4597938dfd3d27659162',
             val1__data='test_osm', val1__specification=spec[0],
             val1__changeset=chgset, val2__data='other_osm',
             val2__specification=spec[1], val2__changeset=chgset
@@ -343,10 +368,12 @@ class TestViews(TestCase):
         ]
 
         self.client.login(username='test', password='test')
-        resp = self.client.post(
-            reverse('locality-update', kwargs={'pk': 1}), {
-                'test': 'new_test_osm', 'other_test': 'other_osm', 'lon': 16,
-                'lat': 45
+        resp = self.client.post(reverse(
+            'locality-update', kwargs={
+                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+            }), {
+            'test': 'new_test_osm', 'other_test': 'other_osm', 'lon': 16,
+            'lat': 45
             }
         )
 
@@ -354,7 +381,7 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.content, 'OK')
 
-        loc = Locality.objects.get(pk=1)
+        loc = Locality.objects.get(uuid='93b7e8c4621a4597938dfd3d27659162')
 
         self.assertEqual(loc.geom.x, 16.0)
         self.assertEqual(loc.geom.y, 45.0)
@@ -390,14 +417,17 @@ class TestViews(TestCase):
         dom = DomainSpecification1AF(spec1__attribute=test_attr)
 
         LocalityValue1F.create(
-            id=1, geom='POINT(16 45)', val1__data='osm', domain=dom,
+            geom='POINT(16 45)', val1__data='osm', domain=dom,
+            uuid='93b7e8c4621a4597938dfd3d27659162',
             val1__specification__attribute=test_attr
         )
 
         self.client.login(username='test', password='test')
-        resp = self.client.post(
-            reverse('locality-update', kwargs={'pk': 1}),
-            {'test': 'new_osm'}
+        resp = self.client.post(reverse(
+            'locality-update', kwargs={
+                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+                }
+            ), {'test': 'new_osm'}
         )
 
         self.assertEqual(resp.status_code, 200)
