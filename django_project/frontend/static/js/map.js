@@ -5,7 +5,11 @@ window.MAP = (function () {
     // constructor
     var module = function () {
         // create a map in the "map" div, set the view to a given place and zoom
-        this.MAP = L.map('map').setView([0, 0], 3);
+        this.MAP = L.map('map');
+
+        if (!this._restoreMapContext()) {
+            this.MAP.setView([0, 0], 3);
+        }
 
         // add an OpenStreetMap tile layer
         var hdm = L.tileLayer('http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
@@ -38,6 +42,9 @@ window.MAP = (function () {
         this._bindExternalEvents();
         this._bindInternalEvents();
 
+        //store initial map context
+        this._updateMapContext();
+
         // hide zoom control on mobile and tablet7
         $('.leaflet-control-zoom').addClass('hidden-xs');
         $('.leaflet-control-zoom').addClass('hidden-sm');
@@ -48,7 +55,37 @@ window.MAP = (function () {
     module.prototype = {
         constructor: module,
 
+        _restoreMapContext: function () {
+            if (sessionStorage.key('map_zoom') && sessionStorage.key('map_center')) {
+                var zoom = parseInt(sessionStorage.getItem('map_zoom'), 10);
+                var center = sessionStorage.getItem('map_center').split('|');
+
+                var latLngCenter = new L.latLng(parseFloat(center[0]), parseFloat(center[1]));
+
+                if (zoom && center) {
+                    this.MAP.setView(latLngCenter, zoom);
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        },
+
+        _updateMapContext: function () {
+            var center = this.MAP.getCenter();
+            var zoom = this.MAP.getZoom();
+
+            sessionStorage.setItem('map_center', center.lat+'|'+center.lng);
+            sessionStorage.setItem('map_zoom', zoom);
+        },
+
         _bindInternalEvents: function() {
+            var self = this;
+            this.MAP.on('moveend', function (evt) {
+                self._updateMapContext();
+            }, this);
         },
 
         _bindExternalEvents:function () {
