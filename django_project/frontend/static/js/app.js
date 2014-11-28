@@ -12,8 +12,8 @@ window.APP = (function () {
         // init map
         new MAP();
 
-        // init localityModal
-        new LocalityModal();
+        // init localitySidebar
+        new LocalitySidebar();
 
         this._initAPPEvents();
 

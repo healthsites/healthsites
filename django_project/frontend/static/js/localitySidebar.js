@@ -1,4 +1,4 @@
-window.LocalityModal = (function () {
+window.LocalitySidebar = (function () {
     "use strict";
     // private variables and functions
 
