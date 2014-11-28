@@ -19,22 +19,44 @@ window.APP = (function () {
 
         this._bindExternalEvents();
 
-        var myRe = /\/(\d+)\//i;
-        var id = window.location.pathname.match(/\/([0-9]+)\//i);
-        if (id) {
-            $APP.trigger('locality.map.click', {'locality_id': id[1]});
-        }
-
+        this._setupRouter();
     };
 
     // prototype
     module.prototype = {
         constructor: module,
 
-        _bindExternalEvents: function () {
+        _setupRouter: function() {
+            //setup crossroads
+            crossroads.addRoute('/locality/{id}', function(id){
+                $APP.trigger('locality.map.click', {'locality_id': id, 'zoomto': true});
+            });
 
+            //setup hasher
+            hasher.prependHash = '!';
+            hasher.initialized.add(this._parseHash);
+            hasher.changed.add(this._parseHash);
+            hasher.init();
+        },
+
+        _parseHash: function (newHash, oldHash){
+            crossroads.parse(newHash);
+        },
+
+        setHashSilently: function (hash){
+            hasher.changed.active = false;  // disable changed signal
+            hasher.setHash(hash);  // set hash without dispatching changed signal
+            hasher.changed.active = true;  // re-enable signal
+        },
+
+        _bindExternalEvents: function () {
+            var self = this;
             $(window).resize(function() {
                 $APP.trigger('locality.show-info-adjust');
+            });
+
+            $APP.on('set.hash.silent', function (evt, payload) {
+                self.setHashSilently('/locality/' + payload.locality);
             });
         },
 

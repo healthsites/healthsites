@@ -89,8 +89,11 @@
 {% block extra_js %}
 <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
 <script type="text/javascript">
+// initialize the app
 new APP();
+
 $.material.init();
+
 $(document).ready(function() {
   $('.sidebar-toggle').click(function() {
     if ($('#sidebar').hasClass('active')) {

@@ -39,7 +39,10 @@ PIPELINE_JS = {
             'js/bootstrap.js',
             'js/material.min.js',
             'js/ripples.min.js',
-            'js/nlform.js'
+            'js/nlform.js',
+            'js/signals.min.js',
+            'js/hasher.min.js',
+            'js/crossroads.min.js'
         ),
         'output_filename': 'js/contrib.js',
     },

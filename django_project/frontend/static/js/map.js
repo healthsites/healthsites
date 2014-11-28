@@ -113,7 +113,11 @@ window.MAP = (function () {
             $APP.on('locality.info', function (evt, payload) {
                 self.original_marker_position = [payload.geom[1], payload.geom[0]];
                 // move map to the marker
-                self.MAP.panTo(self.original_marker_position)
+                if (payload.zoomto) {
+                    self.MAP.setView(self.original_marker_position, self.MAP.getMaxZoom());
+                } else {
+                    self.MAP.panTo(self.original_marker_position);
+                }
             });
         },
 

@@ -56,14 +56,14 @@ window.LocalityModal = (function () {
                 if (val === '2') {
                     var val2 = $('#nl-form-2').val();
                     if (val2 === '1') {
-                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'.%20Please%20validate&url=http://healthsites.io/'+ self.locality_id +'/';
+                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'.%20Please%20validate&url=http://healthsites.io/%23!/locality/'+ self.locality_id;
                         self.sendTweet(loc);
                     }
                 }
                 if (val === '3') {
                     var val2 = $('#nl-form-2').val();
                     if (val2 === '1') {
-                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'&url=http://healthsites.io/'+ self.locality_id +'/';
+                        var loc = 'https://twitter.com/intent/tweet?text=See%20'+self.locality_data.values.name+'&url=http://healthsites.io/%23!/locality/'+ self.locality_id;
                         self.sendTweet(loc);
                     }
                 }
@@ -149,7 +149,7 @@ window.LocalityModal = (function () {
             this.$sidebar_body.height($(window).height() - this.$sidebar_body.offset().top - nlfH);
         },
 
-        getInfo: function(evt) {
+        getInfo: function(evt, payload) {
             var self = this;
             $.getJSON('/localities/' + this.locality_id, function (data) {
                 self.locality_data = data;
@@ -158,7 +158,12 @@ window.LocalityModal = (function () {
                 sessionStorage.setItem('locality-id', self.locality_id);
 
                 self.$sidebar.trigger('show-info');
-                $APP.trigger('locality.info', {'geom': data.geom});
+                if (payload) {
+                    var zoomto = payload.zoomto;
+                } else {
+                    var zoomto = false;
+                }
+                $APP.trigger('locality.info', {'locality_id': self.locality_id, 'geom': data.geom, 'zoomto': zoomto});
             });
         },
 
@@ -218,7 +223,7 @@ window.LocalityModal = (function () {
 
             $APP.on('locality.map.click', function (evt, payload) {
                 self.locality_id = payload.locality_id;
-                self.$sidebar.trigger('get-info');
+                self.$sidebar.trigger('get-info', {'zoomto': payload.zoomto});
             });
             $APP.on('locality.map.move', function (evt, payload) {
                 self.$sidebar.trigger('update-coordinates', payload);
