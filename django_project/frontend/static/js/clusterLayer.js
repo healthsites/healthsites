@@ -18,6 +18,7 @@ L.ClusterLayer = L.LayerGroup.extend({
         this._center = null;
         this._maxBounds = null;
         this.editMode = false;
+        this.localitySaved = false;
         this.clickedPoint = false;
 
         this._bindExternalEvents();
@@ -57,12 +58,23 @@ L.ClusterLayer = L.LayerGroup.extend({
 
         $APP.on('locality.edit', function (evt) {
             self.editMode = true;
+            self.localitySaved = false;
             self.update(true);
         });
 
         $APP.on('locality.cancel', function (evt) {
             self.editMode = false;
+            self.localitySaved = false;
             self.update(true);
+        });
+
+        $APP.on('locality.save', function (evt) {
+            self.editMode = false;
+            self.update();
+            // as locality was recently saved and the map was updated, we need
+            // to suppress first next event, if caused by 'moveend'
+            // TODO: we should probably create a custom map event and encapsulate this behaviour
+            self.localitySaved = true;
         });
     },
 
@@ -117,7 +129,6 @@ L.ClusterLayer = L.LayerGroup.extend({
                     $APP.trigger('locality.map.click', {'locality_id': evt.target.data['id']});
 
                     self.clickedPoint = evt.target;
-                    // L.LayerGroup.prototype.removeLayer.call(self, self.clickedPoint);
                 }
                 else {
                     var bounds = L.latLngBounds(
@@ -135,6 +146,12 @@ L.ClusterLayer = L.LayerGroup.extend({
 
     update: function(use_cache) {
         var self = this;
+
+        if (this.localitySaved) {
+            // skip next map update, probably triggered by panTo... see 'locality.save' event handling
+            this.localitySaved = false;
+            return;
+        }
         var bb = this._map.getBounds();
 
         if(this._curReq && this._curReq.abort)
