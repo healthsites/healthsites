@@ -120,7 +120,7 @@ L.ClusterLayer = L.LayerGroup.extend({
             var mrk = new L.Marker(latlng, {icon: myIcon});
             mrk.data = {
                 'id': data['id'],
-                'bbox': data['bbox'],
+                'bbox': data['minbbox'],
                 'count': data['count']
             }
 

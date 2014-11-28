@@ -14,6 +14,13 @@ window.LocalityModal = (function () {
         this._bindExternalEvents();
         this._bindInternalEvents();
 
+        // check if a locality was clicked, and restore it's view
+        if (sessionStorage.key('locality-id')) {
+            this.locality_id = sessionStorage.getItem('locality-id');
+            this.$sidebar.trigger('get-info');
+        }
+
+
     };
 
     // prototype
@@ -146,6 +153,10 @@ window.LocalityModal = (function () {
             var self = this;
             $.getJSON('/localities/' + this.locality_id, function (data) {
                 self.locality_data = data;
+
+                // store lastClicked localityID to the session storage
+                sessionStorage.setItem('locality-id', self.locality_id);
+
                 self.$sidebar.trigger('show-info');
                 $APP.trigger('locality.info', {'geom': data.geom});
             });
