@@ -31,7 +31,7 @@ class TestViews(TestCase):
         self.assertEqual(resp.status_code, 200)
 
         self.assertEqual(resp.context['debug'], True)
-        self.assertTrue(resp.content.find('GoogleAnalyticsObject') == -1)
+        self.assertTrue(resp.content.find(b'GoogleAnalyticsObject') == -1)
         self.assertListEqual(
             [tmpl.name for tmpl in resp.templates], [
                 'main.html', u'base.html', u'pipeline/css.html',

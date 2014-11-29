@@ -4,6 +4,7 @@ LOG = logging.getLogger(__name__)
 
 import uuid
 import json
+import csv
 
 from django.contrib.gis.geos import Point
 from django.db import transaction
@@ -12,8 +13,6 @@ from django.contrib.auth import get_user_model
 from .models import Locality, Domain, Changeset
 
 from .exceptions import LocalityImportError
-
-from ._csv_unicode import UnicodeDictReader
 
 
 class CSVImporter():
@@ -38,7 +37,7 @@ class CSVImporter():
 
         self.use_tabs = use_tabs
 
-        with open(attr_json_file, 'rb') as attr_map_file:
+        with open(attr_json_file, 'r') as attr_map_file:
             self.attr_map = json.load(attr_map_file)
 
         # import
@@ -147,7 +146,7 @@ class CSVImporter():
                 'geom': tmp_geom,
                 'values': {
                     key: self._read_attr(row_data, row_val)
-                    for key, row_val in self.attr_map['attributes'].iteritems()
+                    for key, row_val in self.attr_map['attributes'].items()
                     if self._read_attr(row_data, row_val) not in (None, '')
                 }
             }
@@ -165,7 +164,7 @@ class CSVImporter():
         dummy_user = User.objects.get(pk=-1)
         tmp_changeset = Changeset.objects.create(social_user=dummy_user)
 
-        for gen_upstream_id, values in self.parsed_data.iteritems():
+        for gen_upstream_id, values in self.parsed_data.items():
             row_uuid = values['uuid']
             loc, _created = self._find_locality(row_uuid, gen_upstream_id)
 
@@ -198,11 +197,11 @@ class CSVImporter():
         transaction to minimize inconsistent database state
         """
 
-        with open(self.csv_filename, 'rb') as csv_file:
+        with open(self.csv_filename, 'r', encoding='utf-8') as csv_file:
             if self.use_tabs:
-                data_file = UnicodeDictReader(csv_file, delimiter='\t')
+                data_file = csv.DictReader(csv_file, delimiter='\t')
             else:
-                data_file = UnicodeDictReader(csv_file)
+                data_file = csv.DictReader(csv_file)
 
             with transaction.atomic():
                 for r_num, r_data in enumerate(data_file):
