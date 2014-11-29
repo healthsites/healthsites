@@ -32,7 +32,6 @@
                 'I want to ',
                 '<select id="nl-form-1">',
                     '<option value="1">edit</option>',
-                    '<option value="2">ask validation for</option>',
                     '<option value="3">share</option>',
                 '</select>',
                 ' this locality'
