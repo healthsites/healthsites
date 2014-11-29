@@ -71,6 +71,13 @@ window.APP = (function () {
                     $(this).removeClass('mdi-content-clear').addClass('mdi-social-share');
                 }
             });
+
+            $('.facebook-hs-share').on('click', function(evt) {
+                FB.ui({
+                    method: 'share',
+                    href: 'http://healthsites.io/'
+                }, function(response){});
+            });
         },
 
         _openSidebar: function() {
