@@ -41,9 +41,7 @@
                 html.push(
                     ' via ',
                     '<select id="nl-form-2">',
-                        '<option value="1">twitter</option>',
-                        '<option value="2">facebook</option>',
-                        '<option value="3">google+</option>',
+                        '<option value="1">twitter</option>'
                     '</select>'
                 );
             }
