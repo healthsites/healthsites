@@ -10,7 +10,7 @@ env:
     - DJANGO_SETTINGS_MODULE=core.settings.test_travis
 
 python:
-  - '2.7'
+  - '3.4'
 
 addons:
   postgresql: "9.3"
