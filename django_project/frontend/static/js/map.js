@@ -108,6 +108,12 @@ window.MAP = (function () {
 
 
             $APP.on('locality.info', function (evt, payload) {
+                // remove edit marker if it exists
+                if (self.pointLayer) {
+                    self.MAP.removeLayer(self.pointLayer);
+                    self.pointLayer.setLatLng([0,0]);
+                };
+
                 self.original_marker_position = [payload.geom[1], payload.geom[0]];
                 // move map to the marker
                 if (payload.zoomto) {
