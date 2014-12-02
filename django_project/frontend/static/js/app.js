@@ -63,10 +63,20 @@ window.APP = (function () {
         _initAPPEvents: function () {
 
             $('#site-social-icon-open').on('click', function (evt) {
-                $('#site-social').animate({width: '115px'}, 500);
+                if ($(this).hasClass('mdi-social-share')) {
+                    $('#site-social').animate({width: '115px'}, 100);
+                    $(this).removeClass('mdi-social-share').addClass('mdi-content-clear');
+                } else {
+                    $('#site-social').animate({width: '24px'}, 100);
+                    $(this).removeClass('mdi-content-clear').addClass('mdi-social-share');
+                }
             });
-            $('#site-social-icon-close').on('click', function (evt) {
-                $('#site-social').animate({width: '24px'}, 100);
+
+            $('.facebook-hs-share').on('click', function(evt) {
+                FB.ui({
+                    method: 'share',
+                    href: 'http://healthsites.io/'
+                }, function(response){});
             });
         },
 
