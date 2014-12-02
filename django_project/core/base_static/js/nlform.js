@@ -40,7 +40,7 @@
                 html.push(
                     ' via ',
                     '<select id="nl-form-2">',
-                        '<option value="1">twitter</option>'
+                        '<option value="1">twitter</option>',
                     '</select>'
                 );
             }
