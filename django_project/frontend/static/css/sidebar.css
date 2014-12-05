@@ -78,7 +78,7 @@
 
 .sidebar-info-body {
   margin: 5px 10px;
-  overflow: hidden;
+  overflow: scroll;
 }
 
 .sidebar-info-footer {
