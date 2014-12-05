@@ -44,7 +44,6 @@ class CSVImporter():
         # import
         self._get_domain()
         self.parse_file()
-        self.save_localities()
 
     def _get_domain(self):
         """
@@ -207,3 +206,5 @@ class CSVImporter():
             with transaction.atomic():
                 for r_num, r_data in enumerate(data_file):
                     self.parse_row(r_num, r_data)
+                # save localities to the database
+                self.save_localities()
