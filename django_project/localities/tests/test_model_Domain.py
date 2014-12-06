@@ -20,7 +20,7 @@ class TestModelDomain(TestCase):
     def test_model_repr(self):
         domain = DomainF.create(name='A domain')
 
-        self.assertEqual(unicode(domain), 'A domain')
+        self.assertEqual(str(domain), 'A domain')
 
     def test_model_uniqueness(self):
         DomainF.create(name='A domain')

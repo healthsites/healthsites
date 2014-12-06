@@ -108,7 +108,7 @@ class TestImporters(TestCase):
         self.assertEqual(Locality.objects.count(), 2)
         self.assertEqual(Value.objects.count(), 4)
 
-        self.assertEqual(
+        self.assertListEqual(
             list(loc.value_set.values_list('data', flat=True)), [
                 u'HIV Treatment; HIV Counseling; HIV Testing',
                 u'Athalia Satellite Clinic'
@@ -135,7 +135,7 @@ class TestImporters(TestCase):
         self.assertEqual(Locality.objects.count(), 2)
         self.assertEqual(Value.objects.count(), 4)
 
-        self.assertEqual(
+        self.assertListEqual(
             list(loc.value_set.values_list('data', flat=True)), [
                 u'HIV Treatment; HIV Counseling; HIV Testing',
                 u'Andrieskraal Satellite Clinic'

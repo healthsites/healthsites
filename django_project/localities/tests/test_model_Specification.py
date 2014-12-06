@@ -26,7 +26,7 @@ class TestModelSpecification(TestCase):
         attr = AttributeF.create(key='An attribute')
         spec = SpecificationF.create(domain=dom, attribute=attr)
 
-        self.assertEqual(unicode(spec), 'A domain an_attribute')
+        self.assertEqual(str(spec), 'A domain an_attribute')
 
     def test_model_uniqueness(self):
         dom = DomainF.create(id=1)

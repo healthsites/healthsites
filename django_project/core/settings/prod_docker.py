@@ -1,6 +1,4 @@
 from .prod import *  # noqa
-import os
-print os.environ
 
 ALLOWED_HOSTS = ['*']
 

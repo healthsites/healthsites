@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('rankB', models.TextField(null=True)),
                 ('rankC', models.TextField(null=True)),
                 ('rankD', models.TextField(null=True)),
-                ('fts_index', pg_fts.fields.TSVectorField(dictionary='english', default='', fields=((b'rankA', b'A'), (b'rankB', b'B'), (b'rankC', b'C'), (b'rankD', b'D')), serialize=False, editable=False, null=True)),
+                ('fts_index', pg_fts.fields.TSVectorField(dictionary='english', default='', fields=(('rankA', 'A'), ('rankB', 'B'), ('rankC', 'C'), ('rankD', 'D')), serialize=False, editable=False, null=True)),
                 ('locality', models.ForeignKey(to='localities.Locality')),
             ],
             options={

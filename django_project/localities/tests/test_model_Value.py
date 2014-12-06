@@ -29,7 +29,7 @@ class TestModelValue(TestCase):
             locality=loc, specification__attribute=attr, data='test'
         )
 
-        self.assertEqual(unicode(value), '(1) an_attribute=test')
+        self.assertEqual(str(value), '(1) an_attribute=test')
 
     def test_model_uniqueness(self):
         loc = LocalityF.create()

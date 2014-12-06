@@ -73,7 +73,9 @@ def cluster(query_set, zoom, pix_x, pix_y):
     localites = query_set.get_lnglat().values('id', 'uuid', 'lnglat')
 
     for locality in localites.iterator():
-        geomx, geomy = map(float, locality['lnglat'].split(','))
+        geomx, geomy = [
+            float(coord) for coord in locality['lnglat'].split(',')
+        ]
 
         # check every point in cluster_points
         for pt in cluster_points:
