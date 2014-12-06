@@ -70,3 +70,8 @@ node_modules
 
 # Working data not intended to be versioned
 data_for_import
+
+# Pg cluster for docker
+pg/postgres_data/9.3
+pg/postgres_staging_data/9.3
+pg/postgres_dev_data/9.3

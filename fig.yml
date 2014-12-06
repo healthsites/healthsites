@@ -1,0 +1,39 @@
+#
+# Production server with UWSGI configured to run on port 1818
+#
+# Usage:
+# fig -f fig-.yml <command>
+#
+# Typical useage:
+#
+# fig build
+# fig up -d web
+
+# To get an interactive shell in the django context:
+#
+# fig run shell
+
+db:
+  image: kartoza/postgis
+  volumes:
+    - ./pg/postgres_data:/var/lib/postgresql
+  environment:
+    - USERNAME=docker
+    - PASS=docker
+
+web:
+  build: docker-prod
+  hostname: uwsgi
+  environment:
+    - DATABASE_NAME=gis
+    - DATABASE_USERNAME=docker
+    - DATABASE_PASSWORD=docker
+    - DATABASE_HOST=db
+    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+  volumes:
+    - ./django_project:/home/web/django_project
+  ports:
+    - "2018:49360"
+  links:
+    - db:db
+

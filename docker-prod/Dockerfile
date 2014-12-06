@@ -1,6 +1,7 @@
 #--------- Generic stuff all our Dockerfiles should start with so we get caching ------------
-FROM ubuntu:trusty
-MAINTAINER Tim Sutton<tim@linfiniti.com>
+# Note this base image is based on debian
+FROM python:2.7.8
+MAINTAINER Tim Sutton<tim@kartoza.com>
 
 RUN  export DEBIAN_FRONTEND=noninteractive
 ENV  DEBIAN_FRONTEND noninteractive
@@ -18,12 +19,12 @@ RUN apt-get -y update
 
 RUN apt-get -y install libpq5 python-gdal python-geoip \
     python python-dev python-distribute python-pip \
-    python-psycopg2 npm node rpl
+    python-psycopg2 npm nodejs rpl
 RUN npm -g install yuglify
 
-# Ubuntu is messed up and aliases node as node js
+# Debian is messed up and aliases node as nodejs
 # So when yuglify is installed it references the wrong node binary...
-# lets fixt that here...
+# lets fix that here...
 
 RUN rpl "env node" "env nodejs" /usr/local/lib/node_modules/yuglify/bin/yuglify
 
@@ -32,17 +33,19 @@ RUN pip install -r /REQUIREMENTS.txt
 RUN pip install uwsgi
 
 ADD uwsgi.conf /uwsgi.conf
-ADD uwsgi_params /uwsgi_params
 
 # Open port 49360 as we will be running our uwsgi socket on that
 EXPOSE 49360
 
-
+WORKDIR /home/web/django_project
 # You could put --protocol=http as a parameter (to test it directly)
-# when running e.g. docker run konektaz/healthsites --protocol=http
+# when running e.g. docker run inasafe/inasafe --protocol=http
 # or any other wsgi parameters and they will be tagged on to the
 # the end of the entrypoint.
 
 # Under normal usage you would supply no additional params and
 # use nginx on the host to forward in the traffic.
-ENTRYPOINT ["uwsgi", "--ini", "/home/web/docker-prod/uwsgi.conf"]
+# Entrypoint is preferred but we use CMD
+# as fig run does not currently correctly
+# overload entrypoint
+CMD ["uwsgi", "--ini", "/uwsgi.conf"]
