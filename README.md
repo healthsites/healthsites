@@ -29,7 +29,11 @@ Out intention is to foster wide spread usage of the data and the code that we pr
 
 # Setup instructions
 
-**Note** we provide alternative setup instructions for deployment and development under docker - see our [developer documentation](https://github.com/konektaz/healthsites/blob/develop/README-dev.md) for complete details. If you want to develop locally without using docker, follow the steps below.
+**Note** we provide alternative setup instructions for deployment and
+development under docker - see our [developer
+documentation](https://github.com/konektaz/healthsites/blob/develop/README-docker.md)
+for complete details. If you want to develop locally without using docker,
+follow the steps below.
 
 ### Check out the source
 
@@ -64,7 +68,7 @@ cd django_project/core/settings
 cp dev_dodobas.py dev_${USER}.py
 ```
 
-Now edit dev_<your username> setting your database connection details as
+Now edit dev_your username setting your database connection details as
 needed. We assume you have created a postgres (with postgis extentions) 
 database somewhere that you can use for your development work. See 
 [http://postgis.net/install/](http://postgis.net/install/) for details on doing

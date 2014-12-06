@@ -1,0 +1,16 @@
+coverage
+pep8
+pylint
+flake8
+factory_boy
+
+django-devserver
+
+# documentation
+Sphinx
+
+# pdb plus plus
+pdbpp
+
+# hizashi-utils
+hizashi-utils

@@ -1,0 +1,36 @@
+#
+# Staging server with UWSGI configured to run on port 1719
+#
+# Usage:
+# fig -f fig-staging.yml <command>
+#
+# Typical useage:
+#
+# fig -f fig-staging.yml build
+# fig -f fig-staging.yml up -d stagingweb
+
+
+stagingdb:
+  image: kartoza/postgis
+  volumes:
+      - ./pg/postgres_staging_data:/var/lib/postgresql
+  environment:
+    - USERNAME=docker
+    - PASS=docker
+
+stagingweb:
+  build: docker-prod
+  hostname: staginguwsgi
+  environment:
+    - DATABASE_NAME=gis
+    - DATABASE_USERNAME=docker
+    - DATABASE_PASSWORD=docker
+    - DATABASE_HOST=db
+    - DJANGO_SETTINGS_MODULE=core.settings.staging_docker
+  volumes:
+    - ./django_project:/home/web/django_project
+  ports:
+    - "2019:49360"
+  links:
+    - stagingdb:db
+

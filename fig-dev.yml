@@ -1,0 +1,43 @@
+#
+# Development server with ssh configured to run on port 1822
+# and the django runserver on port 1823
+#
+# Usage:
+# fig -f fig-dev.yml <command>
+#
+# Be sure to build the production docker uwsgi container first as the dev
+# one inherits from that.
+#
+# Typical useage:
+#
+# fig -f fig-dev.yml build
+# fig -f fig-dev.yml up -d dev
+
+
+#
+# Local development server
+#
+devdb:
+  image: kartoza/postgis
+  volumes:
+      - ./pg/postgres_dev_data:/var/lib/postgresql
+  environment:
+    - USERNAME=docker
+    - PASS=docker
+
+dev:
+  build: docker-dev
+  environment:
+    - DATABASE_NAME=gis
+    - DATABASE_USERNAME=docker
+    - DATABASE_PASSWORD=docker
+    - DATABASE_HOST=db
+    - DJANGO_SETTINGS_MODULE=core.settings.dev_docker
+  volumes:
+    - ./django_project:/home/web/django_project
+  ports:
+    - "2022:22"
+    - "2023:2023"
+  links:
+    - devdb:db
+
