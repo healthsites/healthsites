@@ -73,3 +73,6 @@ data_for_import
 
 deployment/docker-dev/71-apt-cacher-ng
 deployment/docker-prod/71-apt-cacher-ng
+mapproxy
+maps
+deployment/static

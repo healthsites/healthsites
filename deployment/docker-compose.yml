@@ -28,11 +28,11 @@ db:
   image: kartoza/postgis
   volumes:
     - ./pg/postgres_data:/var/lib/postgresql
+    - ./backups:/backups
   environment:
     - USERNAME=docker
     - PASS=docker
-  volumes:
-    - ./backups:/backups
+
 
 qgisserver:
   image: kartoza/qgis-server
