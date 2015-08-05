@@ -450,16 +450,6 @@ class DataLoader(models.Model):
         (UPDATE_DATA_CODE, 'Update Data')
     )
 
-    PENDING_CODE = 1
-    REJECTED_CODE = 2
-    ACCEPTED_CODE = 3
-
-    STATUS_CHOICES = (
-        (PENDING_CODE, 'Pending'),
-        (REJECTED_CODE, 'Rejected'),
-        (ACCEPTED_CODE, 'Accepted'),
-    )
-
     organisation_name = models.CharField(
         verbose_name='Organization\'s Name',
         help_text='Organization\'s Name',

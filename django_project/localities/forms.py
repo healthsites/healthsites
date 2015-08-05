@@ -110,6 +110,28 @@ class DataLoaderForm(models.ModelForm):
             'data_loader_mode',
         )
 
+    organisation_name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control'})
+    )
+
+    json_concept_mapping = forms.FileField(
+        widget=forms.FileInput(
+            attrs={'class': 'form-control'})
+    )
+
+    csv_data = forms.FileField(
+        widget=forms.FileInput(
+            attrs={'class': 'form-control'})
+    )
+
+    data_loader_mode = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={'class': 'form-control'}),
+        choices=DataLoader.DATA_LOADER_MODE_CHOICES,
+        initial=DataLoader.REPLACE_DATA_CODE,
+    )
+
     def save(self, commit=True):
         """Save method.
         """

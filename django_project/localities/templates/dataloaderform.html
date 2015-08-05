@@ -7,10 +7,10 @@
     <h4 class="modal-title">Healthsites - Data Loader</h4>
 </div>
 <div class="modal-body">
-
+{#    {% load bootstrap_tags %}#}
     <form id="add_even_form"  class="" action="" method="post">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form.as_p}}
         <button type="button" class="btn btn-default"
                 data-dismiss="modal">Cancel</button>
         <input type="submit" class="btn btn-primary" value="Submit" />

@@ -6,6 +6,7 @@ INSTALLED_APPS += (
     'pipeline',
     'social.apps.django_app.default',
     'pg_fts',
+    'django_forms_bootstrap',
 )
 
 # define template function (example for underscore)

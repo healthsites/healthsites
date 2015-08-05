@@ -8,3 +8,5 @@ nodeenv
 raven
 python-social-auth
 django-pg-fts
+django-forms-bootstrap
+
