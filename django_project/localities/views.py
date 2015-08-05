@@ -14,7 +14,7 @@ from braces.views import JSONResponseMixin, LoginRequiredMixin
 
 from .models import Locality, Domain, Changeset
 from .utils import render_fragment, parse_bbox
-from .forms import LocalityForm, DomainForm
+from .forms import LocalityForm, DomainForm, DataLoaderForm
 
 from .map_clustering import cluster
 
@@ -204,3 +204,22 @@ class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
 
     def get_form(self, form_class):
         return form_class(domain=self.object, **self.get_form_kwargs())
+
+
+class DataLoaderView(LoginRequiredMixin, FormView):
+    """Handles DataLoader.
+    """
+    form_class = DataLoaderForm
+    template_name = 'updateform.html'
+
+    def get_form(self, form_class):
+        return form_class(domain=self.object, **self.get_form_kwargs())
+
+    def form_valid(self, form):
+        pass
+
+    def get(self, request, *args, **kwargs):
+        return super(DataLoaderView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return super(DataLoaderView, self).post(request, *args, **kwargs)

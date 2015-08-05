@@ -55,6 +55,14 @@
   </div>
   </div>
   <div class="navbar-right nav navbar-nav">
+    {% if user.is_authenticated %}
+      <a id="data-loader-button" class="custom-navbar-item"
+         data-toggle="modal"
+         href="/data-loader"
+         data-target="#data-loader-modal"><i
+              class="mdi-action-face-unlock"></i> <span
+              class="hidden-xs">Data Loader</span></a>
+    {% endif %}
     <a id="about-button" class="custom-navbar-item"
             data-toggle="modal"
             href="/about"
@@ -69,6 +77,15 @@
 {% block content %}
 
 {% endblock content %}
+
+<!-- About Modal -->
+<div class="modal fade" id="data-loader-modal" tabindex="-1" role="dialog"
+     aria-labelledby="data-loader-modal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div> <!-- /.modal-content -->
+    </div> <!-- /.modal-dialog -->
+</div> <!-- /.modal -->
 
 <!-- About Modal -->
 <div class="modal fade" id="about-modal" tabindex="-1" role="dialog"
