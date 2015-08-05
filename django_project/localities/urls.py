@@ -29,7 +29,6 @@ urlpatterns = patterns(
     ),
 
     url(
-        r'^data-loader$', DataLoaderView.as_view(),
-        name='data-loader;'
+        r'^data-loader$', DataLoaderView.as_view(), name='data-loader;'
     )
 )

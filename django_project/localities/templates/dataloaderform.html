@@ -8,11 +8,17 @@
 </div>
 <div class="modal-body">
 
-    Form goes here.
+    <form id="add_even_form"  class="" action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="button" class="btn btn-default"
+                data-dismiss="modal">Cancel</button>
+        <input type="submit" class="btn btn-primary" value="Submit" />
+    </form>
 
 </div><!-- /model-body -->
 <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+{#    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>#}
 </div><!-- /modal-footer -->
 </body>
 </html>

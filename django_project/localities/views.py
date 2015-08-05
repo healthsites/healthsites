@@ -210,10 +210,10 @@ class DataLoaderView(LoginRequiredMixin, FormView):
     """Handles DataLoader.
     """
     form_class = DataLoaderForm
-    template_name = 'updateform.html'
+    template_name = 'dataloaderform.html'
 
     def get_form(self, form_class):
-        return form_class(domain=self.object, **self.get_form_kwargs())
+        return form_class()
 
     def form_valid(self, form):
         pass
