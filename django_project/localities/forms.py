@@ -4,7 +4,7 @@ LOG = logging.getLogger(__name__)
 
 import django.forms as forms
 
-from .models import Domain
+from .models import Domain, DataLoader
 from .utils import render_fragment
 
 
@@ -95,3 +95,27 @@ class LocalityForm(forms.Form):
             self.fields[spec.attribute.key] = field
             self.fields[spec.attribute.key].widget.attrs.update(
                 {'class': 'form-control'})
+
+
+class DataLoaderForm(forms.Form):
+    """Form for DataLoader.
+    """
+    class Meta:
+        model = DataLoader
+        fields = (
+            'organisation_name',
+            'json_concept_mapping',
+            'csv_data',
+            'data_loader_mode'
+        )
+
+    def save(self, commit=True):
+        """Save method.
+        """
+        data = self.cleaned_data
+        data_loader = super(DataLoaderForm, self).save(commit=False)
+        data_loader.author = self.user
+        data_loader.applied = False
+        if commit:
+            data_loader.save()
+        return data_loader
