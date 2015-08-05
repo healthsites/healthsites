@@ -3,6 +3,7 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import django.forms as forms
+from django.forms import models
 
 from .models import Domain, DataLoader
 from .utils import render_fragment
@@ -97,7 +98,7 @@ class LocalityForm(forms.Form):
                 {'class': 'form-control'})
 
 
-class DataLoaderForm(forms.Form):
+class DataLoaderForm(models.ModelForm):
     """Form for DataLoader.
     """
     class Meta:
@@ -106,7 +107,7 @@ class DataLoaderForm(forms.Form):
             'organisation_name',
             'json_concept_mapping',
             'csv_data',
-            'data_loader_mode'
+            'data_loader_mode',
         )
 
     def save(self, commit=True):

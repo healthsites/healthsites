@@ -450,8 +450,18 @@ class DataLoader(models.Model):
         (UPDATE_DATA_CODE, 'Update Data')
     )
 
+    PENDING_CODE = 1
+    REJECTED_CODE = 2
+    ACCEPTED_CODE = 3
+
+    STATUS_CHOICES = (
+        (PENDING_CODE, 'Pending'),
+        (REJECTED_CODE, 'Rejected'),
+        (ACCEPTED_CODE, 'Accepted'),
+    )
+
     organisation_name = models.CharField(
-        name='Organization\'s Name',
+        verbose_name='Organization\'s Name',
         help_text='Organization\'s Name',
         null=False,
         blank=False,
@@ -459,14 +469,14 @@ class DataLoader(models.Model):
     )
 
     json_concept_mapping = models.FileField(
-        name='JSON Concept Mapping',
+        verbose_name='JSON Concept Mapping',
         help_text='JSON Concept Mapping File.',
         upload_to='json_mapping/%Y/%m/%d',
         max_length=100
     )
 
     csv_data = models.FileField(
-        name='CSV Data',
+        verbose_name='CSV Data',
         help_text='CSV data that contains the data.',
         upload_to='csv_data/%Y/%m/%d',
         max_length=100
