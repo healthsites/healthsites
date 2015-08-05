@@ -5,7 +5,8 @@ from .models import (
     Domain,
     Attribute,
     Specification,
-    Changeset
+    Changeset,
+    DataLoader
 )
 
 from .forms import DomainModelForm
@@ -42,3 +43,9 @@ class SpecificationMA(ChangesetMixin, admin.ModelAdmin):
     fields = ('domain', 'attribute', 'required')
 
 admin.site.register(Specification, SpecificationMA)
+
+
+class DataUpdateAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(DataLoader, DataUpdateAdmin)
