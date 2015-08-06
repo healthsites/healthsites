@@ -4,27 +4,23 @@
     <script>
         $(document).ready(function () {
             $('#data-loader-form').submit(function(e) {
-                console.log('submit data loader form');
-                alert('submit data loader form4');
                 $.ajax({
                     type: 'POST',
                     url: '/load-data',
-                    data:  '',
+                    data:  $('#data-loader-form').serialize(),
                     dataType: 'json',
                     success: function(json){
                         console.log('Ajax success');
                         if (json['success']){
-                            console.log('Ajax calls success');
+                            alert('Ajax calls success');
                         } else {
-                            console.log('Ajax calls error');
+                            alert('Ajax calls failed');
+                            alert(json['error_message']);
                         }
-                        console.log('Ajax finished');
-                        alert('submit data loader form');
                     },
                     error: function(xhr, errmsg, err){
                         console.log(xhr.status + ": " + xhr.responseText);
                         alert('error broh');
-                        alert(xhr.status + ": " + xhr.responseText);
                     }
                 });
                 e.preventDefault();
