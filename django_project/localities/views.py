@@ -3,7 +3,7 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import uuid
-
+import json
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse, Http404
@@ -223,3 +223,29 @@ class DataLoaderView(LoginRequiredMixin, FormView):
 
     def post(self, request, *args, **kwargs):
         return super(DataLoaderView, self).post(request, *args, **kwargs)
+
+
+def load_data(request):
+    """Handling load data."""
+    if request.method == 'POST':
+        form = DataLoaderForm(request.POST, user=request.user)
+        if form.is_valid():
+            data_loader = form.save(True)
+            # Do processing here
+            response = {}
+            success_message = 'You have successfully load data'
+            response['success_message'] = success_message
+            response['success'] = True
+            return HttpResponse(json.dumps(
+                response,
+                ensure_ascii=False),
+                content_type='application/javascript')
+        else:
+            error_message = form.errors
+            response = {'error_message': str(error_message), 'success': False}
+            return HttpResponse(json.dumps(
+                response,
+                ensure_ascii=False),
+                content_type='application/javascript')
+    else:
+        pass

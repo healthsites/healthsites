@@ -1,5 +1,37 @@
 <html xmlns="http://www.w3.org/1999/html">
 <head>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script>
+        $(document).ready(function () {
+            $('#data-loader-form').submit(function(e) {
+                console.log('submit data loader form');
+                alert('submit data loader form4');
+                $.ajax({
+                    type: 'POST',
+                    url: '/load-data',
+                    data:  '',
+                    dataType: 'json',
+                    success: function(json){
+                        console.log('Ajax success');
+                        if (json['success']){
+                            console.log('Ajax calls success');
+                        } else {
+                            console.log('Ajax calls error');
+                        }
+                        console.log('Ajax finished');
+                        alert('submit data loader form');
+                    },
+                    error: function(xhr, errmsg, err){
+                        console.log(xhr.status + ": " + xhr.responseText);
+                        alert('error broh');
+                        alert(xhr.status + ": " + xhr.responseText);
+                    }
+                });
+                e.preventDefault();
+                alert('submit data loader form2');
+            });
+        });
+    </script>
 </head>
 <body>
 <div class="modal-header">
@@ -8,7 +40,7 @@
 </div>
 <div class="modal-body">
 {#    {% load bootstrap_tags %}#}
-    <form id="add_even_form"  class="" action="" method="post">
+    <form id="data-loader-form"  class="" action="" method="post">
         {% csrf_token %}
         {{ form.as_p}}
         <button type="button" class="btn btn-default"

@@ -132,6 +132,10 @@ class DataLoaderForm(models.ModelForm):
         initial=DataLoader.REPLACE_DATA_CODE,
     )
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(DataLoaderForm, self).__init__(*args, **kwargs)
+
     def save(self, commit=True):
         """Save method.
         """
