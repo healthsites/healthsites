@@ -228,7 +228,8 @@ class DataLoaderView(LoginRequiredMixin, FormView):
 def load_data(request):
     """Handling load data."""
     if request.method == 'POST':
-        form = DataLoaderForm(request.POST, user=request.user)
+        form = DataLoaderForm(request.POST, files=request.FILES,
+                              user=request.user)
         if form.is_valid():
             data_loader = form.save(True)
             # Do processing here

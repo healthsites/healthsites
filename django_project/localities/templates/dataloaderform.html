@@ -3,29 +3,25 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script>
         $(document).ready(function () {
-            $('#data-loader-form').submit(function(e) {
+            function upload(event) {
+                event.preventDefault();
+                var data = new FormData($('form').get(0));
+
                 $.ajax({
-                    type: 'POST',
-                    url: '/load-data',
-                    data:  $('#data-loader-form').serialize(),
-                    dataType: 'json',
-                    success: function(json){
-                        console.log('Ajax success');
-                        if (json['success']){
-                            alert('Ajax calls success');
-                        } else {
-                            alert('Ajax calls failed');
-                            alert(json['error_message']);
-                        }
-                    },
-                    error: function(xhr, errmsg, err){
-                        console.log(xhr.status + ": " + xhr.responseText);
-                        alert('error broh');
+                    url: $(this).attr('action'),
+                    type: $(this).attr('method'),
+                    data: data,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function(data) {
+                        alert('success');
                     }
                 });
-                e.preventDefault();
-                alert('submit data loader form2');
-            });
+                return false;
+            }
+
+            $('#data-loader-form').submit(upload);
         });
     </script>
 </head>
@@ -36,7 +32,8 @@
 </div>
 <div class="modal-body">
 {#    {% load bootstrap_tags %}#}
-    <form id="data-loader-form"  class="" action="" method="post">
+    <form id="data-loader-form"  class="" action="/load-data" method="post"
+          enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p}}
         <button type="button" class="btn btn-default"

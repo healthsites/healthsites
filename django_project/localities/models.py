@@ -492,3 +492,6 @@ class DataLoader(models.Model):
         help_text='The user who propose the data loader.',
         null=False
     )
+
+    def __str__(self):
+        return self.organisation_name
