@@ -15,6 +15,7 @@ from braces.views import JSONResponseMixin, LoginRequiredMixin
 from .models import Locality, Domain, Changeset
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm
+from .load_data import LoadData
 
 from .map_clustering import cluster
 
@@ -232,6 +233,10 @@ def load_data(request):
                               user=request.user)
         if form.is_valid():
             data_loader = form.save(True)
+
+            load_data_object = LoadData(data_loader)
+            load_data_object.run()
+
             # Do processing here
             response = {}
             success_message = 'You have successfully load data'
