@@ -167,7 +167,7 @@ class CSVImporter:
                     key: self._read_attr(row_data, row_val)
                     for key, row_val in self.attr_map['attributes'].iteritems()
                     if self._read_attr(row_data, row_val) not in (None, '')
-                }
+                    }
             }
         })
 
@@ -207,7 +207,24 @@ class CSVImporter:
 
                 loc.save()
                 LOG.info('Updated %s (%s)', loc.uuid, loc.id)
-                loc.set_values(values['values'], social_user=self.user)
+                if self.mode == 1:
+                    # replace
+                    # delete old value
+                    old_value = loc.repr_dict()['values']
+                    new_value = values['values']
+                    loc.set_values(new_value, social_user=self.user)
+
+                elif self.mode == 2:
+                    # update
+                    # merged old and new value
+                    # set merged value
+                    old_value = loc.repr_dict()['values']
+                    new_value = values['values']
+                    merged_value = old_value.copy()
+                    merged_value.update(new_value)
+                    loc.set_values(merged_value, social_user=self.user)
+                else:
+                    loc.set_values(values['values'], social_user=self.user)
 
                 self.report['modified'] += 1
 
