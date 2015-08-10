@@ -16,7 +16,7 @@ from .exceptions import LocalityImportError
 from ._csv_unicode import UnicodeDictReader
 
 
-class CSVImporter():
+class CSVImporter:
     """
     CSV based importer
 
@@ -31,10 +31,20 @@ class CSVImporter():
 
     def __init__(
             self, domain_name, source_name, csv_filename, attr_json_file,
-            use_tabs=False):
+            use_tabs=False, user=None, mode=1):
         self.domain_name = domain_name
         self.source_name = source_name
         self.csv_filename = csv_filename
+        # Mode
+        # 1 : Replace Data
+        # 2 : Update Data
+        self.mode = mode
+        if not user:
+            user = get_user_model()
+            # Dummy user if not provided.
+            self.user = user.objects.get(pk=-1)
+        else:
+            self.user = user
 
         self.use_tabs = use_tabs
 
@@ -57,31 +67,33 @@ class CSVImporter():
             LOG.error(msg)
             raise LocalityImportError(msg)
 
-    def _find_locality(self, uuid, upstream_id):
+    @staticmethod
+    def _find_locality(the_uuid, upstream_id):
         """
-        Tries to find a Locality in the database either by *uuid* or a
+        Tries to find a Locality in the database either by *the_uuid* or a
         combination of *source_name* and *upstream_id*
 
         If there are no results, just create a new Locality
         """
 
         try:
-            # try to find locality by uuid or upstream_id
-            loc = Locality.objects.filter(uuid=uuid).get()
-            LOG.debug('Found Locality by uuid: %s', uuid)
-            return (loc, False)
+            # try to find locality by the_uuid or upstream_id
+            loc = Locality.objects.filter(uuid=the_uuid).get()
+            LOG.debug('Found Locality by the_uuid: %s', the_uuid)
+            return loc, False
         except Locality.DoesNotExist:
             try:
                 loc = Locality.objects.filter(upstream_id=upstream_id).get()
                 LOG.debug('Found Locality by upstream_id: %s', upstream_id)
-                return (loc, False)
+                return loc, False
             except Locality.DoesNotExist:
                 # create new Locality
                 loc = Locality()
                 LOG.debug('Creating a new Locality')
-                return (loc, True)
+                return loc, True
 
-    def _read_attr(self, row, attr):
+    @staticmethod
+    def _read_attr(row, attr):
         """
         Try to read attribute from a row
         """
@@ -91,7 +103,8 @@ class CSVImporter():
         except KeyError:
             return None
 
-    def parse_geom(self, lon, lat):
+    @staticmethod
+    def parse_geom(lon, lat):
         """
         Parse geometry
         """
@@ -104,7 +117,7 @@ class CSVImporter():
             if not(-180.0 < lon < 180.0 and -90.0 < lat < 90.0):
                 return None
             else:
-                return (lon, lat)
+                return lon, lat
         except ValueError:
             return None
 
@@ -117,7 +130,7 @@ class CSVImporter():
         row_upstream_id = self._read_attr(
             row_data, self.attr_map['upstream_id']
         )
-        if not(row_upstream_id):
+        if not row_upstream_id:
             LOG.error('Row %s has no upstream_id, skipping...', row_num)
             # skip this row
             return None
@@ -134,7 +147,7 @@ class CSVImporter():
             row_data[self.attr_map['geom'][0]],
             row_data[self.attr_map['geom'][1]]
         )
-        if not(tmp_geom):
+        if not tmp_geom:
             LOG.error('Row %s has invalid geometry, skipping...', row_num)
             # skip this row
             return None
@@ -158,11 +171,7 @@ class CSVImporter():
         """
 
         # generate a new changeset id
-        User = get_user_model()
-
-        # TODO: use real user for import, at the moment we use a dummy user
-        dummy_user = User.objects.get(pk=-1)
-        tmp_changeset = Changeset.objects.create(social_user=dummy_user)
+        tmp_changeset = Changeset.objects.create(social_user=self.user)
 
         for gen_upstream_id, values in self.parsed_data.iteritems():
             row_uuid = values['uuid']
@@ -180,14 +189,14 @@ class CSVImporter():
                 LOG.info('Created %s (%s)', loc.uuid, loc.id)
 
                 # save values for Locality
-                loc.set_values(values['values'], social_user=dummy_user)
+                loc.set_values(values['values'], social_user=self.user)
             else:
                 loc.changeset = tmp_changeset
                 loc.geom = Point(*values['geom'])
 
                 loc.save()
                 LOG.info('Updated %s (%s)', loc.uuid, loc.id)
-                loc.set_values(values['values'], social_user=dummy_user)
+                loc.set_values(values['values'], social_user=self.user)
 
     def parse_file(self):
         """
