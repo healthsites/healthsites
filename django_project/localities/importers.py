@@ -184,6 +184,18 @@ class CSVImporter:
             loc, _created = self._find_locality(row_uuid, gen_upstream_id)
 
             if _created:
+                # finding duplication
+                loc_geom = Point(*values['geom'])
+                loc_envelope = self.envelope(loc_geom.x, loc_geom.y)
+                duplicate_localities = Locality.objects.filter(
+                    geom__within=loc_envelope)
+
+                if len(duplicate_localities) > 0:
+                    LOG.info('Possible duplicate %s (%s) at (%s, %s)',
+                             loc.uuid, loc.id, loc_geom.x, loc_geom.y)
+                    self.report['duplicated'] += 1
+                    continue
+
                 loc.changeset = tmp_changeset
                 loc.domain = self.domain
                 loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None

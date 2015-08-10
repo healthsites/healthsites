@@ -258,6 +258,11 @@ def load_data(request):
                 'There are %s localities created and %s localities modified.'
                 % (response['created'], response['modified'])
             )
+            if response['duplicated'] > 0:
+                response['detailed_message'] += (
+                    ' You also have %s possible duplicated localities, '
+                    'and they are not added.' % response['duplicated']
+                )
             return HttpResponse(json.dumps(
                 response,
                 ensure_ascii=False),
