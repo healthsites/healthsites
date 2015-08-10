@@ -229,6 +229,13 @@ staging-collectstatic:
 	# uwsgi container it seems so I use docker exec here
 	@docker exec -t -i $(PROJECT_ID)staging_uwsgi_1 python manage.py collectstatic --noinput
 
+staging-reload:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Reload django project in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i $(PROJECT_ID)staging_uwsgi_1 uwsgi --reload /tmp/django.pid
+
 staging-kill:
 	@echo
 	@echo "------------------------------------------------------------------"
