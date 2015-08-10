@@ -27,14 +27,13 @@ class CSVImporter:
     * attribute mapping file (JSON) - maps csv column names to specifications
     """
 
-    parsed_data = {}
-
     def __init__(
             self, domain_name, source_name, csv_filename, attr_json_file,
             use_tabs=False, user=None, mode=1):
         self.domain_name = domain_name
         self.source_name = source_name
         self.csv_filename = csv_filename
+        self.parsed_data = {}
         # Mode
         # 1 : Replace Data
         # 2 : Update Data
