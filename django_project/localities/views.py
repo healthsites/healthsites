@@ -15,7 +15,6 @@ from braces.views import JSONResponseMixin, LoginRequiredMixin
 from .models import Locality, Domain, Changeset
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm
-from .load_data import LoadData
 from .importers import CSVImporter
 
 from .map_clustering import cluster
