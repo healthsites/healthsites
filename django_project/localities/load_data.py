@@ -126,7 +126,6 @@ class LoadData(object):
         })
 
     def apply(self):
-
         tmp_changeset = Changeset.objects.create(social_user=self.user)
 
         for gen_upstream_id, values in self.parsed_data.iteritems():

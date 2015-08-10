@@ -3,6 +3,12 @@
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script>
         $(document).ready(function () {
+            $('#data-loader-modal').on('hidden.bs.modal', function () {
+                $('#data-loader-form').show();
+                $('#result').hide();
+                alert('close')
+            });
+
             function upload(event) {
                 event.preventDefault();
                 var data = new FormData($('form').get(0));
@@ -14,11 +20,21 @@
                     cache: false,
                     processData: false,
                     contentType: false,
+                    dataType: 'json',
                     success: function(data) {
-                        alert('success');
+                        $('#data-loader-form').hide();
+                        $('#result').show();
+                        $('#result_message').text(data['message']);
+                        $('#detailed_result_message').text(
+                                data['detailed_message']);
+                    },
+                    error: function(xhr, status, error){
+                        $('#data-loader-form').hide();
+                        $('#result').show();
+                        $('#result_message').text(data['message']);
+                        $('#detailed_result_message').text(xhr.responseText);
                     }
                 });
-                return false;
             }
 
             $('#data-loader-form').submit(upload);
@@ -40,6 +56,10 @@
                 data-dismiss="modal">Cancel</button>
         <input type="submit" class="btn btn-primary" value="Submit" />
     </form>
+    <div id="result" hidden>
+        <p id="result_message"></p>
+        <p id="detailed_result_message"></p>
+    </div>
 
 </div><!-- /model-body -->
 <div class="modal-footer">

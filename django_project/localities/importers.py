@@ -5,7 +5,7 @@ LOG = logging.getLogger(__name__)
 import uuid
 import json
 
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, Polygon
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
@@ -47,9 +47,16 @@ class CSVImporter:
             self.user = user
 
         self.use_tabs = use_tabs
+        self.delta = 0.01
 
         with open(attr_json_file, 'rb') as attr_map_file:
             self.attr_map = json.load(attr_map_file)
+
+        self.report = {
+            'created': 0,
+            'modified': 0,
+            'duplicated': 0
+        }
 
         # import
         self._get_domain()
@@ -190,13 +197,32 @@ class CSVImporter:
 
                 # save values for Locality
                 loc.set_values(values['values'], social_user=self.user)
+
+                self.report['created'] += 1
             else:
+                # check location duplication
+
+                # apply mode
                 loc.changeset = tmp_changeset
                 loc.geom = Point(*values['geom'])
 
                 loc.save()
                 LOG.info('Updated %s (%s)', loc.uuid, loc.id)
                 loc.set_values(values['values'], social_user=self.user)
+
+                self.report['modified'] += 1
+
+    def envelope(self, lon, lat):
+        """Return polygon envelope for point (lon, lat)
+        """
+        x_min = lon - self.delta
+        x_max = lon + self.delta
+        y_min = lat - self.delta
+        y_max = lat + self.delta
+
+        polygon = Polygon.from_bbox([x_min, y_min, x_max, y_max])
+
+        return polygon
 
     def parse_file(self):
         """

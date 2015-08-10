@@ -16,6 +16,7 @@ from .models import Locality, Domain, Changeset
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm
 from .load_data import LoadData
+from .importers import CSVImporter
 
 from .map_clustering import cluster
 
@@ -234,21 +235,40 @@ def load_data(request):
         if form.is_valid():
             data_loader = form.save(True)
 
-            load_data_object = LoadData(data_loader)
-            load_data_object.run()
+            # Data Processing
+            csv_importer = CSVImporter(
+                'Health',
+                data_loader.organisation_name,
+                data_loader.csv_data.path,
+                data_loader.json_concept_mapping.path,
+                use_tabs=True,
+                user=data_loader.author,
+                mode=data_loader.data_loader_mode
+            )
 
-            # Do processing here
             response = {}
             success_message = 'You have successfully load data'
-            response['success_message'] = success_message
+            response['created'] = csv_importer.report['created']
+            response['modified'] = csv_importer.report['modified']
+            response['duplicated'] = csv_importer.report['duplicated']
+
+            response['message'] = success_message
             response['success'] = True
+            response['detailed_message'] = (
+                'There are %s localities created and %s localities modified.'
+                % (response['created'], response['modified'])
+            )
             return HttpResponse(json.dumps(
                 response,
                 ensure_ascii=False),
                 content_type='application/javascript')
         else:
             error_message = form.errors
-            response = {'error_message': str(error_message), 'success': False}
+            response = {
+                'detailed_message': str(error_message),
+                'success': False,
+                'message': 'You have failed to load data.'
+            }
             return HttpResponse(json.dumps(
                 response,
                 ensure_ascii=False),
