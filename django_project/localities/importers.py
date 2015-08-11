@@ -223,8 +223,14 @@ class CSVImporter:
                     # replace
                     # delete old value
                     old_value = loc.repr_dict()['values']
+                    for key in old_value.keys():
+                        old_value[key] = ''
                     new_value = values['values']
-                    loc.set_values(new_value, social_user=self.user)
+
+                    merged_value = old_value.copy()
+                    merged_value.update(new_value)
+
+                    loc.set_values(merged_value, social_user=self.user)
 
                 elif self.mode == 2:
                     # update

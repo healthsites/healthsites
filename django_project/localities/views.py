@@ -245,6 +245,9 @@ def load_data(request):
                 mode=data_loader.data_loader_mode
             )
 
+            data_loader.applied = True
+            data_loader.save()
+
             response = {}
             success_message = 'You have successfully load data'
             response['created'] = csv_importer.report['created']
