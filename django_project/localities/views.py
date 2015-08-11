@@ -240,7 +240,7 @@ def load_data(request):
                 data_loader.organisation_name,
                 data_loader.csv_data.path,
                 data_loader.json_concept_mapping.path,
-                use_tabs=True,
+                use_tabs=False,
                 user=data_loader.author,
                 mode=data_loader.data_loader_mode
             )
