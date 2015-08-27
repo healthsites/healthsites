@@ -251,7 +251,7 @@ staging-kill:
 
 	@docker-compose -p $(PROJECT_ID)-staging kill
 
-worker:
+staging-worker:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running worker in staging mode"

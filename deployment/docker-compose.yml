@@ -57,7 +57,7 @@ mapproxy:
 rabbitmq:
   image: library/rabbitmq
   hostname: rabbitmq
-  environmet:
+  environment:
       - RABBIT_PASSWORD=rabbit_test_password
       - USER=rabbit_user
       - RABBITMQ_NODENAME=rabbit
@@ -70,6 +70,7 @@ uwsgi:
     - DATABASE_USERNAME=docker
     - DATABASE_PASSWORD=docker
     - DATABASE_HOST=db
+    - RABBITMQ_HOST=rabbitmq
     - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
     - VIRTUAL_HOST=healthsites.io
     - VIRTUAL_PORT=8080
@@ -82,6 +83,8 @@ uwsgi:
   links:
     - smtp:smtp
     - db:db
+    - rabbitmq:rabbitmq
+    - worker:worker
 
 worker:
   build: docker-prod
@@ -92,6 +95,7 @@ worker:
     - DATABASE_USERNAME=docker
     - DATABASE_PASSWORD=docker
     - DATABASE_HOST=db
+    - RABBITMQ_HOST=rabbitmq
     - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
     - VIRTUAL_HOST=stagging.healthsites.io
     - VIRTUAL_PORT=8080
