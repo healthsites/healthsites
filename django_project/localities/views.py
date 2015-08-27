@@ -4,6 +4,9 @@ LOG = logging.getLogger(__name__)
 
 import uuid
 import json
+# register signals
+import signals  # noqa
+
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.http import HttpResponse, Http404
@@ -15,7 +18,6 @@ from braces.views import JSONResponseMixin, LoginRequiredMixin
 from .models import Locality, Domain, Changeset
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm
-from .importers import CSVImporter
 
 from .map_clustering import cluster
 
@@ -247,6 +249,10 @@ def load_data(request):
             #
             # data_loader.applied = True
             data_loader.save()
+
+            signals.data_uploaded_signal.send(
+                sender=load_data, instance=data_loader
+            )
 
             response = {}
             success_message = 'You have successfully upload your data'

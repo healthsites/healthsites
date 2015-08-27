@@ -95,6 +95,12 @@ logs:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) logs uwsgi
 
+workerlogs:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Showing celery worker logs in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) logs worker
 
 dblogs:
 	@echo
