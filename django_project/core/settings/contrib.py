@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .base import *  # noqa
+import os
 
 # Extra installed apps
 INSTALLED_APPS += (
@@ -7,6 +8,7 @@ INSTALLED_APPS += (
     'social.apps.django_app.default',
     'pg_fts',
     'django_forms_bootstrap',
+    'celery'
 )
 
 # define template function (example for underscore)
@@ -30,3 +32,9 @@ AUTHENTICATION_BACKENDS = (
     'social.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+BROKER_URL = 'amqp://guest:guest@%s:5672//' % os.environ['RABBITMQ_HOST']
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

@@ -66,6 +66,13 @@ reload:
 	@echo "------------------------------------------------------------------"
 	@docker exec -t -i $(PROJECT_ID)_uwsgi_1 uwsgi --reload  /tmp/django.pid
 
+worker:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running worker in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run worker
+
 kill:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -243,6 +250,13 @@ staging-kill:
 	@echo "------------------------------------------------------------------"
 
 	@docker-compose -p $(PROJECT_ID)-staging kill
+
+worker:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running worker in staging mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID)-staging run worker
 
 staging-rm: kill
 	@echo

@@ -54,6 +54,14 @@ mapproxy:
     - qgisserver:qgisserver
 
 
+rabbitmq:
+  image: library/rabbitmq
+  hostname: rabbitmq
+  environmet:
+      - RABBIT_PASSWORD=rabbit_test_password
+      - USER=rabbit_user
+      - RABBITMQ_NODENAME=rabbit
+
 uwsgi:
   build: docker-prod
   hostname: uwsgi
@@ -74,6 +82,29 @@ uwsgi:
   links:
     - smtp:smtp
     - db:db
+
+worker:
+  build: docker-prod
+  hostname: worker
+  command: celery worker -A event_mapper.celeryconf -l info
+  environment:
+    - DATABASE_NAME=gis
+    - DATABASE_USERNAME=docker
+    - DATABASE_PASSWORD=docker
+    - DATABASE_HOST=db
+    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+    - VIRTUAL_HOST=stagging.healthsites.io
+    - VIRTUAL_PORT=8080
+  volumes:
+    - ../django_project:/home/web/django_project
+    - ./static:/home/web/static
+    - ./media:/home/web/media
+    - ./reports:/home/web/reports
+    - ./logs:/var/log/
+  links:
+    - smtp:smtp
+    - db:db
+    - rabbitmq:rabbitmq
 
 dbbackups:
   image: kartoza/pg-backup
