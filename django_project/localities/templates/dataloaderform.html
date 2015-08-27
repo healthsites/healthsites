@@ -6,6 +6,7 @@
             $('#data-loader-modal').on('hidden.bs.modal', function () {
                 $('#data-loader-form').show();
                 $('#result').hide();
+                $('#modal_close_button').hide();
             });
 
             function upload(event) {
@@ -23,6 +24,7 @@
                     success: function(data) {
                         $('#data-loader-form').hide();
                         $('#result').show();
+                        $('#modal_close_button').show();
                         $('#result_message').text(data['message']);
                         $('#detailed_result_message').text(
                                 data['detailed_message']);
@@ -30,6 +32,7 @@
                     error: function(xhr, status, error){
                         $('#data-loader-form').hide();
                         $('#result').show();
+                        $('#modal_close_button').hide();
                         $('#result_message').text(data['message']);
                         $('#detailed_result_message').text(xhr.responseText);
                     }
@@ -62,7 +65,7 @@
 
 </div><!-- /model-body -->
 <div class="modal-footer">
-{#    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>#}
+    <button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_button" style="display: none;">Close</button>
 </div><!-- /modal-footer -->
 </body>
 </html>

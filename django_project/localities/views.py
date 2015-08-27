@@ -235,36 +235,36 @@ def load_data(request):
             data_loader = form.save(True)
 
             # Data Processing
-            csv_importer = CSVImporter(
-                'Health',
-                data_loader.organisation_name,
-                data_loader.csv_data.path,
-                data_loader.json_concept_mapping.path,
-                use_tabs=False,
-                user=data_loader.author,
-                mode=data_loader.data_loader_mode
-            )
-
-            data_loader.applied = True
+            # csv_importer = CSVImporter(
+            #     'Health',
+            #     data_loader.organisation_name,
+            #     data_loader.csv_data.path,
+            #     data_loader.json_concept_mapping.path,
+            #     use_tabs=False,
+            #     user=data_loader.author,
+            #     mode=data_loader.data_loader_mode
+            # )
+            #
+            # data_loader.applied = True
             data_loader.save()
 
             response = {}
-            success_message = 'You have successfully load data'
-            response['created'] = csv_importer.report['created']
-            response['modified'] = csv_importer.report['modified']
-            response['duplicated'] = csv_importer.report['duplicated']
+            success_message = 'You have successfully upload your data'
+            # response['created'] = csv_importer.report['created']
+            # response['modified'] = csv_importer.report['modified']
+            # response['duplicated'] = csv_importer.report['duplicated']
 
             response['message'] = success_message
             response['success'] = True
             response['detailed_message'] = (
-                'There are %s localities created and %s localities modified.'
-                % (response['created'], response['modified'])
+                'Please wait several minutes for Healthsites to load your data. We will send you an email if we '
+                'have finished loading the data.'
             )
-            if response['duplicated'] > 0:
-                response['detailed_message'] += (
-                    ' You also have %s possible duplicated localities, '
-                    'and they are not added.' % response['duplicated']
-                )
+            # if response['duplicated'] > 0:
+            #     response['detailed_message'] += (
+            #         ' You also have %s possible duplicated localities, '
+            #         'and they are not added.' % response['duplicated']
+            #     )
             return HttpResponse(json.dumps(
                 response,
                 ensure_ascii=False),
