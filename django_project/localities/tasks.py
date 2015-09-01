@@ -12,6 +12,7 @@ __doc__ = ''
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from .celery import app
 
 from django.core.mail import send_mail
 
@@ -20,8 +21,11 @@ logger = get_task_logger(__name__)
 from .importers import CSVImporter
 
 
-@shared_task
-def load_data(data_loader):
+@app.task
+def load_data_task(data_loader_pk):
+    from .models import DataLoader
+
+    data_loader = DataLoader.objects.get(pk=data_loader_pk)
     logger.info('Load data')
     # Process data
     csv_importer = CSVImporter(
@@ -38,3 +42,9 @@ def load_data(data_loader):
     # update data_loader
     data_loader.applied = True
     data_loader.save()
+
+
+@app.task
+def test_task(x, y):
+    logger.info('Load data')
+    print x + y

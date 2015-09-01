@@ -18,6 +18,7 @@ from braces.views import JSONResponseMixin, LoginRequiredMixin
 from .models import Locality, Domain, Changeset
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm
+from .tasks import load_data_task, test_task
 
 from .map_clustering import cluster
 
@@ -250,9 +251,12 @@ def load_data(request):
             # data_loader.applied = True
             data_loader.save()
 
-            signals.data_uploaded_signal.send(
-                sender=load_data, instance=data_loader
-            )
+            load_data_task.delay(data_loader.pk)
+            # test_task.delay(5, 10)
+
+            # signals.data_uploaded_signal.send(
+            #     sender=load_data, instance=data_loader
+            # )
 
             response = {}
             success_message = 'You have successfully upload your data'

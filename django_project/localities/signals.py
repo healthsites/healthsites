@@ -20,7 +20,7 @@ from .models import (
     ValueArchive
 )
 
-from .tasks import load_data
+from .tasks import load_data_task
 
 # define custom signals
 SIG_locality_values_updated = Signal()
@@ -159,5 +159,5 @@ def apply_data_loader(sender, instance, **kwargs):
     """
     LOG.info('start apply_data_loader')
     data_loader = instance
-    load_data.delay(data_loader)
+    load_data_task.delay(data_loader)
     LOG.info('finish apply_data_loader')
