@@ -22,7 +22,7 @@
         this.el = el;
         this.fields = [];
         this.fldOpen = -1;
-        this._generateS('1');
+        this._generateS('3');
         this._init();
     }
 
@@ -31,7 +31,7 @@
             var html = [
                 'I want to ',
                 '<select id="nl-form-1">',
-                    '<option value="1">edit</option>',
+                    //'<option value="1">edit</option>',  // Temporary remove edit option
                     '<option value="3">share</option>',
                 '</select>',
                 ' this locality'
