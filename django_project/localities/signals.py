@@ -159,5 +159,5 @@ def apply_data_loader(sender, instance, **kwargs):
     """
     LOG.info('start apply_data_loader')
     data_loader = instance
-    load_data(data_loader)
+    load_data.delay(data_loader)
     LOG.info('finish apply_data_loader')
