@@ -10,11 +10,8 @@ __copyright__ = 'imajimatika@gmail.com'
 __doc__ = ''
 
 
-from celery import shared_task
 from celery.utils.log import get_task_logger
 from .celery import app
-
-from django.core.mail import send_mail
 
 logger = get_task_logger(__name__)
 
@@ -23,6 +20,7 @@ from .importers import CSVImporter
 
 @app.task
 def load_data_task(data_loader_pk):
+    # Put here to avoid circular import
     from .models import DataLoader
 
     data_loader = DataLoader.objects.get(pk=data_loader_pk)

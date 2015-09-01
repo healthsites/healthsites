@@ -20,11 +20,9 @@ from .models import (
     ValueArchive
 )
 
-from .tasks import load_data_task
 
 # define custom signals
 SIG_locality_values_updated = Signal()
-data_uploaded_signal = Signal()
 
 
 def archive_basic_info(archive, instance, content_type):
@@ -151,13 +149,3 @@ def values_updated_handler(sender, instance, **kwargs):
     locind.rankd = loc_fts.get('D', '')
 
     locind.save()
-
-
-@receiver(data_uploaded_signal)
-def apply_data_loader(sender, instance, **kwargs):
-    """Apply data loader / load data.
-    """
-    LOG.info('start apply_data_loader')
-    data_loader = instance
-    load_data_task.delay(data_loader)
-    LOG.info('finish apply_data_loader')

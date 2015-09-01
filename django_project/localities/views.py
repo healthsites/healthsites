@@ -237,26 +237,9 @@ def load_data(request):
         if form.is_valid():
             data_loader = form.save(True)
 
-            # Data Processing
-            # csv_importer = CSVImporter(
-            #     'Health',
-            #     data_loader.organisation_name,
-            #     data_loader.csv_data.path,
-            #     data_loader.json_concept_mapping.path,
-            #     use_tabs=False,
-            #     user=data_loader.author,
-            #     mode=data_loader.data_loader_mode
-            # )
-            #
-            # data_loader.applied = True
             data_loader.save()
 
             load_data_task.delay(data_loader.pk)
-            # test_task.delay(5, 10)
-
-            # signals.data_uploaded_signal.send(
-            #     sender=load_data, instance=data_loader
-            # )
 
             response = {}
             success_message = 'You have successfully upload your data'
