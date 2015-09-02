@@ -1,5 +1,9 @@
 # Welcome to the healthsites code base!
 
+[![Join the chat at https://gitter.im/konektaz/healthsites](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/konektaz/healthsites?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+[![Join the chat at https://gitter.im/konektaz/healthsites](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/konektaz/healthsites?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Healthsites is a framework for capturing, publishing and sharing critical
 health and sanitation related data to help make these facilities more 
 accessible and relevant to the communities they serve. Our framework does not 
