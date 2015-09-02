@@ -153,9 +153,14 @@ class CSVImporter:
             row_data[self.attr_map['geom'][0]],
             row_data[self.attr_map['geom'][1]]
         )
+
         if not tmp_geom:
             LOG.error('Row %s has invalid geometry, skipping...', row_num)
             # skip this row
+            return None
+
+        if tmp_geom == (0, 0):
+            LOG.error('Row %s is located in Null Island (0, 0), skipping...', row_num)
             return None
 
         self.parsed_data.update({
