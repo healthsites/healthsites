@@ -304,7 +304,7 @@ staging-dbshell:
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in staging database"
 	@echo "------------------------------------------------------------------"
-	@docker exec -t -i $(PROJECT_ID)-staging_db_1 psql -U docker -h localhost gis
+	@docker exec -t -i $(PROJECT_ID)staging_db_1 psql -U docker -h localhost gis
 
 staging-qgis:
 	@echo
