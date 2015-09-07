@@ -46,6 +46,7 @@ admin.site.register(Specification, SpecificationMA)
 
 
 class DataUpdateAdmin(admin.ModelAdmin):
-    pass
+    list_display = (
+        'organisation_name', 'author', 'data_loader_mode','date_time_uploaded',  'applied', 'date_time_applied')
 
 admin.site.register(DataLoader, DataUpdateAdmin)

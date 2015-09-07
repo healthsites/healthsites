@@ -9,6 +9,8 @@ __date__ = '8/27/15'
 __copyright__ = 'imajimatika@gmail.com'
 __doc__ = ''
 
+from datetime import datetime
+
 
 from celery.utils.log import get_task_logger
 from .celery import app
@@ -24,7 +26,7 @@ def load_data_task(data_loader_pk):
     from .models import DataLoader
 
     data_loader = DataLoader.objects.get(pk=data_loader_pk)
-    logger.info('Load data')
+    logger.info('Start loading data')
     # Process data
     csv_importer = CSVImporter(
         'Health',
@@ -35,10 +37,13 @@ def load_data_task(data_loader_pk):
         user=data_loader.author,
         mode=data_loader.data_loader_mode
     )
+    logger.info('Finish loading data')
 
     # send email
     # update data_loader
     data_loader.applied = True
+    data_loader.date_time_applied = datetime.utcnow()
+    logger.info('date_time_applied: %s' % data_loader.date_time_applied)
     data_loader.save()
 
 

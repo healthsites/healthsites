@@ -3,6 +3,7 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import itertools
+from datetime import datetime
 
 from django.utils import timezone
 from django.utils.text import slugify
@@ -450,6 +451,22 @@ class DataLoader(models.Model):
         (UPDATE_DATA_CODE, 'Update Data')
     )
 
+    COMMA_CHAR = ','
+    TAB_CHAR = '\t'
+
+    COMMA_CODE = 1  # ,
+    TAB_CODE = 2  # \t
+
+    SEPARATORS = {
+        COMMA_CODE: COMMA_CHAR,
+        TAB_CODE: TAB_CHAR
+    }
+
+    SEPARATOR_CHOICES = (
+        (COMMA_CODE, 'Comma'),
+        (TAB_CODE, 'Tab'),
+    )
+
     organisation_name = models.CharField(
         verbose_name='Organization\'s Name',
         help_text='Organization\'s Name',
@@ -493,5 +510,30 @@ class DataLoader(models.Model):
         null=False
     )
 
+    date_time_uploaded = models.DateTimeField(
+        verbose_name='Uploaded (time)',
+        help_text='Timestamp (UTC) when the data uploaded',
+        null=False,
+    )
+
+    date_time_applied = models.DateTimeField(
+        verbose_name='Applied (time)',
+        help_text='When the data applied (loaded)',
+        null=True
+    )
+
+    separator = models.IntegerField(
+        choices=SEPARATOR_CHOICES,
+        verbose_name="Separator Character",
+        help_text='Separator character.',
+        null=False,
+        default=COMMA_CODE
+    )
+
     def __str__(self):
         return self.organisation_name
+
+    def save(self, *args, **kwargs):
+        if not self.date_time_uploaded:
+            self.date_time_uploaded = datetime.utcnow()
+        super(DataLoader, self).save(*args, **kwargs)
