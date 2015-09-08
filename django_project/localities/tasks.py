@@ -11,6 +11,7 @@ __doc__ = ''
 
 from datetime import datetime
 
+from django.core.mail import send_mail
 
 from celery.utils.log import get_task_logger
 from .celery import app
@@ -18,6 +19,19 @@ from .celery import app
 logger = get_task_logger(__name__)
 
 from .importers import CSVImporter
+
+
+def send_email(data_loader, csv_importer):
+    """Send email for data loader."""
+    logger.info('Send email report.')
+    recipient_list = ['ismail@kartoza.com']
+    send_mail(
+        subject='Healthsites Data Loader Report',
+        message=csv_importer.generate_report(),
+        from_email='dataloader@healthsites.io',
+        recipient_list=recipient_list,
+        fail_silently=False,
+    )
 
 
 @app.task
@@ -41,6 +55,8 @@ def load_data_task(data_loader_pk):
 
     # send email
     logger.info(csv_importer.generate_report())
+
+    send_email(data_loader, csv_importer)
 
     # update data_loader
     data_loader.applied = True
