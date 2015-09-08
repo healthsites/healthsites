@@ -25,6 +25,16 @@ def send_email(data_loader, csv_importer):
     """Send email for data loader."""
     logger.info('Send email report.')
     recipient_list = ['ismail@kartoza.com']
+    
+    email_message = 'Loading data for %s\n\n' % data_loader.organisation_name
+
+    email_message += 'Details:\n'
+    email_message += 'Uploader %s\n' % data_loader.author
+    email_message += 'Data Loading mode %s\n' % data_loader.get_data_loader_mode_display()
+    email_message += 'Uploaded on %s\n' % data_loader.date_time_uploaded
+    email_message += 'Finish loading on %s\n\n' % data_loader.date_time_applied
+
+    email_message += csv_importer.generate_report()
     send_mail(
         subject='Healthsites Data Loader Report',
         message=csv_importer.generate_report(),
