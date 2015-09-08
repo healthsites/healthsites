@@ -40,9 +40,12 @@ def load_data_task(data_loader_pk):
     logger.info('Finish loading data')
 
     # send email
+    logger.info(csv_importer.generate_report())
+
     # update data_loader
     data_loader.applied = True
     data_loader.date_time_applied = datetime.utcnow()
+    data_loader.notes = csv_importer.generate_report()
     logger.info('date_time_applied: %s' % data_loader.date_time_applied)
     data_loader.save()
 

@@ -530,6 +530,14 @@ class DataLoader(models.Model):
         default=COMMA_CODE
     )
 
+    notes = models.TextField(
+        verbose_name='Notes',
+        help_text='Notes',
+        null=True,
+        blank=True,
+        default=''
+    )
+
     def __str__(self):
         return self.organisation_name
 

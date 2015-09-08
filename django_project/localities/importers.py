@@ -54,8 +54,10 @@ class CSVImporter:
         self.report = {
             'created': 0,
             'modified': 0,
-            'duplicated': 0
+            'duplicated': 0,
+            'skipped': 0
         }
+        self.exception = None
 
         # import
         self._get_domain()
@@ -148,6 +150,8 @@ class CSVImporter:
                 'Row %s with upstream_id: %s already exists, skipping...',
                 row_num, gen_upstream_id
             )
+            self.report['skipped'] += 1
+            return None
 
         tmp_geom = self.parse_geom(
             row_data[self.attr_map['geom'][0]],
@@ -157,10 +161,12 @@ class CSVImporter:
         if not tmp_geom:
             LOG.error('Row %s has invalid geometry, skipping...', row_num)
             # skip this row
+            self.report['skipped'] += 1
             return None
 
         if tmp_geom == (0, 0):
             LOG.error('Row %s is located in Null Island (0, 0), skipping...', row_num)
+            self.report['skipped'] += 1
             return None
 
         self.parsed_data.update({
@@ -271,14 +277,30 @@ class CSVImporter:
         transaction to minimize inconsistent database state
         """
 
-        with open(self.csv_filename, 'rb') as csv_file:
-            if self.use_tabs:
-                data_file = UnicodeDictReader(csv_file, delimiter='\t')
-            else:
-                data_file = UnicodeDictReader(csv_file)
+        try:
+            with open(self.csv_filename, 'rb') as csv_file:
+                if self.use_tabs:
+                    data_file = UnicodeDictReader(csv_file, delimiter='\t')
+                else:
+                    data_file = UnicodeDictReader(csv_file)
 
-            with transaction.atomic():
-                for r_num, r_data in enumerate(data_file):
-                    self.parse_row(r_num, r_data)
-                # save localities to the database
-                self.save_localities()
+                with transaction.atomic():
+                    for r_num, r_data in enumerate(data_file):
+                        self.parse_row(r_num, r_data)
+                    # save localities to the database
+                    self.save_localities()
+        except EnvironmentError as e:
+            self.exception = e
+
+    def generate_report(self):
+        """Generate report for the import process
+        """
+        report = 'Report\n\n'
+        for i, key in enumerate(sorted(self.report.iterkeys())):
+            report += ('%d. Number of %s locality is %d.\n' % (i + 1, key, self.report[key]))
+
+        if self.exception:
+            report += 'Notes:\n'
+            report += self.exception
+
+        return report
