@@ -1,0 +1,17 @@
+django-nose
+coverage
+pep8>=1.5.7,<1.6
+pylint
+flake8
+factory_boy
+
+django-devserver
+
+# documentation
+Sphinx
+
+# pdb plus plus
+pdbpp
+
+# hizashi-utils
+hizashi-utils
