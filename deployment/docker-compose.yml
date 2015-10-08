@@ -43,7 +43,7 @@ smtp:
 
 db:
   # Note you cannot scale if you use conteiner_name
-  container_name: projecta-db
+  container_name: healthsites-db
   image: kartoza/postgis:9.4-2.1
   volumes:
     #- ./pg/postgres_data:/var/lib/postgresql
@@ -123,7 +123,7 @@ web:
 # from produ environment if wanted
 devweb:
   # Note you cannot scale if you use conteiner_name
-  container_name: projecta-dev-web
+  container_name: healthsites-dev-web
   build: docker
   dockerfile: Dockerfile-dev
   hostname: uwsgi
