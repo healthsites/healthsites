@@ -1,2 +1,2 @@
--r deployment/docker-dev/REQUIREMENTS-dev.txt
--r deployment/docker-prod/REQUIREMENTS.txt
+-r deployment/docker/REQUIREMENTS-dev.txt
+-r deployment/docker/REQUIREMENTS.txt
