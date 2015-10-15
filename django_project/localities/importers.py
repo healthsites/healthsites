@@ -296,8 +296,16 @@ class CSVImporter:
         """Generate report for the import process
         """
         report = 'Report\n\n'
+        total = 0
         for i, key in enumerate(sorted(self.report.iterkeys())):
-            report += ('%d. Number of %s locality is %d.\n' % (i + 1, key, self.report[key]))
+            total += self.report[key]
+        for i, key in enumerate(sorted(self.report.iterkeys())):
+            if total > 0:
+                percentage = 100.0 * self.report[key] / total
+            else:
+                percentage = 0
+            report += ('%s. Number of %s locality is %s (%.2f %%).\n' % (
+                i + 1, key, self.report[key], percentage))
 
         if self.exception:
             report += 'Notes:\n'

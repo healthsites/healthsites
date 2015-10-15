@@ -32,10 +32,10 @@ def send_email(data_loader, csv_importer):
     email_message = 'Loading data for %s\n\n' % data_loader.organisation_name
 
     email_message += 'Details:\n'
-    email_message += 'Uploader %s\n' % data_loader.author
-    email_message += 'Data Loading mode %s\n' % data_loader.get_data_loader_mode_display()
-    email_message += 'Uploaded on %s\n' % data_loader.date_time_uploaded
-    email_message += 'Finished loading on %s\n\n' % data_loader.date_time_applied
+    email_message += 'Uploader: %s\n' % data_loader.author
+    email_message += 'Data Loading mode: %s\n' % data_loader.get_data_loader_mode_display()
+    email_message += 'Uploaded on: %s\n' % data_loader.date_time_uploaded
+    email_message += 'Finished loading on: %s\n\n' % data_loader.date_time_applied
 
     email_message += csv_importer.generate_report() + '\n\n'
 
@@ -69,17 +69,17 @@ def load_data_task(data_loader_pk):
     )
     logger.info('Finish loading data')
 
-    # send email
-    logger.info(csv_importer.generate_report())
-
-    send_email(data_loader, csv_importer)
-
     # update data_loader
     data_loader.applied = True
     data_loader.date_time_applied = datetime.utcnow()
     data_loader.notes = csv_importer.generate_report()
     logger.info('date_time_applied: %s' % data_loader.date_time_applied)
     data_loader.save()
+
+    # send email
+    logger.info(csv_importer.generate_report())
+
+    send_email(data_loader, csv_importer)
 
 
 @app.task
