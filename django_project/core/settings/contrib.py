@@ -11,7 +11,10 @@ INSTALLED_APPS += (
     'pg_fts',
     'django_forms_bootstrap',
     'celery',
+    'django.contrib.sites'
 )
+
+SITE_ID = 1
 
 # define template function (example for underscore)
 # PIPELINE_TEMPLATE_FUNC = '_.template'
