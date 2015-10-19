@@ -8,33 +8,12 @@ ensure that you have both ``docker`` and ``docker-compose`` installed
 before commencing with these instructions (see [docker installation docs
 for details](https://docs.docker.com/installation/)).
 
-## Build your docker images and run them
 
-
-## Setup nginx reverse proxy
-
-You should create a new nginx virtual host - please see 
-``*-nginx.conf`` in the ``deployment`` directory of the source for an example.
-
-Simply add the example file to your ``/etc/nginx/sites-enabled/`` directory 
-and then modify the contents to match your local filesystem paths. Then use
-
-```
-sudo nginx -t
-```
-
-To verify that your configuration is correct and then reload / restart nginx
-e.g.
-
-```
-sudo /etc/init.d/nginx restart
-```
-
-## Management scripts
+# Management scripts
 
 The following scripts are supplied:
 
-### Create docker env
+## Create docker env
 
 **Usage example:** ``make run``
  
@@ -65,7 +44,7 @@ using the ``docker ps`` command.
 
 
 
-### Collect static
+## Collect static
 
 **Usage example:** ``make collectstatic``
  
@@ -76,7 +55,7 @@ container, using docker's ``--link`` directive. It will then run:
 
 ```django manage.py collectstatic --noinput --settings=core.settings.prod_docker```
 
-### Run migrations
+## Run migrations
 
 **Usage example:** ``make migrations``
 
@@ -89,7 +68,7 @@ container, using docker's ``--link`` directive. It will then run:
 ```django manage.py migrate --settings=core.settings.prod_docker```
 
 
-### Bash prompt
+## Bash prompt
 
 **Usage example:** ``make shell``
 
@@ -101,7 +80,7 @@ shell inside the container that you can use to run ad hoc commands with
 the django project context and database connection available. 
 
 
-### Restart django
+## Restart django
 
 **Usage example:** ``make reload``
 
@@ -116,3 +95,22 @@ container, using docker's ``--link`` directive.
 You can configure the base port used and various other options like the
 image organisation namespace and postgis user/pass by editing 
 ``docker-compose.yml``.
+
+# Setup nginx reverse proxy
+
+You should create a new nginx virtual host - please see 
+``*-nginx.conf`` in the ``deployment`` directory of the source for an example.
+
+Simply add the example file to your ``/etc/nginx/sites-enabled/`` directory 
+and then modify the contents to match your local filesystem paths. Then use
+
+```
+sudo nginx -t
+```
+
+To verify that your configuration is correct and then reload / restart nginx
+e.g.
+
+```
+sudo /etc/init.d/nginx restart
+```
