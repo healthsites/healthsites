@@ -19,6 +19,7 @@
 {% endblock content %}
 
 {% block extra_js %}
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script>
         $(document).ready(function () {
             $(function () {
@@ -41,9 +42,23 @@
                     },
                     minLength: 3,
                     select: function (event, ui) {
-                        log(ui.item ?
-                        "Selected: " + ui.item.label :
-                        "Nothing selected, input was " + this.value);
+                        var geocoder = new google.maps.Geocoder();
+                        geocoder.geocode({'address': $('#id_geoname').val()},
+                                function (results, status) {
+                                    if (status == google.maps.GeocoderStatus.OK) {
+                                        var lat = results[0].geometry.location.lat();
+                                        var lng = results[0].geometry.location.lng();
+
+                                        log(ui.item ?
+                                        "Selected: " + ui.item.label + '(' + lat + ',' + lng + ')':
+                                        "Nothing selected, input was " + this.value);
+
+                                    } else {
+                                        alert("Something got wrong with location " +
+                                                "autocomplete." + status);
+                                    }
+                                });
+
                     },
                     open: function () {
                         $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
