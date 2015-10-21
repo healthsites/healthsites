@@ -42,7 +42,8 @@ PIPELINE_JS = {
             'js/nlform.js',
             'js/signals.min.js',
             'js/hasher.min.js',
-            'js/crossroads.min.js'
+            'js/crossroads.min.js',
+            'js/jquery-ui.js'
         ),
         'output_filename': 'js/contrib.js',
     },
@@ -70,7 +71,8 @@ PIPELINE_CSS = {
             'css/material-wfont.min.css',
             'css/navbar.css',
             'css/sidebar.css',
-            'css/nlf.css'
+            'css/nlf.css',
+            'css/jquery-ui.css'
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {
