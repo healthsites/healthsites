@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+{% endblock header %}
+
+{% block title %}Healthsites{% endblock %}
+
+{% block content %}
+
+    <h1 id="title">Search</h1>
+
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Search"/>
+    </form>
+
+{% endblock content %}
+
+{% block extra_js %}
+    <script>
+        $(document).ready(function () {
+            $(function () {
+                function log(message) {
+                    alert(message);
+                }
+
+                $("#id_geoname").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "http://gd.geobytes.com/AutoCompleteCity",
+                            dataType: "jsonp",
+                            data: {
+                                q: request.term
+                            },
+                            success: function (data) {
+                                response(data);
+                            }
+                        });
+                    },
+                    minLength: 3,
+                    select: function (event, ui) {
+                        log(ui.item ?
+                        "Selected: " + ui.item.label :
+                        "Nothing selected, input was " + this.value);
+                    },
+                    open: function () {
+                        $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                    },
+                    close: function () {
+                        $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock extra_js %}

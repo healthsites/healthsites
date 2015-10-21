@@ -6,7 +6,8 @@ from .views import (
     LocalityInfo,
     LocalityUpdate,
     LocalityCreate,
-    DataLoaderView
+    DataLoaderView,
+    SearchView
 )
 
 urlpatterns = patterns(
@@ -33,6 +34,8 @@ urlpatterns = patterns(
     ),
     url(
         r'^load-data$', 'localities.views.load_data', name='load-data'
-    )
+    ),
+
+    url(r'^search$', SearchView.as_view(), name='search')
 )
 

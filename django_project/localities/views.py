@@ -17,7 +17,7 @@ from braces.views import JSONResponseMixin, LoginRequiredMixin
 
 from .models import Locality, Domain, Changeset
 from .utils import render_fragment, parse_bbox
-from .forms import LocalityForm, DomainForm, DataLoaderForm
+from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .tasks import load_data_task, test_task
 
 from .map_clustering import cluster
@@ -275,3 +275,9 @@ def load_data(request):
                 content_type='application/javascript')
     else:
         pass
+
+
+class SearchView(FormView):
+    template_name = 'search.html'
+    form_class = SearchForm
+

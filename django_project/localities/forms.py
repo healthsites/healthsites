@@ -146,3 +146,12 @@ class DataLoaderForm(models.ModelForm):
         if commit:
             data_loader.save()
         return data_loader
+
+class SearchForm(forms.Form):
+    """Form for search"""
+    geoname = forms.CharField(
+        label='Geoname'
+    )
+    locality_name = forms.CharField(
+        label='Locality'
+    )
