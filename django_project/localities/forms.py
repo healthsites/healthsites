@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 LOG = logging.getLogger(__name__)
 
 import django.forms as forms
@@ -89,7 +90,6 @@ class LocalityForm(forms.Form):
 
         for spec in (
                 locality.domain.specification_set.select_related('attribute')):
-
             field = forms.CharField(
                 label=spec.attribute.key, required=spec.required
             )
@@ -101,6 +101,7 @@ class LocalityForm(forms.Form):
 class DataLoaderForm(models.ModelForm):
     """Form for DataLoader.
     """
+
     class Meta:
         model = DataLoader
         fields = (
@@ -147,11 +148,31 @@ class DataLoaderForm(models.ModelForm):
             data_loader.save()
         return data_loader
 
+
 class SearchForm(forms.Form):
     """Form for search"""
-    geoname = forms.CharField(
-        label='Geoname'
+    LOCALITY_CODE = 1
+    GEONAME_CODE = 2
+
+    MODE_CHOICES = (
+        (LOCALITY_CODE, 'Healthsites'),
+        (GEONAME_CODE, 'Place'),
     )
-    locality_name = forms.CharField(
-        label='Locality'
+
+    search = forms.CharField(
+        label='',
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                # 'class': 'form-control',
+                'placeholder': 'Search'
+            }),
+    )
+
+    mode = forms.ChoiceField(
+        label='',
+        # widget=forms.RadioSelect(
+        #     attrs={'class': 'form-control'}),
+        choices=MODE_CHOICES,
+        initial=GEONAME_CODE,
     )
