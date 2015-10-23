@@ -76,3 +76,6 @@ deployment/docker-prod/71-apt-cacher-ng
 mapproxy
 maps
 deployment/static
+
+# OSX things
+*.DS_Store
