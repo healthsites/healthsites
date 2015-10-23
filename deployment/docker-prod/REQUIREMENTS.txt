@@ -10,3 +10,4 @@ python-social-auth
 django-pg-fts
 django-forms-bootstrap
 celery
+googlemaps
