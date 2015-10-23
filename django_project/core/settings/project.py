@@ -47,7 +47,7 @@ PIPELINE_JS = {
             'js/signals.min.js',
             'js/hasher.min.js',
             'js/crossroads.min.js',
-            'js/jquery-ui.js'
+            'js/jquery-ui.js',
             'js/custom-jquery.js'
         ),
         'output_filename': 'js/contrib.js',
@@ -70,9 +70,9 @@ PIPELINE_CSS = {
             'css/leaflet.css',
             'css/leaflet.draw.css',
             'css/bootstrap.min.css',
-            'css/bootstrap.css'
-            'css/c3.css'
-            'css/font-awesome.min.css'
+            'css/bootstrap.css',
+            'css/c3.css',
+            'css/font-awesome.min.css',
             'css/main.css',
             'css/material.min.css',
             'css/ripples.min.css',
