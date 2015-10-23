@@ -35,9 +35,9 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/leaflet.js',
             'js/leaflet.draw-src.js',
-            'js/jquery-1.11.1.min.js',
+            # 'js/jquery-1.11.1.min.js',
             'js/jquery-1.11.3.min.js',
-            'js/bootstrap.js',
+            # 'js/bootstrap.js',
             'js/bootstrap.min.js',
             'js/c3.min.js',
             'js/d3.min.js',
