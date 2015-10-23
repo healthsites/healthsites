@@ -42,22 +42,22 @@
                     },
                     minLength: 3,
                     select: function (event, ui) {
-                        var geocoder = new google.maps.Geocoder();
-                        geocoder.geocode({'address': $('#id_geoname').val()},
-                                function (results, status) {
-                                    if (status == google.maps.GeocoderStatus.OK) {
-                                        var lat = results[0].geometry.location.lat();
-                                        var lng = results[0].geometry.location.lng();
-
-                                        log(ui.item ?
-                                        "Selected: " + ui.item.label + '(' + lat + ',' + lng + ')':
-                                        "Nothing selected, input was " + this.value);
-
-                                    } else {
-                                        alert("Something got wrong with location " +
-                                                "autocomplete." + status);
-                                    }
-                                });
+{#                        var geocoder = new google.maps.Geocoder();#}
+{#                        geocoder.geocode({'address': $('#id_geoname').val()},#}
+{#                                function (results, status) {#}
+{#                                    if (status == google.maps.GeocoderStatus.OK) {#}
+{#                                        var lat = results[0].geometry.location.lat();#}
+{#                                        var lng = results[0].geometry.location.lng();#}
+{##}
+{#                                        log(ui.item ?#}
+{#                                        "Selected: " + ui.item.label + '(' + lat + ',' + lng + ')':#}
+{#                                        "Nothing selected, input was " + this.value);#}
+{##}
+{#                                    } else {#}
+{#                                        alert("Something got wrong with location " +#}
+{#                                                "autocomplete." + status);#}
+{#                                    }#}
+{#                                });#}
 
                     },
                     open: function () {

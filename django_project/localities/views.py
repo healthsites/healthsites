@@ -9,11 +9,15 @@ import signals  # noqa
 
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.contrib.gis.geos import Point
 from django.db import transaction
+from django.conf import settings
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
+
+import googlemaps
 
 from .models import Locality, Domain, Changeset
 from .utils import render_fragment, parse_bbox
@@ -21,6 +25,9 @@ from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .tasks import load_data_task, test_task
 
 from .map_clustering import cluster
+
+import logging
+LOG = logging.getLogger(__name__)
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -281,3 +288,14 @@ class SearchView(FormView):
     template_name = 'search.html'
     form_class = SearchForm
 
+    def post(self, request, *args, **kwargs):
+        return super(SearchView, self).post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+        gmaps = googlemaps.Client(key=google_maps_api_key)
+        geoname = self.form_class.cleaned_data['id_search']
+        LOG.info(geoname)
+        geocode_result = gmaps.geocode(geoname)
+        LOG.info(geocode_result)
+        return reverse('search')
