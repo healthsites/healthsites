@@ -7,7 +7,7 @@ from django.conf import settings
 
 
 class MainView(TemplateView):
-    template_name = 'main.html'
+    template_name = 'index.html'
 
     def get_context_data(self, **kwargs):
         """
