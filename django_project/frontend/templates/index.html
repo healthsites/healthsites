@@ -27,6 +27,7 @@
     {#<!-- Load d3.js and c3.js -->#}
     {#<script src="js/d3.min.js" charset="utf-8"></script>#}
     {#<script src="js/c3.min.js"></script>#}
+{#    {% stylesheet 'contrib' %}#}
     {% stylesheet 'home' %}
 
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
@@ -194,7 +195,7 @@
         <div id="map" class="col-md-6 map">
             <div class="select-country">
                 <form>
-                    <input type="serach" placeholder="select a country"/>
+                    <input type="search" placeholder="select a country"/>
                     <button type="submit" value="Submit"><i class="fa fa-search"></i></button>
                 </form>
             </div>
@@ -286,6 +287,8 @@
 </footer>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+{#{% javascript 'contrib' %}#}
+{#{% javascript 'appjs' %}#}
 {% javascript 'home' %}
 {#<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>#}
 
@@ -327,8 +330,6 @@
                         },
                     }
                 },
-
-
             },
             axis: {
                 rotated: true,
@@ -351,8 +352,8 @@
             color: {
                 pattern: ['#b6cccc', '#f89ea1']
             }
-        });</script>
-    <script>
+        });
+
         var piechart = c3.generate({
             bindto: '#piechart',
             size: {
@@ -381,7 +382,8 @@
                     console.log("onmouseout", d, i);
                 }
             }
-        });        </script>
+        });
+    </script>
 {% endblock extra_js %}
 
 <!-- Include all compiled plugins (below), or include individual files as needed -->
