@@ -30,6 +30,8 @@ INSTALLED_APPS += (
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/signin/'
 
+PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
+
 PIPELINE_JS = {
     'contrib': {
         'source_filenames': (
@@ -93,9 +95,9 @@ PIPELINE_CSS = {
         'source_filenames': (
             'css/bootstrap.min.css',
             'css/font-awesome.min.css',
+            'css/c3.css',
             'css/site.css',
             'css/home.css',
-            'css/c3.css',
         ),
         'output_filename': 'css/home.css',
         'extra_context': {
