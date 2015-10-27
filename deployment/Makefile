@@ -20,7 +20,7 @@ build:
 	@echo "------------------------------------------------------------------"
 	@echo "Building in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) build
+	@docker-compose -p $(PROJECT_ID) build uwsgi
 
 web:
 	@echo
