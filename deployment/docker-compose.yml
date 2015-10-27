@@ -8,26 +8,45 @@
 
 # Our main nginx service - this is for testing only - normally
 # You would use a standalone nginx instance running on the host!
+
+#
+# Production server with UWSGI configured to run on port 8080
+#
+# docker-compose build
+# docker-compose up -d web
+#
+# See accompanying Make commands for easy collectstatic etc.
+
+# Our main nginx service - this is for testing only - normally
+# You would use a standalone nginx instance running on the host!
 nginx:
+  # Note you cannot scale if you use conteiner_name
+  container_name: healthsites-nginx
   image: nginx
   hostname: nginx
   volumes:
     - ./nginx-conf:/etc/nginx/conf.d
   ports:
     - "0.0.0.0:80:80"
+  restart: on-failure:5
 
 smtp:
+  # Note you cannot scale if you use conteiner_name
+  container_name: healthsites-smtp
   image: catatnight/postfix
   hostname: postfix
   environment:
     # You could change this to something more suitable
     - maildomain=healthsites.io
     - smtp_user=noreply:docker
+  restart: on-failure:5
 
 db:
+  # Note you cannot scale if you use conteiner_name
+  container_name: healthsites-db
   image: kartoza/postgis:9.4-2.1
   volumes:
-#    - ./pg/postgres_data:/var/lib/postgresql
+    #- ./pg/postgres_data:/var/lib/postgresql
     - ./backups:/backups
   environment:
     - USERNAME=docker
@@ -43,6 +62,8 @@ rabbitmq:
       - RABBITMQ_NODENAME=rabbit
 
 uwsgi:
+  # Note you cannot scale if you use conteiner_name
+  container_name: healthsites-uwsgi
   build: docker-prod
   hostname: uwsgi
   environment:
@@ -88,9 +109,11 @@ worker:
   links:
     - smtp:smtp
     - db:db
-    - rabbitmq:rabbitmq
+  restart: on-failure:5
 
 dbbackups:
+  # Note you cannot scale if you use conteiner_name
+  container_name: healthsites-db-backups
   image: kartoza/pg-backup:9.4
   hostname: pg-backups
   volumes:
@@ -100,18 +123,20 @@ dbbackups:
   environment:
     # take care to let the project name below match that
     # declared in the top of the makefile
-    - DUMPPREFIX=PG_healthsites
+    - DUMPPREFIX=PG_HEALTHSITES
     # These are all defaults anyway, but setting explicitly in
     # case we ever want to ever use different credentials
     - PGUSER=docker
     - PGPASSWORD=docker
     - PGPORT=5432
-    - PGHOST=db
+    - PGHOST=healthsites-db
     - PGDATABASE=gis
   restart: on-failure:5
 
 # This is normally the main entry point for a production server
 web:
+  # Note you cannot scale if you use conteiner_name
+  container_name: healthsites-web
   image: nginx
   hostname: nginx
   volumes:
@@ -120,24 +145,43 @@ web:
     - ./static:/home/web/static:ro
     - ./media:/home/web/media:ro
     - ./logs:/var/log/nginx
-    - ./reports:/home/web/archive
   links:
     - uwsgi:uwsgi
   ports:
     - "49361:8080"
+  restart: on-failure:5
 
-# Exactly the same as web but for staging we use a different port.
-stagingweb:
-  image: nginx
-  hostname: nginx
+# This is the entry point for a development server.
+# Run with --no-deps to run attached to the services
+# from produ environment if wanted
+devweb:
+  # Note you cannot scale if you use conteiner_name
+  container_name: healthsites-dev-web
+  build: docker
+  dockerfile: Dockerfile-dev
+  hostname: uwsgi
+  environment:
+    - DATABASE_NAME=gis
+    - DATABASE_USERNAME=docker
+    - DATABASE_PASSWORD=docker
+    - DATABASE_HOST=db
+    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+    - PYTHONPATH=/home/web/django_project
+    - VIRTUAL_HOST=projecta.kartoza.com
+    - VIRTUAL_PORT=8080
   volumes:
-    - ./sites-enabled:/etc/nginx/conf.d:ro
-    # I dont use volumes_from as I want to use the ro modifier
-    - ./static:/home/web/static:ro
-    - ./media:/home/web/media:ro
-    - ./logs:/var/log/nginx
+    - ../django_project:/home/web/django_project
+    - ./static:/home/web/static
+    - ./media:/home/web/media
     - ./reports:/home/web/reports
+    - ./logs:/var/log/
   links:
-    - uwsgi:uwsgi
+    - smtp:smtp
+    - db:db
   ports:
+    # for django test server
     - "49362:8080"
+    # for ssh
+    - "49363:22"
+
+
