@@ -44,7 +44,7 @@ label.inline {
 	background: #f44a52;
 	height: 44px;
 	line-height: 44px;
-	text-align: center; 
+	text-align: center;
 }
 .button:hover {
 	text-decoration: none;
@@ -100,7 +100,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	vertical-align: middle;
 }
 .hs-logo {
-	background: url(../images/logo@2x.png) no-repeat;
+	background: url(../img/logo@2x.png) no-repeat;
 	background-size: 35px 43px;
 	display: inline-block;
 	height: 43px;
@@ -287,7 +287,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	z-index: 10;
 }
 .nav-searchbar .option input[type="radio"]:checked + span {
-    background: url("../images/checked.png") no-repeat center;
+    background: url("../img/checked.png") no-repeat center;
     visibility: visible;
 }
 .nav-searchbar .option span {

@@ -35,12 +35,8 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/leaflet.js',
             'js/leaflet.draw-src.js',
-            # 'js/jquery-1.11.1.min.js',
             'js/jquery-1.11.3.min.js',
-            # 'js/bootstrap.js',
             'js/bootstrap.min.js',
-            # 'js/c3.min.js',
-            # 'js/d3.min.js',
             'js/material.min.js',
             'js/ripples.min.js',
             'js/nlform.js',
@@ -48,7 +44,6 @@ PIPELINE_JS = {
             'js/hasher.min.js',
             'js/crossroads.min.js',
             'js/jquery-ui.js',
-            # 'js/custom-jquery.js'
         ),
         'output_filename': 'js/contrib.js',
     },
@@ -79,10 +74,7 @@ PIPELINE_CSS = {
         'source_filenames': (
             'css/leaflet.css',
             'css/leaflet.draw.css',
-            # 'css/bootstrap.min.css',
             'css/bootstrap.css',
-            # 'css/c3.css',
-            # 'css/font-awesome.min.css',
             'css/main.css',
             'css/material.min.css',
             'css/ripples.min.css',
@@ -91,8 +83,6 @@ PIPELINE_CSS = {
             'css/sidebar.css',
             'css/nlf.css',
             'css/jquery-ui.css',
-            # 'css/site.css',
-            # 'css/home.css',
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {
