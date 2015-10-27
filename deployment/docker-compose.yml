@@ -169,6 +169,7 @@ devweb:
     - PYTHONPATH=/home/web/django_project
     - VIRTUAL_HOST=projecta.kartoza.com
     - VIRTUAL_PORT=8080
+    - RABBITMQ_HOST=rabbitmq
   volumes:
     - ../django_project:/home/web/django_project
     - ./static:/home/web/static
@@ -178,6 +179,7 @@ devweb:
   links:
     - smtp:smtp
     - db:db
+    - rabbitmq:rabbitmq
   ports:
     # for django test server
     - "49362:8080"
