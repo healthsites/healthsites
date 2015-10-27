@@ -64,7 +64,7 @@ rabbitmq:
 uwsgi:
   # Note you cannot scale if you use conteiner_name
   container_name: healthsites-uwsgi
-  build: docker-prod
+  build: docker
   hostname: uwsgi
   environment:
     - DATABASE_NAME=gis
@@ -88,7 +88,7 @@ uwsgi:
     - worker:worker
 
 worker:
-  build: docker-prod
+  build: docker
   hostname: worker
   command: celery worker -A localities -l info
   environment:
