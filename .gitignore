@@ -80,3 +80,11 @@ deployment/media
 
 # OSX things
 *.DS_Store
+
+# Other
+
+.bash_history
+.pycharm_helpers
+*~
+*.orig
+scrap.txt
