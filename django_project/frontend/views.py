@@ -18,6 +18,17 @@ class MainView(TemplateView):
         context['debug'] = settings.DEBUG
         return context
 
+class MapView(TemplateView):
+    template_name = 'main.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        *debug* toggles GoogleAnalytics support on the main page
+        """
+
+        context = super(MapView, self).get_context_data(**kwargs)
+        context['debug'] = settings.DEBUG
+        return context
 
 class AboutView(TemplateView):
     template_name = 'about.html'

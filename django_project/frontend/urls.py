@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
 
-from .views import MainView, AboutView, HelpView
+from .views import MainView, AboutView, HelpView, MapView
 
 urlpatterns = patterns(
     '',
@@ -9,6 +9,6 @@ urlpatterns = patterns(
     url(r'^$', MainView.as_view(), name='home'),
     url(r'^about$', AboutView.as_view(), name='about'),
     url(r'^help', HelpView.as_view(), name='help'),
-    url(r'^map$', MainView.as_view(), name='map')
+    url(r'^map$', MapView.as_view(), name='map')
 
 )
