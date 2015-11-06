@@ -27,7 +27,7 @@
     {#<!-- Load d3.js and c3.js -->#}
     {#<script src="js/d3.min.js" charset="utf-8"></script>#}
     {#<script src="js/c3.min.js"></script>#}
-{#    {% stylesheet 'contrib' %}#}
+    {#    {% stylesheet 'contrib' %}#}
     {% stylesheet 'home' %}
 
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
@@ -90,16 +90,21 @@
     <div class="nav-searchbar container-fluid">
         <form action="">
             <div class="option-group">
-                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite"><span></span><label class="option"
-                                                                                               for="radio-healthsite">health
-                    site</label></div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
-                                                        value="place"><span></span><label class="option"
-                                                                                          for="radio-healthsite">place</label>
+                <div class="option">
+                    <span></span>
+                    <input type="radio" name="option" id="radio-healthsite" value="healthsite">
+                    <span></span>
+                    <label class="option" for="radio-healthsite">healthsite</label>
+                </div>
+                <div class="option">
+                    <span></span>
+                    <input type="radio" name="option" id="radio-place" value="place" checked="checked">
+                    <span></span>
+                    <label class="option" for="radio-healthsite">place</label>
                 </div>
             </div>
-            <input type="search" name="q" placeholder="search..."><input type="submit" value="search">
+            <input type="search" name="q" placeholder="search..." id="search-box">
+            <input type="submit" value="search" id="search-button">
         </form>
     </div>
 </nav>
@@ -116,7 +121,8 @@
                     works</a></div>
             </div>
         </div>
-        <div class="col-md-7"><img src="{% static "images/isometric-ipad@2x.png" %}" width="710" height="364" class="col-md-12"></div>
+        <div class="col-md-7"><img src="{% static "images/isometric-ipad@2x.png" %}" width="710" height="364"
+                                   class="col-md-12"></div>
     </div>
 </section>
 <section class="white about">
@@ -295,6 +301,7 @@
 {% block extra_js %}
 
     <script>
+
         var chart = c3.generate({
             bindto: '#chart1',
             size: {
@@ -382,6 +389,40 @@
                     console.log("onmouseout", d, i);
                 }
             }
+        });
+    </script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script>
+        $(document).ready(function () {
+            $(function () {
+                function log(message) {
+                    alert(message);
+                }
+
+                $("#search-box").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: "http://gd.geobytes.com/AutoCompleteCity",
+                            dataType: "jsonp",
+                            data: {
+                                q: request.term
+                            },
+                            success: function (data) {
+                                response(data);
+                            }
+                        });
+                    },
+                    minLength: 3,
+                    select: function (event, ui) {
+                    },
+                    open: function () {
+                        $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                    },
+                    close: function () {
+                        $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                    }
+                });
+            });
         });
     </script>
 {% endblock extra_js %}

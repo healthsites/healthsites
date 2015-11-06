@@ -66,6 +66,7 @@ PIPELINE_JS = {
             'js/custom-jquery.js',
             'js/d3.min.js',
             'js/c3.min.js',
+            'js/jquery-ui.js',
         ),
         'output_filename': 'js/home.js',
     },
@@ -98,6 +99,7 @@ PIPELINE_CSS = {
             'css/c3.css',
             'css/site.css',
             'css/home.css',
+            'css/jquery-ui.css',
         ),
         'output_filename': 'css/home.css',
         'extra_context': {
