@@ -8,4 +8,5 @@ if [ -f /etc/bashrc ]; then
 fi
 export PYTHONPATH=/home/web/django_project:$PYTHONPATH
 export DJANGO_SETTINGS_MODULE=core.settings.dev_docker
+export RABBITMQ_HOST=rabbitmq
 cd /home/web/django_project

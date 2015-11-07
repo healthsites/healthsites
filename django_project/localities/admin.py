@@ -5,7 +5,8 @@ from .models import (
     Domain,
     Attribute,
     Specification,
-    Changeset
+    Changeset,
+    DataLoader
 )
 
 from .forms import DomainModelForm
@@ -42,3 +43,10 @@ class SpecificationMA(ChangesetMixin, admin.ModelAdmin):
     fields = ('domain', 'attribute', 'required')
 
 admin.site.register(Specification, SpecificationMA)
+
+
+class DataUpdateAdmin(admin.ModelAdmin):
+    list_display = (
+        'organisation_name', 'author', 'data_loader_mode','date_time_uploaded',  'applied', 'date_time_applied')
+
+admin.site.register(DataLoader, DataUpdateAdmin)

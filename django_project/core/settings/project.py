@@ -30,19 +30,22 @@ INSTALLED_APPS += (
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/signin/'
 
+PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
+
 PIPELINE_JS = {
     'contrib': {
         'source_filenames': (
             'js/leaflet.js',
             'js/leaflet.draw-src.js',
-            'js/jquery-1.11.1.min.js',
-            'js/bootstrap.js',
+            'js/jquery-1.11.3.min.js',
+            'js/bootstrap.min.js',
             'js/material.min.js',
             'js/ripples.min.js',
             'js/nlform.js',
             'js/signals.min.js',
             'js/hasher.min.js',
-            'js/crossroads.min.js'
+            'js/crossroads.min.js',
+            'js/jquery-ui.js',
         ),
         'output_filename': 'js/contrib.js',
     },
@@ -55,7 +58,18 @@ PIPELINE_JS = {
             'js/localitySidebar.js'
         ),
         'output_filename': 'js/appjs.js'
-    }
+    },
+    'home': {
+        'source_filenames': (
+            'js/jquery-1.11.3.min.js',
+            'js/bootstrap.min.js',
+            'js/custom-jquery.js',
+            'js/d3.min.js',
+            'js/c3.min.js',
+            'js/jquery-ui.js',
+        ),
+        'output_filename': 'js/home.js',
+    },
 }
 
 PIPELINE_CSS = {
@@ -63,16 +77,31 @@ PIPELINE_CSS = {
         'source_filenames': (
             'css/leaflet.css',
             'css/leaflet.draw.css',
-            'css/bootstrap.min.css',
+            'css/bootstrap.css',
             'css/main.css',
             'css/material.min.css',
             'css/ripples.min.css',
             'css/material-wfont.min.css',
             'css/navbar.css',
             'css/sidebar.css',
-            'css/nlf.css'
+            'css/nlf.css',
+            'css/jquery-ui.css',
         ),
         'output_filename': 'css/contrib.css',
+        'extra_context': {
+            'media': 'screen, projection',
+        },
+    },
+    'home': {
+        'source_filenames': (
+            'css/bootstrap.min.css',
+            'css/font-awesome.min.css',
+            'css/c3.css',
+            'css/site.css',
+            'css/home.css',
+            'css/jquery-ui.css',
+        ),
+        'output_filename': 'css/home.css',
         'extra_context': {
             'media': 'screen, projection',
         },

@@ -3,20 +3,31 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import uuid
+import json
+# register signals
+import signals  # noqa
 
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse, Http404
 from django.contrib.gis.geos import Point
 from django.db import transaction
+from django.conf import settings
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 
+import googlemaps
+
 from .models import Locality, Domain, Changeset
 from .utils import render_fragment, parse_bbox
-from .forms import LocalityForm, DomainForm
+from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
+from .tasks import load_data_task, test_task
 
 from .map_clustering import cluster
+
+import logging
+LOG = logging.getLogger(__name__)
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -204,3 +215,87 @@ class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
 
     def get_form(self, form_class):
         return form_class(domain=self.object, **self.get_form_kwargs())
+
+
+class DataLoaderView(LoginRequiredMixin, FormView):
+    """Handles DataLoader.
+    """
+    form_class = DataLoaderForm
+    template_name = 'dataloaderform.html'
+
+    def get_form(self, form_class):
+        return form_class()
+
+    def form_valid(self, form):
+        pass
+
+    def get(self, request, *args, **kwargs):
+        return super(DataLoaderView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return super(DataLoaderView, self).post(request, *args, **kwargs)
+
+
+def load_data(request):
+    """Handling load data."""
+    if request.method == 'POST':
+        form = DataLoaderForm(request.POST, files=request.FILES,
+                              user=request.user)
+        if form.is_valid():
+            data_loader = form.save(True)
+
+            data_loader.save()
+
+            load_data_task.delay(data_loader.pk)
+
+            response = {}
+            success_message = 'You have successfully upload your data'
+            # response['created'] = csv_importer.report['created']
+            # response['modified'] = csv_importer.report['modified']
+            # response['duplicated'] = csv_importer.report['duplicated']
+
+            response['message'] = success_message
+            response['success'] = True
+            response['detailed_message'] = (
+                'Please wait several minutes for Healthsites to load your data. We will send you an email if we '
+                'have finished loading the data.'
+            )
+            # if response['duplicated'] > 0:
+            #     response['detailed_message'] += (
+            #         ' You also have %s possible duplicated localities, '
+            #         'and they are not added.' % response['duplicated']
+            #     )
+            return HttpResponse(json.dumps(
+                response,
+                ensure_ascii=False),
+                content_type='application/javascript')
+        else:
+            error_message = form.errors
+            response = {
+                'detailed_message': str(error_message),
+                'success': False,
+                'message': 'You have failed to load data.'
+            }
+            return HttpResponse(json.dumps(
+                response,
+                ensure_ascii=False),
+                content_type='application/javascript')
+    else:
+        pass
+
+
+class SearchView(FormView):
+    template_name = 'search.html'
+    form_class = SearchForm
+
+    def post(self, request, *args, **kwargs):
+        return super(SearchView, self).post(request, *args, **kwargs)
+
+    def get_success_url(self):
+        google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+        gmaps = googlemaps.Client(key=google_maps_api_key)
+        geoname = self.form_class.cleaned_data['id_search']
+        LOG.info(geoname)
+        geocode_result = gmaps.geocode(geoname)
+        LOG.info(geocode_result)
+        return reverse('search')

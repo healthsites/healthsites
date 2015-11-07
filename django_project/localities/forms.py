@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
+
 LOG = logging.getLogger(__name__)
 
 import django.forms as forms
+from django.forms import models
 
-from .models import Domain
+from .models import Domain, DataLoader
 from .utils import render_fragment
 
 
@@ -88,10 +90,89 @@ class LocalityForm(forms.Form):
 
         for spec in (
                 locality.domain.specification_set.select_related('attribute')):
-
             field = forms.CharField(
                 label=spec.attribute.key, required=spec.required
             )
             self.fields[spec.attribute.key] = field
             self.fields[spec.attribute.key].widget.attrs.update(
                 {'class': 'form-control'})
+
+
+class DataLoaderForm(models.ModelForm):
+    """Form for DataLoader.
+    """
+
+    class Meta:
+        model = DataLoader
+        fields = (
+            'organisation_name',
+            'json_concept_mapping',
+            'csv_data',
+            'data_loader_mode',
+        )
+
+    organisation_name = forms.CharField(
+        widget=forms.TextInput(
+            attrs={'class': 'form-control'})
+    )
+
+    json_concept_mapping = forms.FileField(
+        widget=forms.FileInput(
+            attrs={'class': 'form-control'})
+    )
+
+    csv_data = forms.FileField(
+        widget=forms.FileInput(
+            attrs={'class': 'form-control'})
+    )
+
+    data_loader_mode = forms.ChoiceField(
+        widget=forms.RadioSelect(
+            attrs={'class': 'form-control'}),
+        choices=DataLoader.DATA_LOADER_MODE_CHOICES,
+        initial=DataLoader.REPLACE_DATA_CODE,
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(DataLoaderForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        """Save method.
+        """
+        data = self.cleaned_data
+        data_loader = super(DataLoaderForm, self).save(commit=False)
+        data_loader.author = self.user
+        data_loader.applied = False
+        if commit:
+            data_loader.save()
+        return data_loader
+
+
+class SearchForm(forms.Form):
+    """Form for search"""
+    LOCALITY_CODE = 1
+    GEONAME_CODE = 2
+
+    MODE_CHOICES = (
+        (LOCALITY_CODE, 'Healthsites'),
+        (GEONAME_CODE, 'Place'),
+    )
+
+    search = forms.CharField(
+        label='',
+        required=True,
+        widget=forms.TextInput(
+            attrs={
+                # 'class': 'form-control',
+                'placeholder': 'Search'
+            }),
+    )
+
+    mode = forms.ChoiceField(
+        label='',
+        # widget=forms.RadioSelect(
+        #     attrs={'class': 'form-control'}),
+        choices=MODE_CHOICES,
+        initial=GEONAME_CODE,
+    )

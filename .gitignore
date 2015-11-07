@@ -75,3 +75,16 @@ deployment/docker/71-apt-cacher-ng
 mapproxy
 maps
 deployment/static
+deployment/backups
+deployment/media
+
+# OSX things
+*.DS_Store
+
+# Other
+
+.bash_history
+.pycharm_helpers
+*~
+*.orig
+scrap.txt

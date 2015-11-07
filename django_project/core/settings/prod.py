@@ -24,7 +24,7 @@ USE_X_FORWARDED_HOST = True
 DEBUG = TEMPLATE_DEBUG = False
 
 INSTALLED_APPS += (
-    'raven.contrib.django.raven_compat',  # enable Raven plugin
+    # 'raven.contrib.django.raven_compat',  # enable Raven plugin
 )
 
 if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:

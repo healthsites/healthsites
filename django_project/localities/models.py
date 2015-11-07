@@ -3,12 +3,14 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import itertools
+from datetime import datetime
 
 from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.gis.db import models
 from django.conf import settings
 
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from model_utils import FieldTracker
@@ -436,3 +438,110 @@ class LocalityIndex(models.Model):
 
 # register signals
 import signals  # noqa
+
+
+class DataLoader(models.Model):
+    """
+    """
+    REPLACE_DATA_CODE = 1
+    UPDATE_DATA_CODE = 2
+
+    DATA_LOADER_MODE_CHOICES = (
+        (REPLACE_DATA_CODE, 'Replace Data'),
+        (UPDATE_DATA_CODE, 'Update Data')
+    )
+
+    COMMA_CHAR = ','
+    TAB_CHAR = '\t'
+
+    COMMA_CODE = 1  # ,
+    TAB_CODE = 2  # \t
+
+    SEPARATORS = {
+        COMMA_CODE: COMMA_CHAR,
+        TAB_CODE: TAB_CHAR
+    }
+
+    SEPARATOR_CHOICES = (
+        (COMMA_CODE, 'Comma'),
+        (TAB_CODE, 'Tab'),
+    )
+
+    organisation_name = models.CharField(
+        verbose_name='Organization\'s Name',
+        help_text='Organization\'s Name',
+        null=False,
+        blank=False,
+        max_length=100
+    )
+
+    json_concept_mapping = models.FileField(
+        verbose_name='JSON Concept Mapping',
+        help_text='JSON Concept Mapping File.',
+        upload_to='json_mapping/%Y/%m/%d',
+        max_length=100
+    )
+
+    csv_data = models.FileField(
+        verbose_name='CSV Data',
+        help_text='CSV data that contains the data.',
+        upload_to='csv_data/%Y/%m/%d',
+        max_length=100
+    )
+
+    data_loader_mode = models.IntegerField(
+        choices=DATA_LOADER_MODE_CHOICES,
+        verbose_name="Data Loader Mode",
+        help_text='The mode of the data loader.',
+        blank=False,
+        null=False
+    )
+
+    applied = models.BooleanField(
+        verbose_name='Applied',
+        help_text='Whether the data update has been applied or not.',
+        default=False
+    )
+
+    author = models.ForeignKey(
+        User,
+        verbose_name='Author',
+        help_text='The user who propose the data loader.',
+        null=False
+    )
+
+    date_time_uploaded = models.DateTimeField(
+        verbose_name='Uploaded (time)',
+        help_text='Timestamp (UTC) when the data uploaded',
+        null=False,
+    )
+
+    date_time_applied = models.DateTimeField(
+        verbose_name='Applied (time)',
+        help_text='When the data applied (loaded)',
+        null=True
+    )
+
+    separator = models.IntegerField(
+        choices=SEPARATOR_CHOICES,
+        verbose_name="Separator Character",
+        help_text='Separator character.',
+        null=False,
+        default=COMMA_CODE
+    )
+
+    notes = models.TextField(
+        verbose_name='Notes',
+        help_text='Notes',
+        null=True,
+        blank=True,
+        default=''
+    )
+
+    def __str__(self):
+        return self.organisation_name
+
+    def save(self, *args, **kwargs):
+        if not self.date_time_uploaded:
+            self.date_time_uploaded = datetime.utcnow()
+        super(DataLoader, self).save(*args, **kwargs)

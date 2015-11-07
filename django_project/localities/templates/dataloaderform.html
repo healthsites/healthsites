@@ -1,0 +1,71 @@
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script>
+        $(document).ready(function () {
+            $('#data-loader-modal').on('hidden.bs.modal', function () {
+                $('#data-loader-form').show();
+                $('#result').hide();
+                $('#modal_close_button').hide();
+            });
+
+            function upload(event) {
+                event.preventDefault();
+                var data = new FormData($('form').get(0));
+
+                $.ajax({
+                    url: $(this).attr('action'),
+                    type: $(this).attr('method'),
+                    data: data,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function(data) {
+                        $('#data-loader-form').hide();
+                        $('#result').show();
+                        $('#modal_close_button').show();
+                        $('#result_message').text(data['message']);
+                        $('#detailed_result_message').text(
+                                data['detailed_message']);
+                    },
+                    error: function(xhr, status, error){
+                        $('#data-loader-form').hide();
+                        $('#result').show();
+                        $('#modal_close_button').hide();
+                        $('#result_message').text(data['message']);
+                        $('#detailed_result_message').text(xhr.responseText);
+                    }
+                });
+            }
+
+            $('#data-loader-form').submit(upload);
+        });
+    </script>
+</head>
+<body>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title">Healthsites - Data Loader</h4>
+</div>
+<div class="modal-body">
+{#    {% load bootstrap_tags %}#}
+    <form id="data-loader-form"  class="" action="/load-data" method="post"
+          enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p}}
+        <button type="button" class="btn btn-default"
+                data-dismiss="modal">Cancel</button>
+        <input type="submit" class="btn btn-primary" value="Submit" />
+    </form>
+    <div id="result" hidden>
+        <p id="result_message"></p>
+        <p id="detailed_result_message"></p>
+    </div>
+
+</div><!-- /model-body -->
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_button" style="display: none;">Close</button>
+</div><!-- /modal-footer -->
+</body>
+</html>

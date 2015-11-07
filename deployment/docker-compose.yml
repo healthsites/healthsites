@@ -53,6 +53,14 @@ db:
     - PASS=docker
   restart: on-failure:5
 
+rabbitmq:
+  image: library/rabbitmq
+  hostname: rabbitmq
+  environment:
+      - RABBIT_PASSWORD=rabbit_test_password
+      - USER=rabbit_user
+      - RABBITMQ_NODENAME=rabbit
+
 uwsgi:
   # Note you cannot scale if you use conteiner_name
   container_name: healthsites-uwsgi
@@ -63,8 +71,34 @@ uwsgi:
     - DATABASE_USERNAME=docker
     - DATABASE_PASSWORD=docker
     - DATABASE_HOST=db
+    - RABBITMQ_HOST=rabbitmq
     - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
     - VIRTUAL_HOST=healthsites.io
+    - VIRTUAL_PORT=8080
+  volumes:
+    - ../django_project:/home/web/django_project
+    - ./static:/home/web/static
+    - ./media:/home/web/media
+    - ./reports:/home/web/reports
+    - ./logs:/var/log/
+  links:
+    - smtp:smtp
+    - db:db
+    - rabbitmq:rabbitmq
+    - worker:worker
+
+worker:
+  build: docker
+  hostname: worker
+  command: celery worker -A localities -l info
+  environment:
+    - DATABASE_NAME=gis
+    - DATABASE_USERNAME=docker
+    - DATABASE_PASSWORD=docker
+    - DATABASE_HOST=db
+    - RABBITMQ_HOST=rabbitmq
+    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+    - VIRTUAL_HOST=stagging.healthsites.io
     - VIRTUAL_PORT=8080
   volumes:
     - ../django_project:/home/web/django_project
@@ -98,7 +132,6 @@ dbbackups:
     - PGHOST=healthsites-db
     - PGDATABASE=gis
   restart: on-failure:5
-
 
 # This is normally the main entry point for a production server
 web:
@@ -136,6 +169,7 @@ devweb:
     - PYTHONPATH=/home/web/django_project
     - VIRTUAL_HOST=projecta.kartoza.com
     - VIRTUAL_PORT=8080
+    - RABBITMQ_HOST=rabbitmq
   volumes:
     - ../django_project:/home/web/django_project
     - ./static:/home/web/static
@@ -145,6 +179,7 @@ devweb:
   links:
     - smtp:smtp
     - db:db
+    - rabbitmq:rabbitmq
   ports:
     # for django test server
     - "49362:8080"

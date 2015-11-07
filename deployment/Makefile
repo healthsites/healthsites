@@ -103,6 +103,13 @@ reload:
 	@echo "------------------------------------------------------------------"
 	@docker exec -t -i $(PROJECT_ID)-uwsgi uwsgi --reload  /tmp/django.pid
 
+worker:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running worker in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run worker
+
 kill:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -123,6 +130,13 @@ logs:
 	@echo "Showing uwsgi logs in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) logs uwsgi
+
+workerlogs:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Showing celery worker logs in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) logs worker
 
 dblogs:
 	@echo
@@ -200,7 +214,6 @@ maillogs:
 	@echo "------------------------------------------------------------------"
 	@docker exec -t -i $(PROJECT_ID)-smtp tail -f /var/log/mail.log
 
-mailerrorlogs:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Showing smtp error logs in production mode"
@@ -212,7 +225,7 @@ mediasync:
 	@echo "------------------------------------------------------------------"
 	@echo "Syncing media files from live server"
 	@echo "------------------------------------------------------------------"
-	@rsync -av --progress inasafe-docker:/home/data/changelog.inasafe.org/deployment/media/ media
+	@rsync -av --progress kartoza4:/home/web/healthsites/deployment/media/ media
 
 dbsync:
 	@echo
@@ -220,8 +233,7 @@ dbsync:
 	@echo "Syncing database files from live server"
 	@echo "------------------------------------------------------------------"
 	-@ssh inasafe-docker "cd /home/data/changelog.inasafe.org/deployment; make dbbackup"
-	@rsync -av --progress inasafe-docker:/home/data/changelog.inasafe.org/deployment/backups/latest.dmp backups/latest.dmp
-
+	@rsync -av --progress kartoza4:/home/web/healthsites/deployment/backups/ backups
 
 # ----------------------------------------------------------------------------
 #    DEVELOPMENT C O M M A N D S

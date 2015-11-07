@@ -6,7 +6,6 @@ from django.dispatch import receiver, Signal
 from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
 
-
 from .models import (
     Domain,
     DomainArchive,
@@ -20,6 +19,7 @@ from .models import (
     Value,
     ValueArchive
 )
+
 
 # define custom signals
 SIG_locality_values_updated = Signal()

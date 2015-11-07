@@ -68,6 +68,18 @@
                 {% endif %}
               </div>
             </div>
+            <div class="row" style="margin-bottom: 10px; line-height: 60px;">
+              <div class="col-md-1">
+                LinkedIn
+              </div>
+              <div class="col-md-1 text-center">
+                {% if 'linkedin-oauth2' in auths %}
+                <span class="text-success glyphicon glyphicon-ok"></span>
+                {% else %}
+                  <a href="{% url 'social:begin' 'linkedin-oauth2' %}" class="btn btn-xs btn-primary">Connect</a>
+                {% endif %}
+              </div>
+            </div>
         </div>
     </div>
 </div>

@@ -5,7 +5,7 @@ LOG = logging.getLogger(__name__)
 import uuid
 import json
 
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, Polygon
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
@@ -16,7 +16,7 @@ from .exceptions import LocalityImportError
 from ._csv_unicode import UnicodeDictReader
 
 
-class CSVImporter():
+class CSVImporter:
     """
     CSV based importer
 
@@ -27,19 +27,37 @@ class CSVImporter():
     * attribute mapping file (JSON) - maps csv column names to specifications
     """
 
-    parsed_data = {}
-
     def __init__(
             self, domain_name, source_name, csv_filename, attr_json_file,
-            use_tabs=False):
+            use_tabs=False, user=None, mode=1):
         self.domain_name = domain_name
         self.source_name = source_name
         self.csv_filename = csv_filename
+        self.parsed_data = {}
+        # Mode
+        # 1 : Replace Data
+        # 2 : Update Data
+        self.mode = mode
+        if not user:
+            user = get_user_model()
+            # Dummy user if not provided.
+            self.user = user.objects.get(pk=-1)
+        else:
+            self.user = user
 
         self.use_tabs = use_tabs
+        self.delta = 0.01
 
         with open(attr_json_file, 'rb') as attr_map_file:
             self.attr_map = json.load(attr_map_file)
+
+        self.report = {
+            'created': 0,
+            'modified': 0,
+            'duplicated': 0,
+            'skipped': 0
+        }
+        self.exception = None
 
         # import
         self._get_domain()
@@ -57,31 +75,33 @@ class CSVImporter():
             LOG.error(msg)
             raise LocalityImportError(msg)
 
-    def _find_locality(self, uuid, upstream_id):
+    @staticmethod
+    def _find_locality(the_uuid, upstream_id):
         """
-        Tries to find a Locality in the database either by *uuid* or a
+        Tries to find a Locality in the database either by *the_uuid* or a
         combination of *source_name* and *upstream_id*
 
         If there are no results, just create a new Locality
         """
 
         try:
-            # try to find locality by uuid or upstream_id
-            loc = Locality.objects.filter(uuid=uuid).get()
-            LOG.debug('Found Locality by uuid: %s', uuid)
-            return (loc, False)
+            # try to find locality by the_uuid or upstream_id
+            loc = Locality.objects.filter(uuid=the_uuid).get()
+            LOG.debug('Found Locality by the_uuid: %s', the_uuid)
+            return loc, False
         except Locality.DoesNotExist:
             try:
                 loc = Locality.objects.filter(upstream_id=upstream_id).get()
                 LOG.debug('Found Locality by upstream_id: %s', upstream_id)
-                return (loc, False)
+                return loc, False
             except Locality.DoesNotExist:
                 # create new Locality
                 loc = Locality()
                 LOG.debug('Creating a new Locality')
-                return (loc, True)
+                return loc, True
 
-    def _read_attr(self, row, attr):
+    @staticmethod
+    def _read_attr(row, attr):
         """
         Try to read attribute from a row
         """
@@ -91,7 +111,8 @@ class CSVImporter():
         except KeyError:
             return None
 
-    def parse_geom(self, lon, lat):
+    @staticmethod
+    def parse_geom(lon, lat):
         """
         Parse geometry
         """
@@ -104,7 +125,7 @@ class CSVImporter():
             if not(-180.0 < lon < 180.0 and -90.0 < lat < 90.0):
                 return None
             else:
-                return (lon, lat)
+                return lon, lat
         except ValueError:
             return None
 
@@ -117,7 +138,7 @@ class CSVImporter():
         row_upstream_id = self._read_attr(
             row_data, self.attr_map['upstream_id']
         )
-        if not(row_upstream_id):
+        if not row_upstream_id:
             LOG.error('Row %s has no upstream_id, skipping...', row_num)
             # skip this row
             return None
@@ -129,14 +150,23 @@ class CSVImporter():
                 'Row %s with upstream_id: %s already exists, skipping...',
                 row_num, gen_upstream_id
             )
+            self.report['skipped'] += 1
+            return None
 
         tmp_geom = self.parse_geom(
             row_data[self.attr_map['geom'][0]],
             row_data[self.attr_map['geom'][1]]
         )
-        if not(tmp_geom):
+
+        if not tmp_geom:
             LOG.error('Row %s has invalid geometry, skipping...', row_num)
             # skip this row
+            self.report['skipped'] += 1
+            return None
+
+        if tmp_geom == (0, 0):
+            LOG.error('Row %s is located in Null Island (0, 0), skipping...', row_num)
+            self.report['skipped'] += 1
             return None
 
         self.parsed_data.update({
@@ -148,7 +178,7 @@ class CSVImporter():
                     key: self._read_attr(row_data, row_val)
                     for key, row_val in self.attr_map['attributes'].iteritems()
                     if self._read_attr(row_data, row_val) not in (None, '')
-                }
+                    }
             }
         })
 
@@ -158,17 +188,25 @@ class CSVImporter():
         """
 
         # generate a new changeset id
-        User = get_user_model()
-
-        # TODO: use real user for import, at the moment we use a dummy user
-        dummy_user = User.objects.get(pk=-1)
-        tmp_changeset = Changeset.objects.create(social_user=dummy_user)
+        tmp_changeset = Changeset.objects.create(social_user=self.user)
 
         for gen_upstream_id, values in self.parsed_data.iteritems():
             row_uuid = values['uuid']
             loc, _created = self._find_locality(row_uuid, gen_upstream_id)
 
             if _created:
+                # finding duplication
+                # loc_geom = Point(*values['geom'])
+                # loc_envelope = self.envelope(loc_geom.x, loc_geom.y)
+                # duplicate_localities = Locality.objects.filter(
+                #     geom__within=loc_envelope)
+                #
+                # if len(duplicate_localities) > 0:
+                #     LOG.info('Possible duplicate %s (%s) at (%s, %s)',
+                #              loc.uuid, loc.id, loc_geom.x, loc_geom.y)
+                #     self.report['duplicated'] += 1
+                #     continue
+
                 loc.changeset = tmp_changeset
                 loc.domain = self.domain
                 loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
@@ -180,14 +218,56 @@ class CSVImporter():
                 LOG.info('Created %s (%s)', loc.uuid, loc.id)
 
                 # save values for Locality
-                loc.set_values(values['values'], social_user=dummy_user)
+                loc.set_values(values['values'], social_user=self.user)
+
+                self.report['created'] += 1
             else:
+                # check location duplication
+
+                # apply mode
                 loc.changeset = tmp_changeset
                 loc.geom = Point(*values['geom'])
 
                 loc.save()
                 LOG.info('Updated %s (%s)', loc.uuid, loc.id)
-                loc.set_values(values['values'], social_user=dummy_user)
+                if self.mode == 1:
+                    # replace
+                    # delete old value
+                    old_value = loc.repr_dict()['values']
+                    for key in old_value.keys():
+                        old_value[key] = ''
+                    new_value = values['values']
+
+                    merged_value = old_value.copy()
+                    merged_value.update(new_value)
+
+                    loc.set_values(merged_value, social_user=self.user)
+
+                elif self.mode == 2:
+                    # update
+                    # merged old and new value
+                    # set merged value
+                    old_value = loc.repr_dict()['values']
+                    new_value = values['values']
+                    merged_value = old_value.copy()
+                    merged_value.update(new_value)
+                    loc.set_values(merged_value, social_user=self.user)
+                else:
+                    loc.set_values(values['values'], social_user=self.user)
+
+                self.report['modified'] += 1
+
+    def envelope(self, lon, lat):
+        """Return polygon envelope for point (lon, lat)
+        """
+        x_min = lon - self.delta
+        x_max = lon + self.delta
+        y_min = lat - self.delta
+        y_max = lat + self.delta
+
+        polygon = Polygon.from_bbox([x_min, y_min, x_max, y_max])
+
+        return polygon
 
     def parse_file(self):
         """
@@ -197,14 +277,38 @@ class CSVImporter():
         transaction to minimize inconsistent database state
         """
 
-        with open(self.csv_filename, 'rb') as csv_file:
-            if self.use_tabs:
-                data_file = UnicodeDictReader(csv_file, delimiter='\t')
-            else:
-                data_file = UnicodeDictReader(csv_file)
+        try:
+            with open(self.csv_filename, 'rb') as csv_file:
+                if self.use_tabs:
+                    data_file = UnicodeDictReader(csv_file, delimiter='\t')
+                else:
+                    data_file = UnicodeDictReader(csv_file)
 
-            with transaction.atomic():
-                for r_num, r_data in enumerate(data_file):
-                    self.parse_row(r_num, r_data)
-                # save localities to the database
-                self.save_localities()
+                with transaction.atomic():
+                    for r_num, r_data in enumerate(data_file):
+                        self.parse_row(r_num, r_data)
+                    # save localities to the database
+                    self.save_localities()
+        except EnvironmentError as e:
+            self.exception = e
+
+    def generate_report(self):
+        """Generate report for the import process
+        """
+        report = 'Report\n\n'
+        total = 0
+        for i, key in enumerate(sorted(self.report.iterkeys())):
+            total += self.report[key]
+        for i, key in enumerate(sorted(self.report.iterkeys())):
+            if total > 0:
+                percentage = 100.0 * self.report[key] / total
+            else:
+                percentage = 0
+            report += ('%s. Number of %s locality is %s (%.2f %%).\n' % (
+                i + 1, key, self.report[key], percentage))
+
+        if self.exception:
+            report += 'Notes:\n'
+            report += self.exception
+
+        return report
