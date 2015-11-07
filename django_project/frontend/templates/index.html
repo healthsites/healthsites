@@ -88,7 +88,8 @@
 
     </div>
     <div class="nav-searchbar container-fluid">
-        <form action="">
+        <form action="{%  url 'map-geoname' %}" method="post">
+            {% csrf_token %}
             <div class="option-group">
                 <div class="option">
                     <span></span>

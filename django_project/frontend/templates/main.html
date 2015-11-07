@@ -4,117 +4,134 @@
 
 {% block content %}
 
-<div class="container-fluid height100 nopadding">
-  <div id="sidebar">
-    <div id="sidebar-profile">
-    {% if user.is_authenticated %}
-      <a href="{% url 'userprofilepage' %}">
-        <img src="/static/img/place-holder.png">
-      </a>
-      <a href="{% url 'userprofilepage' %}" class="profile-name">{{ user.username }}</a>
-      <a href="{% url 'logout_user' %}" class="profile-logout"><i class="mdi-action-exit-to-app"></i></a>
-    {% else %}
-      <a href="{% url 'usersignpage' %}" class="profile-signin"><i class="mdi-action-exit-to-app"></i> </a>
-      <a href="{% url 'usersignpage' %}" class="profile-name">SIGN IN</a>
-    {% endif %}
-    </div>
-    <div class="panel-group" id="sidebar-accordion" role="tablist" aria-multiselectable="true">
-      <!--
-      <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="headingSearch">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseSearch" aria-expanded="true" aria-controls="collapseSearch">
-              <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
-            </a>
-          </h4>
-        </div>
-        <div id="collapseSearch" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseSearch">
-          <div class="panel-body">
-            Search
-          </div>
-        </div>
-      </div>
-      -->
-      <div class="panel panel-default visible-xs visible-sm">
-        <div class="panel-heading" role="tab" id="headingSocialDrawer">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseSocialDrawer" aria-expanded="true" aria-controls="collapseSocialDrawer">
-              <i class="mdi-social-share"></i> Share
-            </a>
-          </h4>
-        </div>
-        <div id="collapseSocialDrawer" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseSocialDrawer">
-          <div class="panel-body">
-            <div id="sidebar-social">
-              <a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20check%20this%20site%20out&url=http://healthsites.io/">
-                <span class="socicon medium-size-icon">a</span>
-              </a>
-              <a href="#" class="facebook-hs-share">
-                <span class="socicon medium-size-icon">b</span>
-              </a>
-              <a href="https://plus.google.com/share?url=http://healthsites.io/"
-                  onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
-                  <span class="socicon medium-size-icon">c</span>
-              </a>
+    <div class="container-fluid height100 nopadding">
+        <div id="sidebar">
+            <div id="sidebar-profile">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'userprofilepage' %}">
+                        <img src="/static/img/place-holder.png">
+                    </a>
+                    <a href="{% url 'userprofilepage' %}" class="profile-name">{{ user.username }}</a>
+                    <a href="{% url 'logout_user' %}" class="profile-logout"><i class="mdi-action-exit-to-app"></i></a>
+                {% else %}
+                    <a href="{% url 'usersignpage' %}" class="profile-signin"><i class="mdi-action-exit-to-app"></i>
+                    </a>
+                    <a href="{% url 'usersignpage' %}" class="profile-name">SIGN IN</a>
+                {% endif %}
             </div>
-          </div>
+            <div class="panel-group" id="sidebar-accordion" role="tablist" aria-multiselectable="true">
+                <!--
+                <div class="panel panel-default">
+                  <div class="panel-heading" role="tab" id="headingSearch">
+                    <h4 class="panel-title">
+                      <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseSearch" aria-expanded="true" aria-controls="collapseSearch">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span> Search
+                      </a>
+                    </h4>
+                  </div>
+                  <div id="collapseSearch" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseSearch">
+                    <div class="panel-body">
+                      Search
+                    </div>
+                  </div>
+                </div>
+                -->
+                <div class="panel panel-default visible-xs visible-sm">
+                    <div class="panel-heading" role="tab" id="headingSocialDrawer">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseSocialDrawer"
+                               aria-expanded="true" aria-controls="collapseSocialDrawer">
+                                <i class="mdi-social-share"></i> Share
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseSocialDrawer" class="panel-collapse collapse" role="tabpanel"
+                         aria-labelledby="collapseSocialDrawer">
+                        <div class="panel-body">
+                            <div id="sidebar-social">
+                                <a href="https://twitter.com/intent/tweet?text=hello%20everyone,%20check%20this%20site%20out&url=http://healthsites.io/">
+                                    <span class="socicon medium-size-icon">a</span>
+                                </a>
+                                <a href="#" class="facebook-hs-share">
+                                    <span class="socicon medium-size-icon">b</span>
+                                </a>
+                                <a href="https://plus.google.com/share?url=http://healthsites.io/"
+                                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+                                    <span class="socicon medium-size-icon">c</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="headingInfo">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseInfo"
+                               aria-expanded="true" aria-controls="collapseInfo">
+                                <i class="mdi-action-info-outline"></i> Locality info
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapseInfo" class="panel-collapse collapse" role="tabpanel"
+                         aria-labelledby="collapseInfo">
+                        <div class="panel-body">
+                            <div id="sidebar-info"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="headingInfo">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseInfo" aria-expanded="true" aria-controls="collapseInfo">
-              <i class="mdi-action-info-outline"></i> Locality info
-            </a>
-          </h4>
+        <div id="sidebar-helper">
         </div>
-        <div id="collapseInfo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="collapseInfo">
-          <div class="panel-body">
-            <div id="sidebar-info"></div>
-          </div>
+        <div class="height100" id="main-content">
+            <div id="map"></div>
         </div>
-      </div>
+        <!--
+        <div id="add-new-locality">
+          <button data-mapclick-text="Click on the map"
+                  data-savelocality-text="Save Locality"
+                  class="btn btn-success btn-fab btn-raised mdi-content-add">
+          </button>
+        </div>
+        -->
     </div>
-  </div>
-  <div id="sidebar-helper">
-  </div>
-  <div class="height100" id="main-content">
-    <div id="map"></div>
-  </div>
-  <!--
-  <div id="add-new-locality">
-    <button data-mapclick-text="Click on the map"
-            data-savelocality-text="Save Locality"
-            class="btn btn-success btn-fab btn-raised mdi-content-add">
-    </button>
-  </div>
-  -->
-</div>
 
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
-<script type="text/javascript">
-// initialize the app
-new APP();
+    <script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            // Set viewport if exist
+            {% if northeast_lat and northeast_lng and  southwest_lat and southwest_lng %}
+                sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
+                sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
+                sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
+                sessionStorage.setItem('southwest_lng', {{ southwest_lng }});
+            {% endif %}
 
-$.material.init();
+            // initialize the app
+            new APP();
 
-$(document).ready(function() {
-  $('.sidebar-toggle').click(function() {
-    if ($('#sidebar').hasClass('active')) {
-      $('#sidebar').removeClass('active');
-      $('#sidebar-helper').removeClass('active');
-    } else {
-      $('#sidebar').addClass('active');
-      $('#sidebar-helper').addClass('active');
-    }
-  });
-  $('#sidebar-helper').click(function() {
-    $('#sidebar').removeClass('active');
-    $('#sidebar-helper').removeClass('active');
-  });
-});
-</script>
+            $.material.init();
+
+
+            $('.sidebar-toggle').click(function () {
+                if ($('#sidebar').hasClass('active')) {
+                    $('#sidebar').removeClass('active');
+                    $('#sidebar-helper').removeClass('active');
+                } else {
+                    $('#sidebar').addClass('active');
+                    $('#sidebar-helper').addClass('active');
+                }
+            });
+            $('#sidebar-helper').click(function () {
+                $('#sidebar').removeClass('active');
+                $('#sidebar-helper').removeClass('active');
+            });
+        });
+    </script>
+    <script>
+
+    </script>
 {% endblock %}

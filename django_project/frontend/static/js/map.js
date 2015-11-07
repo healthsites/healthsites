@@ -7,7 +7,8 @@ window.MAP = (function () {
         // create a map in the "map" div, set the view to a given place and zoom
         this.MAP = L.map('map');
 
-        if (!this._restoreMapContext()) {
+        if (this._isCustomViewPort()){
+        } else if (!this._restoreMapContext()) {
             this.MAP.setView([0, 0], 3);
         }
 
@@ -51,6 +52,34 @@ window.MAP = (function () {
     // prototype
     module.prototype = {
         constructor: module,
+
+        _isCustomViewPort: function(){
+          if (sessionStorage.key('northeast_lat') && sessionStorage.key('northeast_lng') &&
+              sessionStorage.key('southwest_lat') && sessionStorage.key('southwest_lng')){
+
+              var northeast_lat = parseFloat(sessionStorage.getItem('northeast_lat'));
+              var northeast_lng = parseFloat(sessionStorage.getItem('northeast_lng'));
+              var southwest_lat = parseFloat(sessionStorage.getItem('southwest_lat'));
+              var southwest_lng = parseFloat(sessionStorage.getItem('southwest_lng'));
+
+              if (northeast_lat && northeast_lng && southwest_lat && southwest_lng){
+                  this.MAP.fitBounds([
+                      [southwest_lat, southwest_lng],
+                      [northeast_lat, northeast_lng]
+                  ]);
+                  // Remove them
+                  sessionStorage.removeItem('northeast_lat');
+                  sessionStorage.removeItem('northeast_lng');
+                  sessionStorage.removeItem('southwest_lat');
+                  sessionStorage.removeItem('southwest_lng');
+                  return true;
+              } else{
+                  return false;
+              }
+          } else {
+              return false;
+          }
+        },
 
         _restoreMapContext: function () {
             if (sessionStorage.key('map_zoom') && sessionStorage.key('map_center')) {
