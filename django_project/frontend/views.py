@@ -27,7 +27,7 @@ class MainView(TemplateView):
 
 
 class MapView(TemplateView):
-    template_name = 'main.html'
+    template_name = 'map.html'
 
     def get_context_data(self, **kwargs):
         """

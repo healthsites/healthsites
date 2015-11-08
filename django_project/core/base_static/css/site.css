@@ -35,7 +35,7 @@ label.inline {
 	text-align: center;
 }
 .button {
-	font-size: 16px;
+	font-size: 14px;
 	font-weight: 600;
 	-moz-border-radius: 9px;
 	-webkit-border-radius: 9px;
@@ -46,7 +46,7 @@ label.inline {
 	line-height: 44px;
 	text-align: center;
 }
-.button:hover {
+.button:hover, .button:focus {
 	text-decoration: none;
 	color: #fff;
 	opacity: 0.8;
@@ -55,10 +55,27 @@ label.inline {
 	color: #f44a52;
 	background: #fff;
 }
+.button.blue {
+	color: #3c4c57;
+	background: none;
+}
 .button.stroke {
 	border: 3px solid #fff;
 	line-height: 38px;
 }
+.button.stroke.blue {
+	border: 3px solid #3c4c57;
+	line-height: 38px;
+	color: #3c4c57;
+}
+.scroll {
+	clear: both;
+    display: block;
+    height: 53px;
+    margin-top: -53px;
+}
+
+
 /* Prevents animation on initial page load. See lib.app.js */
 
 body:not(.animate) .animate {
@@ -115,9 +132,24 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	color: #3c4c57;
 	font-size: 22px;
 	height: 43px;
-	line-height: 43px;
-	margin-top: 4px;
+	line-height: 40px;
+	margin-top: 2px;
 	margin-left: 10px;
+}
+.navbar-share .share {
+	display: none;
+}
+.navbar-share .close {
+	display: inline-block;
+	vertical-align: middle;
+	line-height: 40px;
+	height: 43px;
+}
+.navbar-share.closed .share {
+	display: inline-block;
+}
+.navbar-share.closed .close {
+	display: none;
 }
 .navbar-toggle .icon-bar {
 	background: #3e3d3d;
@@ -141,11 +173,15 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
     cursor: pointer;
     display: inline-block;
     font-size: 18px;
-    height: 23px;
+    height: 30px;
     overflow: hidden;
 	vertical-align: middle;
 	margin-left: 10px;
 	margin-top: 4px;
+	position: absolute;
+	top: 5px;
+	left: 290px;
+	padding: 4px;
 }
 #site-social a {
 	color: #3c4c57;
@@ -164,6 +200,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	-moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.3);
 	box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.3);
 	margin: 0;
+
 }
 .masthead.no-tag {
 	height: 53px;
@@ -194,6 +231,9 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 .navbar-nav > li > .navbar-chat {
 	font-size: 18px;
 }
+.masthead.no-tag {
+    background: rgba(255, 255, 255, .97);
+}
  @media only screen and (max-width:970px) {
    .navbar-brand, .navbar-share {
 	  font-size: 20px
@@ -215,6 +255,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	   position: absolute;
 	   padding: 5px;
 	   top: 5px;
+	   left: 240px;
 	   background: #fff;
 	   z-index: 200;
 	   box-sizing: content-box;
@@ -342,91 +383,124 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 /* Footer
 
 -------------------------------------------------- */
+#colophon {
+	background: #f44a52;
+	color: #fff;
+	font-family: "Raleway", sans-serif;
+	font-size: 16px;
+	padding: 40px 0;
+}
+#colophon a {
+	color: #fff;
+	text-decoration: none;
+}
+#colophon a:hover {
+	text-decoration: underline;
+}
+#colophon ul {
+	padding: 0;
+	list-style: none;
+}
+#colophon .social {
+	text-align: right;
+}
+#colophon .social li {
+	display: inline-block;
+	font-size: 24px;
+	margin-left: 3px;
+}
+
+
+/**
+  * Rhinoslider 1.05
+  * http://rhinoslider.com/
+  *
+  * Copyright 2015: Sebastian Pontow, Rene Maas (http://renemaas.de/)
+  * Dual licensed under the MIT or GPL Version 2 licenses.
+  * http://rhinoslider.com/license/
+  */
+
+#slider {
+				width:100%;
+				height:688px;
+
+				/*IE bugfix*/
+				padding:0;
+				margin:0;
+			}
+#slider li { list-style:none; }
+
+.rhino-btn {
+	z-index:10;
+	width:56px;
+	height:53px;
+	display:block;
+	text-indent:-999%;
+	-webkit-user-select:none;
+	-moz-user-select:none;
+	user-select:none;
+}
 
 
 
-.footer-animation {
-	background-size: auto 100%;
-	height: 0;
-	padding-bottom: 50%;
-	transition: none;
-	-webkit-animation: walk 2s steps(39) infinite;
-	-moz-animation: walk 2s steps(39) infinite;
-	-o-animation: walk 2s steps(39) infinite;
-	animation: walk 2s steps(39) infinite;
-	-webkit-animation-play-state: paused;
-	-moz-animation-play-state: paused;
-	-o-animation-play-state: paused;
-	animation-play-state: paused;
-}
-.footer:hover .footer-animation {
-	-webkit-animation-play-state: running;
-	-moz-animation-play-state: running;
-	-o-animation-play-state: running;
-	animation-play-state: running;
-}
- @-webkit-keyframes walk {
- from {
-background-position: 0 0;
-}
-to {
-	background-position: 100% 0;
-}
-}
- @-moz-keyframes walk {
- from {
-background-position: 0 0;
-}
-to {
-	background-position: 100% 0;
-}
-}
- @-o-keyframes walk {
- from {
-background-position: 0 0;
-}
-to {
-	background-position: 100% 0;
-}
-}
- @keyframes walk {
- from {
-background-position: 0 0;
-}
-to {
-	background-position: 100% 0;
-}
-}
-.footer-social:hover {
-	-webkit-animation: rainbow 4s steps(36) infinite;
-}
- @-webkit-keyframes rainbow {
- from {
--webkit-filter:hue-rotate(10deg);
-}
-to {
-	-webkit-filter: hue-rotate(360deg);
-}
-}
- @keyframes rainbow {
- from {
- -webkit-filter:hue-rotate(10deg);
- filter:hue-rotate(10deg);
-}
-to {
-	-webkit-filter: hue-rotate(360deg);
-	filter: hue-rotate(360deg);
-}
-}
-.footer-dialog:before {
-	content: '';
+.rhino-container { position:relative; }
+
+.rhino-bullets {
 	position: absolute;
-	height: 0;
-	width: 0;
-	left: -12px;
-	top: 20px;
-	border-top: 10px solid transparent;
-	border-bottom: 10px solid transparent;
-	border-right: 12px solid rgba(0,0,0,.05);
+	bottom: -40px;
+	left: 50%;
+	margin:0 0 0 -260px;
+	z-index: 10;
+	/* background: #c8c5c2; */
+	padding:0;
 }
 
+.rhino-bullets:before, .rhino-bullets:after {
+	position:absolute;
+	display:block;
+	left:-16px;
+	content:' ';
+	width:16px;
+	height:26px;
+
+}
+
+.rhino-bullets:after {
+	left:auto;
+	right:-16px;
+	background-position: -240px 0;
+}
+
+.rhino-bullets li {
+	float:left;
+	display:inline;
+	margin:0 15px;
+}
+
+.rhino-bullets li a.rhino-bullet {
+	display: block;
+	width: 38px;
+	height: 38px;
+	line-height: 38px;
+	cursor: pointer;
+	background: #c8c5c2;
+	font-size: 16px;
+	text-align: center;
+	padding: 0;
+	color: #3c4c57;
+	text-decoration:none;
+	-webkit-user-select:none;
+	-moz-user-select:none;
+	user-select:none;
+	border-radius: 50%;
+}
+
+.rhino-bullets li a.rhino-bullet:hover, .rhino-bullets li a.rhino-bullet:focus {
+	color:#fff;
+	background:#f44a52;
+}
+
+.rhino-bullets li a.rhino-bullet.rhino-active-bullet {
+	color:#fff;
+	background: #f44a52;
+}

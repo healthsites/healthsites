@@ -30,6 +30,7 @@ INSTALLED_APPS += (
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/signin/'
 
+PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 
 PIPELINE_JS = {
@@ -70,6 +71,17 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/home.js',
     },
+    'map': {
+        'source_filenames': (
+            'js/jquery-1.11.3.min.js',
+            'js/bootstrap.min.js',
+            'js/d3.min.js',
+            'js/c3.min.js',
+            'js/rhinoslider-1.05.min.js',
+            'js/custom-jquery.js',
+        ),
+        'output_filename': 'js/map.js',
+    },
 }
 
 PIPELINE_CSS = {
@@ -105,5 +117,18 @@ PIPELINE_CSS = {
         'extra_context': {
             'media': 'screen, projection',
         },
-    }
+    },
+    'map': {
+        'source_filenames': (
+            'css/bootstrap.min.css',
+            'css/font-awesome.min.css',
+            'css/c3.css',
+            'css/site.css',
+            'css/map.css',
+        ),
+        'output_filename': 'css/map.css',
+        'extra_context': {
+            'media': 'screen, projection',
+        },
+    },
 }
