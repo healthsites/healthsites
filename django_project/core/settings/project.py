@@ -48,11 +48,14 @@ PIPELINE_JS = {
     },
     'appjs': {
         'source_filenames': (
+            'js/signals.min.js',
+            'js/hasher.min.js',
+            'js/crossroads.min.js',
             'js/clusterLayer.js',
             'js/csrf-ajax.js',
-            'js/app.js',
             'js/map.js',
-            'js/localitySidebar.js'
+            'js/localitySidebar.js',
+            'js/app.js',
         ),
         'output_filename': 'js/appjs.js'
     },
@@ -63,11 +66,11 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/home.js',
     },
-    'map': {
+    'map_page': {
         'source_filenames': (
             'js/custom-jquery.js',
         ),
-        'output_filename': 'js/map.js',
+        'output_filename': 'js/map_page.js',
     },
 }
 
@@ -96,12 +99,12 @@ PIPELINE_CSS = {
             'media': 'screen, projection',
         },
     },
-    'map': {
+    'map_page': {
         'source_filenames': (
             'css/site.css',
             'css/map.css',
         ),
-        'output_filename': 'css/map.css',
+        'output_filename': 'css/map_page.css',
         'extra_context': {
             'media': 'screen, projection',
         },

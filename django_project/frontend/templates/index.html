@@ -279,6 +279,7 @@
 </footer>
 
 {% javascript 'contrib' %}
+{% javascript 'appjs' %}
 {% javascript 'home' %}
 
 {% block extra_js %}
@@ -377,10 +378,6 @@
     <script>
         $(document).ready(function () {
             $(function () {
-                function log(message) {
-                    alert(message);
-                }
-
                 $("#search-box").autocomplete({
                     source: function (request, response) {
                         $.ajax({
@@ -405,6 +402,8 @@
                     }
                 });
             });
+            // initialize the app
+            new APP();
         });
     </script>
 {% endblock extra_js %}

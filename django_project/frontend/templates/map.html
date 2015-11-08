@@ -13,7 +13,7 @@
     <title>Healthsites.io</title>
 
     {% stylesheet 'contrib' %}
-    {% stylesheet 'map' %}
+    {% stylesheet 'map_page' %}
 
 
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
@@ -201,7 +201,25 @@
 </section>
 
 {% javascript 'contrib' %}
-{% javascript 'map' %}
+{% javascript 'appjs' %}
+{% javascript 'map_page' %}
+
+{% block extra_js %}
+        <script type="text/javascript">
+        $(document).ready(function () {
+            // Set viewport if exist
+            {% if northeast_lat and northeast_lng and  southwest_lat and southwest_lng %}
+                sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
+                sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
+                sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
+                sessionStorage.setItem('southwest_lng', {{ southwest_lng }});
+            {% endif %}
+
+            // initialize the app
+            new APP();
+        });
+    </script>
+{% endblock extra_js %}
 
 </body>
 </html>
