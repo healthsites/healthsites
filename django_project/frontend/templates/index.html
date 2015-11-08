@@ -12,22 +12,7 @@
 
     <title>Healthsites.io</title>
 
-    <!-- Bootstrap  -->
-
-    {#<link href="css/bootstrap.css" rel="stylesheet">#}
-    {#<link href="css/font-awesome.min.css" rel="stylesheet">#}
-    {#<link href="css/site.css" rel="stylesheet">#}
-    {#<link href="css/home.css" rel="stylesheet">#}
-    {#<script type="text/javascript" src="js/jquery-1.11.3.min.js"></script>#}
-    {#<script type="text/javascript" src="js/bootstrap.min.js"></script>#}
-    {#<script type="text/javascript" src="js/custom-jquery.js"></script>#}
-    {#<!-- Load c3.css -->#}
-    {#<link href="css/c3.css" rel="stylesheet" type="text/css">#}
-    {##}
-    {#<!-- Load d3.js and c3.js -->#}
-    {#<script src="js/d3.min.js" charset="utf-8"></script>#}
-    {#<script src="js/c3.min.js"></script>#}
-    {#    {% stylesheet 'contrib' %}#}
+    {% stylesheet 'contrib' %}
     {% stylesheet 'home' %}
 
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
@@ -88,7 +73,7 @@
 
     </div>
     <div class="nav-searchbar container-fluid">
-        <form action="{%  url 'map-geoname' %}" method="post">
+        <form action="{% url 'map-geoname' %}" method="post">
             {% csrf_token %}
             <div class="option-group">
                 <div class="option">
@@ -122,7 +107,7 @@
                     works</a></div>
             </div>
         </div>
-        <div class="col-md-7"><img src="{% static "images/isometric-ipad@2x.png" %}" width="710" height="364"
+        <div class="col-md-7"><img src="{% static "img/isometric-ipad@2x.png" %}" width="710" height="364"
                                    class="col-md-12"></div>
     </div>
 </section>
@@ -293,16 +278,12 @@
     </div>
 </footer>
 
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-{#{% javascript 'contrib' %}#}
-{#{% javascript 'appjs' %}#}
+{% javascript 'contrib' %}
 {% javascript 'home' %}
-{#<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>#}
 
 {% block extra_js %}
 
     <script>
-
         var chart = c3.generate({
             bindto: '#chart1',
             size: {
@@ -428,8 +409,5 @@
     </script>
 {% endblock extra_js %}
 
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-
-{#<script src="js/bootstrap.min.js"></script>#}
 </body>
 </html>

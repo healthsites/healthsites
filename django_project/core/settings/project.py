@@ -40,13 +40,9 @@ PIPELINE_JS = {
             'js/leaflet.draw-src.js',
             'js/jquery-1.11.3.min.js',
             'js/bootstrap.min.js',
-            'js/material.min.js',
-            'js/ripples.min.js',
-            'js/nlform.js',
-            'js/signals.min.js',
-            'js/hasher.min.js',
-            'js/crossroads.min.js',
-            'js/jquery-ui.js',
+            'js/d3.min.js',
+            'js/c3.min.js',
+            'js/rhinoslider-1.05.min.js',
         ),
         'output_filename': 'js/contrib.js',
     },
@@ -62,22 +58,13 @@ PIPELINE_JS = {
     },
     'home': {
         'source_filenames': (
-            'js/jquery-1.11.3.min.js',
-            'js/bootstrap.min.js',
-            'js/custom-jquery.js',
-            'js/d3.min.js',
-            'js/c3.min.js',
             'js/jquery-ui.js',
+            'js/custom-jquery.js',
         ),
         'output_filename': 'js/home.js',
     },
     'map': {
         'source_filenames': (
-            'js/jquery-1.11.3.min.js',
-            'js/bootstrap.min.js',
-            'js/d3.min.js',
-            'js/c3.min.js',
-            'js/rhinoslider-1.05.min.js',
             'js/custom-jquery.js',
         ),
         'output_filename': 'js/map.js',
@@ -89,15 +76,9 @@ PIPELINE_CSS = {
         'source_filenames': (
             'css/leaflet.css',
             'css/leaflet.draw.css',
-            'css/bootstrap.css',
-            'css/main.css',
-            'css/material.min.css',
-            'css/ripples.min.css',
-            'css/material-wfont.min.css',
-            'css/navbar.css',
-            'css/sidebar.css',
-            'css/nlf.css',
-            'css/jquery-ui.css',
+            'css/bootstrap.min.css',
+            'css/font-awesome.min.css',
+            'css/c3.css',
         ),
         'output_filename': 'css/contrib.css',
         'extra_context': {
@@ -106,12 +87,9 @@ PIPELINE_CSS = {
     },
     'home': {
         'source_filenames': (
-            'css/bootstrap.min.css',
-            'css/font-awesome.min.css',
-            'css/c3.css',
+            'css/jquery-ui.css',
             'css/site.css',
             'css/home.css',
-            'css/jquery-ui.css',
         ),
         'output_filename': 'css/home.css',
         'extra_context': {
@@ -120,9 +98,6 @@ PIPELINE_CSS = {
     },
     'map': {
         'source_filenames': (
-            'css/bootstrap.min.css',
-            'css/font-awesome.min.css',
-            'css/c3.css',
             'css/site.css',
             'css/map.css',
         ),
