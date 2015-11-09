@@ -11,6 +11,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 import googlemaps
+from localities.models import Locality
 
 
 class MainView(TemplateView):
@@ -22,7 +23,11 @@ class MainView(TemplateView):
         """
 
         context = super(MainView, self).get_context_data(**kwargs)
+
         context['debug'] = settings.DEBUG
+
+        context['num_localities'] = Locality.objects.count()
+
         return context
 
 
