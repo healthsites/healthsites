@@ -97,7 +97,7 @@
                     </div>
 
                     <span class="name">
-                        <a href="{% url 'userprofilepage' %}">{{ user.username }}</a>
+                        <a href="{% url 'userprofilepage' %}">{{ user }}</a>
                     </span>
                 </div>
                 <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
@@ -145,7 +145,7 @@
                         <p class="address">54, Praed st, London, W2 NY<br/>
                             Unighted Kingdom</p>
 
-                        <p class="coordinates">lat: 6.68926542, long: 9.72791643</p>
+                        <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
 
                         <p class="call"><i class="fa fa-phone"></i> 0141 636 6116 <span class="hours"><i
                                 class="fa fa-clock-o"></i> 24/24 & 7/7</span></p>

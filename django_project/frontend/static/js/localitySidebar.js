@@ -6,10 +6,15 @@ window.LocalitySidebar = (function () {
     var module = function () {
 
         this.$sidebar = $('#sidebar-info');
-        this.$sidebar.html(this.template);
+        //this.$sidebar.html(this.template);
         this.$sidebar_head = this.$sidebar.find('.sidebar-info-header');
         this.$sidebar_body = this.$sidebar.find('.sidebar-info-body');
         this.$sidebar_footer = this.$sidebar.find('.sidebar-info-footer');
+
+        // new style
+        this.$coordinates = $('#locality-coordinates');
+
+
 
         this._bindExternalEvents();
         this._bindInternalEvents();
@@ -117,31 +122,36 @@ window.LocalitySidebar = (function () {
         },
 
         showInfo: function(evt) {
-            var sidebar_head = [
-                '<div class="modal-info-status">',
-                    'This information is considered ',
-                    '<span class="label label-success">current</span>. ',
-                    '<span class="label-status">Why</span>?',
-                    //'<a class="close-modal pull-right"><i class="mdi-navigation-close"></i></a>',
-                '</div>',
-                '<div class="modal-info-information">',
-                    '<p>- It was manualy verified by trusted user</p>',
-                    '<p>- It was been verified using social harvesting</p>',
-                    '<p>- 13 people have verfified its existance in last 3 months</p>',
-                '</div>',
-            ].join('');
+            console.log(this.locality_data.geom);
+            this.$coordinates.text(
+                'lat: '+ this.locality_data.geom[0] + ', long: ' + this.locality_data.geom[1]);
+            console.log(this.$coordinates.text());
+            console.log('apem');
+            //var sidebar_head = [
+            //    '<div class="modal-info-status">',
+            //        'This information is considered ',
+            //        '<span class="label label-success">current</span>. ',
+            //        '<span class="label-status">Why</span>?',
+            //        //'<a class="close-modal pull-right"><i class="mdi-navigation-close"></i></a>',
+            //    '</div>',
+            //    '<div class="modal-info-information">',
+            //        '<p>- It was manualy verified by trusted user</p>',
+            //        '<p>- It was been verified using social harvesting</p>',
+            //        '<p>- 13 people have verfified its existance in last 3 months</p>',
+            //    '</div>',
+            //].join('');
             // placeholder for info quality
             //this.$sidebar_head.html(sidebar_head);
-            this.$sidebar_body.html(this.locality_data.repr);
-            this.$sidebar_footer.html([
-                '<span id="nl-form" class="nl-form"></span>',
-                '<button type="button" id="nl-execute" class="btn btn-xs btn-success nl-execute"> GO <i class="mdi-av-play-arrow"></i></button>',
-            ].join(''));
-            var form = new NLForm( document.getElementById( 'nl-form' ) );
-            $('#sidebar').addClass('active');
-            $('#sidebar-helper').addClass('active');
-            $('#collapseInfo').collapse('show');
-            this.$sidebar.trigger('show-info-adjust');
+            //this.$sidebar_body.html(this.locality_data.repr);
+            //this.$sidebar_footer.html([
+            //    '<span id="nl-form" class="nl-form"></span>',
+            //    '<button type="button" id="nl-execute" class="btn btn-xs btn-success nl-execute"> GO <i class="mdi-av-play-arrow"></i></button>',
+            //].join(''));
+            //var form = new NLForm( document.getElementById( 'nl-form' ) );
+            //$('#sidebar').addClass('active');
+            //$('#sidebar-helper').addClass('active');
+            //$('#collapseInfo').collapse('show');
+            //this.$sidebar.trigger('show-info-adjust');
         },
 
         setInfoWindowHeight: function() {
