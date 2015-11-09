@@ -19,7 +19,9 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    {% stylesheet 'contrib' %}
+    {% stylesheet 'map' %}
+    {% stylesheet 'project' %}
+
     <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
 
@@ -37,7 +39,7 @@
   <a href="/">
   <img height="40px" class="pull-left" style="padding-top: 8px; padding-right: 8px;" src="/static/img/logo.png"/>
   <span id="about" class="navbar-brand">
-    HEALTHSITES.IO
+    healthsites.io
   </span>
   </a>
   <div id="site-social" class="hidden-xs hidden-sm">
@@ -108,8 +110,8 @@
 </div> <!-- /.modal -->
 
 
-{% javascript 'contrib' %}
-{% javascript 'appjs' %}
+{% javascript 'map' %}
+{% javascript 'project' %}
 
 {% block extra_js %}
 

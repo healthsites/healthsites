@@ -27,9 +27,9 @@
     {#<!-- Load d3.js and c3.js -->#}
     {#<script src="js/d3.min.js" charset="utf-8"></script>#}
     {#<script src="js/c3.min.js"></script>#}
-    {#    {% stylesheet 'contrib' %}#}
+    {#    {% stylesheet 'home' %}#}
+    {% stylesheet 'map' %}
     {% stylesheet 'home' %}
-
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -294,9 +294,10 @@
 </footer>
 
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-{#{% javascript 'contrib' %}#}
-{#{% javascript 'appjs' %}#}
+{#{% javascript 'home' %}#}
+{#{% javascript 'home' %}#}
 {% javascript 'home' %}
+{% javascript 'project' %}
 {#<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>#}
 
 {% block extra_js %}
