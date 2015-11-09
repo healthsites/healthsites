@@ -39,23 +39,32 @@
     <div class="container-fluid">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar"><span class="sr-only">Toggle navigation</span> <span
-                    class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
-            <a class="navbar-brand" href="{% url "home" %}"><span class="hs-logo"></span>Healthsites.io</a>
-            <a class="navbar-share closed" href="#"><img class="share" src="{% static "img/share.svg" %}" width="20"/><img
-                    class="close" src="{% static "img/close.svg" %}" width="16"/></a>
+                    aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url "home" %}">
+                <span class="hs-logo"></span>Healthsites.io
+            </a>
+            <a class="navbar-share closed" href="#">
+                <img class="share" src="{% static "img/share.svg" %}" width="20"/>
+                <img class="close" src="{% static "img/close.svg" %}" width="16"/>
+            </a>
 
             <div class="hidden" id="site-social" style="width: 115px;">
                 <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
                 <a href="https://twitter.com/intent/tweet?text=Share and develop critical health facility data on http://healthsites.io"
                    class=" withripple">
-                    <i class="fa fa-twitter"></i></a>
+                    <i class="fa fa-twitter"></i>
+                </a>
                 <a class="facebook-hs-share withripple" href="#">
-                    <i class="fa fa-facebook"></i></a>
+                    <i class="fa fa-facebook"></i>
+                </a>
                 <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
                    href="https://plus.google.com/share?url=http://healthsites.io/">
                     <i class="fa fa-google-plus"></i>
-
                 </a>
             </div>
             <span class="tagline">A free, curated, global, canonical source of healthcare location data</span>
@@ -71,7 +80,6 @@
                 <li><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
                 <li><a class="navbar-chat" href="#"><i class="fa fa-comments"></i></a></li>
             </ul>
-
         </div>
         <!--/.nav-collapse -->
 
@@ -81,23 +89,34 @@
 <section id="map-full" class="js-fullheight fluid-container">
     <div class="location-info pad0x col-md-4">
         <div class="profile">
-            <div class="person col-xs-8 pad0x">
-                <div class="avatar-holder">
-                    <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
-                    <img src="http://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"/>
+            {% if user.is_authenticated %}
+                <div class="person col-xs-8 pad0x">
+                    <div class="avatar-holder">
+                        <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
+                        <img src="http://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"/>
+                    </div>
+
+                    <span class="name">
+                        <a href="{% url 'userprofilepage' %}">{{ user.username }}</a>
+                    </span>
                 </div>
-          <span class="name">
-              <a href="#">John Doe</a>
-          </span>
-            </div>
-            <a href="#" class="button col-xs-4 pad0x blue stroke"><i class="fa fa-sign-out"></i> sign out</a>
+                <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
+                        class="fa fa-sign-out"></i> sign out</a>
+            {% else %}
+                <div class="person col-xs-8 pad0x">
+                <span class="name">
+                        You are not signed in
+                    </span>
+                </div>
+                <a href="{% url 'usersignpage' %}" class="button col-xs-4 pad0x blue stroke"><i
+                        class="fa fa-sign-in"></i> sign in</a>
+            {% endif %}
 
             <div style="clear: both;"></div>
         </div>
-        <div class="details">
+        <div class="details" id="sidebar-info">
             <div class="header">
                 <h1>Priory Hospital Glasgow</h1>
-
                 <p class="sub">first referral hospital</p>
             </div>
             <div class="info">
@@ -186,11 +205,20 @@
             </div>
         </div>
         <div class="buttons col-md-4 col-sm-12 col-xs-12">
-            <div class="button-wrapper col-xs-4"><a class="button share stroke blue" href="#"><i
-                    class="fa fa-twitter"></i> share</a></div>
-            <div class="button-wrapper col-xs-4"><a class="button edit stroke blue" href="#"><i
-                    class="fa fa-pencil"></i> edit</a></div>
-            <div class="button-wrapper col-xs-4"><a class="button add" href="#"><i class="fa fa-plus"></i> add new</a>
+            <div class="button-wrapper col-xs-4">
+                <a class="button share stroke blue" href="#">
+                    <i class="fa fa-twitter"></i> share
+                </a>
+            </div>
+            <div class="button-wrapper col-xs-4">
+                <a class="button edit stroke blue" href="#"><i
+                    class="fa fa-pencil"></i> edit
+                </a>
+            </div>
+            <div class="button-wrapper col-xs-4">
+                <a class="button add" href="#">
+                    <i class="fa fa-plus"></i> add new
+                </a>
             </div>
         </div>
     </div>
@@ -205,7 +233,7 @@
 {% javascript 'map_page' %}
 
 {% block extra_js %}
-        <script type="text/javascript">
+    <script type="text/javascript">
         $(document).ready(function () {
             // Set viewport if exist
             {% if northeast_lat and northeast_lng and  southwest_lat and southwest_lng %}
