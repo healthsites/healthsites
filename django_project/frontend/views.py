@@ -48,7 +48,7 @@ class HelpView(TemplateView):
 
 
 @csrf_exempt
-def map_geonames(request):
+def map(request):
     """View for request."""
     if request.method == 'POST':
         search_query = request.POST.get('q')
@@ -66,7 +66,7 @@ def map_geonames(request):
                 southwest_lng = viewport['southwest']['lng']
                 request.session['tempe_bongkrek'] = 'alfonso'
                 return render_to_response(
-                    'main.html',
+                    'map.html',
                     {
                         'northeast_lat': northeast_lat,
                         'northeast_lng': northeast_lng,
@@ -81,4 +81,7 @@ def map_geonames(request):
         elif option == 'healthsite':
             pass
     else:
-        return HttpResponseRedirect(reverse('map'))
+        return render_to_response(
+            'map.html',
+            context_instance=RequestContext(request)
+        )

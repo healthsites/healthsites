@@ -41,7 +41,7 @@
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar"><span class="sr-only">Toggle navigation</span> <span
                     class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
-            <a class="navbar-brand" href="#"><span class="hs-logo"></span>Healthsites.io</a>
+            <a class="navbar-brand" href="{% url "home" %}"><span class="hs-logo"></span>Healthsites.io</a>
             <a class="navbar-share closed" href="#"><img class="share" src="{% static "img/share.svg" %}" width="20"/><img
                     class="close" src="{% static "img/close.svg" %}" width="16"/></a>
 
@@ -63,7 +63,7 @@
         <div id="navbar" class="collapse navbar-collapse pull-right">
             <ul class="nav navbar-nav">
                 <li><a href="index.html#about">About</a></li>
-                <li><a href="/map.html">Map</a></li>
+                <li><a href="{% url "map" %}">Map</a></li>
                 <li><a href="index.html#map-data">Country data</a></li>
                 <li><a href="index.html#lifecycle">How it works</a></li>
                 <li><a href="index.html#cta">Share data</a></li>
