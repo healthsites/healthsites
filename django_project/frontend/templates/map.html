@@ -116,7 +116,8 @@
         </div>
         <div class="details" id="sidebar-info">
             <div class="header">
-                <h1>Priory Hospital Glasgow</h1>
+                <h1 id="locality-name">Priory Hospital Glasgow</h1>
+
                 <p class="sub">first referral hospital</p>
             </div>
             <div class="info">
@@ -125,9 +126,14 @@
                         <i class="fa fa-info-circle"></i>
                     </div>
                     <div class="data">
-                        <p>last update: <span class="date">11 may 2015</span>, by <span class="name"><a
-                                href="#">@MSF</a><span class="name"> <a href="#" class="full-list">see full list <i
-                                class="fa fa-angle-down"></i></a></p>
+                        <p>last update: <span class="date">11 may 2015</span>, by
+                            <span class="name">
+                                <a href="#">@MSF</a>
+                            </span>
+                            <span class="name">
+                                <a href="#" class="full-list">see full list <i class="fa fa-angle-down"></i></a>
+                            </span>
+                        </p>
 
                         <div class="progress">
                             <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
@@ -142,15 +148,24 @@
                         <i class="fa fa-map-marker"></i>
                     </div>
                     <div class="data">
-                        <p class="address">54, Praed st, London, W2 NY<br/>
+                        <p class="address" id="locality-physical_address">54, Praed st, London, W2 NY<br/>
                             Unighted Kingdom</p>
 
                         <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
 
-                        <p class="call"><i class="fa fa-phone"></i> 0141 636 6116 <span class="hours"><i
-                                class="fa fa-clock-o"></i> 24/24 & 7/7</span></p>
+                        <p class="call">
+                            <i class="fa fa-phone"></i>
+                            <span id="locality-phone"> 0141 636 6116</span>
+                            <span class="hours">
+                                <i class="fa fa-clock-o"></i>
+                                <span id="locality-operation">24/24 & 7/7</span>
+                            </span>
+                        </p>
 
-                        <p class="url"><i class="fa fa-link"></i> www.msf.org</p>
+                        <p class="url">
+                            <i class="fa fa-link"></i>
+                            <a href="#" id="locality-url">www.msf.org</a>
+                        </p>
                     </div>
                 </div>
                 <div class="line services">
@@ -160,29 +175,37 @@
                     <div class="data">
                         <div class="scope-of-service">
                             <h3>scope of service</h3>
-                            <ul>
-                                <li><i class="fa fa-caret-right"></i>Specialized care</li>
-                                <li><i class="fa fa-caret-right"></i>General acute care</li>
-                                <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
-                            </ul>
+
+                            <div id="locality-scope-of-service">
+                                <ul>
+                                    <li><i class="fa fa-caret-right"></i>Specialized care</li>
+                                    <li><i class="fa fa-caret-right"></i>General acute care</li>
+                                    <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="ancillary">
                             <h3>ancillary services</h3>
-                            <ul>
-                                <li><i class="fa fa-caret-right"></i>Operating theater</li>
-                                <li><i class="fa fa-caret-right"></i>Laboratory</li>
-                                <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
-                                <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
-                            </ul>
+
+                            <div id="locality-ancilary-service">
+                                <ul>
+                                    <li><i class="fa fa-caret-right"></i>Operating theater</li>
+                                    <li><i class="fa fa-caret-right"></i>Laboratory</li>
+                                    <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
+                                    <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="services">
                             <h3>services</h3>
-                            <ul>
-                                <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
-                                <li><i class="fa fa-caret-right"></i>Pediatric care</li>
-                                <li><i class="fa fa-caret-right"></i>Mental health</li>
-                                <li><i class="fa fa-caret-right"></i>Geriatric care</li>
-                            </ul>
+                            <div id="locality-activities">
+                                <ul>
+                                    <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
+                                    <li><i class="fa fa-caret-right"></i>Pediatric care</li>
+                                    <li><i class="fa fa-caret-right"></i>Mental health</li>
+                                    <li><i class="fa fa-caret-right"></i>Geriatric care</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -212,7 +235,7 @@
             </div>
             <div class="button-wrapper col-xs-4">
                 <a class="button edit stroke blue" href="#"><i
-                    class="fa fa-pencil"></i> edit
+                        class="fa fa-pencil"></i> edit
                 </a>
             </div>
             <div class="button-wrapper col-xs-4">
