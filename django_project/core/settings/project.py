@@ -1,23 +1,15 @@
-# -*- coding: utf-8 -*-
-from .contrib import *  # noqa
+# coding=utf-8
 
-DATABASES = {
-    'default': {
-        # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        # Or path to database file if using sqlite3.
-        'NAME': '',
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        # Empty for localhost through domain sockets or '127.0.0.1' for
-        # localhost through TCP.
-        'HOST': '',
-        # Set to empty string for default.
-        'PORT': '',
-    }
-}
+"""Project level settings.
+
+Adjust these values as needed but don't commit passwords etc. to any public
+repository!
+"""
+
+import os  # noqa
+from django.utils.translation import ugettext_lazy as _
+from .utils import absolute_path
+from .contrib import *  # noqa
 
 # Project apps
 INSTALLED_APPS += (
@@ -27,86 +19,54 @@ INSTALLED_APPS += (
     'api'
 )
 
-LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = '/signin/'
+# How many versions to list in each project box
+PROJECT_VERSION_LIST_SIZE = 10
 
-PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.NoopCompressor'
 
-PIPELINE_JS = {
-    'contrib': {
-        'source_filenames': (
-            'js/leaflet.js',
-            'js/leaflet.draw-src.js',
-            'js/jquery-1.11.3.min.js',
-            'js/bootstrap.min.js',
-            'js/d3.min.js',
-            'js/c3.min.js',
-            'js/rhinoslider-1.05.min.js',
-        ),
-        'output_filename': 'js/contrib.js',
-    },
-    'appjs': {
-        'source_filenames': (
-            'js/signals.min.js',
-            'js/hasher.min.js',
-            'js/crossroads.min.js',
-            'js/clusterLayer.js',
-            'js/csrf-ajax.js',
-            'js/map.js',
-            'js/localitySidebar.js',
-            'js/app.js',
-        ),
-        'output_filename': 'js/appjs.js'
-    },
-    'home': {
-        'source_filenames': (
-            'js/jquery-ui.js',
-            'js/custom-jquery.js',
-        ),
-        'output_filename': 'js/home.js',
-    },
-    'map_page': {
-        'source_filenames': (
-            'js/custom-jquery.js',
-        ),
-        'output_filename': 'js/map_page.js',
-    },
+# Set debug to false for production
+DEBUG = TEMPLATE_DEBUG = False
+
+SOUTH_TESTS_MIGRATE = False
+
+
+# Set languages which want to be translated
+LANGUAGES = (
+    ('en', _('English')),
+    ('af', _('Afrikaans')),
+    ('id', _('Indonesian')),
+    ('ko', _('Korean')),
+)
+
+# Set storage path for the translation files
+LOCALE_PATHS = (absolute_path('locale'),)
+
+# Project specific javascript files to be pipelined
+# For third party libs like jquery should go in contrib.py
+# Maybe we can split these between project-home and project-map
+PIPELINE_JS['project'] = {
+    'source_filenames': (
+        'js/clusterLayer.js',
+        'js/custom-jquery.js',
+        'js/csrf-ajax.js',
+        'js/localitySidebar.js',
+        'js/map.js',
+        'js/app.js',
+    ),
+    'output_filename': 'js/project.js',
 }
 
-PIPELINE_CSS = {
-    'contrib': {
-        'source_filenames': (
-            'css/leaflet.css',
-            'css/leaflet.draw.css',
-            'css/bootstrap.min.css',
-            'css/font-awesome.min.css',
-            'css/c3.css',
-        ),
-        'output_filename': 'css/contrib.css',
-        'extra_context': {
-            'media': 'screen, projection',
-        },
-    },
-    'home': {
-        'source_filenames': (
-            'css/jquery-ui.css',
-            'css/site.css',
-            'css/home.css',
-        ),
-        'output_filename': 'css/home.css',
-        'extra_context': {
-            'media': 'screen, projection',
-        },
-    },
-    'map_page': {
-        'source_filenames': (
-            'css/site.css',
-            'css/map.css',
-        ),
-        'output_filename': 'css/map_page.css',
-        'extra_context': {
-            'media': 'screen, projection',
-        },
+# Project specific css files to be pipelined
+# For third party libs like bootstrap should go in contrib.py
+PIPELINE_CSS['project'] = {
+    'source_filenames': (
+        'css/site.css',
+        'css/home.css',
+        'css/main.css',
+        'css/navbar.css',
+        'css/sidebar.css',
+    ),
+    'output_filename': 'css/project.css',
+    'extra_context': {
+        'media': 'screen, projection',
     },
 }

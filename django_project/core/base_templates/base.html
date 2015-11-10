@@ -19,7 +19,17 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    {% stylesheet 'contrib' %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/ripples.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
+
+    {% stylesheet 'map' %}
+    {% stylesheet 'project' %}
+
     <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
     <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
 
@@ -37,7 +47,7 @@
   <a href="/">
   <img height="40px" class="pull-left" style="padding-top: 8px; padding-right: 8px;" src="/static/img/logo.png"/>
   <span id="about" class="navbar-brand">
-    HEALTHSITES.IO
+    healthsites.io
   </span>
   </a>
   <div id="site-social" class="hidden-xs hidden-sm">
@@ -97,7 +107,6 @@
     </div> <!-- /.modal-dialog -->
 </div> <!-- /.modal -->
 
-
 <!-- Help Modal -->
 <div class="modal fade" id="help-modal" tabindex="-1" role="dialog"
      aria-labelledby="help-modal" aria-hidden="true">
@@ -107,9 +116,19 @@
     </div> <!-- /.modal-dialog -->
 </div> <!-- /.modal -->
 
+<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script  type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script  type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script  type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
+<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
+<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
+<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
+<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/material.min.js"></script>
 
-{% javascript 'contrib' %}
-{% javascript 'appjs' %}
+
+{% javascript 'map' %}
+{% javascript 'project' %}
 
 {% block extra_js %}
 
