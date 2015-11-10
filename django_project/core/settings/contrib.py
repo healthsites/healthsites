@@ -9,8 +9,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Extra installed apps
 INSTALLED_APPS = (
-    'grappelli',
-) + INSTALLED_APPS
+                     # 'grappelli',
+                 ) + INSTALLED_APPS
 
 INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',  # enable Raven plugin
@@ -103,12 +103,20 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 PIPELINE_JS = {
     'map': {
         'source_filenames': (
-            'js/nlform.js',
+            'js/localitySidebar.js',
+            'js/map.js',
+            'js/app.js',
+            'js/custom-jquery.js',
         ),
         'output_filename': 'js/map.js',
     },
     'home': {
         'source_filenames': (
+            'js/localitySidebar.js',
+            'js/map.js',
+            'js/app.js',
+            'js/jquery-ui.js',
+            'js/custom-jquery.js',
         ),
         'output_filename': 'js/home.js',
     },
@@ -119,13 +127,9 @@ PIPELINE_JS = {
 PIPELINE_CSS = {
     'map': {
         'source_filenames': (
-            'css/bootstrap-theme.3.3.5.css',
-            'css/leaflet.css',
-            'css/leaflet.draw.css',
-            'css/ripples.min.css',
-            'css/material-wfont.min.css',
-            'css/jquery-ui.css',
-            'css/nlf.css',
+            # 'css/bootstrap-theme.3.3.5.css',
+            'css/site.css',
+            'css/map.css',
         ),
         'output_filename': 'css/map.css',
         'extra_context': {
@@ -134,12 +138,9 @@ PIPELINE_CSS = {
     },
     'home': {
         'source_filenames': (
-            'css/bootstrap.min.css',
-            'css/font-awesome.min.css',
-            'css/c3.css',
+            'css/jquery-ui.css',
             'css/site.css',
             'css/home.css',
-            'css/jquery-ui.css',
         ),
         'output_filename': 'css/home.css',
         'extra_context': {

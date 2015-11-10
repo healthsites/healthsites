@@ -22,12 +22,10 @@ INSTALLED_APPS += (
 # How many versions to list in each project box
 PROJECT_VERSION_LIST_SIZE = 10
 
-
 # Set debug to false for production
 DEBUG = TEMPLATE_DEBUG = False
 
 SOUTH_TESTS_MIGRATE = False
-
 
 # Set languages which want to be translated
 LANGUAGES = (
@@ -45,12 +43,14 @@ LOCALE_PATHS = (absolute_path('locale'),)
 # Maybe we can split these between project-home and project-map
 PIPELINE_JS['project'] = {
     'source_filenames': (
+        'js/leaflet.draw-src.js',
+        'js/rhinoslider-1.05.min.js',
+        'js/signals.min.js',
+        'js/hasher.min.js',
+        'js/crossroads.min.js',
         'js/clusterLayer.js',
-        'js/custom-jquery.js',
         'js/csrf-ajax.js',
-        'js/localitySidebar.js',
-        'js/map.js',
-        'js/app.js',
+
     ),
     'output_filename': 'js/project.js',
 }
@@ -62,8 +62,8 @@ PIPELINE_CSS['project'] = {
         'css/site.css',
         'css/home.css',
         'css/main.css',
-        'css/navbar.css',
-        'css/sidebar.css',
+        # 'css/navbar.css',
+        # 'css/sidebar.css',
     ),
     'output_filename': 'css/project.css',
     'extra_context': {
