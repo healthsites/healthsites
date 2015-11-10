@@ -99,32 +99,16 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 # Contributed / third party js libs for pipeline compression
 # For hand rolled js for this app, use project.py
+# Only put css and libs in here that are not available on CDN
 PIPELINE_JS = {
     'map': {
         'source_filenames': (
-            'js/jquery-1.11.3.js',
-            'js/jquery-ui.js',
-            'js/underscore.1.8.3.js',
-            'js/bootstrap-3.3.5.js',
-            'js/material.min.js',
-            'js/leaflet.js',
-            'js/leaflet.draw-src.js',
-            'js/ripples.min.js',
             'js/nlform.js',
-            'js/signals.min.js',
-            'js/hasher.min.js',
-            'js/crossroads.min.js',
         ),
         'output_filename': 'js/map.js',
     },
     'home': {
         'source_filenames': (
-            'js/jquery-1.11.3.js',
-            'js/jquery-ui.js',
-            'js/custom-jquery.js',
-            'js/bootstrap-3.3.5.js'
-            'js/d3.min.js',
-            'js/c3.min.js',
         ),
         'output_filename': 'js/home.js',
     },
@@ -135,11 +119,9 @@ PIPELINE_JS = {
 PIPELINE_CSS = {
     'map': {
         'source_filenames': (
-            'css/bootstrap.3.3.5.css',
             'css/bootstrap-theme.3.3.5.css',
             'css/leaflet.css',
             'css/leaflet.draw.css',
-            'css/material.min.css',
             'css/ripples.min.css',
             'css/material-wfont.min.css',
             'css/jquery-ui.css',

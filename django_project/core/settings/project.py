@@ -41,9 +41,11 @@ LOCALE_PATHS = (absolute_path('locale'),)
 
 # Project specific javascript files to be pipelined
 # For third party libs like jquery should go in contrib.py
+# Maybe we can split these between project-home and project-map
 PIPELINE_JS['project'] = {
     'source_filenames': (
         'js/clusterLayer.js',
+        'js/custom-jquery.js',
         'js/csrf-ajax.js',
         'js/localitySidebar.js',
         'js/map.js',
