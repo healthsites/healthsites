@@ -19,7 +19,7 @@ from braces.views import JSONResponseMixin, LoginRequiredMixin
 
 import googlemaps
 
-from .models import Locality, Domain, Changeset
+from .models import Locality, Domain, Changeset, Value
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .tasks import load_data_task, test_task
@@ -104,7 +104,6 @@ class LocalityInfo(JSONResponseMixin, DetailView):
         obj_repr.update({'completeness': '%s%%' % completeness})
 
         return self.render_json_response(obj_repr)
-
 
 class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
     """
@@ -303,3 +302,16 @@ class SearchView(FormView):
         geocode_result = gmaps.geocode(geoname)
         LOG.info(geocode_result)
         return reverse('search')
+
+
+def search_locality_by_name(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+        locality_values = Value.objects.filter(
+            specification__attribute__key='name').filter(
+            data__istartswith=query)
+        result = []
+        for locality_value in locality_values:
+            result.append(locality_value.data)
+        result = json.dumps(result)
+        return HttpResponse(result, content_type='application/json')

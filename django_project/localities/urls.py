@@ -30,6 +30,12 @@ urlpatterns = patterns(
     ),
 
     url(
+        r'^search/localities/name$',
+        'localities.views.search_locality_by_name',
+        name='locality-name-search'
+    ),
+
+    url(
         r'^data-loader$', DataLoaderView.as_view(), name='data-loader'
     ),
     url(

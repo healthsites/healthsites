@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 import googlemaps
-from localities.models import Locality
+from localities.models import Locality, Value
 
 
 class MainView(TemplateView):
@@ -84,7 +84,26 @@ def map(request):
                 return HttpResponseRedirect(reverse('map'))
 
         elif option == 'healthsite':
-            pass
+            locality_values = Value.objects.filter(
+                specification__attribute__key='name').filter(
+                data=search_query)
+            if locality_values:
+                locality_value = locality_values[0]
+            else:
+                locality_values = Value.objects.filter(
+                    specification__attribute__key='name').filter(
+                    data__istartswith=search_query)
+                if locality_values:
+                    locality_value = locality_values[0]
+                else:
+                    return render_to_response(
+                        'map.html',
+                        context_instance=RequestContext(request)
+                    )
+            locality_uuid = locality_value.locality.uuid
+            map_url = reverse('map')
+            return HttpResponseRedirect(
+                map_url + "#!/locality/%s" % locality_uuid)
     else:
         return render_to_response(
             'map.html',

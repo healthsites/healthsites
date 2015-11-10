@@ -376,32 +376,51 @@
     </script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script>
+        var search_url = "{% url 'locality-name-search' %}";
         $(document).ready(function () {
-            $(function () {
-                $("#search-box").autocomplete({
-                    source: function (request, response) {
-                        $.ajax({
-                            url: "http://gd.geobytes.com/AutoCompleteCity",
-                            dataType: "jsonp",
-                            data: {
-                                q: request.term
-                            },
-                            success: function (data) {
-                                response(data);
-                            }
-                        });
-                    },
-                    minLength: 3,
-                    select: function (event, ui) {
-                    },
-                    open: function () {
-                        $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-                    },
-                    close: function () {
-                        $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-                    }
+            function set_search_url(url, data_type) {
+                $(function () {
+                    $("#search-box").autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                url: url,
+                                dataType: data_type,
+                                data: {
+                                    q: request.term
+                                },
+                                success: function (data) {
+                                    response(data);
+                                }
+                            });
+                        },
+                        minLength: 3,
+                        select: function (event, ui) {
+                        },
+                        open: function () {
+                            $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                        },
+                        close: function () {
+                            $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                        }
+                    });
                 });
+            }
+
+            set_search_url(search_url);
+            $('input:radio[name=option]').change(function () {
+                if (this.value == 'place') {
+                    search_url = 'http://gd.geobytes.com/AutoCompleteCity';
+                    set_search_url(search_url, 'jsonp');
+
+                } else if (this.value == 'healthsite') {
+                    search_url = "{% url 'locality-name-search' %}";
+                    set_search_url(search_url, 'json');
+                } else {
+                    search_url = "{% url 'locality-name-search' %}";
+                    set_search_url(search_url, 'json');
+                }
             });
+
             // initialize the app
             new APP();
         });
