@@ -115,7 +115,6 @@ PIPELINE_JS = {
             'js/localitySidebar.js',
             'js/map.js',
             'js/app.js',
-            'js/jquery-ui.js',
             'js/custom-jquery.js',
         ),
         'output_filename': 'js/home.js',
@@ -138,7 +137,6 @@ PIPELINE_CSS = {
     },
     'home': {
         'source_filenames': (
-            'css/jquery-ui.css',
             'css/site.css',
             'css/home.css',
         ),
