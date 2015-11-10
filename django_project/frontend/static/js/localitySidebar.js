@@ -12,6 +12,8 @@ window.LocalitySidebar = (function () {
 
         // new style
         this.$name = $('#locality-name');
+        this.$nature_of_facility = $('#locality-nature-of-facility');
+        this.$completenees = $('#locality-completeness');
         this.$coordinates = $('#locality-coordinates');
         this.$physical_address = $('#locality-physical_address');
         this.$phone = $('#locality-phone');
@@ -20,6 +22,8 @@ window.LocalitySidebar = (function () {
         this.$scope_of_service = $('#locality-scope-of-service');
         this.$ancilary_service = $('#locality-ancilary-service');
         this.$activities = $('#locality-activities');
+        this.$inpatient_service = $('#locality-inpatient-service');
+        this.$staff = $('#locality-staff');
 
         this.showDefaultInfo();
 
@@ -130,6 +134,9 @@ window.LocalitySidebar = (function () {
         showInfo: function (evt) {
             console.log(this.locality_data);
             this.$name.text(this.locality_data.values['name']);
+            this.$nature_of_facility.text(this.locality_data.values['nature_of_facility']);
+            this.$completenees.attr('style', 'width:' + this.locality_data.completeness);
+            this.$completenees.text(this.locality_data.completeness + ' Complete');
             this.$coordinates.text(
                 'lat: ' + this.locality_data.geom[0] + ', long: ' + this.locality_data.geom[1]);
             this.$physical_address.text(this.locality_data.values['physical_address']);
@@ -180,10 +187,15 @@ window.LocalitySidebar = (function () {
                 this.$activities.text('');
                 this.$activities.html(activities_html);
             }
+            this.$inpatient_service.text(this.locality_data.values['inpatient_service']);
+            this.$staff.text(this.locality_data.values['staff']);
         },
 
         showDefaultInfo: function (evt) {
             this.$name.text("No Name");
+            this.$nature_of_facility.text("No information");
+            this.$completenees.attr('style', 'width:0%');
+            this.$completenees.text('0% Complete');
             this.$coordinates.text(
                 'lat: ' + 'n/a' + ', long: ' + 'n/a');
             this.$physical_address.text("No Physical Address");
@@ -192,11 +204,13 @@ window.LocalitySidebar = (function () {
             this.$url.text('No url found');
             this.$url.removeAttr('href');
             this.$scope_of_service.html('');
-            this.$scope_of_service.text('Not found');
+            this.$scope_of_service.text('No information');
             this.$ancilary_service.html('');
-            this.$ancilary_service.text('Not found');
+            this.$ancilary_service.text('No information');
             this.$activities.html('');
-            this.$activities.text('Not found');
+            this.$activities.text('No information');
+            this.$inpatient_service.text('No information');
+            this.$staff.text('No information');
         },
 
         setInfoWindowHeight: function () {

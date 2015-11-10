@@ -98,6 +98,10 @@ class LocalityInfo(JSONResponseMixin, DetailView):
             self.object.domain.template_fragment, obj_repr
         )
         obj_repr.update({'repr': data_repr})
+        num_data = len(obj_repr['values']) + 1  # geom
+        # 16 = 4 mandatory + 12 core
+        completeness = num_data / 16.0 * 100  # percentage
+        obj_repr.update({'completeness': '%s%%' % completeness})
 
         return self.render_json_response(obj_repr)
 
