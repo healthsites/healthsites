@@ -109,7 +109,7 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/map_app.js',
     },
-    'map': {
+    'map_page': {
         'source_filenames': (
             'js/custom-jquery.js',
         ),
@@ -129,7 +129,7 @@ PIPELINE_JS = {
 # Contributed / third party css for pipeline compression
 # For hand rolled css for this app, use project.py
 PIPELINE_CSS = {
-    'map': {
+    'map_page': {
         'source_filenames': (
             'css/map.css',
         ),
