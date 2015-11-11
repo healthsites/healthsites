@@ -243,7 +243,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             u'uuid': self.uuid,
             u'values': {
                 val.specification.attribute.key: val.data
-                for val in self.value_set.select_related('attribute').all()
+                for val in self.value_set.select_related().all()
             },
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
