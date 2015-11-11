@@ -106,15 +106,15 @@ L.ClusterLayer = L.LayerGroup.extend({
                 var myIcon = L.divIcon({
                     className: 'marker-icon',
                     html: data['count'],
-                    iconAnchor: [24, 23],
-                    iconSize: [48, 46]
+                    iconAnchor: [24, 59],
+                    iconSize: [48, 59]
                 });
             } else {
                 var myIcon = L.icon({
                     iconUrl: '/static/img/healthsite-marker.png',
                     iconRetinaUrl: '/static/img/healthsite-marker-2x.png',
-                    iconSize: [26, 46],
-                    iconAnchor: [13, 46]
+                    iconSize: [35, 43],
+                    iconAnchor: [17, 43]
                 });
             }
 
