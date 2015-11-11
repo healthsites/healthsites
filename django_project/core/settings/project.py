@@ -27,7 +27,6 @@ DEBUG = TEMPLATE_DEBUG = False
 
 SOUTH_TESTS_MIGRATE = False
 
-
 # Set languages which want to be translated
 LANGUAGES = (
     ('en', _('English')),
@@ -44,12 +43,10 @@ LOCALE_PATHS = (absolute_path('locale'),)
 # Maybe we can split these between project-home and project-map
 PIPELINE_JS['project'] = {
     'source_filenames': (
+        'js/rhinoslider-1.05.min.js',
         'js/clusterLayer.js',
-        'js/custom-jquery.js',
         'js/csrf-ajax.js',
-        'js/localitySidebar.js',
-        'js/map.js',
-        'js/app.js',
+
     ),
     'output_filename': 'js/project.js',
 }
@@ -59,10 +56,6 @@ PIPELINE_JS['project'] = {
 PIPELINE_CSS['project'] = {
     'source_filenames': (
         'css/site.css',
-        'css/home.css',
-        'css/main.css',
-        'css/navbar.css',
-        'css/sidebar.css',
     ),
     'output_filename': 'css/project.css',
     'extra_context': {

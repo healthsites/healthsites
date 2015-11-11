@@ -11,6 +11,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 import googlemaps
+from localities.models import Locality, Value
 
 
 class MainView(TemplateView):
@@ -22,12 +23,16 @@ class MainView(TemplateView):
         """
 
         context = super(MainView, self).get_context_data(**kwargs)
+
         context['debug'] = settings.DEBUG
+
+        context['num_localities'] = Locality.objects.count()
+
         return context
 
 
 class MapView(TemplateView):
-    template_name = 'main.html'
+    template_name = 'map.html'
 
     def get_context_data(self, **kwargs):
         """
@@ -48,7 +53,7 @@ class HelpView(TemplateView):
 
 
 @csrf_exempt
-def map_geonames(request):
+def map(request):
     """View for request."""
     if request.method == 'POST':
         search_query = request.POST.get('q')
@@ -66,7 +71,7 @@ def map_geonames(request):
                 southwest_lng = viewport['southwest']['lng']
                 request.session['tempe_bongkrek'] = 'alfonso'
                 return render_to_response(
-                    'main.html',
+                    'map.html',
                     {
                         'northeast_lat': northeast_lat,
                         'northeast_lng': northeast_lng,
@@ -79,6 +84,28 @@ def map_geonames(request):
                 return HttpResponseRedirect(reverse('map'))
 
         elif option == 'healthsite':
-            pass
+            locality_values = Value.objects.filter(
+                specification__attribute__key='name').filter(
+                data=search_query)
+            if locality_values:
+                locality_value = locality_values[0]
+            else:
+                locality_values = Value.objects.filter(
+                    specification__attribute__key='name').filter(
+                    data__istartswith=search_query)
+                if locality_values:
+                    locality_value = locality_values[0]
+                else:
+                    return render_to_response(
+                        'map.html',
+                        context_instance=RequestContext(request)
+                    )
+            locality_uuid = locality_value.locality.uuid
+            map_url = reverse('map')
+            return HttpResponseRedirect(
+                map_url + "#!/locality/%s" % locality_uuid)
     else:
-        return HttpResponseRedirect(reverse('map'))
+        return render_to_response(
+            'map.html',
+            context_instance=RequestContext(request)
+        )

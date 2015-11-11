@@ -9,8 +9,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Extra installed apps
 INSTALLED_APPS = (
-    'grappelli',
-) + INSTALLED_APPS
+                     # 'grappelli',
+                 ) + INSTALLED_APPS
 
 INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',  # enable Raven plugin
@@ -101,14 +101,26 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 # For hand rolled js for this app, use project.py
 # Only put css and libs in here that are not available on CDN
 PIPELINE_JS = {
-    'map': {
+    'map_app': {
         'source_filenames': (
-            'js/nlform.js',
+            'js/localitySidebar.js',
+            'js/map.js',
+            'js/app.js',
         ),
-        'output_filename': 'js/map.js',
+        'output_filename': 'js/map_app.js',
+    },
+    'map_page': {
+        'source_filenames': (
+            'js/custom-jquery.js',
+        ),
+        'output_filename': 'js/map_page.js',
     },
     'home': {
         'source_filenames': (
+            'js/custom-jquery.js',
+            'js/mousewheel.js',
+            'js/easing.js',
+            'js/jquery.countto.js',
         ),
         'output_filename': 'js/home.js',
     },
@@ -117,29 +129,18 @@ PIPELINE_JS = {
 # Contributed / third party css for pipeline compression
 # For hand rolled css for this app, use project.py
 PIPELINE_CSS = {
-    'map': {
+    'map_page': {
         'source_filenames': (
-            'css/bootstrap-theme.3.3.5.css',
-            'css/leaflet.css',
-            'css/leaflet.draw.css',
-            'css/ripples.min.css',
-            'css/material-wfont.min.css',
-            'css/jquery-ui.css',
-            'css/nlf.css',
+            'css/map.css',
         ),
-        'output_filename': 'css/map.css',
+        'output_filename': 'css/map_page.css',
         'extra_context': {
             'media': 'screen, projection',
         },
     },
     'home': {
         'source_filenames': (
-            'css/bootstrap.min.css',
-            'css/font-awesome.min.css',
-            'css/c3.css',
-            'css/site.css',
             'css/home.css',
-            'css/jquery-ui.css',
         ),
         'output_filename': 'css/home.css',
         'extra_context': {
