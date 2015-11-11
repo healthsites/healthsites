@@ -101,21 +101,26 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 # For hand rolled js for this app, use project.py
 # Only put css and libs in here that are not available on CDN
 PIPELINE_JS = {
-    'map': {
+    'app': {
         'source_filenames': (
             'js/localitySidebar.js',
             'js/map.js',
             'js/app.js',
+        ),
+        'output_filename': 'js/map.js',
+    },
+    'map': {
+        'source_filenames': (
             'js/custom-jquery.js',
         ),
         'output_filename': 'js/map.js',
     },
     'home': {
         'source_filenames': (
-            'js/localitySidebar.js',
-            'js/map.js',
-            'js/app.js',
             'js/custom-jquery.js',
+            'js/mousewheel.js',
+            'js/easing.js',
+            'js/jquery.countto.js',
         ),
         'output_filename': 'js/home.js',
     },
@@ -126,8 +131,6 @@ PIPELINE_JS = {
 PIPELINE_CSS = {
     'map': {
         'source_filenames': (
-            # 'css/bootstrap-theme.3.3.5.css',
-            'css/site.css',
             'css/map.css',
         ),
         'output_filename': 'css/map.css',
@@ -137,7 +140,6 @@ PIPELINE_CSS = {
     },
     'home': {
         'source_filenames': (
-            'css/site.css',
             'css/home.css',
         ),
         'output_filename': 'css/home.css',

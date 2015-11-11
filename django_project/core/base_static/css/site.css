@@ -44,7 +44,7 @@ label.inline {
 	background: #f44a52;
 	height: 44px;
 	line-height: 44px;
-	text-align: center;
+	text-align: center; 
 }
 .button:hover, .button:focus {
 	text-decoration: none;
@@ -200,7 +200,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	-moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.3);
 	box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.3);
 	margin: 0;
-
+	
 }
 .masthead.no-tag {
 	height: 53px;
@@ -392,10 +392,10 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 }
 #colophon a {
 	color: #fff;
-	text-decoration: none;
+	text-decoration: none;	
 }
 #colophon a:hover {
-	text-decoration: underline;
+	text-decoration: underline;	
 }
 #colophon ul {
 	padding: 0;
@@ -419,17 +419,17 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
   * Dual licensed under the MIT or GPL Version 2 licenses.
   * http://rhinoslider.com/license/
   */
-
+  
 #slider {
 				width:100%;
 				height:688px;
-
+				
 				/*IE bugfix*/
 				padding:0;
 				margin:0;
 			}
-#slider li { list-style:none; }
-
+#slider li { list-style:none; }  
+  
 .rhino-btn {
 	z-index:10;
 	width:56px;
@@ -462,7 +462,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	content:' ';
 	width:16px;
 	height:26px;
-
+	
 }
 
 .rhino-bullets:after {

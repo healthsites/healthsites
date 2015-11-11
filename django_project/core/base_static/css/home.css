@@ -23,6 +23,7 @@
 	background: #f44a52;
 	color: #fff;
 	font-family: "Raleway", sans-serif;
+	min-height: 600px;
 }
 @media only screen and (max-width:640px) {
   #tophome {
@@ -37,7 +38,135 @@ h2.fancy {
   font-weight: 600;
   line-height: 58px;
 }
-/* Map
+.link-left {
+	margin-right: 20px;
+}
+.isopad {
+	position: relative;
+	overflow: hidden
+}
+.pin {
+	position: absolute;
+	width: 54px;
+	height: 65px;
+	background: url(../img/pin.png) no-repeat;
+	z-index: 8;
+	opacity: 0;
+	animation-name: bounceInDown;
+	-moz-animation-name: bounceInDown;
+	animation-duration: 0.8s;
+	-moz-animation-duration: 0.8s;
+	animation-timing-function: linear;
+	-moz-animation-timing-function: linear;
+	animation-direction: alternate;
+	-moz-animation-direction: alternate;
+	animation-fill-mode: forwards;
+	-moz-animation-fill-mode: forwards;
+}
+.pin-1 {
+	top: 40%;
+	left: 35%;
+	animation-delay: 0.2s;
+}
+.pin-2 {
+	top: 40%;
+	left: 50%;
+	animation-delay: 0.4s;
+}
+.pin-3 {
+	top: 50%;
+	left: 48%;
+	animation-delay: 0.5s;
+}
+.pin-4 {
+	top: 25%;
+	left: 65%;
+	animation-delay: 0.55s;
+}
+
+@keyframes bounceInDown {
+  from, 60%, 75%, 90%, to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+	-moz-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -3000px, 0);
+	-moz-transform: translate3d(0, -3000px, 0);
+    transform: translate3d(0, -3000px, 0);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 25px, 0);
+	-moz-transform: translate3d(0, 25px, 0);
+    transform: translate3d(0, 25px, 0);
+	opacity: 1;
+  }
+
+  75% {
+    -webkit-transform: translate3d(0, -10px, 0);
+	 -moz-transform: translate3d(0, -10px, 0);
+    transform: translate3d(0, -10px, 0);
+  }
+
+  90% {
+    -webkit-transform: translate3d(0, 5px, 0);
+	-moz-transform: translate3d(0, 5px, 0);
+    transform: translate3d(0, 5px, 0);
+  }
+
+  to {
+    -webkit-transform: none;
+	-moz-transform: none;
+    transform: none;
+	opacity: 1;
+  }
+}
+
+.bounceInDown {
+  -webkit-animation-name: bounceInDown;
+  animation-name: bounceInDown;
+}
+
+
+
+/* About
+
+-------------------------------------------------- */
+.about {
+	font-family: "Raleway", sans-serif;
+	padding: 85px 0;
+	font-size: 16px;
+	line-height: 24px;
+}
+.about h2 {
+	text-align: center;
+	font-weight: bold;
+	margin-bottom: 1em;
+}
+.about .icon {
+	text-align: right;
+}
+.about .block {
+	margin-bottom: 20px;
+	overflow: hidden;
+}
+@media only screen and (max-width:991px) {
+  .about .block, .about .icon {
+	text-align: center;
+  }
+  .about .block {
+	margin-bottom: 40px;
+  }
+  .about .icon {
+	margin-bottom: 20px;
+  }
+}
+
+/* CTA
 
 -------------------------------------------------- */
 #cta {
@@ -47,6 +176,36 @@ h2.fancy {
 	color: #fff;
 	background: #3c4c57;
 	height: 219px;
+	padding: 0 60px;
+	border-right: 1px solid #fff;
+}
+#cta .center:last-child .content {
+	border-right: none;
+}
+#cta .icon-holder {
+	padding-top: 25px;
+	font-size: 36px;
+}
+#cta h3 {
+	font-weight: 600;
+	font-size: 18px;
+	margin: 5px 0;
+}
+#cta .text {
+	display: block;
+	color: #a3a8ac;
+}
+#cta .links {
+	margin-top: 10px;
+	padding-bottom: 30px;
+}
+#cta .links a {
+	color: #fff;
+	text-decoration: underline;
+	margin: 0 5px;
+}
+#cta .links a:hover {
+	color: #f44a52;
 }
 
 /* Map
@@ -55,7 +214,7 @@ h2.fancy {
 .map-data {
 	overflow: hidden;
 }
-#map {
+#map-home {
 	height: 645px;
 	position: relative;
 }
@@ -92,6 +251,7 @@ h2.fancy {
 }
 .country-data {
 	background: #fcfbfb;
+	padding-bottom: 30px;
 }
 .map-data h2 {
 	font-size: 30px;
@@ -115,4 +275,45 @@ h2.fancy {
 	-webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.15);
 	-moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.15);
 	box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.15);
+	font-family: "Ubuntu", sans-serif;
+}
+.country-data .graph.updates {
+	padding-left: 0;
+	padding-right: 0;
+	font-wize: 14px;
+}
+.country-data .graph .entry {
+	padding: 5px 15px;
+	border-bottom: 1px solid #f1f0f0;
+}
+.country-data .graph .entry:first-child {
+	padding-top:0;
+}
+.country-data .graph .entry:last-child {
+	padding-bottom:0;
+	border-bottom: none;
+}
+.country-data .name a {
+	color: #f44a52;
+}
+.country-data .date, .country-data .time {
+	font-style: italic;
+}
+
+/* Lifecycle
+
+-------------------------------------------------- */
+.lifecycle {
+	background: #e0e1e2;
+	padding: 40px 0 80px;
+	text-align: center;
+}
+.lifecycle h2 {
+	text-align: center;
+	margin-bottom: 40px;
+	color: #3c4c57;
+	font-weight: 700;
+}
+.rhino-item img {
+	max-width: 100%;
 }

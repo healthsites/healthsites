@@ -6,17 +6,17 @@ $(document).ready(function(){
 	  $(".navbar-search i").toggleClass("fa-search fa-times");
 	  return false;
     });
-
+	
 	//activate social login/share
 	$('.navbar-share').click(function() {
       $("#site-social").toggleClass("hidden");
 	  $(".navbar-share").toggleClass("closed");
 	   return false;
     });
-
+	
 	$('.js-fullheight').css('height', $(window).height());
-
-
+	
+	
 	$('a[href*=#]:not([href=#])').click(function() {
     if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
       var target = $(this.hash);
@@ -29,14 +29,14 @@ $(document).ready(function(){
       }
     }
   });
-
+	
   var h_height = $('.masthead').height();
   var v_height = $(window).height();
   var v_width = $(window).width();
   var s_width = $('.location-info').width();
   $('#map').css('height', v_height - h_height);
   $('#map').css('width', v_width - s_width);
-
+  
   if (v_width<=991) {
 	  var pad = v_height/2;
 	  $('.location-info').css('margin-top',pad);
@@ -48,7 +48,7 @@ $(document).ready(function(){
 
 	}
 	var v_count = '0';
-
+	
 	$('#slider').rhinoslider({
 					effect: 'fade',
 					controlsMousewheel: false,
@@ -58,35 +58,35 @@ $(document).ready(function(){
 					showBullets: 'always',
 					showControls: 'never'
 				});
-
+	
 	$('.timer').each(function(){
-			var imagePos = $(this).offset().top;
+			var imagePos = $(this).offset().top;			
 			var topOfWindow = $(window).scrollTop();
-			if (imagePos < topOfWindow+500 && v_count=='0') {
+			if (imagePos < topOfWindow+500 && v_count=='0') {		
 				$(function ($) {
 					// start all the timers
-					$('.timer').each(count);
+					$('.timer').each(count);					  					  
 					function count(options) {
 						v_count = '1';
 						var $this = $(this);
 						options = $.extend({}, options || {}, $this.data('countToOptions') || {});
 						$this.countTo(options);
 					}
-				});
+				});				
 			}
 		});
-
+	
 });
-
+	
 //hide/show tagline on scroll
-$(window).scroll(function() {
+$(window).scroll(function() {    
   var scroll = $(window).scrollTop();
   if (scroll >= 72) {
 	  $(".home .masthead").addClass("no-tag");
   } else {
 	  $(".home .masthead").removeClass("no-tag");
-  }
-
+  }	
+  
 });
 
 
@@ -107,7 +107,7 @@ $(window).resize(function() {
   }
   else {
 	   $('.location-info').css('margin-top',0);
-
+	  
   }
 });
 
