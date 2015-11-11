@@ -225,7 +225,7 @@
         <div id="map-home" class="col-md-6 map">
             <div class="select-country">
                 <form>
-                    <input type="serach" placeholder="select a country"/>
+                    <input type="search" placeholder="select a country"/>
                     <button type="submit" value="Submit"><i class="fa fa-search"></i></button>
                 </form>
             </div>
@@ -367,11 +367,10 @@
 
 
 {% javascript 'project' %}
-{% javascript 'app' %}
 {% javascript 'home' %}
+{% javascript 'map_app' %}
 
 {% block extra_js %}
-
     <script>
         var chart = c3.generate({
             bindto: '#chart1',
@@ -512,7 +511,8 @@
             });
 
             // initialize the app
-            new APP();
+{#            new APP();#}
+            // We need different app for the home page. Adapt from the current app.
         });
     </script>
 {% endblock extra_js %}

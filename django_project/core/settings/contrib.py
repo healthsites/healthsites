@@ -101,19 +101,19 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 # For hand rolled js for this app, use project.py
 # Only put css and libs in here that are not available on CDN
 PIPELINE_JS = {
-    'app': {
+    'map_app': {
         'source_filenames': (
             'js/localitySidebar.js',
             'js/map.js',
             'js/app.js',
         ),
-        'output_filename': 'js/map.js',
+        'output_filename': 'js/map_app.js',
     },
     'map': {
         'source_filenames': (
             'js/custom-jquery.js',
         ),
-        'output_filename': 'js/map.js',
+        'output_filename': 'js/map_page.js',
     },
     'home': {
         'source_filenames': (
@@ -133,7 +133,7 @@ PIPELINE_CSS = {
         'source_filenames': (
             'css/map.css',
         ),
-        'output_filename': 'css/map.css',
+        'output_filename': 'css/map_page.css',
         'extra_context': {
             'media': 'screen, projection',
         },
