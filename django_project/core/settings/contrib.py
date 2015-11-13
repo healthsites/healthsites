@@ -103,9 +103,7 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 PIPELINE_JS = {
     'map_app': {
         'source_filenames': (
-            'js/localitySidebar.js',
-            'js/map.js',
-            'js/app.js',
+            'js/rhinoslider-1.05.min.js',
         ),
         'output_filename': 'js/map_app.js',
     },
