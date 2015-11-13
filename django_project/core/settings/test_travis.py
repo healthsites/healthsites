@@ -7,7 +7,7 @@ from .test import *  # noqa
 # Temporary hack as travis fails with
 # attribute error on ProjectState.render
 # whcih is caused by something in localities app
-INSTALLED_APPS = tuple(x for x in INSTALLED_APPS if x is not 'localities')
+INSTALLED_APPS = tuple(x for x in INSTALLED_APPS if x != 'localities')
 
 DATABASES = {
     'default': {
