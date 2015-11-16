@@ -1,22 +1,20 @@
 # -*- coding: utf-8 -*-
 import logging
+
 LOG = logging.getLogger(__name__)
 
 import itertools
 from datetime import datetime
-
 from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.gis.db import models
 from django.conf import settings
-
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
-
 from model_utils import FieldTracker
 from pg_fts.fields import TSVectorField
-
 from .querysets import PassThroughGeoManager, LocalitiesQuerySet
+from django.db.models.signals import post_save
 
 
 class ChangesetMixin(models.Model):
@@ -63,7 +61,7 @@ class UpdateMixin(models.Model):
 
     def save(self, *args, **kwargs):
         # object exists - update
-        if self.pk and not(kwargs.get('force_insert')):
+        if self.pk and not (kwargs.get('force_insert')):
             # execute any model specific changes
             self.before_save(*args, update=True, **kwargs)
 
@@ -160,8 +158,8 @@ class Locality(UpdateMixin, ChangesetMixin):
     def _get_attr_map(self):
         return (
             self.domain.specification_set
-            .order_by('id')
-            .values('id', 'attribute__key')
+                .order_by('id')
+                .values('id', 'attribute__key')
         )
 
     def set_geom(self, lon, lat):
@@ -189,7 +187,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             # try to match key from changed items with a key from attr_map
             attr_list = [
                 attr for attr in attrs if attr['attribute__key'] == key
-            ]
+                ]
 
             if attr_list:
                 # get specification id for specific key
@@ -211,7 +209,7 @@ class Locality(UpdateMixin, ChangesetMixin):
 
                 # check if Value.data actually changed, and save if it did
                 if obj.tracker.changed():
-                    if not(tmp_changeset):
+                    if not (tmp_changeset):
                         tmp_changeset = Changeset.objects.create(
                             social_user=social_user
                         )
@@ -244,7 +242,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             u'values': {
                 val.specification.attribute.key: val.data
                 for val in self.value_set.select_related().all()
-            },
+                },
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
             u'changeset': self.changeset_id
@@ -258,7 +256,7 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         data_values = itertools.groupby(
             self.value_set.order_by('specification__fts_rank')
-            .values_list('specification__fts_rank', 'data'),
+                .values_list('specification__fts_rank', 'data'),
             lambda x: x[0]
         )
 
@@ -408,7 +406,7 @@ class Changeset(models.Model):
         change anything
         """
 
-        if self.pk and not(kwargs.get('force_insert')):
+        if self.pk and not (kwargs.get('force_insert')):
             super(Changeset, self).save(*args, **kwargs)
         else:
             self.created = timezone.now()
@@ -436,8 +434,10 @@ class LocalityIndex(models.Model):
         ('ranka', 'A'), ('rankb', 'B'), ('rankc', 'C'), ('rankd', 'D')
     ))
 
+
 # register signals
 import signals  # noqa
+from .tasks import load_data_task, test_task
 
 
 class DataLoader(models.Model):
@@ -545,3 +545,12 @@ class DataLoader(models.Model):
         if not self.date_time_uploaded:
             self.date_time_uploaded = datetime.utcnow()
         super(DataLoader, self).save(*args, **kwargs)
+
+
+# method for updating
+def load_data(sender, instance, **kwargs):
+    load_data_task.delay(instance.pk)
+
+
+# register the signal
+post_save.connect(load_data, sender=DataLoader)
