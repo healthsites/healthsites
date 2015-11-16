@@ -43,10 +43,11 @@ LOCALE_PATHS = (absolute_path('locale'),)
 # Maybe we can split these between project-home and project-map
 PIPELINE_JS['project'] = {
     'source_filenames': (
-        'js/rhinoslider-1.05.min.js',
         'js/clusterLayer.js',
         'js/csrf-ajax.js',
-
+        'js/localitySidebar.js',
+        'js/map.js',
+        'js/app.js',
     ),
     'output_filename': 'js/project.js',
 }

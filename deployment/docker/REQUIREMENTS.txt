@@ -12,3 +12,4 @@ django-forms-bootstrap
 celery
 googlemaps
 django-grappelli
+django_hashedfilenamestorage

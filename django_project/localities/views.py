@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
+
 LOG = logging.getLogger(__name__)
 
 import uuid
 import json
 # register signals
 import signals  # noqa
-
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from django.core.urlresolvers import reverse
@@ -14,19 +14,15 @@ from django.http import HttpResponse, Http404
 from django.contrib.gis.geos import Point
 from django.db import transaction
 from django.conf import settings
-
 from braces.views import JSONResponseMixin, LoginRequiredMixin
-
 import googlemaps
-
 from .models import Locality, Domain, Changeset, Value
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .tasks import load_data_task, test_task
-
 from .map_clustering import cluster
-
 import logging
+
 LOG = logging.getLogger(__name__)
 
 
@@ -43,8 +39,8 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         raise Http404 exception
         """
 
-        if not(all(param in request.GET for param in [
-                'bbox', 'zoom', 'iconsize'])):
+        if not (all(param in request.GET for param in [
+            'bbox', 'zoom', 'iconsize'])):
             raise Http404
 
         try:
@@ -104,6 +100,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
         obj_repr.update({'completeness': '%s%%' % completeness})
 
         return self.render_json_response(obj_repr)
+
 
 class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
     """
@@ -247,9 +244,7 @@ def load_data(request):
         if form.is_valid():
             data_loader = form.save(True)
 
-            data_loader.save()
-
-            load_data_task.delay(data_loader.pk)
+            # load_data_task.delay(data_loader.pk)
 
             response = {}
             success_message = 'You have successfully upload your data'
