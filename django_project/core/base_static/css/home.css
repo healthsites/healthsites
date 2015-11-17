@@ -2,6 +2,11 @@
     max-width: 1140px;
     width: 83.3333%;
 }
+@media only screen and (max-width:940px) {
+.limiter {
+    width: 90%;
+}
+}
 .pin-top, .pin-right, .pin-bottom, .pin-left, .pin-topleft, .pin-topright, .pin-bottomleft, .pin-bottomright {
     position: absolute;
 }
@@ -45,11 +50,25 @@ h2.fancy {
 	position: relative;
 	overflow: hidden
 }
+@media only screen and (max-width:991px) {
+.isopad {
+    margin-top: 50px;
+}
+.slideshow-container {
+	padding: 20px 0;
+}
+}
+
+.isopad img {
+	max-width: 100%;
+	height: auto;
+}
 .pin {
 	position: absolute;
 	width: 54px;
 	height: 65px;
-	background: url(../img/pin.png) no-repeat;
+	background-image: url(../img/pin.png);
+	background-repeat: no-repeat;
 	z-index: 8;
 	opacity: 0;
 	animation-name: bounceInDown;
@@ -62,6 +81,8 @@ h2.fancy {
 	-moz-animation-direction: alternate;
 	animation-fill-mode: forwards;
 	-moz-animation-fill-mode: forwards;
+	transform: translate3d(0,0,0);
+-webkit-transform: translate3d(0,0,0);
 }
 .pin-1 {
 	top: 40%;
@@ -82,6 +103,17 @@ h2.fancy {
 	top: 25%;
 	left: 65%;
 	animation-delay: 0.55s;
+}
+@media only screen and (max-width:640px) {
+  	h2.fancy {
+  		font-size: 38px;
+  		line-height: 46px;
+	}
+	.pin {
+		width: 30px;
+		height: 38px;
+		background-size: 30px 38px;
+	}
 }
 
 @keyframes bounceInDown {
@@ -155,6 +187,9 @@ h2.fancy {
 	overflow: hidden;
 }
 @media only screen and (max-width:991px) {
+  .about {
+	  padding: 40px 0;
+  }
   .about .block, .about .icon {
 	text-align: center;
   }
@@ -207,10 +242,45 @@ h2.fancy {
 #cta .links a:hover {
 	color: #f44a52;
 }
+@media only screen and (max-width:1525px) {
+	#cta .content {
+		padding: 0 20px;
+	}
+	#cta .text {
+		font-size: 14px;
+	}
+}
+@media only screen and (max-width:1190px) {
+	#cta .content {
+		height: 250px;
+	}
+}
+@media only screen and (max-width:1009px) {
+	#cta .content {
+		height: 265px;
+	}
+}
+@media only screen and (max-width:993px) {
+	#cta .content {
+		height: auto;
+		border-right: none;
+		border-bottom: 1px solid #fff;
+		padding-bottom: 40px;
+	}
+	#cta .text {
+		font-size: 16px;
+	}
+	#cta .icon-holder {
+       font-size: 48px;
+    }
+}
 
 /* Map
 
 -------------------------------------------------- */
+#map-data {
+	height: 1px;
+}
 .map-data {
 	overflow: hidden;
 }
@@ -238,6 +308,9 @@ h2.fancy {
 	font-weight: 800;
 	font-size: 16px;
 }
+.select-country button {
+	float: right;
+}
 .select-country  input:focus {
 	outline: none;
 }
@@ -256,7 +329,8 @@ h2.fancy {
 .map-data h2 {
 	font-size: 30px;
 	font-weight: 400;
-	margin-top: 40px;
+	padding-top: 40px;
+	margin: 0;
 }
 .map-data h3 {
 	font-size: 16px;
@@ -299,13 +373,19 @@ h2.fancy {
 .country-data .date, .country-data .time {
 	font-style: italic;
 }
+@media only screen and (max-width: 500px) {
+	.select-country  input, .select-country button {
+		padding: 5px;
+		font-size: 14px;
+	}
+}
 
 /* Lifecycle
 
 -------------------------------------------------- */
 .lifecycle {
 	background: #e0e1e2;
-	padding: 40px 0 80px;
+	padding: 40px 0 100px;
 	text-align: center;
 }
 .lifecycle h2 {
@@ -316,4 +396,40 @@ h2.fancy {
 }
 .rhino-item img {
 	max-width: 100%;
+}
+
+/* Partners
+
+-------------------------------------------------- */
+.partners {
+	padding: 10px 0;
+}
+.partners h3, .partners ul, .partners li {
+	display: inline-block;
+	margin-bottom: 0;
+}
+.partners h3 {
+	font-family: "Raleway", sans-serif;
+	font-weight: bold;
+	font-size: 18px;
+	color: #4e4d4d;
+	padding-right: 100px;
+}
+.partners li {
+	margin-right: 20px;
+}
+@media only screen and (max-width:860px) {
+   .partners h3, .partners ul, .partners li {
+	  display: block;
+	  text-align: center;
+  }
+  .partners h3 {
+	  font-size: 22px;
+	  font-weight: bold;
+	  padding-right: 0;
+	  margin-bottom: 20px;
+  }
+  .partners-list {
+	  margin: 0;
+  }
 }

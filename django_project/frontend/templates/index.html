@@ -89,7 +89,7 @@
                     <span></span>
                     <input type="radio" name="option" id="radio-healthsite" value="healthsite" checked="checked">
                     <span></span>
-                    <label class="option" for="radio-healthsite">health site</label>
+                    <label class="option" for="radio-healthsite">healthsite</label>
                 </div>
                 <div class="option">
                     <span></span>
@@ -128,10 +128,11 @@
         </div>
     </div>
 </section>
+<span class="scroll" id="about"></span>
 <section class="white about">
     <div class="container pad0x">
         <div class="col-md-10 col-md-offset-1 pad0x">
-            <h2>What is Healthsites.io</h2>
+            <h2>About Healthsites.io</h2>
 
             <div class="hazard block">
                 <div class="icon col-md-2"><img src="{% static "img/hazard.svg" %}" onerror="this.onerror=null; this.src='image.png'">
@@ -194,6 +195,7 @@
             <div class="content">
                 <div class="icon-holder"><i class="fa fa-cog"></i></div>
                 <h3 class="col-md-12">Data model</h3>
+                <span class="col-md-12 links"><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data model</a></span>
             </div>
         </div>
         <div class="center col-md-3 pad0x">
@@ -208,7 +210,7 @@
                 <div class="icon-holder"><i class="fa fa-pencil"></i></div>
                 <h3 class="col-md-12">Developers</h3>
                 <span class="col-md-12 text">We welcome new contributions to this project - see our github page for details.</span>
-                <span class="col-md-12 links"><a href="#">API</a> <a href="#">GitHub</a> <a href="#">Road Map</a></span>
+                <span class="col-md-12 text">We welcome new contributions to this project - see our github page for details.</span> <span class="col-md-12 links"><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a> <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road Map</a></span> 
             </div>
         </div>
         <div class="center col-md-3 pad0x">
@@ -216,10 +218,11 @@
                 <div class="icon-holder"><i class="fa fa-comments"></i></div>
                 <h3 class="col-md-12">Chat live</h3>
                 <span class="col-md-12 text">We've established a chatroom where we'll do our best to respond and share project knowledge.</span>
-                <span class="col-md-12 links"><a href="#">Chat space</a></span></div>
+                <span class="col-md-12 text">We've established a chatroom where we'll do our best to respond and share project knowledge.</span> <span class="col-md-12 links"><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat space</a></span></div>
         </div>
     </div>
 </section>
+<span class="scroll" id="map-data"></span>
 <section class="map-data">
     <div class="container-fluid pad0x">
         <div id="map-home" class="col-md-6 map">
@@ -231,7 +234,7 @@
             </div>
         </div>
         <div class="col-md-6 country-data pad10x">
-            <h2 class="col-md-12"><strong>Country data</strong> - <span class="number">189990</span> health sites</h2>
+            <h2 class="col-md-12"><strong>Country data</strong> - <span class="number">{{ num_localities }}</span> health sites</h2>
 
             <div class="col-md-6">
                 <h3>Number of heathsites per type</h3>
@@ -281,6 +284,7 @@
         </div>
     </div>
 </section>
+<span class="scroll" id="lifecycle"></span>
 <section class="lifecycle">
     <div class="container">
         <h2>Healthsites data lifecycle</h2>
@@ -307,34 +311,36 @@
     <div class="container">
         <h3>Partners</h3>
         <ul class="partners-list">
-            <li></li>
-        </ul>
+      <li><img src="{% static "img/hcid-logo.png" %}"/></li>
+      <li><img src="{% static "img/icrc-logo.png" %}"/></li>
+      <li><img src="{% static "img/ihf-logo.png" %}"/></li>
+    </ul>
     </div>
 </section>
 <footer id="colophon">
     <div class="container">
         <div class="col-md-3 pad0x">
             <ul class="footer-nav-1">
-                <li><a href="#">Mission</a></li>
-                <li><a href="#">Participate</a></li>
-                <li><a href="#">Road map</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Vision" target="_blank">Vision</a></li>
+        		<li><a href="https://github.com/healthsites/healthsites/wiki/Participate" target="_blank">Participate</a></li>
+        		<li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road map</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
         </div>
         <div class="col-md-3 pad0x">
             <ul class="footer-nav-2">
-                <li><a href="#">Data</a></li>
-                <li><a href="#">Source code</a></li>
+                 <li><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data</a></li>
+        		<li><a href="https://github.com/healthsites/healthsites" target="_blank">Source code</a></li>
                 <li><a href="#">Map edit</a></li>
-                <li><a href="#">Data lifecycle</a></li>
+                 <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">Data lifecycle</a></li>
             </ul>
         </div>
         <div class="col-md-3 pad0x">
             <ul class="footer-nav-2">
                 <li><a href="data-loader">Upload form</a></li>
-                <li><a href="#">Chat space</a></li>
-                <li><a href="#">API</a></li>
-                <li><a href="#">GitHub</a></li>
+                <li><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat space</a></li>
+        		<li><a href="https://github.com/healthsites/healthsites/wiki/API" target="_blank">API</a></li>
+        		<li><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a></li>
             </ul>
         </div>
         <div class="col-md-3 right pad0x">
@@ -347,7 +353,7 @@
         </div>
         <div style="clear:both;"></div>
         <div class="copy">
-            <p>@2015 Healthsites.io</p>
+            
         </div>
     </div>
 </footer>
