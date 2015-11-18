@@ -109,6 +109,7 @@ worker:
   links:
     - smtp:smtp
     - db:db
+    - rabbitmq:rabbitmq
   restart: on-failure:5
 
 dbbackups:

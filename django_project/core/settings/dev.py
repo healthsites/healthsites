@@ -62,7 +62,6 @@ try:
     import devserver  # noqa
     INSTALLED_APPS += (
         'devserver',
-        'django_hashedfilenamestorage',
     )
     # more details at https://github.com/dcramer/django-devserver#configuration
     DEVSERVER_DEFAULT_ADDR = '0.0.0.0'
