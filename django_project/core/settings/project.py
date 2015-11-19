@@ -49,6 +49,7 @@ PIPELINE_JS['project'] = {
         'js/localitySidebar.js',
         'js/map.js',
         'js/app.js',
+        'js/bootstrap.min.js',
     ),
     'output_filename': 'js/project.js',
 }
@@ -58,7 +59,7 @@ PIPELINE_JS['project'] = {
 PIPELINE_CSS['project'] = {
     'source_filenames': (
         'css/site.css',
-        'css/main.css',
+        'css/bootstrap.css',
     ),
     'output_filename': 'css/project.css',
     'extra_context': {

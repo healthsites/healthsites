@@ -137,4 +137,3 @@ $('.rhino-container #slider li').width("100%");
 $('.rhino-container #slider li').height(688);
   }
 });
-
