@@ -16,7 +16,8 @@ INSTALLED_APPS += (
     'localities',
     'frontend',
     'social_users',
-    'api'
+    'api',
+    'django_hashedfilenamestorage',
 )
 
 # How many versions to list in each project box
