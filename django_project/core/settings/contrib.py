@@ -144,6 +144,15 @@ PIPELINE_CSS = {
         'extra_context': {
             'media': 'screen, projection',
         },
+    },
+    'profile': {
+        'source_filenames': (
+            'css/profile.css',
+        ),
+        'output_filename': 'css/profile.css',
+        'extra_context': {
+            'media': 'screen, projection',
+        },
     }
 }
 

@@ -44,10 +44,6 @@ class MapView(TemplateView):
         return context
 
 
-class ProfileView(TemplateView):
-    template_name = 'profile.html'
-
-
 class AboutView(TemplateView):
     template_name = 'about.html'
 

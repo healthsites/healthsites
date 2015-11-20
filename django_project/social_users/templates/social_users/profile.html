@@ -30,7 +30,7 @@
 
 
     {% stylesheet 'project' %}
-    {% stylesheet 'home' %}
+    {% stylesheet 'profile' %}
 
     {# HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries  #}
     {# WARNING: Respond.js doesn't work if you view the page via file://  #}
@@ -103,244 +103,59 @@
         </form>
     </div>
 </nav>
-<section id="tophome" class="slideshow js-fullheight fluid-container">
-    <div class="slideshow-container limiter pin-top pin-bottom clearfix">
-        <div class="z1 slideshow-text pad4y col-md-4 prose prose-big dark">
-            <h2 class="fancy "><span class="timer" data-speed="2500"
-                                     data-to="{{ num_localities }}">{{ num_localities }}</span><br/>
-                healthsites added</h2>
-
-            <div class="cta col-md-12 clearfix pad0x">
-                <div class="col-md-6 hide-mobile pad0x"><a href="{% url 'map' %}" class="col-md-11 button white pad0x">see
-                    the map</a></div>
-                <div class="col-md-6 pad0x"><a href="#lifecycle" class="col-md-11 button stroke pad0x">how it works</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8">
-            <div class="isopad">
-                <div class="pin pin-1"></div>
-                <div class="pin pin-2"></div>
-                <div class="pin pin-3"></div>
-                <div class="pin pin-4"></div>
-                <img src="{% static "img/isometric-ipad@2x.png" %}" width="710" height="364" class="col-md-12">
-            </div>
-        </div>
-    </div>
-</section>
-<span class="scroll" id="about"></span>
 <section class="white about">
     <div class="container pad0x">
-        <div class="col-md-10 col-md-offset-1 pad0x">
-            <h2>About Healthsites.io</h2>
-
-            <div class="hazard block">
-                <div class="icon col-md-2"><img src="{% static "img/hazard.svg" %}" onerror="this.onerror=null; this.src='image.png'">
-                </div>
-                <div class="col-md-10 pad0x">
-                    When a natural disaster or disease outbreak occurs there is a rush to establish accurate health care
-                    location data that can be used to support people on the ground. This has been demonstrated by events
-                    such as the Haiti earthquake and the Ebola epidemic in West Africa. As a result valuable time is
-                    wasted establishing accurate and accessible baseline data.<br/>
-                    Healthsites.io establishes this data and the tools necessary to upload, manage and make the data
-                    easily accessible.
-                </div>
+        <div class="left-side">
+            <div class="center profile-image-size">
+                <img class="profile-image profile-image-size" src="{% static "img/no-profile-img.gif" %}"/>
             </div>
-            <div class="col-md-6 pad0x block">
-                <div class="icon col-md-4"><img src="{% static "img/globe.svg" %}" onerror="this.onerror=null; this.src='image.png'">
-                </div>
-                <div class="col-md-8 pad0x">
-                    <strong>Global scope</strong><br/>
-                    The Global Healthsites Mapping Project is an initiative to create an online map of every health
-                    facility in the world and make the details of each location easily accessible.
-                </div>
+            <div class="center header">
+                <h1>{{ profile.username }}</h1>
             </div>
-            <div class="col-md-6 pad0x block">
-                <div class="icon col-md-4"><img src="{% static "img/open-data.svg" %}"
-                                                onerror="this.onerror=null; this.src='image.png'"></div>
-                <div class="col-md-8 pad0x">
-                    <strong>Open data collaboration</strong><br/>
-                    Through collaborations with users, trusted partners and OpenStreepMap we will capture and validate
-                    the location and contact details of every facility and make this data freely available under an Open
-                    Data License (ODBL)'
-                </div>
+            <div class="center">
+                <strong>Name</strong>
             </div>
-            <div style="clear: both"></div>
-            <div class="col-md-6 pad0x block">
-                <div class="icon col-md-4"><img src="{% static "img/accessible.svg" %}"
-                                                onerror="this.onerror=null; this.src='image.png'"></div>
-                <div class="col-md-8 pad0x">
-                    <strong>Accessible</strong><br/>
-                    We will make the data accessible over the Internet through and API and other formats such as
-                    GeoJSON, Shape files, KML, CSV
-                </div>
+            <div class="center">{{ profile.get_full_name }}</div>
+            <div class="center">
+                <strong>Email</strong>
             </div>
-            <div class="col-md-6 pad0x block">
-                <div class="icon col-md-4"><img src="{% static "img/location.svg" %}"
-                                                onerror="this.onerror=null; this.src='image.png'"></div>
-                <div class="col-md-8 pad0x">
-                    <strong>Focus on health care location data</strong><br/>
-                    Our design philosophy is the long term curation and validation of health care location data. The
-                    healthsites.io map will enable users to discover what healthcare facilities exist at any global
-                    location and the associated services and resources.
-                </div>
+            <div class="center">{{ profile.email }}</div>
+        </div>
+        <div class="right-side">
+            <div class="center header">
+                <h1>List of location</h1>
             </div>
         </div>
     </div>
-</section>
-<span class="scroll" id="cta"></span>
-<section id="cta" class="navi">
-    <div class="container-fluid pad0x">
-        <div class="center col-md-3 pad0x">
-            <div class="content">
-                <div class="icon-holder"><i class="fa fa-cog"></i></div>
-                <h3 class="col-md-12">Data model</h3>
-                <span class="col-md-12 links"><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data model</a></span>
-            </div>
-        </div>
-        <div class="center col-md-3 pad0x">
-            <div class="content">
-                <div class="icon-holder"><i class="fa fa-map-marker"></i></div>
-                <h3 class="col-md-12">Share the location data</h3>
-                <span class="col-md-12 text">Contact us should you need assistance or share your data using our upload form</span>
-                <span class="col-md-12 links"><a href="#">Upload form</a> <a href="#">Contact us</a></span></div>
-        </div>
-        <div class="center col-md-3 pad0x">
-            <div class="content">
-                <div class="icon-holder"><i class="fa fa-pencil"></i></div>
-                <h3 class="col-md-12">Developers</h3>
-                <span class="col-md-12 text">We welcome new contributions to this project - see our github page for details.</span>
-                <span class="col-md-12 text">We welcome new contributions to this project - see our github page for details.</span> <span class="col-md-12 links"><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a> <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road Map</a></span> 
-            </div>
-        </div>
-        <div class="center col-md-3 pad0x">
-            <div class="content">
-                <div class="icon-holder"><i class="fa fa-comments"></i></div>
-                <h3 class="col-md-12">Chat live</h3>
-                <span class="col-md-12 text">We've established a chatroom where we'll do our best to respond and share project knowledge.</span>
-                <span class="col-md-12 text">We've established a chatroom where we'll do our best to respond and share project knowledge.</span> <span class="col-md-12 links"><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat space</a></span></div>
-        </div>
-    </div>
-</section>
-<span class="scroll" id="map-data"></span>
-<section class="map-data">
-    <div class="container-fluid pad0x">
-        <div id="map-home" class="col-md-6 map">
-            <div class="select-country">
-                <form>
-                    <input type="search" placeholder="select a country"/>
-                    <button type="submit" value="Submit"><i class="fa fa-search"></i></button>
-                </form>
-            </div>
-        </div>
-        <div class="col-md-6 country-data pad10x">
-            <h2 class="col-md-12"><strong>Country data</strong> - <span class="number">{{ num_localities }}</span> health sites</h2>
-
-            <div class="col-md-6">
-                <h3>Number of heathsites per type</h3>
-
-                <div class="graph">
-                    <div id="chart1"></div>
-
-                    <script>
-                    </script>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <h3>Completeness of attributes</h3>
-
-                <div class="graph">
-                    <div id="piechart"></div>
-
-
-                </div>
-            </div>
-            <div class="col-md-12">
-                <h3>Latest updates</h3>
-
-                <div class="graph updates">
-                    <div class="entry">
-                        <span class="date">2015-10-14</span> <span class="time">17:23:15</span> - <span class="name"><a
-                            href="#">@who</a></span> - <span class="location-name">Priory Hosp Glasgow</span>
-                    </div>
-                    <div class="entry">
-                        <span class="date">2015-10-11</span> <span class="time">17:23:15</span> - <span class="name"><a
-                            href="#">@sagovernment</a></span> - <span class="location-name">50 hs/added</span>
-                    </div>
-                    <div class="entry">
-                        <span class="date">2015-10-09</span> <span class="time">17:23:15</span> - <span class="name"><a
-                            href="#">@jimbob</a></span> - <span class="location-name">75 hs/added 20/amended </span>
-                    </div>
-                    <div class="entry">
-                        <span class="date">2015-09-09</span> <span class="time">17:23:15</span> - <span class="name"><a
-                            href="#">@arryedwards</a></span> - <span class="location-name">22 hs/added</span>
-                    </div>
-                    <div class="entry">
-                        <span class="date">2015-08-14</span> <span class="time">17:23:15</span> - <span class="name"><a
-                            href="#">@nev</a></span> - <span class="location-name">Accrington Victoria Hosp</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<span class="scroll" id="lifecycle"></span>
-<section class="lifecycle">
-    <div class="container">
-        <h2>Healthsites data lifecycle</h2>
-
-        <div class="main-img">
-            <ul id="slider">
-                <li><img src="{% static "img/step-1.png" %}"/></li>
-                <li><img src="{% static "img/step-2.png" %}"/></li>
-                <li><img src="{% static "img/step-3.png" %}"/></li>
-                <li><img src="{% static "img/step-4.png" %}"/></li>
-                <li><img src="{% static "img/step-5.png" %}"/></li>
-                <li><img src="{% static "img/step-6.png" %}"/></li>
-                <li><img src="{% static "img/step-7.png" %}"/></li>
-                <li><img src="{% static "img/step-8.png" %}"/></li>
-            </ul>
-        </div>
-        <div class="steps">
-
-        </div>
-    </div>
-</section>
-<span class="scroll" id="partners"></span>
-<section class="partners">
-    <div class="container">
-        <h3>Partners</h3>
-        <ul class="partners-list">
-      <li><img src="{% static "img/hcid-logo.png" %}"/></li>
-      <li><img src="{% static "img/icrc-logo.png" %}"/></li>
-      <li><img src="{% static "img/ihf-logo.png" %}"/></li>
-    </ul>
-    </div>
+    <div class="clear"></div>
 </section>
 <footer id="colophon">
     <div class="container">
         <div class="col-md-3 pad0x">
             <ul class="footer-nav-1">
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Vision" target="_blank">Vision</a></li>
-        		<li><a href="https://github.com/healthsites/healthsites/wiki/Participate" target="_blank">Participate</a></li>
-        		<li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road map</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Participate"
+                       target="_blank">Participate</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road
+                    map</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
         </div>
         <div class="col-md-3 pad0x">
             <ul class="footer-nav-2">
-                 <li><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data</a></li>
-        		<li><a href="https://github.com/healthsites/healthsites" target="_blank">Source code</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data</a></li>
+                <li><a href="https://github.com/healthsites/healthsites" target="_blank">Source code</a></li>
                 <li><a href="#">Map edit</a></li>
-                 <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">Data lifecycle</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">Data
+                    lifecycle</a></li>
             </ul>
         </div>
         <div class="col-md-3 pad0x">
             <ul class="footer-nav-2">
                 <li><a href="data-loader">Upload form</a></li>
                 <li><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat space</a></li>
-        		<li><a href="https://github.com/healthsites/healthsites/wiki/API" target="_blank">API</a></li>
-        		<li><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/API" target="_blank">API</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a></li>
             </ul>
         </div>
         <div class="col-md-3 right pad0x">
@@ -353,7 +168,7 @@
         </div>
         <div style="clear:both;"></div>
         <div class="copy">
-            
+
         </div>
     </div>
 </footer>
@@ -517,7 +332,7 @@
             });
 
             // initialize the app
-{#            new APP();#}
+            {#            new APP();#}
             // We need different app for the home page. Adapt from the current app.
         });
     </script>

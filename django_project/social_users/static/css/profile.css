@@ -1,0 +1,81 @@
+/* About
+
+-------------------------------------------------- */
+.about {
+    font-family: "Raleway", sans-serif;
+    padding-right: 85px;
+    padding-left: 85px;
+    padding-top: 20px;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.about h2 {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.about .icon {
+    text-align: right;
+}
+
+.about .block {
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+@media only screen and (max-width: 991px) {
+    .about {
+        padding-top: 20px;
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+    .about .block, .about .icon {
+        text-align: center;
+    }
+
+    .about .block {
+        margin-bottom: 40px;
+    }
+
+    .about .icon {
+        margin-bottom: 20px;
+    }
+}
+
+/* PROFILE CSS
+-------------------------------------------------- */
+.center {
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.clear {
+    float: none;
+}
+
+.header {
+    margin-bottom: 20px;
+}
+
+.left-side {
+    width: 300px;
+    margin-right: 20px;
+    float: left;
+    padding: 30px;
+}
+
+.profile-image-size {
+    width: 200px;
+}
+
+.profile-image {
+    max-width: 100%;
+}
+
+.right-side {
+    width: 100%;
+    padding: 30px;
+}
