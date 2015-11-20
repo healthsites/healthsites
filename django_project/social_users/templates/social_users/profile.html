@@ -107,19 +107,34 @@
     <div class="container pad0x">
         <div class="left-side">
             <div class="center profile-image-size">
-                <img class="profile-image profile-image-size" src="{% static "img/no-profile-img.gif" %}"/>
+                {% if user.profile_picture == "" %}
+                    <img class="profile-image profile-image-size" src="{% static "img/no-profile-img.gif" %}"/>
+                {% else %}
+                    <img class="profile-image profile-image-size" src="/media/{{ user.profile_picture }}"/>
+                {% endif %}
             </div>
             <div class="center header">
-                <h1>{{ profile.username }}</h1>
+                <h1>{{ user.username }}</h1>
             </div>
             <div class="center">
                 <strong>Name</strong>
             </div>
-            <div class="center">{{ profile.get_full_name }}</div>
+            <div class="center">
+                {% if user.get_full_name == "" %}
+                    -
+                {% else %}
+                    {{ user.get_full_name }}
+                {% endif %}
+            </div>
             <div class="center">
                 <strong>Email</strong>
             </div>
-            <div class="center">{{ profile.email }}</div>
+            <div class="center">
+                {% if user.email == "" %}
+                    -
+                {% else %}
+                    {{ user.email }}
+                {% endif %}</div>
         </div>
         <div class="right-side">
             <div class="center header">
