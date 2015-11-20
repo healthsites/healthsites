@@ -49,7 +49,6 @@ PIPELINE_JS['project'] = {
         'js/localitySidebar.js',
         'js/map.js',
         'js/app.js',
-        'js/bootstrap.min.js',
     ),
     'output_filename': 'js/project.js',
 }
@@ -58,7 +57,6 @@ PIPELINE_JS['project'] = {
 # For third party libs like bootstrap should go in contrib.py
 PIPELINE_CSS['project'] = {
     'source_filenames': (
-        'css/bootstrap.css',
         'css/site.css',
     ),
     'output_filename': 'css/project.css',
