@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
-
-from .views import MainView, AboutView, HelpView, MapView, map
+from .views import MainView, AboutView, HelpView, MapView, map, ProfileView
 
 urlpatterns = patterns(
     '',
@@ -11,4 +10,8 @@ urlpatterns = patterns(
     url(r'^help', HelpView.as_view(), name='help'),
     # url(r'^map$', MapView.as_view(), name='map'),
     url(r'^map$', 'frontend.views.map', name='map'),
+    url(
+        r'^profile/(?P<uuid>\w)$', ProfileView.as_view(),
+        name='profile'
+    ),
 )
