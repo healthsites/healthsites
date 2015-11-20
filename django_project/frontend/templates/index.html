@@ -15,8 +15,6 @@
           media="screen, projection"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
-          media="screen, projection"/>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css"
@@ -42,7 +40,7 @@
 </head>
 
 <body class="body">
-<nav class="navbar navbar-fixed-top masthead">
+<nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
     <div class="container-fluid">
         <div class="navbar-header">
 
@@ -73,7 +71,7 @@
         <div id="navbar" class="collapse navbar-collapse pull-right">
             <ul class="nav navbar-nav">
                 <li><a href="#about">About</a></li>
-                <li><a href="/map.html">Map</a></li>
+                <li><a href="/map">Map</a></li>
                 <li><a href="#map-data">Country data</a></li>
                 <li><a href="#lifecycle">How it works</a></li>
                 <li><a href="#cta">Share data</a></li>
@@ -127,10 +125,10 @@
 <section class="white about">
     <div class="container pad0x">
         <div class="col-md-10 col-md-offset-1 pad0x">
-            <h2>About Healthsites.io</h2>
+            <h2>About healthsites.io</h2>
 
             <div class="hazard block">
-                <div class="icon col-md-2"><img src="{% static "static/img/hazard.svg" %}"
+                <div class="icon col-md-2"><img src="{% static "img/hazard.svg" %}"
                                                 onerror="this.onerror=null; this.src='image.png'">
                 </div>
                 <div class="col-md-10 pad0x">
@@ -208,7 +206,6 @@
                 <div class="icon-holder"><i class="fa fa-pencil"></i></div>
                 <h3 class="col-md-12">Developers</h3>
                 <span class="col-md-12 text">We welcome new contributions to this project - see our github page for details.</span>
-                <span class="col-md-12 text">We welcome new contributions to this project - see our github page for details.</span>
                 <span class="col-md-12 links"><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a> <a
                         href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road
                     Map</a></span>
@@ -218,7 +215,6 @@
             <div class="content">
                 <div class="icon-holder"><i class="fa fa-comments"></i></div>
                 <h3 class="col-md-12">Chat live</h3>
-                <span class="col-md-12 text">We've established a chatroom where we'll do our best to respond and share project knowledge.</span>
                 <span class="col-md-12 text">We've established a chatroom where we'll do our best to respond and share project knowledge.</span>
                 <span class="col-md-12 links"><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat
                     space</a></span></div>

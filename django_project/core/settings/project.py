@@ -58,8 +58,8 @@ PIPELINE_JS['project'] = {
 # For third party libs like bootstrap should go in contrib.py
 PIPELINE_CSS['project'] = {
     'source_filenames': (
-        'css/site.css',
         'css/bootstrap.css',
+        'css/site.css',
     ),
     'output_filename': 'css/project.css',
     'extra_context': {
