@@ -1,12 +1,13 @@
 #map-full {
 	background: #eff0f0;
+	margin-top: 53px;
 }
 .location-info {
 	background: #fff;
-	padding-top: 53px;
 	font-family: "Raleway", sans-serif;
 	color: #3c4c57;
 	padding-bottom: 64px;
+	z-index: 1;
 }
 .location-info .profile, .location-info .header {
 	padding: 0 20px;
@@ -142,14 +143,14 @@
 }
 .map-page {
 	position: relative;
-	margin-top: 53px;
 }
 #map {
 	background: #c8e6ff;
 	position: fixed;
 	top: 53px;
 	right: 0;
-	width: 100%;
+	width:100%;
+	height: 100%
 }
 @media only screen and (max-width:991px) {
 .map-page {
