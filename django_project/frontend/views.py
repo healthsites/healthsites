@@ -32,7 +32,7 @@ class MainView(TemplateView):
 
 
 class ContactView(TemplateView):
-    template_name = 'contact.html'
+    template_name = 'envelope/contact.html'
 
 
 class MapView(TemplateView):

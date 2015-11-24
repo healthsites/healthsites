@@ -232,7 +232,6 @@ h2.fancy {
 }
 #cta .links {
 	margin-top: 10px;
-	padding-bottom: 30px;
 }
 #cta .links a {
 	color: #fff;
@@ -287,6 +286,7 @@ h2.fancy {
 #map-home {
 	height: 645px;
 	position: relative;
+	background: url(../img/ruanda.png);
 }
 .select-country {
 	position: absolute;

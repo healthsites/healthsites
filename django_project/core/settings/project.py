@@ -18,6 +18,7 @@ INSTALLED_APPS += (
     'social_users',
     'api',
     'django_hashedfilenamestorage',
+    'envelope'
 )
 
 # How many versions to list in each project box
@@ -58,7 +59,6 @@ PIPELINE_JS['project'] = {
 PIPELINE_CSS['project'] = {
     'source_filenames': (
         'css/site.css',
-        'css/main.css',
     ),
     'output_filename': 'css/project.css',
     'extra_context': {

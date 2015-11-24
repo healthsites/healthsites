@@ -96,13 +96,10 @@ if (v_width<=991) {
 $(window).scroll(function() {    
   var scroll = $(window).scrollTop();
   if (scroll >= 72) {
-	  $(".home .masthead").addClass("no-tag");
+	  $("#navbar-wrapper").addClass("no-tag");
   } else {
-	  $(".home .masthead").removeClass("no-tag");
-  }	
-  
-
-  
+	  $("#navbar-wrapper").removeClass("no-tag");
+  }
 });
 
 
@@ -137,4 +134,3 @@ $('.rhino-container #slider li').width("100%");
 $('.rhino-container #slider li').height(688);
   }
 });
-
