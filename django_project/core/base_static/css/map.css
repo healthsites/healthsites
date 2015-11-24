@@ -166,7 +166,6 @@
 	top: 0;
 }
 }
-
 .marker-icon {
     width: 48px;
     height: 46px;
@@ -175,4 +174,8 @@
     text-align: center;
     font-weight: bold;
     font-size: 11px;
+}
+
+#twitter_share_map:hover {
+	cursor: pointer;
 }
