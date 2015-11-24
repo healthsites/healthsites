@@ -26,7 +26,7 @@
 .frame {
 	position: absolute;
 	top: 0;
-	left: 0; 
+	left: 0;
 }
 .location-info .profile .name, .location-info .profile .name a {
 	text-transform: uppercase;
@@ -57,7 +57,7 @@
 .location-info .icon-holder i {
 	color: #afb4b7;
 	font-size: 21px;
-}	
+}
 .location-info .data {
 	margin-left: 48px;
 	background: #f9f9f9;
@@ -139,7 +139,7 @@
 }
 .buttons .button {
 	display: block;
-}	
+}
 .map-page {
 	position: relative;
 	margin-top: 53px;
@@ -164,4 +164,14 @@
 	position: relative;
 	top: 0;
 }
+}
+
+.marker-icon {
+    width: 48px;
+    height: 46px;
+    background: url("/static/img/healthsite-cluster-marker.png");
+    line-height: 46px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 11px;
 }
