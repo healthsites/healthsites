@@ -118,6 +118,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	float: none;
 	display: inline-block;
 	vertical-align: middle;
+	padding: 0;
 }
 .hs-logo {
 	background: url(../img/logo@2x.png) no-repeat;
@@ -135,8 +136,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	color: #3c4c57;
 	font-size: 22px;
 	height: 43px;
-	line-height: 40px;
-	margin-top: 2px;
+	line-height: 38px;
 	margin-left: 10px;
 }
 .navbar-share .share {
@@ -514,7 +514,10 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 				margin:0;
 			}
 #slider li { list-style:none; }  
-  
+.slick-slide img {
+    margin: 0 auto;
+	max-width: 100%;
+}
 .slick-prev,
 .slick-next {
 	z-index:10;

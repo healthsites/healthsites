@@ -38,32 +38,25 @@ $(document).ready(function(){
  
   
   if (v_width<=991) {
+	  var v_height = $(window).height();
+      var v_width = $(window).width();
+      var s_width = $('.location-info').width();
 	  var pad = v_height/2;
 	  $('.location-info').css('margin-top',pad);
 	  $('#map, #map-home').css('height',pad);
 	  $('#map, #map-home').css('width',v_width);
 	   var h_height = $('.masthead').height();
-  var v_height = $(window).height();
-  var v_width = $(window).width();
-  var s_width = $('.location-info').width();
-  $('#map').css('height', v_height - h_height);
-  $('#map').css('width', v_width - s_width);
+  
+ 
   }
 	else {
 		 $('.location-info').css('margin-top',0);
-
+         $('#map').css('height', v_height - h_height);
+         $('#map').css('width', v_width - s_width);
 	}
 	var v_count = '0';
 	
-	$('#slider').slick({
-					dots: true,
-					infinite: false,
-					speed: 300,
-					slidesToShow: 1,
-					adaptiveHeight: true,
-					fade: true,
-					centerMode: true,
-				});
+	
 	
 	$('.timer').each(function(){
 			var imagePos = $(this).offset().top;			

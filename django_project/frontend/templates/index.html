@@ -528,6 +528,16 @@
                     set_search_url(search_url, 'json');
                 }
             });
+			
+			$('#slider').slick({
+					dots: true,
+					infinite: false,
+					speed: 300,
+					slidesToShow: 1,
+					adaptiveHeight: true,
+					fade: true,
+					centerMode: true,
+				});
 
             // initialize the app
             {#            new APP();#}
