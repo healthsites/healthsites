@@ -37,15 +37,20 @@ $(document).ready(function(){
 	
  
   
+  var v_width = $(window).width();
+  var v_height = $(window).height();
+  var h_height = $('.masthead').height();
+  var s_width = $('.location-info').width();
+  
   if (v_width<=991) {
-	  var v_height = $(window).height();
-      var v_width = $(window).width();
-      var s_width = $('.location-info').width();
+	  
+      
+     
 	  var pad = v_height/2;
 	  $('.location-info').css('margin-top',pad);
 	  $('#map, #map-home').css('height',pad);
 	  $('#map, #map-home').css('width',v_width);
-	   var h_height = $('.masthead').height();
+	   
   
  
   }
@@ -54,6 +59,7 @@ $(document).ready(function(){
          $('#map').css('height', v_height - h_height);
          $('#map').css('width', v_width - s_width);
 	}
+	
 	var v_count = '0';
 	
 	
