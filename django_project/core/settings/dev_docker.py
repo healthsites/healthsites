@@ -10,7 +10,7 @@ DATABASES = {
         'NAME': 'gis',
         'USER': 'docker',
         'PASSWORD': 'docker',
-        'HOST': 'healthsites-db',
+        'HOST': 'db',
         'PORT': 5432,
         'TEST_NAME': 'unittests',
     }
