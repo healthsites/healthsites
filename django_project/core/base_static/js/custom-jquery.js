@@ -35,7 +35,13 @@ $(document).ready(function(){
     }
   });
 	
- 
+   
+  $("#locality-name").bind("DOMSubtreeModified",function(){
+      $(this).parent().stop().animate({ backgroundColor: "#f44a52",
+	                                    color: "#fff" }, 100)
+	                         .animate({ backgroundColor: "white",
+							            color: "#3c4c57" }, 550);
+  });
   
   var v_width = $(window).width();
   var v_height = $(window).height();

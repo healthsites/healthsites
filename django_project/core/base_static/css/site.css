@@ -107,13 +107,14 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 .hs-logo {
 	position: relative;
 	z-index: 10;
+	margin-top: 2px;
 }
 .navbar-brand {
 	/* text-transform: uppercase; */
 	color: #f44a52;
 	font-size: 24px;
 	font-weight: 700;
-	margin-top: 6px;
+	margin-top: 3px;
 	position: relative;
 	float: none;
 	display: inline-block;
@@ -633,4 +634,9 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	.slick-dots {
 		margin: 0 0 0 -153px;
 	}
+}
+#ribbon {
+	position: fixed;
+	right: 0;
+	bottom: 100px;
 }

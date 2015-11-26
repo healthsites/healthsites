@@ -43,7 +43,7 @@
 
 </head>
 
-<body class="body">
+<body class="body home">
 <nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -198,16 +198,15 @@
                 <div class="icon-holder"><i class="fa fa-cog"></i></div>
                 <h3 class="col-md-12">Data model</h3>
                 <span class="col-md-12 text">Each healthsite is stored as a geometry object in the database</span>
-				<span class="col-md-12 links"><a href="https://github.com/healthsites/healthsites/wiki/Healthsite-attributes"  target="_blank">Healthsites attributes</a> <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-data-model"
-                                                 target="_blank">Data model</a></span>
+				<span class="col-md-12 links"><a href="https://github.com/healthsites/healthsites/wiki/Healthsite-attributes"  target="_blank">Healthsites attributes</a> <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-data-model" target="_blank">Data model</a></span>
             </div>
         </div>
         <div class="center col-md-3 pad0x">
             <div class="content">
                 <div class="icon-holder"><i class="fa fa-map-marker"></i></div>
-                <h3 class="col-md-12">Share the location data</h3>
+                <h3 class="col-md-12">Share healthsite data</h3>
                 <span class="col-md-12 text">Contact us should you need assistance or share your data using our upload form</span>
-                <span class="col-md-12 links"><a href="#">Upload form</a> <a href="#">Contact us</a></span></div>
+                <span class="col-md-12 links"><a href="/upload-form">Upload form</a> <a href="/contact">Contact us</a></span></div>
         </div>
         <div class="center col-md-3 pad0x">
             <div class="content">
@@ -242,7 +241,7 @@
         </div>
         <div class="col-md-6 country-data pad10x">
             <h2 class="col-md-12"><strong>Country data</strong> - <span class="number">{{ num_localities }}</span>
-                health sites</h2>
+                healthsites</h2>
 
             <div class="col-md-6">
                 <h3>Number of heathsites per type</h3>
@@ -356,10 +355,10 @@
         </div>
         <div class="col-md-3 right pad0x">
             <ul class="footer-nav-2 social">
-                <li><a href="#"><i class="fa fa-twitter-square"></i></a></li>
-                <li><a href="#"><i class="fa fa-facebook-square"></i></a></li>
-                <li><a href="#"><i class="fa fa-linkedin-square"></i></a></li>
-                <li><a href="#"><i class="fa fa-envelope-square"></i></a></li>
+                <li><a href="https://twitter.com/sharehealthdata" target="_blank"><i class="fa fa-twitter-square"></i></a></li>
+                <li><a href="https://www.facebook.com/healthsites.io" target="_blank"><i class="fa fa-facebook-square"></i></a></li>
+                <li><a href="https://www.linkedin.com/company/healthsites-io?trk=biz-companies-cym" target="_blank"><i class="fa fa-linkedin-square"></i></a></li>
+                <li><a href="https://plus.google.com/u/2/117257570769390062756" target="_blank"><i class="fa fa-envelope-square"></i></a></li>
             </ul>
         </div>
         <div style="clear:both;"></div>
@@ -367,6 +366,7 @@
 
         </div>
     </div>
+    <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
 </footer>
 
 <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
