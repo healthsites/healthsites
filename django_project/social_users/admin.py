@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 from .models import (
-    UserDetail, UserLink
+    UserDetail
 )
 
 
@@ -11,11 +11,3 @@ class UserDetailAdmin(admin.ModelAdmin):
 
 
 admin.site.register(UserDetail, UserDetailAdmin)
-
-
-class UserLinkAdmin(admin.ModelAdmin):
-    list_display = (
-        'pk', 'link')
-
-
-admin.site.register(UserLink, UserLinkAdmin)
