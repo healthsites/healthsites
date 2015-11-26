@@ -118,6 +118,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	float: none;
 	display: inline-block;
 	vertical-align: middle;
+	padding: 0;
 }
 .hs-logo {
 	background: url(../img/logo@2x.png) no-repeat;
@@ -135,8 +136,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	color: #3c4c57;
 	font-size: 22px;
 	height: 43px;
-	line-height: 40px;
-	margin-top: 2px;
+	line-height: 38px;
 	margin-left: 10px;
 }
 .navbar-share .share {
@@ -507,15 +507,19 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
   
 #slider {
 				width:100%;
-				height:688px;
+				
 				
 				/*IE bugfix*/
 				padding:0;
 				margin:0;
 			}
 #slider li { list-style:none; }  
-  
-.rhino-prev, .rhino-next {
+.slick-slide img {
+    margin: 0 auto;
+	max-width: 100%;
+}
+.slick-prev,
+.slick-next {
 	z-index:10;
 	width:21px;
 	height:33px;
@@ -525,19 +529,21 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	-moz-user-select:none;
 	user-select:none;
 	top: 50%;
+	position: absolute;
+	border: none;
+	overflow: hidden;
 }
-.rhino-prev {
+.slick-prev {
 	left: 0;
 	background: url(../img/prev.svg) no-repeat;
 }
-.rhino-next {
+.slick-next {
 	right: 0;
 	background: url(../img/next.svg) no-repeat;
 }
-.rhino-play, .rhino-pause { visibility: hidden; }
-.rhino-container { position:relative; }
 
-.rhino-bullets {
+
+.slick-dots {
 	position: absolute;
 	bottom: -40px;
 	left: 50%;
@@ -548,7 +554,7 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	height: 4px;
 }
 
-.rhino-bullets:before, .rhino-bullets:after {
+.slick-dots:before, .slick-dots:after {
 	position:absolute;
 	display:block;
 	left:-16px;
@@ -558,24 +564,24 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	
 }
 
-.rhino-bullets:after {
+.slick-dots:after {
 	left:auto;
 	right:-16px;
 	background-position: -240px 0;
 }
 
-.rhino-bullets li {
+.slick-dots li {
 	float:left;
 	display:inline;
 	margin: -19px 15px 0;
 }
-.rhino-bullets li:first-child {
+.slick-dots li:first-child {
 	margin-left: 0;
 }
-.rhino-bullets li:last-child {
+.slick-dots li:last-child {
 	margin-right: 0;
 }
-.rhino-bullets li a.rhino-bullet {
+.slick-dots li button {
 	display: block;
 	width: 38px;
 	height: 38px;
@@ -591,39 +597,40 @@ input[type=text].transparent,  input[type=text].transparent:active,  input[type=
 	-moz-user-select:none;
 	user-select:none;
 	border-radius: 50%;
+	border: none;
 }
 
-.rhino-bullets li a.rhino-bullet:hover, .rhino-bullets li a.rhino-bullet:focus {
+.slick-dots li button:hover, .slick-dots li button:focus {
 	color:#fff;
 	background:#f44a52;
 }
 
-.rhino-bullets li a.rhino-bullet.rhino-active-bullet {
+.slick-dots li.slick-active button {
 	color:#fff;
 	background: #f44a52;
 }
 @media only screen and (max-width:600px) {
-	.rhino-bullets li {
+	.slick-dots li {
 		margin-right: 10px;
 		margin-left: 10px;
 		margin-top: -14px;
 	}
-	.rhino-bullets li a.rhino-bullet {
+	.slick-dots li button {
 		font-size: 14px;
 		height: 30px;
 		line-height: 30px;
 		width: 30px;
 	}
-	.rhino-bullets {
+	.slick-dots {
 		margin: 0 0 0 -190px;
 	}
 }
 @media only screen and (max-width:460px) {
-	.rhino-bullets li {
+	.slick-dots li {
 		margin-right: 5px;
 		margin-left: 5px;
 	}
-	.rhino-bullets {
+	.slick-dots {
 		margin: 0 0 0 -153px;
 	}
 }

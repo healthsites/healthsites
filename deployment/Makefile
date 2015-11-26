@@ -54,6 +54,13 @@ db:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) up -d db
 
+rabbitmq:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running rabbitmq in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) up -d rabbitmq
+
 nginx:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -244,10 +251,17 @@ dbsync:
 # for pydevd etc. If they dont get copied, restart pycharm...
 # ----------------------------------------------------------------------------
 
-devweb: db
+devweb: db rabbitmq
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running in DEVELOPMENT mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) up --no-deps -d devweb
+
+build-devweb: db
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Building devweb"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) build devweb
 
