@@ -130,7 +130,7 @@ dbbackups:
     - PGUSER=docker
     - PGPASSWORD=docker
     - PGPORT=5432
-    - PGHOST=healthsites-db
+    - PGHOST=db
     - PGDATABASE=gis
   restart: on-failure:5
 
