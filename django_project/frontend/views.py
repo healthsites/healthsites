@@ -31,6 +31,10 @@ class MainView(TemplateView):
         return context
 
 
+class ContactView(TemplateView):
+    template_name = 'envelope/contact.html'
+
+
 class MapView(TemplateView):
     template_name = 'map.html'
 

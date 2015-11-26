@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% load envelope_tags %}
+
+{% block title %}Healthsites{% endblock %}
+
+{% block content %}
+    <section class="slideshow js-fullheight fluid-container" style="padding: 40px; padding-top: 100px; ">
+        {% render_contact_form %}
+    </section>
+
+{% endblock %}
