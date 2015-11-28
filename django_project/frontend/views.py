@@ -26,7 +26,7 @@ class MainView(TemplateView):
 
         context['debug'] = settings.DEBUG
 
-        context['num_localities'] = Locality.objects.count()
+        context['locality_count'] = Locality.objects.count()
 
         return context
 
