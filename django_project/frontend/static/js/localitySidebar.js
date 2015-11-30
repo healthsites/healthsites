@@ -1,5 +1,6 @@
 window.LocalitySidebar = (function () {
     "use strict";
+    var need_information = "needs information";
     // private variables and functions
 
     // constructor
@@ -193,7 +194,7 @@ window.LocalitySidebar = (function () {
 
         showDefaultInfo: function (evt) {
             this.$name.text("No Name");
-            this.$nature_of_facility.text("No information");
+            this.$nature_of_facility.text(need_information);
             this.$completenees.attr('style', 'width:0%');
             this.$completenees.text('0% Complete');
             this.$coordinates.text(
@@ -204,13 +205,13 @@ window.LocalitySidebar = (function () {
             this.$url.text('No url found');
             this.$url.removeAttr('href');
             this.$scope_of_service.html('');
-            this.$scope_of_service.text('No information');
+            this.$scope_of_service.text(need_information);
             this.$ancilary_service.html('');
-            this.$ancilary_service.text('No information');
+            this.$ancilary_service.text(need_information);
             this.$activities.html('');
-            this.$activities.text('No information');
-            this.$inpatient_service.text('No information');
-            this.$staff.text('No information');
+            this.$activities.text(need_information);
+            this.$inpatient_service.text(need_information);
+            this.$staff.text(need_information);
         },
 
         setInfoWindowHeight: function () {
