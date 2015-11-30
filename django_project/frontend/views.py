@@ -52,6 +52,10 @@ class HelpView(TemplateView):
     template_name = 'help.html'
 
 
+class ContactView(TemplateView):
+    template_name = 'envelope/contact.html'
+
+
 @csrf_exempt
 def map(request):
     """View for request."""
