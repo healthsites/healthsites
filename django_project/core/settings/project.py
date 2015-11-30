@@ -10,6 +10,7 @@ import os  # noqa
 from django.utils.translation import ugettext_lazy as _
 from .utils import absolute_path
 from .contrib import *  # noqa
+from .secret import *  # secret
 
 # Project apps
 INSTALLED_APPS += (
