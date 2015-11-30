@@ -59,13 +59,12 @@
 
             <div class="hidden" id="site-social">
                 <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
-                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" href="https://twitter.com/intent/tweet?text=Share and develop critical health facility data on http://staging.healthsites.io/"
-                   class=" withripple">
-                    <i class="fa fa-twitter"></i></a>
-                <a class="facebook-hs-share withripple" href="https://www.facebook.com/sharer/sharer.php?u=http://staging.healthsites.io/">
-                    <i class="fa fa-facebook"></i></a>
                 <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   href="https://plus.google.com/share?url=http://staging.healthsites.io/">
+                   class="withripple twitter-href">
+                    <i class="fa fa-twitter"></i></a>
+                <a class="facebook-hs-share withripple facebook-href">
+                    <i class="fa fa-facebook"></i></a>
+                <a class="googleplus-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-google-plus"></i>
 
                 </a>
@@ -486,6 +485,12 @@
     <script>
         var search_url = "{% url 'locality-name-search' %}";
         $(document).ready(function () {
+            // set share url
+            var baseURL = location.protocol + "//" + location.hostname+"/";
+            $(".twitter-href").attr("href","https://twitter.com/intent/tweet?text=Share and develop critical health facility data on "+baseURL);
+            $(".facebook-href").attr("href","https://www.facebook.com/sharer/sharer.php?u="+baseURL);
+            $(".googleplus-href").attr("href","https://plus.google.com/share?url="+baseURL);
+
             function set_search_url(url, data_type) {
                 $(function () {
                     $("#search-box").autocomplete({

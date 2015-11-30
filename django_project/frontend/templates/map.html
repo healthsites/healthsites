@@ -62,15 +62,14 @@
 
             <div class="hidden" id="site-social" style="width: 115px;">
                 <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
-                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" href="https://twitter.com/intent/tweet?text=Share and develop critical health facility data on http://staging.healthsites.io/"
-                   class=" withripple">
+                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+                   class="withripple twitter-href">
                     <i class="fa fa-twitter"></i>
                 </a>
-                <a class="facebook-hs-share withripple" href="https://www.facebook.com/sharer/sharer.php?u=http://staging.healthsites.io/">
+                <a class="facebook-hs-share withripple facebook-href">
                     <i class="fa fa-facebook"></i>
                 </a>
-                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   href="https://plus.google.com/share?url=http://staging.healthsites.io/">
+                <a class="googleplus-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-google-plus"></i>
                 </a>
             </div>
@@ -293,7 +292,14 @@
 
 {% block extra_js %}
     <script type="text/javascript">
+
         $(document).ready(function () {
+            // set share url
+            var baseURL = location.protocol + "//" + location.hostname+"/";
+            $(".twitter-href").attr("href","https://twitter.com/intent/tweet?text=Share and develop critical health facility data on "+baseURL);
+            $(".facebook-href").attr("href","https://www.facebook.com/sharer/sharer.php?u="+baseURL);
+            $(".googleplus-href").attr("href","https://plus.google.com/share?url="+baseURL);
+
             // Set viewport if exist
             {% if northeast_lat and northeast_lng and  southwest_lat and southwest_lng %}
                 sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
