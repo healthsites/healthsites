@@ -61,11 +61,6 @@ window.APP = (function () {
         },
 
         _initAPPEvents: function () {
-            $('#twitter_share_map').on('click', function (evt) {
-                // twitter share
-                var nowURL = hasher.getURL().replace("#", "%23");
-                javascript:window.open('https://twitter.com/intent/tweet?text=' + nowURL, 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
-            });
 
             $('#site-social-icon-open').on('click', function (evt) {
                 if ($(this).hasClass('mdi-social-share')) {

@@ -26,7 +26,7 @@
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,300,500,700' rel='stylesheet'
           type='text/css'>
-    
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
           media="screen, projection"/>
 
@@ -107,11 +107,11 @@
 <section id="tophome" class="slideshow js-fullheight fluid-container">
     <div class="slideshow-container limiter pin-top pin-bottom clearfix">
         <div class="z1 slideshow-text pad4y col-md-4 prose prose-big dark">
-            <h2 class="fancy "><span class="timer" data-speed="2500" data-to="567367">567367</span><br/>
+            <h2 class="fancy "><span class="timer" data-speed="2500" data-to="{{ locality_count }}">{{ locality_count }}</span><br/>
                 healthsites added</h2>
 
             <div class="cta col-md-12 clearfix pad0x">
-                <div class="col-xs-6 hide-mobile pad0x"><a href="/map.html" class="col-xs-11 button white pad0x">see the
+                <div class="col-xs-6 hide-mobile pad0x"><a target="_blank"  href="/map" class="col-xs-11 button white pad0x">see the
                     map</a></div>
                 <div class="col-xs-6 pad0x"><a href="#lifecycle" class="col-xs-11 button stroke pad0x">how it works</a>
                 </div>
@@ -240,7 +240,7 @@
             </div>
         </div>
         <div class="col-md-6 country-data pad10x">
-            <h2 class="col-md-12"><strong>Country data</strong> - <span class="number">{{ num_localities }}</span>
+            <h2 class="col-md-12"><strong>Country data</strong> - <span class="number">{{ locality_count }}</span>
                 healthsites</h2>
 
             <div class="col-md-6">
@@ -528,7 +528,7 @@
                     set_search_url(search_url, 'json');
                 }
             });
-			
+
 			$('#slider').slick({
 					dots: true,
 					infinite: false,
