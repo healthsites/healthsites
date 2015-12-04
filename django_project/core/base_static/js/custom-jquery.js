@@ -30,6 +30,7 @@ $(document).ready(function(){
         $('html,body').animate({
           scrollTop: target.offset().top
         }, 1000);
+		   window.history.pushState("", "", '#'+this.hash.slice(1));
         return false;
       }
     }
