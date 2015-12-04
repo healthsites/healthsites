@@ -206,6 +206,7 @@ h2.fancy {
 -------------------------------------------------- */
 #cta {
 	font-family: "Raleway", sans-serif;
+	overflow: hidden;
 }
 #cta .content {
 	color: #fff;
@@ -277,9 +278,6 @@ h2.fancy {
 /* Map
 
 -------------------------------------------------- */
-#map-data {
-	height: 1px;
-}
 .map-data {
 	overflow: hidden;
 }
