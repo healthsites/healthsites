@@ -50,6 +50,7 @@ PIPELINE_JS['project'] = {
         'js/localitySidebar.js',
         'js/map.js',
         'js/app.js',
+        'js/graphRender.js',
     ),
     'output_filename': 'js/project.js',
 }
