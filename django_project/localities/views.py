@@ -22,6 +22,8 @@ from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .tasks import load_data_task, test_task
 from .map_clustering import cluster
 import logging
+from localities.models import Country
+from django.db.models import Count
 
 LOG = logging.getLogger(__name__)
 
@@ -308,5 +310,98 @@ def search_locality_by_name(request):
         result = []
         for locality_value in locality_values:
             result.append(locality_value.data)
+        result = json.dumps(result)
+        return HttpResponse(result, content_type='application/json')
+
+
+def search_locality_by_country(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+        result = []
+        try:
+            output = ""
+            # locality which in polygon
+            # data for frontend
+            complete = 0
+            partial = 0
+            basic = 0
+            if query != "":
+                # getting country's polygon
+                country = Country.objects.get(
+                    name=query)
+                polygons = country.polygon_geometry
+
+                # query for each of attribute
+                healthsites = Locality.objects.in_polygon(
+                    polygons)
+                healthsites_number = healthsites.count()
+                filtered_value = Value.objects.filter(
+                    locality__geom__within=polygons)
+                hospital_number = filtered_value.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='hospital').count()
+                medical_clinic_number = filtered_value.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='clinic').count()
+                orthopaedic_clinic_number = filtered_value.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='orthopaedic clinic').count()
+            else:
+                # query for each of attribute
+                healthsites = Locality.objects.all()
+                healthsites_number = healthsites.count()
+                hospital_number = Value.objects.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='hospital').count()
+                medical_clinic_number = Value.objects.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='clinic').count()
+                orthopaedic_clinic_number = Value.objects.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='orthopaedic').count()
+
+            # check completnees
+            values = Value.objects.filter(locality__in=healthsites).values('locality').annotate(
+                value_count=Count('locality'))
+            # 16 = 4 mandatory + 12 core
+            # this make long waiting, need to more good query
+            complete = values.filter(value_count__gte=15).count()
+            partial = values.filter(value_count__gte=4).filter(value_count__lte=14).count()
+            basic = values.filter(value_count__lte=3).count()
+
+            # values = values.values("value_count")
+            # for value in values:
+            #     value_count = value["value_count"] + 1
+            #     # 16 = 4 mandatory + 12 core
+            #     if value_count >= 16:
+            #         complete += 1
+            #     elif value_count <= 4:
+            #         basic += 1
+            #     else:
+            #         partial += 1
+
+            output = {"numbers": {"hospital": hospital_number, "medical_clinic": medical_clinic_number
+                , "orthopaedic_clinic": orthopaedic_clinic_number},
+                      "completeness": {"complete": complete, "partial": partial, "basic": basic},
+                      "localities": healthsites_number}
+
+            result = json.dumps(output)
+        except Country.DoesNotExist:
+            result = []
+            result = json.dumps(result)
+
+        result = json.dumps(output)
+        return HttpResponse(result, content_type='application/json')
+
+
+def search_countries(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+
+        countries = Country.objects.filter(
+            name__istartswith=query)
+        result = []
+        for country in countries:
+            result.append(country.name)
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')

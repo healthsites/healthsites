@@ -6,7 +6,8 @@ from .models import (
     Attribute,
     Specification,
     Changeset,
-    DataLoader
+    DataLoader,
+    Country
 )
 
 from .forms import DomainModelForm
@@ -50,3 +51,9 @@ class DataUpdateAdmin(admin.ModelAdmin):
         'organisation_name', 'author', 'data_loader_mode','date_time_uploaded',  'applied', 'date_time_applied')
 
 admin.site.register(DataLoader, DataUpdateAdmin)
+
+class CountryAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'polygon_geometry', 'id')
+
+admin.site.register(Country, CountryAdmin)

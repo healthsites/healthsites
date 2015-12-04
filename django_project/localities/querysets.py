@@ -33,3 +33,11 @@ class LocalitiesQuerySet(GeoQuerySet):
         """
 
         return self.extra(select={'lnglat': 'st_x(geom)||$$,$$||st_y(geom)'})
+
+    def in_polygon(self, polygon):
+        """
+        Filter Localities within a polygon
+        """
+
+        LOG.debug('Filtering Localities using polygon: %s', polygon)
+        return self.filter(geom__within=polygon)
