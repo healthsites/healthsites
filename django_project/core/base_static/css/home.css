@@ -433,3 +433,16 @@ h2.fancy {
 	  margin: 0;
   }
 }
+.marker-icon {
+    width: 48px;
+    height: 46px;
+    background: url("/static/img/healthsite-cluster-marker.png");
+    line-height: 46px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.map{
+	padding: 0px;
+}

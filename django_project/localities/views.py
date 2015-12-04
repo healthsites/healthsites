@@ -42,13 +42,14 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         """
 
         if not (all(param in request.GET for param in [
-            'bbox', 'zoom', 'iconsize'])):
+            'bbox', 'zoom', 'iconsize', 'geoname'])):
             raise Http404
 
         try:
             bbox_poly = parse_bbox(request.GET.get('bbox'))
             zoom = int(request.GET.get('zoom'))
             icon_size = map(int, request.GET.get('iconsize').split(','))
+            geoname = request.GET.get('geoname');
 
         except:
             # return 404 if any of parameters are missing or not parsable
@@ -61,14 +62,24 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             # icon sizes should be positive
             raise Http404
 
-        return (bbox_poly, zoom, icon_size)
+        return (bbox_poly, zoom, icon_size, geoname)
 
     def get(self, request, *args, **kwargs):
         # parse request params
-        bbox, zoom, iconsize = self._parse_request_params(request)
-
+        bbox, zoom, iconsize, geoname = self._parse_request_params(request)
         # cluster Localites for a view
-        object_list = cluster(Locality.objects.in_bbox(bbox), zoom, *iconsize)
+        locatities = Locality.objects.in_bbox(bbox)
+        try:
+            if geoname != "":
+                # getting country's polygon
+                country = Country.objects.get(
+                    name__iexact=geoname)
+                polygon = country.polygon_geometry
+                locatities = locatities.in_polygon(polygon)
+        except Country.DoesNotExist:
+            geoname = ""
+
+        object_list = cluster(locatities, zoom, *iconsize)
 
         return self.render_json_response(object_list)
 
@@ -325,10 +336,26 @@ def search_locality_by_country(request):
             complete = 0
             partial = 0
             basic = 0
+            northeast_lat = 0.0
+            northeast_lng = 0.0
+            southwest_lat = 0.0
+            southwest_lng = 0.0
             if query != "":
+                # getting viewport
+                google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+                gmaps = googlemaps.Client(key=google_maps_api_key)
+                try:
+                    geocode_result = gmaps.geocode(query)[0]
+                    viewport = geocode_result['geometry']['viewport']
+                    northeast_lat = viewport['northeast']['lat']
+                    northeast_lng = viewport['northeast']['lng']
+                    southwest_lat = viewport['southwest']['lat']
+                    southwest_lng = viewport['southwest']['lng']
+                except:
+                    print "except"
                 # getting country's polygon
                 country = Country.objects.get(
-                    name=query)
+                    name__iexact=query)
                 polygons = country.polygon_geometry
 
                 # query for each of attribute
@@ -383,7 +410,9 @@ def search_locality_by_country(request):
             output = {"numbers": {"hospital": hospital_number, "medical_clinic": medical_clinic_number
                 , "orthopaedic_clinic": orthopaedic_clinic_number},
                       "completeness": {"complete": complete, "partial": partial, "basic": basic},
-                      "localities": healthsites_number}
+                      "localities": healthsites_number,
+                      "viewport": {"northeast_lat": northeast_lat, "northeast_lng": northeast_lng,
+                                   "southwest_lat": southwest_lat, "southwest_lng": southwest_lng}}
 
             result = json.dumps(output)
         except Country.DoesNotExist:

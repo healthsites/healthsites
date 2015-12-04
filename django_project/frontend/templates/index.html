@@ -240,7 +240,9 @@
 <span class="scroll" id="map-data"></span>
 <section class="map-data">
     <div class="container-fluid pad0x">
-        <div id="map-home" class="col-md-6 map">
+        <div class="col-md-6 map">
+            <div id="map">
+            </div>
             <div class="select-country">
                 <form id="country-form">
                     <input id="country-search-box" name="country" type="search" placeholder="type country name"/>
@@ -500,6 +502,8 @@
     <script>
         var search_url = "{% url 'locality-name-search' %}";
         $(document).ready(function () {
+            var map = new MAP();
+
             function set_search_url(url, data_type) {
                 $(function () {
                     $("#search-box").autocomplete({
@@ -627,6 +631,7 @@
                         q: country
                     },
                     success: function (data) {
+                        map._updateGeoname(country);
                         {# default #}
                         $("#country-locality-number").html(0);
                         updateChart(0, 0, 0);
@@ -646,6 +651,17 @@
                         if (data.completeness) {
                             updatePieChart(data.completeness.basic, data.completeness.partial, data.completeness.complete);
                         }
+
+                        {# set view port #}
+                        if (data.viewport) {
+                            var northeast_lat = parseFloat(data.viewport.northeast_lat);
+                            var northeast_lng = parseFloat(data.viewport.northeast_lng);
+                            var southwest_lat = parseFloat(data.viewport.southwest_lat);
+                            var southwest_lng = parseFloat(data.viewport.southwest_lng);
+                            if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
+                                map._setFitBound(southwest_lat, southwest_lng, northeast_lat, northeast_lng);
+                            }
+                        }
                         console.log(data);
                     }
                 });
@@ -653,6 +669,7 @@
 
             // initialize the app
             {#            new APP();#}
+            // init map
             // We need different app for the home page. Adapt from the current app.
         });
     </script>
