@@ -92,18 +92,18 @@
 
     </div>
     <div class="nav-searchbar container-fluid">
-        <form action="">
+        <form action="map" method="POST">
             <div class="option-group">
                 <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite"><span></span><label class="option"
-                                                                                               for="radio-healthsite">healthsite</label>
+                                                        value="healthsite" checked><span></span><label class="option"
+                                                                                                       for="radio-healthsite">healthsite</label>
                 </div>
                 <div class="option"><span></span><input type="radio" name="option" id="radio-place"
                                                         value="place"><span></span><label class="option"
                                                                                           for="radio-healthsite">place</label>
                 </div>
             </div>
-            <input type="search" name="q" placeholder="search..."><input type="submit" value="search">
+            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
         </form>
     </div>
 </nav>
@@ -511,12 +511,15 @@
                                     q: request.term
                                 },
                                 success: function (data) {
+                                    console.log(data);
                                     response(data);
                                 }
                             });
                         },
                         minLength: 3,
                         select: function (event, ui) {
+                            console.log(event);
+                            console.log(ui);
                         },
                         open: function () {
                             $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
@@ -530,6 +533,10 @@
 
             set_search_url(search_url);
             $('input:radio[name=option]').change(function () {
+                // set text default for search box
+                $("#search-box").val("");
+
+                // set data for autocomplete
                 if (this.value == 'place') {
                     search_url = 'http://gd.geobytes.com/AutoCompleteCity';
                     set_search_url(search_url, 'jsonp');
