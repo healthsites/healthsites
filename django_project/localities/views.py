@@ -69,6 +69,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         bbox, zoom, iconsize, geoname = self._parse_request_params(request)
         # cluster Localites for a view
         locatities = Locality.objects.in_bbox(bbox)
+        exception = False
         try:
             if geoname != "":
                 # getting country's polygon
@@ -77,9 +78,12 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 polygon = country.polygon_geometry
                 locatities = locatities.in_polygon(polygon)
         except Country.DoesNotExist:
-            geoname = ""
+            if geoname != "" and geoname != "undefined":
+                exception = True
 
-        object_list = cluster(locatities, zoom, *iconsize)
+        object_list = []
+        if not exception:
+            object_list = cluster(locatities, zoom, *iconsize)
 
         return self.render_json_response(object_list)
 
