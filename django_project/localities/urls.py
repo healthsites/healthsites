@@ -36,7 +36,7 @@ urlpatterns = patterns(
     ),
 
     url(
-        r'^data-loader$', DataLoaderView.as_view(), name='data-loader'
+        r'^upload-form$', DataLoaderView.as_view(), name='data-loader'
     ),
     url(
         r'^load-data$', 'localities.views.load_data', name='load-data'
