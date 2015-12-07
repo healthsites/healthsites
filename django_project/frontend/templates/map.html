@@ -41,7 +41,7 @@
 
 </head>
 
-<body>
+<body class="map-page">
 <nav class="navbar navbar-fixed-top masthead no-tag">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -90,6 +90,16 @@
         <!--/.nav-collapse -->
 
     </div>
+    
+    <div class="nav-searchbar container-fluid">
+      	<form action="">
+          <div class="option-group">
+            <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite" value="healthsite"><span></span><label class="option" for="radio-healthsite">healthsite</label></div>
+            <div class="option"><span></span><input type="radio" name="option" id="radio-place" value="place"><span></span><label class="option" for="radio-healthsite">place</label></div>
+          </div>
+          <input type="search" name="q" placeholder="search..."><input type="submit" value="search">
+        </form>
+	</div> 
 </nav>
 
 <section id="map-full" class="js-fullheight fluid-container">
@@ -301,7 +311,8 @@
             $(".googleplus-href").attr("href","https://plus.google.com/share?url="+baseURL);
 
             // Set viewport if exist
-            {% if northeast_lat and northeast_lng and  southwest_lat and southwest_lng %}
+            {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
+                console.log({{ northeast_lat }} + " " + {{ northeast_lng }} + " " + {{ southwest_lat }} + " " + {{ southwest_lng }});
                 sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
                 sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
                 sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
