@@ -26,7 +26,7 @@ class MainView(TemplateView):
 
         context['debug'] = settings.DEBUG
 
-        context['num_localities'] = Locality.objects.count()
+        context['locality_count'] = Locality.objects.count()
 
         return context
 
@@ -73,10 +73,10 @@ def map(request):
                 return render_to_response(
                     'map.html',
                     {
-                        'northeast_lat': northeast_lat,
-                        'northeast_lng': northeast_lng,
-                        'southwest_lat': southwest_lat,
-                        'southwest_lng': southwest_lng
+                        'northeast_lat': "%f" % northeast_lat,
+                        'northeast_lng': "%f" % northeast_lng,
+                        'southwest_lat': "%f" % southwest_lat,
+                        'southwest_lng': "%f" % southwest_lng
                     },
                     context_instance=RequestContext(request)
                 )

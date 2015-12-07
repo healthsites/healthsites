@@ -26,7 +26,7 @@
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,300,500,700' rel='stylesheet'
           type='text/css'>
-    
+
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
           media="screen, projection"/>
 
@@ -43,7 +43,7 @@
 
 </head>
 
-<body class="body">
+<body class="body home">
 <nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -59,13 +59,12 @@
 
             <div class="hidden" id="site-social">
                 <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
-                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" href="https://twitter.com/intent/tweet?text=Share and develop critical health facility data on http://healthsites.io"
-                   class=" withripple">
-                    <i class="fa fa-twitter"></i></a>
-                <a class="facebook-hs-share withripple" href="https://www.facebook.com/sharer/sharer.php?u=http%3A//healthsites.io">
-                    <i class="fa fa-facebook"></i></a>
                 <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   href="https://plus.google.com/share?url=http://healthsites.io/">
+                   class="withripple twitter-href">
+                    <i class="fa fa-twitter"></i></a>
+                <a class="facebook-hs-share withripple facebook-href">
+                    <i class="fa fa-facebook"></i></a>
+                <a class="googleplus-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-google-plus"></i>
 
                 </a>
@@ -81,7 +80,8 @@
                 <li><a href="#cta">Share data</a></li>
                 <li><a href="#partners">Partners</a></li>
                 <li class="nav-search-wrap"><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
-                <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i class="fa fa-comments"></i></a></li>
+                <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i
+                        class="fa fa-comments"></i></a></li>
             </ul>
 
         </div>
@@ -89,29 +89,31 @@
 
     </div>
     <div class="nav-searchbar container-fluid">
-        <form action="">
+        <form action="map" method="POST">
             <div class="option-group">
                 <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite"><span></span><label class="option"
-                                                                                               for="radio-healthsite">healthsite</label>
+                                                        value="healthsite" checked><span></span><label class="option"
+                                                                                                       for="radio-healthsite">healthsite</label>
                 </div>
                 <div class="option"><span></span><input type="radio" name="option" id="radio-place"
                                                         value="place"><span></span><label class="option"
                                                                                           for="radio-healthsite">place</label>
                 </div>
             </div>
-            <input type="search" name="q" placeholder="search..."><input type="submit" value="search">
+            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
         </form>
     </div>
 </nav>
 <section id="tophome" class="slideshow js-fullheight fluid-container">
     <div class="slideshow-container limiter pin-top pin-bottom clearfix">
         <div class="z1 slideshow-text pad4y col-md-4 prose prose-big dark">
-            <h2 class="fancy "><span class="timer" data-speed="2500" data-to="567367">567367</span><br/>
+            <h2 class="fancy "><span class="timer" data-speed="2500"
+                                     data-to="{{ locality_count }}">{{ locality_count }}</span><br/>
                 healthsites added</h2>
 
             <div class="cta col-md-12 clearfix pad0x">
-                <div class="col-xs-6 hide-mobile pad0x"><a href="/map.html" class="col-xs-11 button white pad0x">see the
+                <div class="col-xs-6 hide-mobile pad0x"><a target="_blank" href="/map"
+                                                           class="col-xs-11 button white pad0x">see the
                     map</a></div>
                 <div class="col-xs-6 pad0x"><a href="#lifecycle" class="col-xs-11 button stroke pad0x">how it works</a>
                 </div>
@@ -198,16 +200,19 @@
                 <div class="icon-holder"><i class="fa fa-cog"></i></div>
                 <h3 class="col-md-12">Data model</h3>
                 <span class="col-md-12 text">Each healthsite is stored as a geometry object in the database</span>
-				<span class="col-md-12 links"><a href="https://github.com/healthsites/healthsites/wiki/Healthsite-attributes"  target="_blank">Healthsites attributes</a> <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-data-model"
-                                                 target="_blank">Data model</a></span>
+                <span class="col-md-12 links"><a
+                        href="https://github.com/healthsites/healthsites/wiki/Healthsite-attributes" target="_blank">Healthsites
+                    attributes</a> <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-data-model"
+                                      target="_blank">Data model</a></span>
             </div>
         </div>
         <div class="center col-md-3 pad0x">
             <div class="content">
                 <div class="icon-holder"><i class="fa fa-map-marker"></i></div>
-                <h3 class="col-md-12">Share the location data</h3>
+                <h3 class="col-md-12">Share healthsite data</h3>
                 <span class="col-md-12 text">Contact us should you need assistance or share your data using our upload form</span>
-                <span class="col-md-12 links"><a href="#">Upload form</a> <a href="#">Contact us</a></span></div>
+                <span class="col-md-12 links"><a href="/upload-form">Upload form</a> <a href="/contact">Contact
+                    us</a></span></div>
         </div>
         <div class="center col-md-3 pad0x">
             <div class="content">
@@ -241,8 +246,8 @@
             </div>
         </div>
         <div class="col-md-6 country-data pad10x">
-            <h2 class="col-md-12"><strong>Country data</strong> - <span class="number">{{ num_localities }}</span>
-                health sites</h2>
+            <h2 class="col-md-12"><strong>Country data</strong> - <span class="number">{{ locality_count }}</span>
+                healthsites</h2>
 
             <div class="col-md-6">
                 <h3>Number of heathsites per type</h3>
@@ -356,10 +361,14 @@
         </div>
         <div class="col-md-3 right pad0x">
             <ul class="footer-nav-2 social">
-                <li><a href="#"><i class="fa fa-twitter-square"></i></a></li>
-                <li><a href="#"><i class="fa fa-facebook-square"></i></a></li>
-                <li><a href="#"><i class="fa fa-linkedin-square"></i></a></li>
-                <li><a href="#"><i class="fa fa-envelope-square"></i></a></li>
+                <li><a href="https://twitter.com/sharehealthdata" target="_blank"><i
+                        class="fa fa-twitter-square"></i></a></li>
+                <li><a href="https://www.facebook.com/healthsites.io" target="_blank"><i
+                        class="fa fa-facebook-square"></i></a></li>
+                <li><a href="https://www.linkedin.com/company/healthsites-io?trk=biz-companies-cym" target="_blank"><i
+                        class="fa fa-linkedin-square"></i></a></li>
+                <li><a href="https://plus.google.com/u/2/117257570769390062756" target="_blank"><i
+                        class="fa fa-envelope-square"></i></a></li>
             </ul>
         </div>
         <div style="clear:both;"></div>
@@ -367,6 +376,7 @@
 
         </div>
     </div>
+    <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
 </footer>
 
 <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
@@ -486,6 +496,12 @@
     <script>
         var search_url = "{% url 'locality-name-search' %}";
         $(document).ready(function () {
+            // set share url
+            var baseURL = location.protocol + "//" + location.hostname+"/";
+            $(".twitter-href").attr("href","https://twitter.com/intent/tweet?text=Share and develop critical health facility data on "+baseURL);
+            $(".facebook-href").attr("href","https://www.facebook.com/sharer/sharer.php?u="+baseURL);
+            $(".googleplus-href").attr("href","https://plus.google.com/share?url="+baseURL);
+
             function set_search_url(url, data_type) {
                 $(function () {
                     $("#search-box").autocomplete({
@@ -497,12 +513,15 @@
                                     q: request.term
                                 },
                                 success: function (data) {
+                                    console.log(data);
                                     response(data);
                                 }
                             });
                         },
                         minLength: 3,
                         select: function (event, ui) {
+                            console.log(event);
+                            console.log(ui);
                         },
                         open: function () {
                             $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
@@ -516,6 +535,10 @@
 
             set_search_url(search_url);
             $('input:radio[name=option]').change(function () {
+                // set text default for search box
+                $("#search-box").val("");
+
+                // set data for autocomplete
                 if (this.value == 'place') {
                     search_url = 'http://gd.geobytes.com/AutoCompleteCity';
                     set_search_url(search_url, 'jsonp');
@@ -528,16 +551,16 @@
                     set_search_url(search_url, 'json');
                 }
             });
-			
-			$('#slider').slick({
-					dots: true,
-					infinite: false,
-					speed: 300,
-					slidesToShow: 1,
-					adaptiveHeight: true,
-					fade: true,
-					centerMode: true,
-				});
+
+            $('#slider').slick({
+                dots: true,
+                infinite: false,
+                speed: 300,
+                slidesToShow: 1,
+                adaptiveHeight: true,
+                fade: true,
+                centerMode: true,
+            });
 
             // initialize the app
             {#            new APP();#}
