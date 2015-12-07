@@ -26,9 +26,9 @@ window.APP = (function () {
     module.prototype = {
         constructor: module,
 
-        _setupRouter: function() {
+        _setupRouter: function () {
             //setup crossroads
-            crossroads.addRoute('/locality/{uuid}', function(uuid){
+            crossroads.addRoute('/locality/{uuid}', function (uuid) {
                 $APP.trigger('locality.map.click', {'locality_uuid': uuid, 'zoomto': true});
             });
 
@@ -39,11 +39,11 @@ window.APP = (function () {
             hasher.init();
         },
 
-        _parseHash: function (newHash, oldHash){
+        _parseHash: function (newHash, oldHash) {
             crossroads.parse(newHash);
         },
 
-        setHashSilently: function (hash){
+        setHashSilently: function (hash) {
             hasher.changed.active = false;  // disable changed signal
             hasher.setHash(hash);  // set hash without dispatching changed signal
             hasher.changed.active = true;  // re-enable signal
@@ -51,7 +51,7 @@ window.APP = (function () {
 
         _bindExternalEvents: function () {
             var self = this;
-            $(window).resize(function() {
+            $(window).resize(function () {
                 $APP.trigger('locality.show-info-adjust');
             });
 
@@ -72,20 +72,21 @@ window.APP = (function () {
                 }
             });
 
-            $('.facebook-hs-share').on('click', function(evt) {
+            $('.facebook-hs-share').on('click', function (evt) {
                 FB.ui({
                     method: 'share',
                     href: 'http://healthsites.io/'
-                }, function(response){});
+                }, function (response) {
+                });
             });
         },
 
-        _openSidebar: function() {
+        _openSidebar: function () {
             $('#sidebar').addClass('active');
             $('#sidebar-helper').addClass('active');
         },
 
-        _closeSidebar: function() {
+        _closeSidebar: function () {
 
         }
     }

@@ -7,10 +7,11 @@ window.MAP = (function () {
         // create a map in the "map" div, set the view to a given place and zoom
         this.MAP = L.map('map');
 
-        if (this._isCustomViewPort()){
+        if (this._isCustomViewPort()) {
         } else if (!this._restoreMapContext()) {
             this.MAP.setView([0, 0], 3);
         }
+
         var osm = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
             type: 'map',
             ext: 'jpg',
@@ -48,38 +49,52 @@ window.MAP = (function () {
         $('.leaflet-control-zoom').addClass('hidden-xs');
         $('.leaflet-control-zoom').addClass('hidden-sm');
 
+
+        // activate share
+        $('#twitter_share_map').on('click', function (evt) {
+            // twitter share
+            var name = $("#locality-name").text();
+            if (name == "No Name") {
+                name = "";
+            }
+            else {
+                name = "See " + name + " ";
+            }
+            var nowURL = hasher.getURL().replace("#", "%23");
+            javascript:window.open('https://twitter.com/intent/tweet?text=' + name + nowURL, 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
+        });
     }
 
     // prototype
     module.prototype = {
         constructor: module,
 
-        _isCustomViewPort: function(){
-          if (sessionStorage.key('northeast_lat') && sessionStorage.key('northeast_lng') &&
-              sessionStorage.key('southwest_lat') && sessionStorage.key('southwest_lng')){
+        _isCustomViewPort: function () {
+            if (sessionStorage.key('northeast_lat') && sessionStorage.key('northeast_lng') &&
+                sessionStorage.key('southwest_lat') && sessionStorage.key('southwest_lng')) {
 
-              var northeast_lat = parseFloat(sessionStorage.getItem('northeast_lat'));
-              var northeast_lng = parseFloat(sessionStorage.getItem('northeast_lng'));
-              var southwest_lat = parseFloat(sessionStorage.getItem('southwest_lat'));
-              var southwest_lng = parseFloat(sessionStorage.getItem('southwest_lng'));
+                var northeast_lat = parseFloat(sessionStorage.getItem('northeast_lat'));
+                var northeast_lng = parseFloat(sessionStorage.getItem('northeast_lng'));
+                var southwest_lat = parseFloat(sessionStorage.getItem('southwest_lat'));
+                var southwest_lng = parseFloat(sessionStorage.getItem('southwest_lng'));
 
-              if (northeast_lat && northeast_lng && southwest_lat && southwest_lng){
-                  this.MAP.fitBounds([
-                      [southwest_lat, southwest_lng],
-                      [northeast_lat, northeast_lng]
-                  ]);
-                  // Remove them
-                  sessionStorage.removeItem('northeast_lat');
-                  sessionStorage.removeItem('northeast_lng');
-                  sessionStorage.removeItem('southwest_lat');
-                  sessionStorage.removeItem('southwest_lng');
-                  return true;
-              } else{
-                  return false;
-              }
-          } else {
-              return false;
-          }
+                if (northeast_lat && northeast_lng && southwest_lat && southwest_lng){
+                    this.MAP.fitBounds([
+                        [southwest_lat, southwest_lng],
+                        [northeast_lat, northeast_lng]
+                    ]);
+                    // Remove them
+                    sessionStorage.removeItem('northeast_lat');
+                    sessionStorage.removeItem('northeast_lng');
+                    sessionStorage.removeItem('southwest_lat');
+                    sessionStorage.removeItem('southwest_lng');
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                return false;
+            }
         },
 
         _restoreMapContext: function () {
@@ -104,18 +119,18 @@ window.MAP = (function () {
             var center = this.MAP.getCenter();
             var zoom = this.MAP.getZoom();
 
-            sessionStorage.setItem('map_center', center.lat+'|'+center.lng);
+            sessionStorage.setItem('map_center', center.lat + '|' + center.lng);
             sessionStorage.setItem('map_zoom', zoom);
         },
 
-        _bindInternalEvents: function() {
+        _bindInternalEvents: function () {
             var self = this;
             this.MAP.on('moveend', function (evt) {
                 self._updateMapContext();
             }, this);
         },
 
-        _bindExternalEvents:function () {
+        _bindExternalEvents: function () {
             var self = this;
 
             $APP.on('locality.edit', function (evt, payload) {
@@ -127,13 +142,13 @@ window.MAP = (function () {
             $APP.on('locality.cancel', function (evt) {
                 // user clicked cancel while updating Locality
                 self.MAP.removeLayer(self.pointLayer);
-                self.pointLayer.setLatLng([0,0]);
+                self.pointLayer.setLatLng([0, 0]);
             });
 
             $APP.on('locality.save', function (evt) {
                 // user clicked save while updating Locality
                 self.MAP.removeLayer(self.pointLayer);
-                self.pointLayer.setLatLng([0,0]);
+                self.pointLayer.setLatLng([0, 0]);
             });
 
 
@@ -141,8 +156,9 @@ window.MAP = (function () {
                 // remove edit marker if it exists
                 if (self.pointLayer) {
                     self.MAP.removeLayer(self.pointLayer);
-                    self.pointLayer.setLatLng([0,0]);
-                };
+                    self.pointLayer.setLatLng([0, 0]);
+                }
+                ;
 
                 self.original_marker_position = [payload.geom[1], payload.geom[0]];
                 // move map to the marker
@@ -187,12 +203,12 @@ window.MAP = (function () {
             });
         },
 
-        _setupClusterLayer: function() {
-              var self = this;
-              var clusterLayer = L.clusterLayer({
+        _setupClusterLayer: function () {
+            var self = this;
+            var clusterLayer = L.clusterLayer({
                 'url': '/localities.json'
-              });
-              self.MAP.addLayer(clusterLayer);
+            });
+            self.MAP.addLayer(clusterLayer);
         }
     }
 

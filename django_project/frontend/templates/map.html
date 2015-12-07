@@ -41,7 +41,7 @@
 
 </head>
 
-<body>
+<body class="map-page">
 <nav class="navbar navbar-fixed-top masthead no-tag">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -62,15 +62,14 @@
 
             <div class="hidden" id="site-social" style="width: 115px;">
                 <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
-                <a href="https://twitter.com/intent/tweet?text=Share and develop critical health facility data on http://healthsites.io"
-                   class=" withripple">
+                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+                   class="withripple twitter-href">
                     <i class="fa fa-twitter"></i>
                 </a>
-                <a class="facebook-hs-share withripple" href="#">
+                <a class="facebook-hs-share withripple facebook-href">
                     <i class="fa fa-facebook"></i>
                 </a>
-                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   href="https://plus.google.com/share?url=http://healthsites.io/">
+                <a class="googleplus-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-google-plus"></i>
                 </a>
             </div>
@@ -85,12 +84,22 @@
                 <li><a href="/#cta">Share data</a></li>
                 <li><a href="/#partners">Partners</a></li>
                 <li><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
-                <li><a class="navbar-chat" href="#"><i class="fa fa-comments"></i></a></li>
+                <li><a class="navbar-chat" href="https://gitter.im/healthsites/healthsites"><i class="fa fa-comments"></i></a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->
 
     </div>
+    
+    <div class="nav-searchbar container-fluid">
+      	<form action="">
+          <div class="option-group">
+            <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite" value="healthsite"><span></span><label class="option" for="radio-healthsite">healthsite</label></div>
+            <div class="option"><span></span><input type="radio" name="option" id="radio-place" value="place"><span></span><label class="option" for="radio-healthsite">place</label></div>
+          </div>
+          <input type="search" name="q" placeholder="search..."><input type="submit" value="search">
+        </form>
+	</div> 
 </nav>
 
 <section id="map-full" class="js-fullheight fluid-container">
@@ -137,7 +146,7 @@
                             <span class="name">
                                 <a href="#">@MSF</a>
                             </span>
-                            <span class="name">
+                            <span class="more">
                                 <a href="#" class="full-list">see full list <i class="fa fa-angle-down"></i></a>
                             </span>
                         </p>
@@ -224,6 +233,14 @@
                         <p id="locality-inpatient-service">20 full time beds, 50 part time beds</p>
                     </div>
                 </div>
+                <div class="line note">
+                    <div class="icon-holder">
+                        <i class="fa fa-sticky-note"></i>
+                    </div>
+                    <div class="data">
+                        <p><strong>Note:</strong> Outpatient consultation and in-patient hospitalization</p>
+                    </div>
+                </div>
                 <div class="line doctors">
                     <div class="icon-holder">
                         <i class="fa fa-user-md"></i>
@@ -232,11 +249,19 @@
                         <p id="locality-staff">20 full time equivalent doctors and 50 full time equivalent nurses</p>
                     </div>
                 </div>
+                <div class="line ownership">
+                    <div class="icon-holder">
+                        <i class="fa fa-briefcase"></i>
+                    </div>
+                    <div class="data">
+                        <p><strong>Ownership:</strong> public</p>
+                    </div>
+            	</div>
             </div>
         </div>
         <div class="buttons col-md-4 col-sm-12 col-xs-12">
             <div class="button-wrapper col-xs-4">
-                <a class="button share stroke blue" href="#">
+                <a id="twitter_share_map" class="button share stroke blue">
                     <i class="fa fa-twitter"></i> share
                 </a>
             </div>
@@ -264,6 +289,8 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 <script  type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript"
+            src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
 <script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
 <script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
@@ -275,9 +302,17 @@
 
 {% block extra_js %}
     <script type="text/javascript">
+
         $(document).ready(function () {
+            // set share url
+            var baseURL = location.protocol + "//" + location.hostname+"/";
+            $(".twitter-href").attr("href","https://twitter.com/intent/tweet?text=Share and develop critical health facility data on "+baseURL);
+            $(".facebook-href").attr("href","https://www.facebook.com/sharer/sharer.php?u="+baseURL);
+            $(".googleplus-href").attr("href","https://plus.google.com/share?url="+baseURL);
+
             // Set viewport if exist
-            {% if northeast_lat and northeast_lng and  southwest_lat and southwest_lng %}
+            {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
+                console.log({{ northeast_lat }} + " " + {{ northeast_lng }} + " " + {{ southwest_lat }} + " " + {{ southwest_lng }});
                 sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
                 sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
                 sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
@@ -290,5 +325,6 @@
     </script>
 {% endblock extra_js %}
 
+<div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
 </body>
 </html>
