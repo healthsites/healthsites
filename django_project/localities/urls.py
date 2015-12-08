@@ -36,6 +36,18 @@ urlpatterns = patterns(
     ),
 
     url(
+        r'^countries$',
+        'localities.views.search_countries',
+        name='countries'
+    ),
+
+    url(
+        r'^search/localities/country$',
+        'localities.views.search_locality_by_country',
+        name='locality-country-search'
+    ),
+
+    url(
         r'^data-loader$', DataLoaderView.as_view(), name='data-loader'
     ),
     url(

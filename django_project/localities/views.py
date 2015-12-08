@@ -22,6 +22,8 @@ from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .tasks import load_data_task, test_task
 from .map_clustering import cluster
 import logging
+from localities.models import Country
+from django.db.models import Count
 
 LOG = logging.getLogger(__name__)
 
@@ -40,13 +42,14 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         """
 
         if not (all(param in request.GET for param in [
-            'bbox', 'zoom', 'iconsize'])):
+            'bbox', 'zoom', 'iconsize', 'geoname'])):
             raise Http404
 
         try:
             bbox_poly = parse_bbox(request.GET.get('bbox'))
             zoom = int(request.GET.get('zoom'))
             icon_size = map(int, request.GET.get('iconsize').split(','))
+            geoname = request.GET.get('geoname');
 
         except:
             # return 404 if any of parameters are missing or not parsable
@@ -59,14 +62,28 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             # icon sizes should be positive
             raise Http404
 
-        return (bbox_poly, zoom, icon_size)
+        return (bbox_poly, zoom, icon_size, geoname)
 
     def get(self, request, *args, **kwargs):
         # parse request params
-        bbox, zoom, iconsize = self._parse_request_params(request)
-
+        bbox, zoom, iconsize, geoname = self._parse_request_params(request)
         # cluster Localites for a view
-        object_list = cluster(Locality.objects.in_bbox(bbox), zoom, *iconsize)
+        locatities = Locality.objects.in_bbox(bbox)
+        exception = False
+        try:
+            if geoname != "":
+                # getting country's polygon
+                country = Country.objects.get(
+                    name__iexact=geoname)
+                polygon = country.polygon_geometry
+                locatities = locatities.in_polygon(polygon)
+        except Country.DoesNotExist:
+            if geoname != "" and geoname != "undefined":
+                exception = True
+
+        object_list = []
+        if not exception:
+            object_list = cluster(locatities, zoom, *iconsize)
 
         return self.render_json_response(object_list)
 
@@ -308,5 +325,116 @@ def search_locality_by_name(request):
         result = []
         for locality_value in locality_values:
             result.append(locality_value.data)
+        result = json.dumps(result)
+        return HttpResponse(result, content_type='application/json')
+
+
+def search_locality_by_country(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+        result = []
+        try:
+            output = ""
+            # locality which in polygon
+            # data for frontend
+            complete = 0
+            partial = 0
+            basic = 0
+            northeast_lat = 0.0
+            northeast_lng = 0.0
+            southwest_lat = 0.0
+            southwest_lng = 0.0
+            if query != "":
+                # getting viewport
+                try:
+                    google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+                    gmaps = googlemaps.Client(key=google_maps_api_key)
+                    geocode_result = gmaps.geocode(query)[0]
+                    viewport = geocode_result['geometry']['viewport']
+                    northeast_lat = viewport['northeast']['lat']
+                    northeast_lng = viewport['northeast']['lng']
+                    southwest_lat = viewport['southwest']['lat']
+                    southwest_lng = viewport['southwest']['lng']
+                except:
+                    print "except"
+                # getting country's polygon
+                country = Country.objects.get(
+                    name__iexact=query)
+                polygons = country.polygon_geometry
+
+                # query for each of attribute
+                healthsites = Locality.objects.in_polygon(
+                    polygons)
+                healthsites_number = healthsites.count()
+                filtered_value = Value.objects.filter(
+                    locality__geom__within=polygons)
+                hospital_number = filtered_value.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='hospital').count()
+                medical_clinic_number = filtered_value.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='clinic').count()
+                orthopaedic_clinic_number = filtered_value.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='orthopaedic clinic').count()
+            else:
+                # query for each of attribute
+                healthsites = Locality.objects.all()
+                healthsites_number = healthsites.count()
+                hospital_number = Value.objects.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='hospital').count()
+                medical_clinic_number = Value.objects.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='clinic').count()
+                orthopaedic_clinic_number = Value.objects.filter(
+                    specification__attribute__key='type').filter(
+                    data__iexact='orthopaedic').count()
+
+            # check completnees
+            values = Value.objects.filter(locality__in=healthsites).values('locality').annotate(
+                value_count=Count('locality'))
+            # 16 = 4 mandatory + 12 core
+            # this make long waiting, need to more good query
+            complete = values.filter(value_count__gte=15).count()
+            partial = values.filter(value_count__gte=4).filter(value_count__lte=14).count()
+            basic = values.filter(value_count__lte=3).count()
+
+            # values = values.values("value_count")
+            # for value in values:
+            #     value_count = value["value_count"] + 1
+            #     # 16 = 4 mandatory + 12 core
+            #     if value_count >= 16:
+            #         complete += 1
+            #     elif value_count <= 4:
+            #         basic += 1
+            #     else:
+            #         partial += 1
+
+            output = {"numbers": {"hospital": hospital_number, "medical_clinic": medical_clinic_number
+                , "orthopaedic_clinic": orthopaedic_clinic_number},
+                      "completeness": {"complete": complete, "partial": partial, "basic": basic},
+                      "localities": healthsites_number,
+                      "viewport": {"northeast_lat": northeast_lat, "northeast_lng": northeast_lng,
+                                   "southwest_lat": southwest_lat, "southwest_lng": southwest_lng}}
+
+            result = json.dumps(output)
+        except Country.DoesNotExist:
+            result = []
+            result = json.dumps(result)
+
+        result = json.dumps(output)
+        return HttpResponse(result, content_type='application/json')
+
+
+def search_countries(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+
+        countries = Country.objects.filter(
+            name__istartswith=query)
+        result = []
+        for country in countries:
+            result.append(country.name)
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')

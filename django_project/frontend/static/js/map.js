@@ -1,7 +1,7 @@
 window.MAP = (function () {
     "use strict";
     // private variables and functions
-
+    var clusterLayer;
     // constructor
     var module = function () {
         // create a map in the "map" div, set the view to a given place and zoom
@@ -78,7 +78,7 @@ window.MAP = (function () {
                 var southwest_lat = parseFloat(sessionStorage.getItem('southwest_lat'));
                 var southwest_lng = parseFloat(sessionStorage.getItem('southwest_lng'));
 
-                if (northeast_lat && northeast_lng && southwest_lat && southwest_lng){
+                if (northeast_lat && northeast_lng && southwest_lat && southwest_lng) {
                     this.MAP.fitBounds([
                         [southwest_lat, southwest_lng],
                         [northeast_lat, northeast_lng]
@@ -205,10 +205,22 @@ window.MAP = (function () {
 
         _setupClusterLayer: function () {
             var self = this;
-            var clusterLayer = L.clusterLayer({
+            this.clusterLayer = L.clusterLayer({
                 'url': '/localities.json'
             });
-            self.MAP.addLayer(clusterLayer);
+            self.MAP.addLayer(this.clusterLayer);
+        },
+
+        _updateGeoname: function (geoname) {
+            this.clusterLayer.updateGeoname(geoname);
+            this.clusterLayer.update();
+        },
+
+        _setFitBound: function (southwest_lat, southwest_lng, northeast_lat, northeast_lng) {
+            this.MAP.fitBounds([
+                [southwest_lat, southwest_lng],
+                [northeast_lat, northeast_lng]
+            ]);
         }
     }
 
