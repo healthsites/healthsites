@@ -60,6 +60,7 @@ PIPELINE_JS['project'] = {
 PIPELINE_CSS['project'] = {
     'source_filenames': (
         'css/site.css',
+        'css/profile.css',
     ),
     'output_filename': 'css/project.css',
     'extra_context': {

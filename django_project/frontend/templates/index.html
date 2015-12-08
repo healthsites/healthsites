@@ -238,15 +238,18 @@
 <section class="map-data">
     <div class="container-fluid pad0x">
         <div id="map-home" class="col-md-6 map">
+            <div id="map" style="height: 100%">
+            </div>
             <div class="select-country">
-                <form>
-                    <input type="search" placeholder="type country name"/>
+                <form id="country-form">
+                    <input id="country-search-box" name="country" type="search" placeholder="type country name"/>
                     <button type="submit" value="Submit"><i class="fa fa-search"></i></button>
                 </form>
             </div>
         </div>
         <div class="col-md-6 country-data pad10x">
-            <h2 class="col-md-12"><strong>Country data</strong> - <span class="number">{{ locality_count }}</span>
+            <h2 class="col-md-12"><strong id="country-title">World</strong> - <span id="country-locality-number"
+                                                                                    class="number">{{ locality_count }}</span>
                 healthsites</h2>
 
             <div class="col-md-6">
@@ -416,9 +419,9 @@
                     //the healthsites names
                     ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
                     //the healthsites number
-                    ['number', 63739, 63291, 32667],
+                    ['number', 0, 0, 0],
                     //the healthsites percentgage
-                    ['percent', 0.4, 0.4, 0.2]
+                    ['percent', 0, 0, 0]
                 ],
                 axes: {
                     number: 'y2'
@@ -470,9 +473,9 @@
             data: {
                 // iris data from R
                 columns: [
-                    ['complete', 30],
-                    ['partial', 120],
-                    ['basic', 65],
+                    ['complete', 0],
+                    ['partial', 0],
+                    ['basic', 0],
                 ],
                 colors: {
                     complete: '#f89ea1',
@@ -496,6 +499,7 @@
     <script>
         var search_url = "{% url 'locality-name-search' %}";
         $(document).ready(function () {
+            var map = new MAP();
             // set share url
             var baseURL = location.protocol + "//" + location.hostname+"/";
             $(".twitter-href").attr("href","https://twitter.com/intent/tweet?text=Share and develop critical health facility data on "+baseURL);
@@ -561,9 +565,113 @@
                 fade: true,
                 centerMode: true,
             });
+            $("#country-search-box").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "{% url 'countries' %}",
+                        dataType: 'json',
+                        data: {
+                            q: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                },
+                open: function () {
+                    $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                },
+                close: function () {
+                    $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                }
+            });
+
+            {# FOR UPDATING CHART #}
+            function updateChart(hospital, medical, orthopedic) {
+                var hospital_per = hospital / (hospital + medical + orthopedic);
+                var medical_per = medical / (hospital + medical + orthopedic);
+                var orthopedic_per = orthopedic / (hospital + medical + orthopedic);
+                chart.load({
+                    columns: [
+                        //the healthsites names
+                        ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
+                        //the healthsites number
+                        ['number', hospital, medical, orthopedic],
+                        //the healthsites percentgage
+                        ['percent', hospital_per, medical_per, orthopedic_per]
+                    ]
+                });
+            }
+
+            function updatePieChart(basic, partial, complete) {
+                piechart.load({
+                    columns: [
+                        ['complete', complete],
+                        ['partial', partial],
+                        ['basic', basic],
+                    ],
+                });
+            }
+
+            $("#country-form").submit(function (event) {
+                var country = $("#country-form").find("#country-search-box")[0].value;
+                event.preventDefault();
+                gettingData(country);
+            });
+
+            {# first init #}
+            gettingData("");
+
+            function gettingData(country) {
+                $.ajax({
+                    url: "{% url 'locality-country-search' %}",
+                    dataType: 'json',
+                    data: {
+                        q: country
+                    },
+                    success: function (data) {
+                        map._updateGeoname(country);
+                        {# default #}
+                        $("#country-locality-number").html(0);
+                        updateChart(0, 0, 0);
+
+                        {# show the real data #}
+                        {# country title #}
+                        if (country == "") country = "World";
+                        $("#country-title").html(country);
+
+                        {# country healthsite number #}
+                        if (data.localities) {
+                            $("#country-locality-number").html(data.localities);
+                        }
+                        if (data.numbers) {
+                            updateChart(data.numbers.hospital, data.numbers.medical_clinic, data.numbers.orthopaedic_clinic);
+                        }
+                        if (data.completeness) {
+                            updatePieChart(data.completeness.basic, data.completeness.partial, data.completeness.complete);
+                        }
+
+                        {# set view port #}
+                        if (data.viewport) {
+                            var northeast_lat = parseFloat(data.viewport.northeast_lat);
+                            var northeast_lng = parseFloat(data.viewport.northeast_lng);
+                            var southwest_lat = parseFloat(data.viewport.southwest_lat);
+                            var southwest_lng = parseFloat(data.viewport.southwest_lng);
+                            if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
+                                map._setFitBound(southwest_lat, southwest_lng, northeast_lat, northeast_lng);
+                            }
+                        }
+                        console.log(data);
+                    }
+                });
+            }
 
             // initialize the app
             {#            new APP();#}
+            // init map
             // We need different app for the home page. Adapt from the current app.
         });
     </script>
