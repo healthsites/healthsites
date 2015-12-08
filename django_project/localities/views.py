@@ -346,9 +346,9 @@ def search_locality_by_country(request):
             southwest_lng = 0.0
             if query != "":
                 # getting viewport
-                google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
-                gmaps = googlemaps.Client(key=google_maps_api_key)
                 try:
+                    google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+                    gmaps = googlemaps.Client(key=google_maps_api_key)
                     geocode_result = gmaps.geocode(query)[0]
                     viewport = geocode_result['geometry']['viewport']
                     northeast_lat = viewport['northeast']['lat']
