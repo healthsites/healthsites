@@ -206,6 +206,7 @@ h2.fancy {
 -------------------------------------------------- */
 #cta {
 	font-family: "Raleway", sans-serif;
+	overflow: hidden;
 }
 #cta .content {
 	color: #fff;
@@ -277,20 +278,16 @@ h2.fancy {
 /* Map
 
 -------------------------------------------------- */
-#map-data {
-	height: 1px;
-}
 .map-data {
 	overflow: hidden;
 }
 #map-home {
 	height: 645px;
 	position: relative;
-	background: url(../img/ruanda.png);
 }
 .select-country {
 	position: absolute;
-	bottom: 10px;
+	bottom: 20px;
 	left: 50%;
 	width: 234px;
 	margin-left: -114px;
@@ -432,4 +429,17 @@ h2.fancy {
   .partners-list {
 	  margin: 0;
   }
+}
+.marker-icon {
+    width: 48px;
+    height: 46px;
+    background: url("/static/img/healthsite-cluster-marker.png");
+    line-height: 46px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.map{
+	padding: 0px;
 }

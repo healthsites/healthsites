@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-
 from .models import (
     Domain,
     Attribute,
     Specification,
     Changeset,
-    DataLoader
+    DataLoader,
+    Country
 )
-
 from .forms import DomainModelForm
 
 
@@ -30,11 +29,13 @@ class DomainMA(ChangesetMixin, admin.ModelAdmin):
     fields = ('name', 'description', 'template_fragment')
     form = DomainModelForm
 
+
 admin.site.register(Domain, DomainMA)
 
 
 class AttributeMA(ChangesetMixin, admin.ModelAdmin):
     fields = ('key', 'description')
+
 
 admin.site.register(Attribute, AttributeMA)
 
@@ -42,11 +43,13 @@ admin.site.register(Attribute, AttributeMA)
 class SpecificationMA(ChangesetMixin, admin.ModelAdmin):
     fields = ('domain', 'attribute', 'required')
 
+
 admin.site.register(Specification, SpecificationMA)
 
 
 class DataUpdateAdmin(admin.ModelAdmin):
     list_display = (
-        'organisation_name', 'author', 'data_loader_mode','date_time_uploaded',  'applied', 'date_time_applied')
+        'organisation_name', 'author', 'data_loader_mode', 'date_time_uploaded', 'applied', 'date_time_applied')
+
 
 admin.site.register(DataLoader, DataUpdateAdmin)
