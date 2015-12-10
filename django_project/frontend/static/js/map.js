@@ -163,7 +163,7 @@ window.MAP = (function () {
                 self.original_marker_position = [payload.geom[1], payload.geom[0]];
                 // move map to the marker
                 if (payload.zoomto) {
-                    self.MAP.setView(self.original_marker_position, self.MAP.getMaxZoom());
+                    self.MAP.setView(self.original_marker_position, self.MAP.getMaxZoom()-2);
                 } else {
                     self.MAP.panTo(self.original_marker_position);
                 }
