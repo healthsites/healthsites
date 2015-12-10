@@ -37,6 +37,7 @@
 .details .header {
 	padding-top: 18px;
 	border-bottom: 1px solid #eff0f0;
+	margin-bottom: 0;
 }
 .details h1 {
 	font-size: 24px;
