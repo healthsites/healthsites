@@ -13,3 +13,4 @@ celery
 googlemaps
 django-grappelli
 django-hashedfilenamestorage
+django-envelope

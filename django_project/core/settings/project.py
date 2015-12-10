@@ -19,6 +19,7 @@ INSTALLED_APPS += (
     'social_users',
     'api',
     'django_hashedfilenamestorage',
+    'envelope'
 )
 
 # How many versions to list in each project box
