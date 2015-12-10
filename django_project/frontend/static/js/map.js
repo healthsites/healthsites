@@ -9,7 +9,7 @@ window.MAP = (function () {
 
         if (this._isCustomViewPort()) {
         } else if (!this._restoreMapContext()) {
-            this.MAP.setView([0, 0], 3);
+            this.MAP.setView([0, 0], 2);
         }
 
         var osm = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
@@ -98,21 +98,21 @@ window.MAP = (function () {
         },
 
         _restoreMapContext: function () {
-            if (sessionStorage.key('map_zoom') && sessionStorage.key('map_center')) {
-                var zoom = parseInt(sessionStorage.getItem('map_zoom'), 10);
-                var center = sessionStorage.getItem('map_center').split('|');
-
-                var latLngCenter = new L.latLng(parseFloat(center[0]), parseFloat(center[1]));
-
-                if (zoom && center) {
-                    this.MAP.setView(latLngCenter, zoom);
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
+            //if (sessionStorage.key('map_zoom') && sessionStorage.key('map_center')) {
+            //    var zoom = parseInt(sessionStorage.getItem('map_zoom'), 10);
+            //    var center = sessionStorage.getItem('map_center').split('|');
+            //
+            //    var latLngCenter = new L.latLng(parseFloat(center[0]), parseFloat(center[1]));
+            //
+            //    if (zoom && center) {
+            //        this.MAP.setView(latLngCenter, zoom);
+            //        return true;
+            //    } else {
+            //        return false;
+            //    }
+            //} else {
+            //    return false;
+            //}
         },
 
         _updateMapContext: function () {
