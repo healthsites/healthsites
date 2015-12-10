@@ -47,6 +47,7 @@ PIPELINE_JS['project'] = {
     'source_filenames': (
         'js/clusterLayer.js',
         'js/csrf-ajax.js',
+        'js/nav_bar.js',
         'js/localitySidebar.js',
         'js/map.js',
         'js/app.js',

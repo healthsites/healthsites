@@ -12,13 +12,19 @@
 
     <title>Healthsites.io</title>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet"
+          type="text/css" media="screen, projection"/>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
+          media="screen, projection"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css" media="screen, projection"/>
+    <link href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" rel="stylesheet" type="text/css"
+          media="screen, projection"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet"
+          type="text/css" media="screen, projection"/>
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css"
+          media="screen, projection"/>
     {% stylesheet 'project' %}
     {% stylesheet 'map_page' %}
 
@@ -69,7 +75,8 @@
                 <a class="facebook-hs-share withripple facebook-href">
                     <i class="fa fa-facebook"></i>
                 </a>
-                <a class="googleplus-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+                <a class="googleplus-href"
+                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-google-plus"></i>
                 </a>
             </div>
@@ -84,22 +91,29 @@
                 <li><a href="/#share-data">Share data</a></li>
                 <li><a href="/#partners">Partners</a></li>
                 <li><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
-                <li><a class="navbar-chat" href="https://gitter.im/healthsites/healthsites"><i class="fa fa-comments"></i></a></li>
+                <li><a class="navbar-chat" href="https://gitter.im/healthsites/healthsites"><i
+                        class="fa fa-comments"></i></a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->
 
     </div>
-    
+
     <div class="nav-searchbar container-fluid">
-      	<form action="">
-          <div class="option-group">
-            <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite" value="healthsite"><span></span><label class="option" for="radio-healthsite">healthsite</label></div>
-            <div class="option"><span></span><input type="radio" name="option" id="radio-place" value="place"><span></span><label class="option" for="radio-healthsite">place</label></div>
-          </div>
-          <input type="search" name="q" placeholder="search..."><input type="submit" value="search">
+        <form action="map" method="POST">
+            <div class="option-group">
+                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
+                                                        value="healthsite" checked><span></span><label class="option"
+                                                                                                       for="radio-healthsite">healthsite</label>
+                </div>
+                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
+                                                        value="place"><span></span><label class="option"
+                                                                                          for="radio-healthsite">place</label>
+                </div>
+            </div>
+            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
         </form>
-	</div> 
+    </div>
 </nav>
 
 <section id="map-full" class="js-fullheight fluid-container">
@@ -214,6 +228,7 @@
                         </div>
                         <div class="services">
                             <h3>services</h3>
+
                             <div id="locality-activities">
                                 <ul>
                                     <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
@@ -256,7 +271,7 @@
                     <div class="data">
                         <p><strong>Ownership:</strong> public</p>
                     </div>
-            	</div>
+                </div>
             </div>
         </div>
         <div class="buttons col-md-4 col-sm-12 col-xs-12">
@@ -283,18 +298,20 @@
     </div>
 </section>
 
-<script  type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 {#<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>#}
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-<script  type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript"
-            src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
 
 {% javascript 'project' %}
 {% javascript 'map_page' %}
@@ -305,14 +322,14 @@
 
         $(document).ready(function () {
             // set share url
-            var baseURL = location.protocol + "//" + location.hostname+"/";
-            $(".twitter-href").attr("href","https://twitter.com/intent/tweet?text=Share and develop critical health facility data on "+baseURL);
-            $(".facebook-href").attr("href","https://www.facebook.com/sharer/sharer.php?u="+baseURL);
-            $(".googleplus-href").attr("href","https://plus.google.com/share?url="+baseURL);
+            var baseURL = location.protocol + "//" + location.hostname + "/";
+            $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
+            $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
+            $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
 
             // Set viewport if exist
             {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
-                console.log({{ northeast_lat }} + " " + {{ northeast_lng }} + " " + {{ southwest_lat }} + " " + {{ southwest_lng }});
+                console.log({{ northeast_lat }} +" " + {{ northeast_lng }} +" " + {{ southwest_lat }} +" " + {{ southwest_lng }});
                 sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
                 sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
                 sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
