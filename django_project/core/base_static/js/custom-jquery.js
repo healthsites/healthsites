@@ -124,7 +124,7 @@ $(window).resize(function() {
   else {
 	   $('.location-info').css('margin-top',0);
 	   $('#map-home').css('width','50%');
-	   $('#map-home').css('height', 645);
+	   $('#map-home').css('height', 400);
   }
 });
 
