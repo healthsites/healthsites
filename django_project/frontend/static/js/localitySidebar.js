@@ -36,12 +36,6 @@ window.LocalitySidebar = (function () {
         this._bindExternalEvents();
         this._bindInternalEvents();
 
-        // check if a locality was clicked, and restore it's view
-        if (sessionStorage.key('locality-uuid')) {
-            this.locality_uuid = sessionStorage.getItem('locality-uuid');
-            this.$sidebar.trigger('get-info');
-        }
-
     };
 
     // prototype
@@ -230,10 +224,6 @@ window.LocalitySidebar = (function () {
             var self = this;
             $.getJSON('/localities/' + this.locality_uuid, function (data) {
                 self.locality_data = data;
-
-                // store lastClicked localityID to the session storage
-                sessionStorage.setItem('locality-uuid', self.locality_uuid);
-
                 self.$sidebar.trigger('show-info');
                 if (payload) {
                     var zoomto = payload.zoomto;
