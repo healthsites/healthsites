@@ -189,6 +189,8 @@ $(document).ready(function(){
 	fixed: true
 });	
     
+	
+	
 	//activate searchbar
 	$('.navbar-search').click(function() {
       $("body").toggleClass("searchbar-active");
@@ -246,13 +248,21 @@ $(document).ready(function(){
 	  $('.map-page #map, #map-home').css('height',pad);
 	  $('.map-page #map, #map-home').css('width',v_width);
 	   
-  
+      //mobile country search
+	$('.select-country input').focusin(function() {
+		$('body').addClass('search-focus');
+	});
+	$('.select-country input').focusout(function() {
+		$('body').removeClass('search-focus');
+	});
  
   }
 	else {
 		 $('.location-info').css('margin-top',0);
          $('.map-page #map').css('height', v_height - h_height);
          $('.map-page #map').css('width', v_width - s_width);
+		 
+		 
 	}
 	
 	var v_count = '0';
