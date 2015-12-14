@@ -28,8 +28,9 @@ class CSVImporter:
     """
 
     def __init__(
-            self, domain_name, source_name, csv_filename, attr_json_file,
+            self, data_loader, domain_name, source_name, csv_filename, attr_json_file,
             use_tabs=False, user=None, mode=1):
+        self.data_loader = data_loader
         self.domain_name = domain_name
         self.source_name = source_name
         self.csv_filename = csv_filename
@@ -256,6 +257,8 @@ class CSVImporter:
                     loc.set_values(values['values'], social_user=self.user)
 
                 self.report['modified'] += 1
+
+            loc.update_history(self.data_loader);
 
     def envelope(self, lon, lat):
         """Return polygon envelope for point (lon, lat)

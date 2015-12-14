@@ -31,6 +31,9 @@ window.LocalitySidebar = (function () {
         this.$inpatient_service = $('#locality-inpatient-service');
         this.$staff = $('#locality-staff');
 
+        this.$uploader = $('#uploader');
+        this.$lastupdate = $('#last_update');
+
         this.showDefaultInfo();
 
         this._bindExternalEvents();
@@ -151,6 +154,9 @@ window.LocalitySidebar = (function () {
             this.$activities.text(need_information);
             this.$inpatient_service.text(need_information);
             this.$staff.text(need_information);
+            this.$lastupdate.text("11 may 2015 17:23:15");
+            this.$uploader.text("@sharehealthdata");
+            this.$uploader.attr("href", "profile/sharehealthdata");
         },
 
         showInfo: function (evt) {
@@ -210,6 +216,14 @@ window.LocalitySidebar = (function () {
                 activities_html += '</ul>';
                 this.$activities.text('');
                 this.$activities.html(activities_html);
+            }
+            if (this.locality_data.updates) {
+                var updates = this.locality_data.updates;
+                if (updates[0]) {
+                    this.$lastupdate.text(getDateString(updates[0]['last_update']));
+                    this.$uploader.text("@" + updates[0]['uploader']);
+                    this.$uploader.attr("href", "profile/" + updates[0]['uploader']);
+                }
             }
             this.$inpatient_service.text(this.locality_data.values['inpatient_service']);
             this.$staff.text(this.locality_data.values['staff']);

@@ -59,6 +59,7 @@ def load_data_task(data_loader_pk):
     logger.info('Start loading data')
     # Process data
     csv_importer = CSVImporter(
+        data_loader,
         'Health',
         data_loader.organisation_name,
         data_loader.csv_data.path,
