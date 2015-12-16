@@ -16,7 +16,7 @@ from django.db import transaction
 from django.conf import settings
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 import googlemaps
-from .models import Locality, Domain, Changeset, Value
+from .models import Locality, Domain, Changeset, Value, Attribute, Specification
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .tasks import load_data_task, test_task
@@ -170,6 +170,33 @@ class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
 
     def get_form(self, form_class):
         return form_class(locality=self.object, **self.get_form_kwargs())
+
+
+def LocalityEdit(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated():
+            request_uuid = request.POST.get('uuid')
+            request_name = request.POST.get('locality-name')
+            request_physical_address = request.POST.get('physical-address')
+            request_phone = request.POST.get('phone')
+            request_operation = request.POST.get('operation')
+
+            locality = Locality.objects.get(uuid=request_uuid)
+            json = {}
+            if len(request_name) > 0:
+                json['name'] = request_name
+            if len(request_physical_address) > 0:
+                json['physical_address'] = request_physical_address
+            if len(request_phone) > 0:
+                json['phone'] = request_phone
+            if len(request_operation) > 0:
+                json['operation'] = request_operation
+
+            locality.set_values(json, request.user)
+
+        else:
+            print "not logged in"
+        return HttpResponse('ERROR updating Locality and values')
 
 
 class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):

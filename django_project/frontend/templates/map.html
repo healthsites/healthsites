@@ -46,7 +46,12 @@
     <![endif]-->
 
 </head>
-
+<script>
+    var isLoggedIn = false;
+    {% if user.is_authenticated %}
+        isLoggedIn = true;
+    {% endif %}
+</script>
 <body class="map-page">
 <nav class="navbar navbar-fixed-top masthead no-tag">
     <div class="container-fluid">
@@ -117,185 +122,211 @@
 </nav>
 
 <section id="map-full" class="js-fullheight fluid-container">
-    <div class="location-info pad0x col-md-4">
-        <div class="profile">
-            {% if user.is_authenticated %}
-                <div class="person col-xs-8 pad0x">
-                    <div class="avatar-holder">
-                        <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
-                        <img src="http://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"/>
-                    </div>
+    <form id="locality-form" action="localities/edit" method="post">
+        {% csrf_token %}
+        <div class="location-info pad0x col-md-4">
+            <div class="profile">
+                {% if user.is_authenticated %}
+                    <div class="person col-xs-8 pad0x">
+                        <div class="avatar-holder">
+                            <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
+                            <img src="http://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"/>
+                        </div>
 
                     <span class="name">
                         <a href="{% url 'userprofilepage' %}">{{ user }}</a>
                     </span>
-                </div>
-                <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
-                        class="fa fa-sign-out"></i> sign out</a>
-            {% else %}
-                <div class="person col-xs-8 pad0x">
+                    </div>
+                    <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
+                            class="fa fa-sign-out"></i> sign out</a>
+                {% else %}
+                    <div class="person col-xs-8 pad0x">
                 <span class="name">
                         You are not signed in
                     </span>
-                </div>
-                <a href="{% url 'usersignpage' %}" class="button col-xs-4 pad0x blue stroke"><i
-                        class="fa fa-sign-in"></i> sign in</a>
-            {% endif %}
-
-            <div style="clear: both;"></div>
-        </div>
-        <div class="details" id="sidebar-info">
-            <div class="header">
-                <h1 id="locality-name">Priory Hospital Glasgow</h1>
-
-                <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
-            </div>
-            <div class="info">
-                <div class="line updates">
-                    <div class="icon-holder">
-                        <i class="fa fa-info-circle"></i>
                     </div>
-                    <div class="data">
-                        <p>last update: <span class="date">11 may 2015</span>, by
+                    <a href="{% url 'usersignpage' %}" class="button col-xs-4 pad0x blue stroke"><i
+                            class="fa fa-sign-in"></i> sign in</a>
+                {% endif %}
+
+                <div style="clear: both;"></div>
+            </div>
+            <div class="details" id="sidebar-info">
+                <div class="header">
+                    <h1 id="locality-name">Priory Hospital Glasgow</h1>
+                    <input type="text" id="locality-name-input" name="locality-name"
+                           placeholder="Locality name" style="display: none"/>
+
+                    <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
+                </div>
+                <div class="info">
+                    <div class="line updates">
+                        <div class="icon-holder">
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div class="data">
+                            <p>last update: <span class="date">11 may 2015</span>, by
                             <span class="name">
                                 <a href="profile/sharehealthdata">@sharehealthdata</a>
                             </span>
                             <span class="more">
                                 <a href="#" class="full-list">see full list <i class="fa fa-angle-down"></i></a>
                             </span>
-                        </p>
+                            </p>
 
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
-                                 aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
-                                90% Complete
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
+                                     aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
+                                    90% Complete
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="line find">
-                    <div class="icon-holder">
-                        <i class="fa fa-map-marker"></i>
-                    </div>
-                    <div class="data">
-                        <p class="address" id="locality-physical_address">54, Praed st, London, W2 NY<br/>
-                            Unighted Kingdom</p>
+                    <div class="line find">
+                        <div class="icon-holder">
+                            <i class="fa fa-map-marker"></i>
+                        </div>
+                        <div class="data">
+                            <p class="address" id="locality-physical-address">54, Praed st, London, W2 NY<br/>
+                                Unighted Kingdom</p>
+                            <input type="text" id="locality-physical-address-input" name="physical-address"
+                                   placeholder="Physical Address" style="display: none"/>
 
-                        <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
+                            <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
 
-                        <p class="call">
-                            <i class="fa fa-phone"></i>
-                            <span id="locality-phone"> 0141 636 6116</span>
-                            <span class="hours">
+                            <p>
+                                <i class="fa fa-phone"></i>
+                                <span id="locality-phone" class="call">0141 636 6116</span>
+                                <span><input type="text" id="locality-phone-input" name="phone"
+                                             placeholder="Phone" style="display: none"/></span>
+                            </p>
+
+                            <p>
                                 <i class="fa fa-clock-o"></i>
-                                <span id="locality-operation">24/24 & 7/7</span>
-                            </span>
-                        </p>
+                                <span id="locality-operation" class="call">24/24 & 7/7</span>
+                                <span><input type="text" id="locality-operation-input" name="operation"
+                                             placeholder="Operation Hours" style="display: none"/></span>
+                            </p>
 
-                        <p class="url">
-                            <i class="fa fa-link"></i>
-                            <a href="#" id="locality-url">www.msf.org</a>
-                        </p>
-                    </div>
-                </div>
-                <div class="line services">
-                    <div class="icon-holder">
-                        <i class="fa fa-tags"></i>
-                    </div>
-                    <div class="data">
-                        <div class="scope-of-service">
-                            <h3>scope of service</h3>
-
-                            <div id="locality-scope-of-service">
-                                <ul>
-                                    <li><i class="fa fa-caret-right"></i>Specialized care</li>
-                                    <li><i class="fa fa-caret-right"></i>General acute care</li>
-                                    <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="ancillary">
-                            <h3>ancillary services</h3>
-
-                            <div id="locality-ancilary-service">
-                                <ul>
-                                    <li><i class="fa fa-caret-right"></i>Operating theater</li>
-                                    <li><i class="fa fa-caret-right"></i>Laboratory</li>
-                                    <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
-                                    <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="services">
-                            <h3>services</h3>
-
-                            <div id="locality-activities">
-                                <ul>
-                                    <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
-                                    <li><i class="fa fa-caret-right"></i>Pediatric care</li>
-                                    <li><i class="fa fa-caret-right"></i>Mental health</li>
-                                    <li><i class="fa fa-caret-right"></i>Geriatric care</li>
-                                </ul>
-                            </div>
+                            <p class="url">
+                                <i class="fa fa-link"></i>
+                                <a href="#" id="locality-url">www.msf.org</a>
+                            </p>
                         </div>
                     </div>
+                    <div class="line services">
+                        <div class="icon-holder">
+                            <i class="fa fa-tags"></i>
+                        </div>
+                        <div class="data">
+                            <div class="scope-of-service">
+                                <h3>scope of service</h3>
+
+                                <div id="locality-scope-of-service">
+                                    <ul>
+                                        <li><i class="fa fa-caret-right"></i>Specialized care</li>
+                                        <li><i class="fa fa-caret-right"></i>General acute care</li>
+                                        <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="ancillary">
+                                <h3>ancillary services</h3>
+
+                                <div id="locality-ancilary-service">
+                                    <ul>
+                                        <li><i class="fa fa-caret-right"></i>Operating theater</li>
+                                        <li><i class="fa fa-caret-right"></i>Laboratory</li>
+                                        <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
+                                        <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="services">
+                                <h3>services</h3>
+
+                                <div id="locality-activities">
+                                    <ul>
+                                        <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
+                                        <li><i class="fa fa-caret-right"></i>Pediatric care</li>
+                                        <li><i class="fa fa-caret-right"></i>Mental health</li>
+                                        <li><i class="fa fa-caret-right"></i>Geriatric care</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line beds">
+                        <div class="icon-holder">
+                            <i class="fa fa-bed"></i>
+                        </div>
+                        <div class="data">
+                            <p id="locality-inpatient-service">20 full time beds, 50 part time beds</p>
+                        </div>
+                    </div>
+                    <div class="line note">
+                        <div class="icon-holder">
+                            <i class="fa fa-sticky-note"></i>
+                        </div>
+                        <div class="data">
+                            <p><strong>Note:</strong> Outpatient consultation and in-patient hospitalization</p>
+                        </div>
+                    </div>
+                    <div class="line doctors">
+                        <div class="icon-holder">
+                            <i class="fa fa-user-md"></i>
+                        </div>
+                        <div class="data">
+                            <p id="locality-staff">20 full time equivalent doctors and 50 full time equivalent
+                                nurses</p>
+                        </div>
+                    </div>
+                    <div class="line ownership">
+                        <div class="icon-holder">
+                            <i class="fa fa-briefcase"></i>
+                        </div>
+                        <div class="data">
+                            <p><strong>Ownership:</strong> public</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="line beds">
-                    <div class="icon-holder">
-                        <i class="fa fa-bed"></i>
-                    </div>
-                    <div class="data">
-                        <p id="locality-inpatient-service">20 full time beds, 50 part time beds</p>
-                    </div>
+            </div>
+            <div class="buttons col-md-4 col-sm-12 col-xs-12">
+                <div class="button-wrapper col-xs-4">
+                    <a id="twitter_share_map" class="button share stroke blue">
+                        <i class="fa fa-twitter"></i> share
+                    </a>
                 </div>
-                <div class="line note">
-                    <div class="icon-holder">
-                        <i class="fa fa-sticky-note"></i>
-                    </div>
-                    <div class="data">
-                        <p><strong>Note:</strong> Outpatient consultation and in-patient hospitalization</p>
-                    </div>
+                <div class="button-wrapper col-xs-4" id="edit-button">
+                    <a class="button edit stroke blue"
+                       style="cursor: pointer"><i
+                            class="fa fa-pencil"></i> edit
+                    </a>
                 </div>
-                <div class="line doctors">
-                    <div class="icon-holder">
-                        <i class="fa fa-user-md"></i>
-                    </div>
-                    <div class="data">
-                        <p id="locality-staff">20 full time equivalent doctors and 50 full time equivalent nurses</p>
-                    </div>
+                <div class="button-wrapper col-xs-4" id="save-button" style="display: none">
+                    <a class="button edit stroke blue"
+                       style="cursor: pointer"><i
+                            class="fa fa-pencil"></i> save
+                    </a>
                 </div>
-                <div class="line ownership">
-                    <div class="icon-holder">
-                        <i class="fa fa-briefcase"></i>
-                    </div>
-                    <div class="data">
-                        <p><strong>Ownership:</strong> public</p>
-                    </div>
+                <div class="button-wrapper col-xs-4" id="add-button">
+                    <a class="button add" style="cursor: pointer">
+                        <i class="fa fa-plus"></i> add new
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4" id="cancel-button" style="display: none">
+                    <a class="button edit stroke blue"
+                       style="cursor: pointer"><i
+                            class="fa fa-pencil"></i> cancel
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="buttons col-md-4 col-sm-12 col-xs-12">
-            <div class="button-wrapper col-xs-4">
-                <a id="twitter_share_map" class="button share stroke blue">
-                    <i class="fa fa-twitter"></i> share
-                </a>
-            </div>
-            <div class="button-wrapper col-xs-4">
-                <a class="button edit stroke blue" href="#"><i
-                        class="fa fa-pencil"></i> edit
-                </a>
-            </div>
-            <div class="button-wrapper col-xs-4">
-                <a class="button add" href="#">
-                    <i class="fa fa-plus"></i> add new
-                </a>
+        <div class="map-page pad0x col-md-8">
+            <div id="map">
             </div>
         </div>
-    </div>
-    <div class="map-page pad0x col-md-8">
-        <div id="map">
-        </div>
-    </div>
+    </form>
 </section>
 
 <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
@@ -319,7 +350,6 @@
 
 {% block extra_js %}
     <script type="text/javascript">
-
         $(document).ready(function () {
             // set share url
             var baseURL = location.protocol + "//" + location.hostname + "/";

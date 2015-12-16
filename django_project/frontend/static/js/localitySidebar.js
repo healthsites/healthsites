@@ -6,22 +6,21 @@ window.LocalitySidebar = (function () {
     var no_operation_hours_found = "No operation hours found";
     var no_url_found = "No url found";
     var no_name = "No Name";
+    var is_enable = false;
+    var info_fields = [];
+    var edit_fields = [];
     // private variables and functions
 
     // constructor
     var module = function () {
-
         this.$sidebar = $('#sidebar-info');
-        this.$sidebar_head = this.$sidebar.find('.sidebar-info-header');
-        this.$sidebar_body = this.$sidebar.find('.sidebar-info-body');
-        this.$sidebar_footer = this.$sidebar.find('.sidebar-info-footer');
 
         // new style
         this.$name = $('#locality-name');
         this.$nature_of_facility = $('#locality-nature-of-facility');
         this.$completenees = $('#locality-completeness');
         this.$coordinates = $('#locality-coordinates');
-        this.$physical_address = $('#locality-physical_address');
+        this.$physical_address = $('#locality-physical-address');
         this.$phone = $('#locality-phone');
         this.$operation = $('#locality-operation');
         this.$url = $('#locality-url');
@@ -31,6 +30,34 @@ window.LocalitySidebar = (function () {
         this.$inpatient_service = $('#locality-inpatient-service');
         this.$staff = $('#locality-staff');
 
+        // form
+        this.$form = $('#locality-form');
+        this.$editButton = $('#edit-button');
+        this.$saveButton = $('#save-button');
+        this.$addButton = $('#add-button');
+        this.$cancelButton = $('#cancel-button');
+        this.$physical_address_input = $('#locality-physical-address-input');
+        this.$name_input = $('#locality-name-input');
+        this.$phone_input = $('#locality-phone-input');
+        this.$operation_input = $('#locality-operation-input');
+
+        // set info field array
+        info_fields.push(this.$editButton);
+        info_fields.push(this.$addButton);
+        info_fields.push(this.$name);
+        info_fields.push(this.$physical_address);
+        info_fields.push(this.$phone);
+        info_fields.push(this.$operation);
+
+        // set editfield array
+        edit_fields.push(this.$saveButton);
+        edit_fields.push(this.$cancelButton);
+        edit_fields.push(this.$name_input);
+        edit_fields.push(this.$physical_address_input);
+        edit_fields.push(this.$phone_input);
+        edit_fields.push(this.$operation_input);
+
+        this.setEnable(is_enable);
         this.showDefaultInfo();
 
         this._bindExternalEvents();
@@ -41,11 +68,6 @@ window.LocalitySidebar = (function () {
     // prototype
     module.prototype = {
         constructor: module,
-        template: [
-            '<div class="sidebar-info-header"></div>',
-            '<div class="sidebar-info-body">Click a marker on the map to load locality info</div>',
-            '<div class="sidebar-info-footer"></div>',
-        ].join(''),
 
         _bindInternalEvents: function () {
             var self = this;
@@ -55,43 +77,65 @@ window.LocalitySidebar = (function () {
             this.$sidebar.on('get-info', this.getInfo.bind(this));
             this.$sidebar.on('show-info', this.showInfo.bind(this));
             this.$sidebar.on('show-info-adjust', this.setInfoWindowHeight.bind(this));
-            this.$sidebar.on('show-edit', this.showEdit.bind(this));
 
             this.$sidebar.on('update-coordinates', this.updateCoordinates.bind(this));
 
-            this.$sidebar_footer.on('click', '.edit', this.showEditForm.bind(this));
-            this.$sidebar_footer.on('click', '.save', this.saveForm.bind(this));
-            this.$sidebar_footer.on('click', '.cancel', this.cancelEdit.bind(this));
+            this.$sidebar.on('update-coordinates', this.updateCoordinates.bind(this));
 
-            this.$sidebar_footer.on('click', '.nl-execute', function () {
-                var val = $('#nl-form-1').val();
-                if (val === '1') {
-                    self.showEditForm.call(self);
-                }
-                if (val === '2') {
-                    var val2 = $('#nl-form-2').val();
-                    if (val2 === '1') {
-                        var loc = 'https://twitter.com/intent/tweet?text=See%20' + self.locality_data.values.name + '.%20Please%20validate&url=http://healthsites.io/%23!/locality/' + self.locality_uuid;
-                        self.sendTweet(loc);
+            this.$editButton.on('click', this.showEdit.bind(this));
+            this.$cancelButton.on('click', this.showEdit.bind(this));
+            this.$saveButton.on('click', this.sendEdit.bind(this));
+
+            // form if submit
+            var that = this;
+            this.$form.submit(function (event) {
+                // Stop form from submitting normally
+                event.preventDefault();
+
+                var url = that.$form.attr("action");
+                var fields = that.$form.serialize() + '&uuid=' + that.locality_data.uuid;
+
+                // Send the data using post
+                var posting = $.post(url, fields);
+
+                var sidebar = that;
+                // Put the results in a div
+                posting.done(function (data) {
+                    sidebar.getInfo();
+                });
+            });
+        },
+        showEdit: function (evt) {
+            if (is_enable) {
+                if (this.$editButton.is(":visible")) {
+                    for (var i = 0; i < info_fields.length; i++) {
+                        info_fields[i].hide();
+                    }
+                    for (var i = 0; i < edit_fields.length; i++) {
+                        edit_fields[i].show();
+                    }
+                } else {
+                    for (var i = 0; i < info_fields.length; i++) {
+                        info_fields[i].show();
+                    }
+                    for (var i = 0; i < edit_fields.length; i++) {
+                        edit_fields[i].hide();
                     }
                 }
-                if (val === '3') {
-                    var val2 = $('#nl-form-2').val();
-                    if (val2 === '1') {
-                        var loc = 'https://twitter.com/intent/tweet?text=See%20' + self.locality_data.values.name + '&url=http://healthsites.io/%23!/locality/' + self.locality_uuid;
-                        self.sendTweet(loc);
-                    }
-                }
-            });
-
-
-            this.$sidebar_head.on('mouseover', '.label-status', function () {
-                self.$sidebar_head.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
-            });
-
-            this.$sidebar_head.on('mouseout', '.label-status', function () {
-                self.$sidebar_head.find('.modal-info-information').animate({height: "1px"}, 100).removeClass('modal-info-expanded');
-            });
+            }
+        },
+        setEnable: function (input) {
+            is_enable = input;
+            if (input) {
+                this.$editButton.css({'opacity': 1});
+                this.$addButton.css({'opacity': 1});
+            } else {
+                this.$editButton.css({'opacity': 0.7});
+                this.$addButton.css({'opacity': 0.7});
+            }
+        },
+        sendEdit: function (evt, payload) {
+            this.$form.submit();
         },
 
         handleXHRError: function (evt, payload) {
@@ -111,34 +155,22 @@ window.LocalitySidebar = (function () {
             $('#id_lat').val(payload.latlng.lat);
         },
 
-        sendTweet: function (text) {
-            var windowOptions = 'scrollbars=yes,resizable=yes,toolbar=no,location=yes';
-            var width = 550;
-            var height = 420;
-            var winHeight = screen.height;
-            var winWidth = screen.width;
-            var left = Math.round((winWidth / 2) - (width / 2));
-            var top = 0;
-            if (winHeight > height) {
-                top = Math.round((winHeight / 2) - (height / 2));
-            }
-            window.open(text, 'intent', windowOptions + ',width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
-        },
-
-        cancelEdit: function (evt) {
-            $APP.trigger('locality.cancel');
-            // show data
-            this.showInfo();
-        },
-
         showDefaultInfo: function (evt) {
+            if (!this.$editButton.is(":visible")) {
+                this.$editButton.click();
+            }
+
             this.$name.text(no_name);
+            this.$name_input.val("");
+
             this.$nature_of_facility.text(need_information);
             this.$completenees.attr('style', 'width:0%');
             this.$completenees.text('0% Complete');
-            this.$coordinates.text(
-                'lat: ' + 'n/a' + ', long: ' + 'n/a');
+            this.$coordinates.text('lat: ' + 'n/a' + ', long: ' + 'n/a');
+
             this.$physical_address.text(no_physical_address);
+            this.$physical_address.val("");
+
             this.$phone.text(no_phone_found);
             this.$operation.text(no_operation_hours_found);
             this.$url.text(no_url_found);
@@ -156,16 +188,28 @@ window.LocalitySidebar = (function () {
         showInfo: function (evt) {
             // reset first
             this.showDefaultInfo();
+            // set disable
+            if (isLoggedIn) {
+                this.setEnable(true);
+            }
             console.log(this.locality_data);
+
             this.$name.text(this.locality_data.values['name']);
+            this.$name_input.val(this.locality_data.values['name']);
+
             this.$nature_of_facility.text(this.locality_data.values['nature_of_facility']);
             this.$completenees.attr('style', 'width:' + this.locality_data.completeness);
             this.$completenees.text(this.locality_data.completeness + ' Complete');
-            this.$coordinates.text(
-                'lat: ' + this.locality_data.geom[0] + ', long: ' + this.locality_data.geom[1]);
+            this.$coordinates.text('lat: ' + this.locality_data.geom[0] + ', long: ' + this.locality_data.geom[1]);
+
             this.$physical_address.text(this.locality_data.values['physical_address']);
+            this.$physical_address_input.val(this.locality_data.values['physical_address']);
+
             this.$phone.text(this.locality_data.values['phone']);
+            this.$phone_input.val(this.locality_data.values['phone']);
+
             this.$operation.text(this.locality_data.values['operation']);
+            this.$operation_input.val(this.locality_data.values['operation']);
 
             if (this.locality_data.values['url']) {
                 this.$url.text(this.locality_data.values['url']);
@@ -236,59 +280,6 @@ window.LocalitySidebar = (function () {
                     'zoomto': zoomto
                 });
             });
-        },
-
-        showEdit: function (evt, payload) {
-            this.$sidebar_body.html(payload.data);
-            this.$sidebar_footer.html([
-                '<button type="button" class="btn btn-default cancel">Cancel</button>',
-                '<button type="button" class="btn btn-warning save">Save changes</button>'
-            ].join(''))
-
-            this.$sidebar_body.find('input:text').filter(function () {
-                return $(this).val() == "";
-            }).each(function () {
-                $(this).parents('.form-group').detach().appendTo('#empty-form-tab');
-            });
-
-        },
-
-
-        showEditForm: function (evt) {
-            var self = this;
-            $.get('/localities/' + this.locality_uuid + '/form', function (data) {
-                self.$sidebar.trigger('show-edit', {'data': data});
-                // show red-marker on the map
-                $APP.trigger('locality.edit', {'geom': [self.locality_data.geom[1], self.locality_data.geom[0]]});
-            }).fail(function (xhr, status, error) {
-                self.$sidebar.trigger('handle-xhr-error', {'xhr': xhr});
-            });
-        },
-
-        saveForm: function (evt) {
-            var self = this;
-            var form = this.$sidebar_body.find('form');
-            var latlng = [$('#id_lat').val(), $('#id_lon').val()];
-            var data = form.serializeArray();
-
-            $.ajax('/localities/' + this.locality_uuid + '/form', {
-                'type': 'POST',
-                'data': data,
-                'success': function (data, status, xhr) {
-                    if (data !== 'OK') {
-                        // there were some form processing errors
-                        self.$sidebar.trigger('show-edit', {'data': data});
-                    } else {
-                        // everything went ok, get new data from the server and show info
-                        self.$sidebar.trigger('get-info');
-
-                        $APP.trigger('locality.save');
-                    }
-                },
-                'error': function (xhr, status, error) {
-                    self.$sidebar.trigger('handle-xhr-error', {'xhr': xhr});
-                }
-            })
         },
 
         _bindExternalEvents: function () {

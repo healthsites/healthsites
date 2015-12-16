@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
-
 from .views import (
     LocalitiesLayer,
     LocalityInfo,
@@ -27,6 +26,10 @@ urlpatterns = patterns(
     url(
         r'^localities/form/(?P<domain>\w+)$', LocalityCreate.as_view(),
         name='locality-create'
+    ),
+    url(
+        r'^localities/edit$', 'localities.views.LocalityEdit',
+        name='locality-edit'
     ),
 
     url(
@@ -56,4 +59,3 @@ urlpatterns = patterns(
 
     url(r'^search$', SearchView.as_view(), name='search')
 )
-
