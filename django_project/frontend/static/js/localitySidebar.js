@@ -40,6 +40,7 @@ window.LocalitySidebar = (function () {
         this.$name_input = $('#locality-name-input');
         this.$phone_input = $('#locality-phone-input');
         this.$operation_input = $('#locality-operation-input');
+        this.$nature_of_facility_input = $('#locality-nature-of-facility-input');
 
         // set info field array
         info_fields.push(this.$editButton);
@@ -48,6 +49,7 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$physical_address);
         info_fields.push(this.$phone);
         info_fields.push(this.$operation);
+        info_fields.push(this.$nature_of_facility);
 
         // set editfield array
         edit_fields.push(this.$saveButton);
@@ -56,6 +58,7 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$physical_address_input);
         edit_fields.push(this.$phone_input);
         edit_fields.push(this.$operation_input);
+        edit_fields.push(this.$nature_of_facility_input);
 
         this.setEnable(is_enable);
         this.showDefaultInfo();
@@ -125,6 +128,7 @@ window.LocalitySidebar = (function () {
             }
         },
         setEnable: function (input) {
+            console.log(input);
             is_enable = input;
             if (input) {
                 this.$editButton.css({'opacity': 1});
@@ -198,6 +202,8 @@ window.LocalitySidebar = (function () {
             this.$name_input.val(this.locality_data.values['name']);
 
             this.$nature_of_facility.text(this.locality_data.values['nature_of_facility']);
+            this.$nature_of_facility.val(this.locality_data.values['nature_of_facility']);
+
             this.$completenees.attr('style', 'width:' + this.locality_data.completeness);
             this.$completenees.text(this.locality_data.completeness + ' Complete');
             this.$coordinates.text('lat: ' + this.locality_data.geom[0] + ', long: ' + this.locality_data.geom[1]);
