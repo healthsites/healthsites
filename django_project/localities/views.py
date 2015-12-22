@@ -174,43 +174,81 @@ class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
         return form_class(locality=self.object, **self.get_form_kwargs())
 
 
+def get_json_from_request(request):
+    request_uuid = request.POST.get('uuid')
+    request_lat = request.POST.get('lat')
+    request_long = request.POST.get('long')
+    request_name = request.POST.get('locality-name')
+    request_physical_address = request.POST.get('physical-address')
+    request_phone = request.POST.get('phone')
+    request_operation = request.POST.get('operation')
+    request_nature = request.POST.get('nature-of-facility')
+    request_scope = request.POST.get('scope-of-service')
+    request_ancillary = request.POST.get('ancillary')
+    request_ownership = request.POST.get('ownership')
+    request_activities = request.POST.get('activities')
+    request_inpatient = request.POST.get('inpatient-service')
+    request_staff = request.POST.get('staff')
+
+    json = {}
+    json['name'] = request_name
+    json['physical_address'] = request_physical_address
+    json['phone'] = request_phone
+    json['operation'] = request_operation
+    json['nature_of_facility'] = request_nature
+    json['scope_of_service'] = request_scope
+    json['ancillary_services'] = request_ancillary
+    json['ownership'] = request_ownership
+    json['activities'] = request_activities
+    json['inpatient_service'] = request_inpatient
+    json['staff'] = request_staff
+
+    json['param_uuid'] = request_uuid
+    json['param_lat'] = request_lat
+    json['param_long'] = request_long
+
+    # check mandatory
+    is_valid = True
+
+    if not json['param_lat'] or json['param_lat'] == "":
+        is_valid = False
+        json['param_invalid_key'] = "latitude"
+
+    if not json['param_long'] or json['param_long'] == "":
+        is_valid = False
+        json['param_invalid_key'] = "longitude"
+
+    if is_valid:
+        domain = Domain.objects.get(name="Health")
+        attributes = Specification.objects.filter(domain=domain).filter(required=True)
+        for attribute in attributes:
+            try:
+                if len(json[attribute.attribute.key]) == 0:
+                    is_valid = False
+                    json['param_invalid_key'] = attribute.attribute.key
+                    break
+            except:
+                print "except"
+
+    json['is_valid'] = is_valid
+    return json
+
+
 def locality_edit(request):
     if request.method == 'POST':
         if request.user.is_authenticated():
-            request_uuid = request.POST.get('uuid')
-            request_lat = request.POST.get('lat')
-            request_long = request.POST.get('long')
-            request_name = request.POST.get('locality-name')
-            request_physical_address = request.POST.get('physical-address')
-            request_phone = request.POST.get('phone')
-            request_operation = request.POST.get('operation')
-            request_nature = request.POST.get('nature-of-facility')
-            request_scope = request.POST.get('scope-of-service')
-            request_ancillary = request.POST.get('ancillary')
-            request_ownership = request.POST.get('ownership')
-            request_activities = request.POST.get('activities')
-            request_inpatient = request.POST.get('inpatient-service')
-            request_staff = request.POST.get('staff')
-
-            locality = Locality.objects.get(uuid=request_uuid)
-            json = {}
-            json['name'] = request_name
-            json['physical_address'] = request_physical_address
-            json['phone'] = request_phone
-            json['operation'] = request_operation
-            json['nature_of_facility'] = request_nature
-            json['scope_of_service'] = request_scope
-            json['ancillary_services'] = request_ancillary
-            json['ownership'] = request_ownership
-            json['activities'] = request_activities
-            json['inpatient_service'] = request_inpatient
-            json['staff'] = request_staff
-
-            locality.set_geom(float(request_long), float(request_lat))
-            locality.save()
-
-            locality.set_values(json, request.user)
-            return HttpResponse(request_uuid)
+            json_request = get_json_from_request(request)
+            # checking mandatory
+            if json_request['is_valid'] == True:
+                locality = Locality.objects.get(uuid=json_request['param_uuid'])
+                locality.set_geom(float(json_request['param_long']), float(json_request['param_lat']))
+                locality.save()
+                locality.set_values(json_request, request.user)
+                return HttpResponse(json.dumps(
+                    {"valid": json_request['is_valid'], "uuid": json_request['param_uuid']}))
+            else:
+                return HttpResponse(
+                    json.dumps({"valid": json_request['is_valid'], "key": json_request['param_invalid_key']}))
 
     else:
         print "not logged in"
@@ -220,57 +258,33 @@ def locality_edit(request):
 def locality_create(request):
     if request.method == 'POST':
         if request.user.is_authenticated():
-            request_lat = request.POST.get('lat')
-            request_long = request.POST.get('long')
-            request_name = request.POST.get('locality-name')
-            request_physical_address = request.POST.get('physical-address')
-            request_phone = request.POST.get('phone')
-            request_operation = request.POST.get('operation')
-            request_nature = request.POST.get('nature-of-facility')
-            request_scope = request.POST.get('scope-of-service')
-            request_ancillary = request.POST.get('ancillary')
-            request_ownership = request.POST.get('ownership')
-            request_activities = request.POST.get('activities')
-            request_inpatient = request.POST.get('inpatient-service')
-            request_staff = request.POST.get('staff')
-            print request.POST
+            json_request = get_json_from_request(request)
+            # checking mandatory
+            if json_request['is_valid'] == True:
+                tmp_changeset = Changeset.objects.create(
+                    social_user=request.user
+                )
+                # generate new uuid
+                tmp_uuid = uuid.uuid4().hex
 
-            tmp_changeset = Changeset.objects.create(
-                social_user=request.user
-            )
+                loc = Locality()
+                loc.changeset = tmp_changeset
+                loc.domain = Domain.objects.get(name="Health")
+                loc.uuid = tmp_uuid
 
-            # generate new uuid
-            tmp_uuid = uuid.uuid4().hex
+                # generate unique upstream_id
+                loc.upstream_id = u'web¶{}'.format(tmp_uuid)
 
-            loc = Locality()
-            loc.changeset = tmp_changeset
-            loc.domain = Domain.objects.get(name="Health")
-            loc.uuid = tmp_uuid
-
-            # generate unique upstream_id
-            loc.upstream_id = u'web¶{}'.format(tmp_uuid)
-
-            loc.geom = Point(
-                float(request_long), float(request_lat)
-            )
-            loc.save()
-            print loc
-
-            json = {}
-            json['name'] = request_name
-            json['physical_address'] = request_physical_address
-            json['phone'] = request_phone
-            json['operation'] = request_operation
-            json['nature_of_facility'] = request_nature
-            json['scope_of_service'] = request_scope
-            json['ancillary_services'] = request_ancillary
-            json['ownership'] = request_ownership
-            json['activities'] = request_activities
-            json['inpatient_service'] = request_inpatient
-            json['staff'] = request_staff
-
-            loc.set_values(json, request.user)
-            return HttpResponse(tmp_uuid)
+                loc.geom = Point(
+                    float(json_request['param_long']), float(json_request['param_lat'])
+                )
+                loc.save()
+                loc.set_values(json_request, request.user)
+                return HttpResponse(json.dumps(
+                    {"valid": json_request['is_valid'], "uuid": tmp_uuid}))
+            else:
+                return HttpResponse(
+                    json.dumps({"valid": json_request['is_valid'], "key": json_request['param_invalid_key']}))
 
     else:
         print "not logged in"

@@ -119,8 +119,10 @@ window.MAP = (function () {
             var self = this;
 
             $APP.on('locality.coordinate-changed', function (evt, payload) {
-                self.pointLayer.setLatLng([payload.geom[1], payload.geom[0]]);
-                self.MAP.panTo([payload.geom[1], payload.geom[0]]);
+                if (!isNaN(parseInt(payload.geom[0])) && !isNaN(parseInt(payload.geom[1]))) {
+                    self.pointLayer.setLatLng([payload.geom[1], payload.geom[0]]);
+                    self.MAP.panTo([payload.geom[1], payload.geom[0]]);
+                }
             });
 
             $APP.on('locality.create', function (evt, payload) {
