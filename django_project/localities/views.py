@@ -106,15 +106,17 @@ class LocalityInfo(JSONResponseMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
+        # get attributes
+        attribute_count = Attribute.objects.all().count() + 1  # geom
+        # count completeness based attributes
         obj_repr = self.object.repr_dict()
         data_repr = render_fragment(
             self.object.domain.template_fragment, obj_repr
         )
         obj_repr.update({'repr': data_repr})
         num_data = len(obj_repr['values']) + 1  # geom
-        # 16 = 4 mandatory + 12 core
-        completeness = num_data / 16.0 * 100  # percentage
-        obj_repr.update({'completeness': '%s%%' % completeness})
+        completeness = (num_data + 0.0) / (attribute_count + 0.0) * 100  # percentage
+        obj_repr.update({'completeness': '%s%%' % format(completeness, '.2f')})
 
         return self.render_json_response(obj_repr)
 
@@ -172,31 +174,107 @@ class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
         return form_class(locality=self.object, **self.get_form_kwargs())
 
 
-def LocalityEdit(request):
+def locality_edit(request):
     if request.method == 'POST':
         if request.user.is_authenticated():
             request_uuid = request.POST.get('uuid')
+            request_lat = request.POST.get('lat')
+            request_long = request.POST.get('long')
             request_name = request.POST.get('locality-name')
             request_physical_address = request.POST.get('physical-address')
             request_phone = request.POST.get('phone')
             request_operation = request.POST.get('operation')
+            request_nature = request.POST.get('nature-of-facility')
+            request_scope = request.POST.get('scope-of-service')
+            request_ancillary = request.POST.get('ancillary')
+            request_ownership = request.POST.get('ownership')
+            request_activities = request.POST.get('activities')
+            request_inpatient = request.POST.get('inpatient-service')
+            request_staff = request.POST.get('staff')
 
             locality = Locality.objects.get(uuid=request_uuid)
             json = {}
-            if len(request_name) > 0:
-                json['name'] = request_name
-            if len(request_physical_address) > 0:
-                json['physical_address'] = request_physical_address
-            if len(request_phone) > 0:
-                json['phone'] = request_phone
-            if len(request_operation) > 0:
-                json['operation'] = request_operation
+            json['name'] = request_name
+            json['physical_address'] = request_physical_address
+            json['phone'] = request_phone
+            json['operation'] = request_operation
+            json['nature_of_facility'] = request_nature
+            json['scope_of_service'] = request_scope
+            json['ancillary_services'] = request_ancillary
+            json['ownership'] = request_ownership
+            json['activities'] = request_activities
+            json['inpatient_service'] = request_inpatient
+            json['staff'] = request_staff
+
+            locality.set_geom(float(request_long), float(request_lat))
+            locality.save()
 
             locality.set_values(json, request.user)
+            return HttpResponse(request_uuid)
 
-        else:
-            print "not logged in"
-        return HttpResponse('ERROR updating Locality and values')
+    else:
+        print "not logged in"
+    return HttpResponse('ERROR updating Locality and values')
+
+
+def locality_create(request):
+    if request.method == 'POST':
+        if request.user.is_authenticated():
+            request_lat = request.POST.get('lat')
+            request_long = request.POST.get('long')
+            request_name = request.POST.get('locality-name')
+            request_physical_address = request.POST.get('physical-address')
+            request_phone = request.POST.get('phone')
+            request_operation = request.POST.get('operation')
+            request_nature = request.POST.get('nature-of-facility')
+            request_scope = request.POST.get('scope-of-service')
+            request_ancillary = request.POST.get('ancillary')
+            request_ownership = request.POST.get('ownership')
+            request_activities = request.POST.get('activities')
+            request_inpatient = request.POST.get('inpatient-service')
+            request_staff = request.POST.get('staff')
+            print request.POST
+
+            tmp_changeset = Changeset.objects.create(
+                social_user=request.user
+            )
+
+            # generate new uuid
+            tmp_uuid = uuid.uuid4().hex
+
+            loc = Locality()
+            loc.changeset = tmp_changeset
+            loc.domain = Domain.objects.get(name="Health")
+            loc.uuid = tmp_uuid
+
+            # generate unique upstream_id
+            loc.upstream_id = u'web¶{}'.format(tmp_uuid)
+
+            loc.geom = Point(
+                float(request_long), float(request_lat)
+            )
+            loc.save()
+            print loc
+
+            json = {}
+            json['name'] = request_name
+            json['physical_address'] = request_physical_address
+            json['phone'] = request_phone
+            json['operation'] = request_operation
+            json['nature_of_facility'] = request_nature
+            json['scope_of_service'] = request_scope
+            json['ancillary_services'] = request_ancillary
+            json['ownership'] = request_ownership
+            json['activities'] = request_activities
+            json['inpatient_service'] = request_inpatient
+            json['staff'] = request_staff
+
+            loc.set_values(json, request.user)
+            return HttpResponse(tmp_uuid)
+
+    else:
+        print "not logged in"
+    return HttpResponse('ERROR updating Locality and values')
 
 
 class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
@@ -419,24 +497,16 @@ def search_locality_by_country(request):
                     data__iexact='orthopaedic').count()
 
             # check completnees
-            values = Value.objects.filter(locality__in=healthsites).values('locality').annotate(
+            values = Value.objects.filter(locality__in=healthsites).exclude(data__isnull=True).exclude(
+                data__exact='').values('locality').annotate(
                 value_count=Count('locality'))
-            # 16 = 4 mandatory + 12 core
+            # get attributes
+            attribute_count = Attribute.objects.all().count() + 1  # geom
+            # count completeness based attributes
             # this make long waiting, need to more good query
-            complete = values.filter(value_count__gte=15).count()
-            partial = values.filter(value_count__gte=4).filter(value_count__lte=14).count()
+            complete = values.filter(value_count__gte=attribute_count).count()
+            partial = values.filter(value_count__gte=4).filter(value_count__lte=attribute_count - 1).count()
             basic = values.filter(value_count__lte=3).count()
-
-            # values = values.values("value_count")
-            # for value in values:
-            #     value_count = value["value_count"] + 1
-            #     # 16 = 4 mandatory + 12 core
-            #     if value_count >= 16:
-            #         complete += 1
-            #     elif value_count <= 4:
-            #         basic += 1
-            #     else:
-            #         partial += 1
 
             output = {"numbers": {"hospital": hospital_number, "medical_clinic": medical_clinic_number
                 , "orthopaedic_clinic": orthopaedic_clinic_number},

@@ -161,23 +161,11 @@
 
                     <p style="margin-top: 5px">
                         <select id="locality-nature-of-facility-input" name="nature-of-facility" style="display: none">
-                            <option value=""></option>
-                            <option value="clinic without beds">clinic without beds</option>
-                            <option value="clinic with beds">clinic with beds</option>
-                            <option value="first referral hospital">first referral hospital</option>
-                            <option value="second referral hospital or General hospital">second referral hospital or
-                                General
-                                hospital
-                            </option>
-                            <option value="tertiary level including University hospital">tertiary level including
-                                University
-                                hospital
-                            </option>
                         </select>
                     </p>
                 </div>
                 <div class="info">
-                    <div class="line updates">
+                    <div id="line-updates" class="line updates">
                         <div class="icon-holder">
                             <i class="fa fa-info-circle"></i>
                         </div>
@@ -211,6 +199,16 @@
 
                             <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
 
+                            <p class="coordinates" id="locality-coordinates-input" style="display: none">lat: <input
+                                    type="number"
+                                    id="locality-coordinates-lat-input"
+                                    style="width: 80px"
+                                    min="-180" max="180" onchange="onChange(this)"/>,
+                                long: <input type="number"
+                                             id="locality-coordinates-long-input" style="width: 80px" min="-180"
+                                             max="180" onchange="onChange(this)"/></p>
+
+
                             <p>
                                 <i class="fa fa-phone"></i>
                                 <span id="locality-phone" class="call">0141 636 6116</span>
@@ -221,8 +219,13 @@
                             <p>
                                 <i class="fa fa-clock-o"></i>
                                 <span id="locality-operation" class="call">24/24 & 7/7</span>
-                                <span><input type="text" id="locality-operation-input" name="operation"
-                                             placeholder="Operation Hours" style="display: none"/></span>
+                                <span>
+                                    <select id="locality-operation-input"
+                                            style="display: none" onchange="onChange(this)">
+                                    </select>
+                                </span>
+                                <input type="text" id="locality-operation-specify-input"
+                                       placeholder="Operations" style="display: none"/>
                             </p>
 
                             <p class="url">
@@ -237,38 +240,37 @@
                         </div>
                         <div class="data">
                             <div class="scope-of-service">
-                                <h3>scope of service</h3>
+                                <h3>scope of service <span id="locality-scope-of-service-add"
+                                                           class="add_remove_optional_button " style="display: none"
+                                                           onclick="addOption('scope')">+</span>
+                                </h3>
 
                                 <div id="locality-scope-of-service">
-                                    <ul>
-                                        <li><i class="fa fa-caret-right"></i>Specialized care</li>
-                                        <li><i class="fa fa-caret-right"></i>General acute care</li>
-                                        <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
-                                    </ul>
+                                </div>
+                                <div id="locality-scope-of-service-input"
+                                     style="display: none">
                                 </div>
                             </div>
                             <div class="ancillary">
-                                <h3>ancillary services</h3>
+                                <h3>ancillary services <span id="locality-ancillary-service-add"
+                                                             class="add_remove_optional_button " style="display: none"
+                                                             onclick="addOption('ancillary')">+</span></h3>
 
-                                <div id="locality-ancilary-service">
-                                    <ul>
-                                        <li><i class="fa fa-caret-right"></i>Operating theater</li>
-                                        <li><i class="fa fa-caret-right"></i>Laboratory</li>
-                                        <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
-                                        <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
-                                    </ul>
+                                <div id="locality-ancillary-service">
+                                </div>
+                                <div id="locality-ancillary-service-input"
+                                     style="display: none">
                                 </div>
                             </div>
-                            <div class="services">
-                                <h3>services</h3>
+                            <div class="activities">
+                                <h3>activities <span id="locality-activities-add"
+                                                     class="add_remove_optional_button " style="display: none"
+                                                     onclick="addOption('activities')">+</span></h3>
 
                                 <div id="locality-activities">
-                                    <ul>
-                                        <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
-                                        <li><i class="fa fa-caret-right"></i>Pediatric care</li>
-                                        <li><i class="fa fa-caret-right"></i>Mental health</li>
-                                        <li><i class="fa fa-caret-right"></i>Geriatric care</li>
-                                    </ul>
+                                </div>
+                                <div id="locality-activities-input"
+                                     style="display: none">
                                 </div>
                             </div>
                         </div>
@@ -278,7 +280,17 @@
                             <i class="fa fa-bed"></i>
                         </div>
                         <div class="data">
-                            <p id="locality-inpatient-service">20 full time beds, 50 part time beds</p>
+                            <p id="locality-inpatient-service"></p>
+
+                            <p id="locality-inpatient-service-input" style="display: none"><input type="number"
+                                                                                                  id="locality-inpatient-service-full-input"
+                                                                                                  min="0"
+                                                                                                  style="width: 50px"
+                                                                                                  placeholder="Full Time"/>
+                                full
+                                time beds, <input type="number" id="locality-inpatient-service-part-input" min="0"
+                                                  style="width: 50px" placeholder="Part Time"/>
+                                part time beds</p>
                         </div>
                     </div>
                     <div class="line note">
@@ -294,7 +306,17 @@
                             <i class="fa fa-user-md"></i>
                         </div>
                         <div class="data">
-                            <p id="locality-staff">20 full time equivalent doctors and 50 full time equivalent
+                            <p id="locality-staff"></p>
+
+                            <p id="locality-staff-input" style="display: none"><input type="number"
+                                                                                      id="locality-staff-doctor-input"
+                                                                                      min="0"
+                                                                                      style="width: 50px"
+                                                                                      placeholder="Doctor"/>
+                                full time equivalent doctors and <input type="number" id="locality-staff-nurse-input"
+                                                                        min="0"
+                                                                        style="width: 50px" placeholder="Nurse"/>
+                                full time equivalent
                                 nurses</p>
                         </div>
                     </div>
@@ -303,7 +325,11 @@
                             <i class="fa fa-briefcase"></i>
                         </div>
                         <div class="data">
-                            <p><strong>Ownership:</strong> public</p>
+                            <p><strong>Ownership:</strong>
+                                <span id="locality-ownership"></span>
+                                <select id="locality-ownership-input" name="ownership"
+                                        style="display: none">
+                                </select></p>
                         </div>
                     </div>
                 </div>
@@ -324,6 +350,12 @@
                     <a class="button edit stroke blue"
                        style="cursor: pointer"><i
                             class="fa fa-pencil"></i> save
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4" id="create-button" style="display: none">
+                    <a class="button edit stroke blue"
+                       style="cursor: pointer"><i
+                            class="fa fa-pencil"></i> create
                     </a>
                 </div>
                 <div class="button-wrapper col-xs-4" id="add-button">
@@ -367,6 +399,7 @@
 
 {% block extra_js %}
     <script type="text/javascript">
+        var APP;
         $(document).ready(function () {
             // set share url
             var baseURL = location.protocol + "//" + location.hostname + "/";
@@ -385,6 +418,17 @@
 
             // initialize the app
             new APP();
+        });
+        function addOption(wrapper) {
+            $APP.trigger('sidebar.add-option', {'wrapper': wrapper});
+        }
+        function onChange(element) {
+            $APP.trigger('sidebar.option-onchange', {'element': element});
+        }
+
+        $('body').on("click", ".remove_option", function (e) { //user click on remove text
+            e.preventDefault();
+            $(this).parent('div').remove();
         });
     </script>
 {% endblock extra_js %}

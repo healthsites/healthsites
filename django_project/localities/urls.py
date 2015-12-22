@@ -28,8 +28,12 @@ urlpatterns = patterns(
         name='locality-create'
     ),
     url(
-        r'^localities/edit$', 'localities.views.LocalityEdit',
+        r'^localities/edit$', 'localities.views.locality_edit',
         name='locality-edit'
+    ),
+    url(
+        r'^localities/create$', 'localities.views.locality_create',
+        name='locality-create'
     ),
 
     url(

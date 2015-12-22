@@ -23,8 +23,8 @@ window.MAP = (function () {
         this.redIcon = L.icon({
             iconUrl: '/static/img/healthsite-marker-red.png',
             iconRetinaUrl: '/static/img/healthsite-marker-red-2x.png',
-            iconSize: [26, 46],
-            iconAnchor: [13, 46]
+            iconSize: [35, 43],
+            iconAnchor: [17, 43]
         });
 
         this.MAP.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text.
@@ -98,21 +98,6 @@ window.MAP = (function () {
         },
 
         _restoreMapContext: function () {
-            //if (sessionStorage.key('map_zoom') && sessionStorage.key('map_center')) {
-            //    var zoom = parseInt(sessionStorage.getItem('map_zoom'), 10);
-            //    var center = sessionStorage.getItem('map_center').split('|');
-            //
-            //    var latLngCenter = new L.latLng(parseFloat(center[0]), parseFloat(center[1]));
-            //
-            //    if (zoom && center) {
-            //        this.MAP.setView(latLngCenter, zoom);
-            //        return true;
-            //    } else {
-            //        return false;
-            //    }
-            //} else {
-            //    return false;
-            //}
         },
 
         _updateMapContext: function () {
@@ -133,9 +118,21 @@ window.MAP = (function () {
         _bindExternalEvents: function () {
             var self = this;
 
+            $APP.on('locality.coordinate-changed', function (evt, payload) {
+                self.pointLayer.setLatLng([payload.geom[1], payload.geom[0]]);
+                self.MAP.panTo([payload.geom[1], payload.geom[0]]);
+            });
+
+            $APP.on('locality.create', function (evt, payload) {
+                self.pointLayer.setLatLng([payload.geom[1], payload.geom[0]]);
+                self.MAP.addLayer(self.pointLayer);
+                self.MAP.panTo([payload.geom[1], payload.geom[0]]);
+            });
+
             $APP.on('locality.edit', function (evt, payload) {
                 self.pointLayer.setLatLng(self.original_marker_position);
                 self.MAP.addLayer(self.pointLayer);
+                self.MAP.panTo(self.original_marker_position);
 
             });
 
@@ -163,7 +160,7 @@ window.MAP = (function () {
                 self.original_marker_position = [payload.geom[1], payload.geom[0]];
                 // move map to the marker
                 if (payload.zoomto) {
-                    self.MAP.setView(self.original_marker_position, self.MAP.getMaxZoom()-2);
+                    self.MAP.setView(self.original_marker_position, self.MAP.getMaxZoom() - 2);
                 } else {
                     self.MAP.panTo(self.original_marker_position);
                 }

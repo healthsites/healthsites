@@ -211,3 +211,8 @@
 #twitter_share_map:hover {
     cursor: pointer;
 }
+
+.add_remove_optional_button {
+    color: black;
+    cursor: pointer;
+}

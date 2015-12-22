@@ -1,12 +1,18 @@
 window.LocalitySidebar = (function () {
     "use strict";
+    var nature_options = ["", "clinic without beds", "clinic with beds", "first referral hospital", "second referral hospital or General hospital", "tertiary level including University hospital"];
+    var scope_options = ["all type of services", "specialized care", "general acute care", "rehabilitation care", "old age/hospice care"];
+    var ancillary_options = ["Operating theater", "laboratory", "imaging equipment", "intensive care unit", "Emergency department"];
+    var activities_options = ["medicine and medical specialties", "surgery and surgical specialties", "Maternal and women health", "pediatric care", "mental health", "geriatric care", "social care"];
+    var ownership_options = ["", "public", "private not for profit", "private commercial"];
+    var operation_options = ["", "24/24 & 7/7", "open only during business hours", "other"];
     var need_information = "needs information";
     var no_physical_address = "No Physical Address";
     var no_phone_found = "No phone found";
     var no_operation_hours_found = "No operation hours found";
     var no_url_found = "No url found";
     var no_name = "No Name";
-    var is_enable = false;
+    var is_enable_edit = false;
     var info_fields = [];
     var edit_fields = [];
     // private variables and functions
@@ -16,6 +22,7 @@ window.LocalitySidebar = (function () {
         this.$sidebar = $('#sidebar-info');
 
         // new style
+        this.$line_updates = $('#line-updates');
         this.$name = $('#locality-name');
         this.$nature_of_facility = $('#locality-nature-of-facility');
         this.$completenees = $('#locality-completeness');
@@ -25,8 +32,9 @@ window.LocalitySidebar = (function () {
         this.$operation = $('#locality-operation');
         this.$url = $('#locality-url');
         this.$scope_of_service = $('#locality-scope-of-service');
-        this.$ancilary_service = $('#locality-ancilary-service');
+        this.$ancillary_service = $('#locality-ancillary-service');
         this.$activities = $('#locality-activities');
+        this.$ownership = $('#locality-ownership');
         this.$inpatient_service = $('#locality-inpatient-service');
         this.$staff = $('#locality-staff');
 
@@ -34,13 +42,44 @@ window.LocalitySidebar = (function () {
         this.$form = $('#locality-form');
         this.$editButton = $('#edit-button');
         this.$saveButton = $('#save-button');
+        this.$createButton = $('#create-button');
         this.$addButton = $('#add-button');
         this.$cancelButton = $('#cancel-button');
         this.$physical_address_input = $('#locality-physical-address-input');
         this.$name_input = $('#locality-name-input');
         this.$phone_input = $('#locality-phone-input');
         this.$operation_input = $('#locality-operation-input');
+        this.$operation_specify_input = $('#locality-operation-specify-input');
         this.$nature_of_facility_input = $('#locality-nature-of-facility-input');
+        this.$scope_of_service_input = $('#locality-scope-of-service-input');
+        this.$scope_of_service_add = $('#locality-scope-of-service-add');
+        this.$ownership_input = $('#locality-ownership-input');
+        this.$ancillary_service_input = $('#locality-ancillary-service-input');
+        this.$ancillary_service_add = $('#locality-ancillary-service-add');
+        this.$activities_input = $('#locality-activities-input');
+        this.$activities_add = $('#locality-activities-add');
+        this.$inpatient_service_input = $('#locality-inpatient-service-input');
+        this.$inpatient_service_full_input = $('#locality-inpatient-service-full-input');
+        this.$inpatient_service_part_input = $('#locality-inpatient-service-part-input');
+        this.$staff_input = $('#locality-staff-input');
+        this.$staff_doctor_input = $('#locality-staff-doctor-input');
+        this.$staff_nurse_input = $('#locality-staff-nurse-input');
+        this.$coordinates_input = $('#locality-coordinates-input');
+        this.$coordinates_lat_input = $('#locality-coordinates-lat-input');
+        this.$coordinates_long_input = $('#locality-coordinates-long-input');
+
+        // create nature options
+        for (var i = 0; i < nature_options.length; i++) {
+            this.$nature_of_facility_input.append("<option value=\"" + nature_options[i] + "\">" + nature_options[i] + "</option>");
+        }
+        // create ownershipe options
+        for (var i = 0; i < ownership_options.length; i++) {
+            this.$ownership_input.append("<option value=\"" + ownership_options[i] + "\">" + ownership_options[i] + "</option>");
+        }
+        // create operations options
+        for (var i = 0; i < operation_options.length; i++) {
+            this.$operation_input.append("<option value=\"" + operation_options[i] + "\">" + operation_options[i] + "</option>");
+        }
 
         // set info field array
         info_fields.push(this.$editButton);
@@ -50,17 +89,33 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$phone);
         info_fields.push(this.$operation);
         info_fields.push(this.$nature_of_facility);
+        info_fields.push(this.$scope_of_service);
+        info_fields.push(this.$ownership);
+        info_fields.push(this.$ancillary_service);
+        info_fields.push(this.$activities);
+        info_fields.push(this.$inpatient_service);
+        info_fields.push(this.$staff);
+        info_fields.push(this.$coordinates);
 
         // set editfield array
-        edit_fields.push(this.$saveButton);
         edit_fields.push(this.$cancelButton);
         edit_fields.push(this.$name_input);
         edit_fields.push(this.$physical_address_input);
         edit_fields.push(this.$phone_input);
         edit_fields.push(this.$operation_input);
         edit_fields.push(this.$nature_of_facility_input);
+        edit_fields.push(this.$ownership_input);
+        edit_fields.push(this.$scope_of_service_input);
+        edit_fields.push(this.$scope_of_service_add);
+        edit_fields.push(this.$ancillary_service_input);
+        edit_fields.push(this.$ancillary_service_add);
+        edit_fields.push(this.$activities_input);
+        edit_fields.push(this.$activities_add);
+        edit_fields.push(this.$inpatient_service_input);
+        edit_fields.push(this.$staff_input);
+        edit_fields.push(this.$coordinates_input);
 
-        this.setEnable(is_enable);
+        this.setEnable(is_enable_edit);
         this.showDefaultInfo();
 
         this._bindExternalEvents();
@@ -85,18 +140,93 @@ window.LocalitySidebar = (function () {
 
             this.$sidebar.on('update-coordinates', this.updateCoordinates.bind(this));
 
-            this.$editButton.on('click', this.showEdit.bind(this));
-            this.$cancelButton.on('click', this.showEdit.bind(this));
+            this.$editButton.on('click', this.showEdit.bind(this, "edit"));
             this.$saveButton.on('click', this.sendEdit.bind(this));
+            this.$addButton.on('click', this.showEdit.bind(this, "create"));
+            this.$createButton.on('click', this.sendCreate.bind(this));
+            this.$cancelButton.on('click', this.showEdit.bind(this));
 
-            // form if submit
+            // -------------------------------------------------------------------
+            // FORM IF SUBMIT
+            // -------------------------------------------------------------------
             var that = this;
             this.$form.submit(function (event) {
                 // Stop form from submitting normally
                 event.preventDefault();
+                // GET OPERATIONS
+                var lat = that.$coordinates_lat_input.val();
+                if (lat > 180) {
+                    lat = 180;
+                } else if (lat < -180) {
+                    lat = -180;
+                }
+                // GET OPERATIONS
+                var long = that.$coordinates_long_input.val();
+                if (long > 180) {
+                    long = 180;
+                } else if (long < -180) {
+                    long = -180;
+                }
+
+                // GET OPERATIONS
+                var operation = that.$operation_input.val();
+                if (operation == operation_options[operation_options.length - 1]) {
+                    operation = that.$operation_specify_input.val();
+                }
+
+                // GET SCOPE CHILD
+                var scope_inputs = that.$scope_of_service_input.find('select');
+                var scope = "";
+                for (var i = 0; i < scope_inputs.length; i++) {
+                    scope += $(scope_inputs[i]).find("option:selected").text() + "|";
+                }
+                if (scope == "|") {
+                    scope = "";
+                }
+
+                // GET ANCILLARY CHILD
+                var ancillary_inputs = that.$ancillary_service_input.find('select');
+                var ancillary = "";
+                for (var i = 0; i < ancillary_inputs.length; i++) {
+                    ancillary += $(ancillary_inputs[i]).find("option:selected").text() + "|";
+                }
+                if (ancillary == "|") {
+                    ancillary = "";
+                }
+
+                // GET ACTIVITIES CHILD
+                var activities_input = that.$activities_input.find('select');
+                var activities = "";
+                for (var i = 0; i < activities_input.length; i++) {
+                    activities += $(activities_input[i]).find("option:selected").text() + "|";
+                }
+                if (activities == "|") {
+                    activities = "";
+                }
+
+
+                // GET INPATIENT CHILD
+                var inpatient = that.$inpatient_service_full_input.val() + "|" + that.$inpatient_service_part_input.val();
+                if (inpatient == "|") {
+                    inpatient = "";
+                }
+
+
+                // GET STAFFS CHILD
+                var staffs = that.$staff_doctor_input.val() + "|" + that.$staff_nurse_input.val();
+                if (staffs == "|") {
+                    staffs = "";
+                }
 
                 var url = that.$form.attr("action");
-                var fields = that.$form.serialize() + '&uuid=' + that.locality_data.uuid;
+                var fields = that.$form.serialize();
+                if (that.locality_data != null) {
+                    fields += '&uuid=' + that.locality_data.uuid;
+                }
+                fields += '&lat=' + lat + '&long=' + long +
+                    '&scope-of-service=' + encodeURIComponent(scope) +
+                    "&ancillary=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient-service=" + encodeURIComponent(inpatient) +
+                    "&staff=" + encodeURIComponent(staffs) + "&operation=" + encodeURIComponent(operation);
 
                 // Send the data using post
                 var posting = $.post(url, fields);
@@ -104,41 +234,111 @@ window.LocalitySidebar = (function () {
                 var sidebar = that;
                 // Put the results in a div
                 posting.done(function (data) {
+                    sidebar.locality_uuid = data;
                     sidebar.getInfo();
                 });
             });
         },
-        showEdit: function (evt) {
-            if (is_enable) {
-                if (this.$editButton.is(":visible")) {
-                    for (var i = 0; i < info_fields.length; i++) {
-                        info_fields[i].hide();
+        addedNewOption: function (wrapper, value) {
+            // SCOPE OPTIONS
+            if (wrapper == "scope") {
+                var html = "<div><select>";
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    if (value == scope_options[i]) {
+                        html += "<option selected>" + scope_options[i] + "</option>";
+                    } else {
+                        html += "<option>" + scope_options[i] + "</option>";
                     }
-                    for (var i = 0; i < edit_fields.length; i++) {
-                        edit_fields[i].show();
+                }
+                html += "</select><span class=\"add_remove_optional_button remove_option\">  -  <div>";
+                this.$scope_of_service_input.append(html);
+            }
+            // ANCILLARY OPTIONS
+            else if (wrapper == "ancillary") {
+                var html = "<div><select>";
+                // create ancillary options
+                for (var i = 0; i < ancillary_options.length; i++) {
+                    if (value == ancillary_options[i]) {
+                        html += "<option selected>" + ancillary_options[i] + "</option>";
+                    } else {
+                        html += "<option>" + ancillary_options[i] + "</option>";
                     }
+                }
+                html += "</select><span class=\"add_remove_optional_button  remove_option\">  -  <div>";
+                this.$ancillary_service_input.append(html);
+            }
+            // ACTIVITIES OPTIONS
+            else if (wrapper == "activities") {
+                var html = "<div><select>";
+                // create ancillary options
+                for (var i = 0; i < activities_options.length; i++) {
+                    if (value == activities_options[i]) {
+                        html += "<option selected>" + activities_options[i] + "</option>";
+                    } else {
+                        html += "<option>" + activities_options[i] + "</option>";
+                    }
+                }
+                html += "</select><span class=\"add_remove_optional_button  remove_option\">  -  <div>";
+                this.$activities_input.append(html);
+            }
+        },
+        showEdit: function (mode, event) {
+            var isEditingMode = !(this.$editButton.is(":visible") && this.$createButton.is(":visible"));
+            this.$saveButton.hide();
+            this.$createButton.hide();
+            this.$line_updates.show();
+            if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create" && isLoggedIn))) {
+                if (mode == "edit" && is_enable_edit) {
+                    $APP.trigger('locality.edit');
+                    this.$saveButton.show();
+                    this.showInfo();
                 } else {
-                    for (var i = 0; i < info_fields.length; i++) {
-                        info_fields[i].show();
-                    }
-                    for (var i = 0; i < edit_fields.length; i++) {
-                        edit_fields[i].hide();
-                    }
+                    $APP.trigger('locality.create', {'geom': [5, 5]});
+                    this.$createButton.show();
+                    this.$line_updates.hide();
+                    this.showDefaultEdit();
+                }
+                //this.showInfo();
+                for (var i = 0; i < info_fields.length; i++) {
+                    info_fields[i].hide();
+                }
+                for (var i = 0; i < edit_fields.length; i++) {
+                    edit_fields[i].show();
+                }
+                var operation = this.$operation_input.val();
+                if (operation == operation_options[operation_options.length - 1]) {
+                    this.$operation_specify_input.show()
+                }
+            } else {
+                $APP.trigger('locality.cancel');
+                this.$operation_specify_input.hide();
+                for (var i = 0; i < info_fields.length; i++) {
+                    info_fields[i].show();
+                }
+                for (var i = 0; i < edit_fields.length; i++) {
+                    edit_fields[i].hide();
                 }
             }
         },
         setEnable: function (input) {
-            console.log(input);
-            is_enable = input;
+            this.$addButton.css({'opacity': 0.7});
+            if (isLoggedIn) {
+                this.$addButton.css({'opacity': 1});
+            }
+            is_enable_edit = input;
             if (input) {
                 this.$editButton.css({'opacity': 1});
-                this.$addButton.css({'opacity': 1});
             } else {
                 this.$editButton.css({'opacity': 0.7});
-                this.$addButton.css({'opacity': 0.7});
             }
         },
         sendEdit: function (evt, payload) {
+            this.$form.attr('action', "localities/edit");
+            this.$form.submit();
+        },
+        sendCreate: function (evt, payload) {
+            this.$form.attr('action', "localities/create");
             this.$form.submit();
         },
 
@@ -155,25 +355,40 @@ window.LocalitySidebar = (function () {
 
         updateCoordinates: function (evt, payload) {
             // set new values
-            $('#id_lon').val(payload.latlng.lng);
-            $('#id_lat').val(payload.latlng.lat);
+            this.$coordinates_long_input.val(payload.latlng.lng);
+            this.$coordinates_lat_input.val(payload.latlng.lat);
         },
-
-        showDefaultInfo: function (evt) {
-            if (!this.$editButton.is(":visible")) {
-                this.$editButton.click();
+        showDefaultEdit: function (evt) {
+            this.$scope_of_service_input.html("");
+            this.$ancillary_service_input.html("");
+            this.$activities_input.html("");
+            $(this.$nature_of_facility_input.find('option')[0]).prop('selected', true);
+            $(this.$operation_input.find('option')[0]).prop('selected', true);
+            this.$phone_input.val("");
+            this.$coordinates_lat_input.val(0);
+            this.$coordinates_long_input.val(0);
+            this.$operation_specify_input.val("");
+            this.$operation_specify_input.hide();
+            if (this.$cancelButton.is(":visible")) {
+                this.$cancelButton.click();
             }
-
-            this.$name.text(no_name);
             this.$name_input.val("");
+            this.$physical_address_input.val("");
+            this.$inpatient_service_full_input.val("");
+            this.$inpatient_service_part_input.val("");
+            this.$staff_doctor_input.val("");
+            this.$staff_nurse_input.val("");
 
+        },
+        showDefaultInfo: function (evt) {
+            this.showDefaultEdit();
+            this.$name.text(no_name);
             this.$nature_of_facility.text(need_information);
             this.$completenees.attr('style', 'width:0%');
             this.$completenees.text('0% Complete');
             this.$coordinates.text('lat: ' + 'n/a' + ', long: ' + 'n/a');
 
             this.$physical_address.text(no_physical_address);
-            this.$physical_address.val("");
 
             this.$phone.text(no_phone_found);
             this.$operation.text(no_operation_hours_found);
@@ -181,12 +396,14 @@ window.LocalitySidebar = (function () {
             this.$url.removeAttr('href');
             this.$scope_of_service.html('');
             this.$scope_of_service.text(need_information);
-            this.$ancilary_service.html('');
-            this.$ancilary_service.text(need_information);
+            this.$ancillary_service.html('');
+            this.$ancillary_service.text(need_information);
             this.$activities.html('');
             this.$activities.text(need_information);
-            this.$inpatient_service.text(need_information);
             this.$staff.text(need_information);
+            this.$ownership.text(need_information);
+
+            this.$inpatient_service.text(need_information);
         },
 
         showInfo: function (evt) {
@@ -198,24 +415,180 @@ window.LocalitySidebar = (function () {
             }
             console.log(this.locality_data);
 
-            this.$name.text(this.locality_data.values['name']);
-            this.$name_input.val(this.locality_data.values['name']);
-
-            this.$nature_of_facility.text(this.locality_data.values['nature_of_facility']);
-            this.$nature_of_facility.val(this.locality_data.values['nature_of_facility']);
-
+            // COORDINATE
             this.$completenees.attr('style', 'width:' + this.locality_data.completeness);
             this.$completenees.text(this.locality_data.completeness + ' Complete');
-            this.$coordinates.text('lat: ' + this.locality_data.geom[0] + ', long: ' + this.locality_data.geom[1]);
+            this.$coordinates.text('lat: ' + this.locality_data.geom[1] + ', long: ' + this.locality_data.geom[0]);
+            this.$coordinates_lat_input.val(this.locality_data.geom[1]);
+            this.$coordinates_long_input.val(this.locality_data.geom[0]);
 
-            this.$physical_address.text(this.locality_data.values['physical_address']);
-            this.$physical_address_input.val(this.locality_data.values['physical_address']);
+            // LOCALITY NAME
+            var name = this.locality_data.values['name'];
+            if (this.isHasValue(name)) {
+                this.$name.text(name);
+                this.$name_input.val(name);
+            }
 
-            this.$phone.text(this.locality_data.values['phone']);
-            this.$phone_input.val(this.locality_data.values['phone']);
+            // NATURE OF LOCALITY
+            var nature = this.locality_data.values['nature_of_facility'];
+            if (this.isHasValue(nature)) {
+                this.$nature_of_facility.text(nature);
+                for (var i = 0; i < nature_options.length; i++) {
+                    if (nature == nature_options[i]) {
+                        $(this.$nature_of_facility_input.find('option')[i]).prop('selected', true);
+                        break;
+                    }
+                }
+            }
 
-            this.$operation.text(this.locality_data.values['operation']);
-            this.$operation_input.val(this.locality_data.values['operation']);
+            // PHYSICAL ADDRESS
+            var address = this.locality_data.values['physical_address'];
+            if (this.isHasValue(address)) {
+                this.$physical_address.text(address);
+                this.$physical_address_input.val(address);
+            }
+
+            // PHONE
+            var phone = this.locality_data.values['phone'];
+            if (this.isHasValue(phone)) {
+                this.$phone.text(phone);
+                this.$phone_input.val(phone);
+            }
+
+            // SCOPE OF SERVICE
+            var scope = this.locality_data.values['scope_of_service'];
+            if (this.isHasValue(scope)) {
+                var scopes = scope.split("|");
+                var html = '<ul>';
+                for (i = 0; i < scopes.length; ++i) {
+                    if (scopes[i].length > 0) {
+                        html += '<li><i class="fa fa-caret-right"></i>';
+                        html += scopes[i];
+                        html += '</li>';
+                        this.addedNewOption("scope", scopes[i]);
+                    }
+                }
+                html += '</ul>';
+                if (html != "<ul></ul>") {
+                    this.$scope_of_service.html(html);
+                }
+            } else {
+                //this.addedNewOption("scope", "");
+            }
+
+
+            // ANCILLARY OF SERVICE
+            var ancillary = this.locality_data.values['ancillary_services'];
+            if (this.isHasValue(ancillary)) {
+                var ancillary = ancillary.split("|");
+                var html = '<ul>';
+                for (i = 0; i < ancillary.length; ++i) {
+                    if (ancillary[i].length > 0) {
+                        html += '<li><i class="fa fa-caret-right"></i>';
+                        html += ancillary[i];
+                        html += '</li>';
+                        this.addedNewOption("ancillary", ancillary[i]);
+                    }
+                }
+                html += '</ul>';
+                if (html != "<ul></ul>") {
+                    this.$ancillary_service.html(html);
+                }
+            } else {
+                //this.addedNewOption("ancillary", "");
+            }
+
+
+            // ACTIVITIES OF SERVICE
+            var activities = this.locality_data.values['activities'];
+            if (this.isHasValue(activities)) {
+                var activities = activities.split("|");
+                var html = '<ul>';
+                for (i = 0; i < activities.length; ++i) {
+                    if (activities[i].length > 0) {
+                        html += '<li><i class="fa fa-caret-right"></i>';
+                        html += activities[i];
+                        html += '</li>';
+                        this.addedNewOption("activities", activities[i]);
+                    }
+                }
+                html += '</ul>';
+                if (html != "<ul></ul>") {
+                    this.$activities.html(html);
+                }
+            } else {
+                //this.addedNewOption("activities", "");
+            }
+
+
+            // INPATIENT-SERVICE
+            var inpatient = this.locality_data.values['inpatient_service'];
+            if (this.isHasValue(inpatient)) {
+                var inpatient = inpatient.split("|");
+                if (inpatient.length >= 1 && inpatient[0] != "") {
+                    // reinit view
+                    this.$inpatient_service.html("<span id=\"locality-inpatient-service-full\">-</span> full time beds, <span id=\"locality-inpatient-service-part\">-</span> part time beds");
+                    this.$inpatient_service_full = $('#locality-inpatient-service-full');
+                    this.$inpatient_service_part = $('#locality-inpatient-service-part');
+                    // fill value
+                    this.$inpatient_service_full.text(parseInt(inpatient[0], 10));
+                    this.$inpatient_service_full_input.val(parseInt(inpatient[0], 10));
+                }
+                if (inpatient.length >= 2 && inpatient[1] != "") {
+                    this.$inpatient_service_part.text(parseInt(inpatient[1], 10));
+                    this.$inpatient_service_part_input.val(parseInt(inpatient[1], 10));
+                }
+            }
+
+
+            // STAFFS
+            var staff = this.locality_data.values['staff'];
+            if (this.isHasValue(staff)) {
+                var staff = staff.split("|");
+                if (staff.length >= 1 && staff[0] != "") {
+                    // reinit view
+                    this.$staff.html("<span id=\"locality-staff-doctor\">-</span> full time equivalent doctors and <span id=\"locality-staff-nurse\">-</span> full time equivalent nurses");
+                    this.$staff_doctor = $('#locality-staff-doctor');
+                    this.$staff_nurse = $('#locality-staff-nurse');
+                    // fill value
+                    this.$staff_doctor.text(parseInt(staff[0], 10));
+                    this.$staff_doctor_input.val(parseInt(staff[0], 10));
+                }
+                if (staff.length >= 2 && staff[1] != "") {
+                    this.$staff_nurse.text(parseInt(staff[1], 10));
+                    this.$staff_nurse_input.val(parseInt(staff[1], 10));
+                }
+            }
+
+            // OWNERSHIP
+            var ownership = this.locality_data.values['ownership'];
+            if (this.isHasValue(ownership)) {
+                this.$ownership.text(ownership);
+                for (var i = 0; i < ownership_options.length; i++) {
+                    if (ownership == ownership_options[i]) {
+                        $(this.$ownership_input.find('option')[i]).prop('selected', true);
+                        break;
+                    }
+                }
+            }
+
+            // OPERATION
+            var operation = this.locality_data.values['operation'];
+            if (this.isHasValue(operation)) {
+                this.$operation.text(operation);
+                for (var i = 0; i < operation_options.length; i++) {
+                    if (operation == operation_options[i]) {
+                        $(this.$operation_input.find('option')[i]).prop('selected', true);
+                        break;
+                    } else {
+                        if (i == operation_options.length - 1) {
+                            $(this.$operation_input.find('option')[operation_options.length - 1]).prop('selected', true);
+                            this.$operation_specify_input.val(operation);
+                        }
+                    }
+                }
+            }
+
 
             if (this.locality_data.values['url']) {
                 this.$url.text(this.locality_data.values['url']);
@@ -224,47 +597,14 @@ window.LocalitySidebar = (function () {
                 }
                 this.$url.attr('href', this.locality_data.values['url']);
             }
-
-            var i;
-            if (this.locality_data.values['scope_of_service']) {
-                var scope_of_service_html = '<ul>';
-                for (i = 0; i < this.locality_data.values['scope_of_service'].length; ++i) {
-                    scope_of_service_html += '<li><i class="fa fa-caret-right"></i>';
-                    scope_of_service_html += this.locality_data.values['scope_of_service'][i];
-                    scope_of_service_html += '</li>';
-                }
-                scope_of_service_html += '</ul>';
-                this.$scope_of_service.text('');
-                this.$scope_of_service.html(scope_of_service_html);
-            }
-
-            if (this.locality_data.values['ancilary_service']) {
-                var ancilary_service_html = '<ul>';
-                for (i = 0; i < this.locality_data.values['ancilary_service'].length; ++i) {
-                    ancilary_service_html += '<li><i class="fa fa-caret-right"></i>';
-                    ancilary_service_html += this.locality_data.values['ancilary_service'][i];
-                    ancilary_service_html += '</li>';
-                }
-                ancilary_service_html += '</ul>';
-                this.$ancilary_service.text('');
-                this.$ancilary_service.html(ancilary_service_html);
-            }
-
-            if (this.locality_data.values['activities']) {
-                var activities_html = '<ul>';
-                for (i = 0; i < this.locality_data.values['activities'].length; ++i) {
-                    activities_html += '<li><i class="fa fa-caret-right"></i>';
-                    activities_html += this.locality_data.values['activities'][i];
-                    activities_html += '</li>';
-                }
-                activities_html += '</ul>';
-                this.$activities.text('');
-                this.$activities.html(activities_html);
-            }
-            this.$inpatient_service.text(this.locality_data.values['inpatient_service']);
-            this.$staff.text(this.locality_data.values['staff']);
         },
-
+        isHasValue: function (value) {
+            if (value && value.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        },
         setInfoWindowHeight: function () {
             var nlfH = this.$sidebar_footer.height() + 15;
             this.$sidebar_body.height($(window).height() - this.$sidebar_body.offset().top - nlfH);
@@ -302,6 +642,25 @@ window.LocalitySidebar = (function () {
             $APP.on('locality.show-info-adjust', function (evt, payload) {
                 self.$sidebar.trigger('show-info-adjust');
             });
+            $APP.on('sidebar.add-option', function (evt, payload) {
+                self.addedNewOption(payload.wrapper, "");
+            });
+            $APP.on('sidebar.option-onchange', function (evt, payload) {
+                self.onchange(payload.element);
+            });
+        },
+        onchange: function (element) {
+            if (element.id == this.$operation_input.attr('id')) {
+                if (element.value == operation_options[operation_options.length - 1]) {
+                    this.$operation_specify_input.show();
+                } else {
+                    this.$operation_specify_input.hide();
+                }
+            } else if (element.id == this.$coordinates_lat_input.attr('id')) {
+                $APP.trigger('locality.coordinate-changed', {'geom': [this.$coordinates_long_input.val(), this.$coordinates_lat_input.val()]});
+            } else if (element.id == this.$coordinates_long_input.attr('id')) {
+                $APP.trigger('locality.coordinate-changed', {'geom': [this.$coordinates_long_input.val(), this.$coordinates_lat_input.val()]});
+            }
         }
     }
 

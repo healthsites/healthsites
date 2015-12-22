@@ -13,7 +13,7 @@ window.APP = (function () {
         new MAP();
 
         // init localitySidebar
-        new LocalitySidebar();
+        this.$sidebar = new LocalitySidebar();
 
         this._initAPPEvents();
 
@@ -88,7 +88,7 @@ window.APP = (function () {
 
         _closeSidebar: function () {
 
-        }
+        },
     }
 
     // return module
