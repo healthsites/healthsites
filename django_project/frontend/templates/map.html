@@ -212,8 +212,11 @@
                             <p>
                                 <i class="fa fa-phone"></i>
                                 <span id="locality-phone" class="call">0141 636 6116</span>
-                                <span><input type="text" id="locality-phone-input" name="phone"
-                                             placeholder="Phone" style="display: none"/></span>
+                                <span id="locality-phone-input" style="display: none">+<input type="number"
+                                                                                              id="locality-phone-input-int"
+                                                                                              style="width: 50px; margin-right: 5px"/><input
+                                        type="number"
+                                        id="locality-phone-input-number"/></span>
                             </p>
 
                             <p>
@@ -240,37 +243,30 @@
                         </div>
                         <div class="data">
                             <div class="scope-of-service">
-                                <h3>scope of service <span id="locality-scope-of-service-add"
-                                                           class="add_remove_optional_button " style="display: none"
-                                                           onclick="addOption('scope')">+</span>
-                                </h3>
+                                <h3>scope of service</h3>
 
                                 <div id="locality-scope-of-service">
                                 </div>
                                 <div id="locality-scope-of-service-input"
-                                     style="display: none">
+                                     style="display: none; margin-bottom: 10px;">
                                 </div>
                             </div>
                             <div class="ancillary">
-                                <h3>ancillary services <span id="locality-ancillary-service-add"
-                                                             class="add_remove_optional_button " style="display: none"
-                                                             onclick="addOption('ancillary')">+</span></h3>
+                                <h3>ancillary services</h3>
 
                                 <div id="locality-ancillary-service">
                                 </div>
                                 <div id="locality-ancillary-service-input"
-                                     style="display: none">
+                                     style="display: none; margin-bottom: 10px;">
                                 </div>
                             </div>
                             <div class="activities">
-                                <h3>activities <span id="locality-activities-add"
-                                                     class="add_remove_optional_button " style="display: none"
-                                                     onclick="addOption('activities')">+</span></h3>
+                                <h3>activities</h3>
 
                                 <div id="locality-activities">
                                 </div>
                                 <div id="locality-activities-input"
-                                     style="display: none">
+                                     style="display: none; margin-bottom: 10px;">
                                 </div>
                             </div>
                         </div>
@@ -285,11 +281,10 @@
                             <p id="locality-inpatient-service-input" style="display: none"><input type="number"
                                                                                                   id="locality-inpatient-service-full-input"
                                                                                                   min="0"
-                                                                                                  style="width: 50px"
-                                                                                                  placeholder="Full Time"/>
+                                                                                                  style="width: 50px"/>
                                 full
                                 time beds, <input type="number" id="locality-inpatient-service-part-input" min="0"
-                                                  style="width: 50px" placeholder="Part Time"/>
+                                                  style="width: 50px"/>
                                 part time beds</p>
                         </div>
                     </div>
@@ -311,11 +306,10 @@
                             <p id="locality-staff-input" style="display: none"><input type="number"
                                                                                       id="locality-staff-doctor-input"
                                                                                       min="0"
-                                                                                      style="width: 50px"
-                                                                                      placeholder="Doctor"/>
+                                                                                      style="width: 50px"/>
                                 full time equivalent doctors and <input type="number" id="locality-staff-nurse-input"
                                                                         min="0"
-                                                                        style="width: 50px" placeholder="Nurse"/>
+                                                                        style="width: 50px"/>
                                 full time equivalent
                                 nurses</p>
                         </div>
@@ -418,17 +412,9 @@
             // initialize the app
             new APP();
         });
-        function addOption(wrapper) {
-            $APP.trigger('sidebar.add-option', {'wrapper': wrapper});
-        }
         function onChange(element) {
             $APP.trigger('sidebar.option-onchange', {'element': element});
         }
-
-        $('body').on("click", ".remove_option", function (e) { //user click on remove text
-            e.preventDefault();
-            $(this).parent('div').remove();
-        });
     </script>
 {% endblock extra_js %}
 

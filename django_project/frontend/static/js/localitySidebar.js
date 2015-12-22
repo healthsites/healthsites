@@ -48,6 +48,8 @@ window.LocalitySidebar = (function () {
         this.$physical_address_input = $('#locality-physical-address-input');
         this.$name_input = $('#locality-name-input');
         this.$phone_input = $('#locality-phone-input');
+        this.$phone_input_number = $('#locality-phone-input-number');
+        this.$phone_input_int = $('#locality-phone-input-int');
         this.$operation_input = $('#locality-operation-input');
         this.$operation_specify_input = $('#locality-operation-specify-input');
         this.$nature_of_facility_input = $('#locality-nature-of-facility-input');
@@ -150,7 +152,6 @@ window.LocalitySidebar = (function () {
             // -------------------------------------------------------------------
             var that = this;
             this.$form.submit(function (event) {
-                var is_valid = true;
                 var url = that.$form.attr("action");
                 var fields = that.$form.serialize();
                 // Stop form from submitting normally
@@ -159,14 +160,14 @@ window.LocalitySidebar = (function () {
                 // PARSING FORM
                 // ------------------------------------------------------------
                 {
-                    // GET OPERATIONS
+                    // GET LAT
                     var lat = that.$coordinates_lat_input.val();
                     if (lat > 180) {
                         lat = 180;
                     } else if (lat < -180) {
                         lat = -180;
                     }
-                    // GET OPERATIONS
+                    // GET LONG
                     var long = that.$coordinates_long_input.val();
                     if (long > 180) {
                         long = 180;
@@ -181,30 +182,36 @@ window.LocalitySidebar = (function () {
                     }
 
                     // GET SCOPE CHILD
-                    var scope_inputs = that.$scope_of_service_input.find('select');
+                    var scope_inputs = that.$scope_of_service_input.find('input');
                     var scope = "";
                     for (var i = 0; i < scope_inputs.length; i++) {
-                        scope += $(scope_inputs[i]).find("option:selected").text() + "|";
+                        if ($(scope_inputs[i]).prop('checked')) {
+                            scope += scope_options[i] + "|";
+                        }
                     }
                     if (scope == "|") {
                         scope = "";
                     }
 
                     // GET ANCILLARY CHILD
-                    var ancillary_inputs = that.$ancillary_service_input.find('select');
+                    var ancillary_inputs = that.$ancillary_service_input.find('input');
                     var ancillary = "";
                     for (var i = 0; i < ancillary_inputs.length; i++) {
-                        ancillary += $(ancillary_inputs[i]).find("option:selected").text() + "|";
+                        if ($(ancillary_inputs[i]).prop('checked')) {
+                            ancillary += ancillary_options[i] + "|";
+                        }
                     }
                     if (ancillary == "|") {
                         ancillary = "";
                     }
 
                     // GET ACTIVITIES CHILD
-                    var activities_input = that.$activities_input.find('select');
+                    var activities_input = that.$activities_input.find('input');
                     var activities = "";
                     for (var i = 0; i < activities_input.length; i++) {
-                        activities += $(activities_input[i]).find("option:selected").text() + "|";
+                        if ($(activities_input[i]).prop('checked')) {
+                            activities += activities_options[i] + "|";
+                        }
                     }
                     if (activities == "|") {
                         activities = "";
@@ -221,10 +228,14 @@ window.LocalitySidebar = (function () {
                     if (staffs == "|") {
                         staffs = "";
                     }
+
+                    // GET PHONE
+                    var phone = "+" + that.$phone_input_int.val() + "-" + that.$phone_input_number.val();
+
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
                     }
-                    fields += '&lat=' + lat + '&long=' + long +
+                    fields += '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope-of-service=' + encodeURIComponent(scope) +
                         "&ancillary=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient-service=" + encodeURIComponent(inpatient) +
                         "&staff=" + encodeURIComponent(staffs) + "&operation=" + encodeURIComponent(operation);
@@ -234,68 +245,85 @@ window.LocalitySidebar = (function () {
                 // POST
                 // ------------------------------------------------------------
                 {
-                    if (is_valid) {
-                        // Send the data using post
-                        var posting = $.post(url, fields);
-                        // Put the results in a div
-                        posting.done(function (data) {
-                            console.log(data);
-                            var data = JSON.parse(data);
-                            if (data["valid"]) {
-                                that.locality_uuid = data["uuid"];
-                                that.getInfo();
-                            } else {
-                                alert(data["key"] + " can't be empty");
-                            }
-                        });
-                    }
+                    // Send the data using post
+                    var posting = $.post(url, fields);
+                    // Put the results in a div
+                    posting.done(function (data) {
+                        console.log(data);
+                        var data = JSON.parse(data);
+                        if (data["valid"]) {
+                            that.locality_uuid = data["uuid"];
+                            that.getInfo();
+                        } else {
+                            alert(data["key"] + " can't be empty");
+                        }
+                    });
                 }
             });
         },
-        addedNewOption: function (wrapper, value) {
+        addedNewOptons: function (wrapper) {
             // SCOPE OPTIONS
             if (wrapper == "scope") {
-                var html = "<div><select onchange=\"onChange(this)\">";
+                var html = "";
                 // create nature options
                 for (var i = 0; i < scope_options.length; i++) {
-                    if (value == scope_options[i]) {
-                        html += "<option selected>" + scope_options[i] + "</option>";
-                    } else {
-                        html += "<option>" + scope_options[i] + "</option>";
-                    }
+                    html += "<input type=\"checkbox\">" + scope_options[i] + "<br>";
                 }
-                html += "</select><span class=\"add_remove_optional_button remove_option\">  -  <div>";
-                this.$scope_of_service_input.append(html);
+                html += "";
+                this.$scope_of_service_input.html(html);
             }
-
             // ANCILLARY OPTIONS
             else if (wrapper == "ancillary") {
-                var html = "<div><select onchange=\"onChange(this)\">";
-                // create ancillary options
-                for (var i = 0; i < ancillary_options.length; i++) {
-                    if (value == ancillary_options[i]) {
-                        html += "<option selected>" + ancillary_options[i] + "</option>";
-                    } else {
-                        html += "<option>" + ancillary_options[i] + "</option>";
-                    }
+                var html = "";
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + ancillary_options[i] + "<br>";
                 }
-                html += "</select><span class=\"add_remove_optional_button  remove_option\">  -  <div>";
-                this.$ancillary_service_input.append(html);
+                html += "";
+                this.$ancillary_service_input.html(html);
             }
-
             // ACTIVITIES OPTIONS
             else if (wrapper == "activities") {
-                var html = "<div><select onchange=\"onChange(this)\">";
-                // create ancillary options
-                for (var i = 0; i < activities_options.length; i++) {
-                    if (value == activities_options[i]) {
-                        html += "<option selected>" + activities_options[i] + "</option>";
-                    } else {
-                        html += "<option>" + activities_options[i] + "</option>";
+                var html = "";
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + activities_options[i] + "<br>";
+                }
+                html += "";
+                this.$activities_input.html(html);
+            }
+
+        },
+        checkingOptions: function (wrapper, selected) {
+            // SCOPE UPDATES
+            if (wrapper == "scope") {
+                var scope_inputs = this.$scope_of_service_input.find('input');
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    if (selected == scope_options[i]) {
+                        $(scope_inputs[i]).prop('checked', true);
                     }
                 }
-                html += "</select><span class=\"add_remove_optional_button  remove_option\">  -  <div>";
-                this.$activities_input.append(html);
+            }
+            // ANCILLARY UPDATES
+            else if (wrapper == "ancillary") {
+                var ancillary_service_input = this.$ancillary_service_input.find('input');
+                // create nature options
+                for (var i = 0; i < ancillary_options.length; i++) {
+                    if (selected == ancillary_options[i]) {
+                        $(ancillary_service_input[i]).prop('checked', true);
+                    }
+                }
+            }
+            // ACTIVITIES UPDATES
+            else if (wrapper == "activities") {
+                var activities_input = this.$activities_input.find('input');
+                // create nature options
+                for (var i = 0; i < activities_options.length; i++) {
+                    if (selected == activities_options[i]) {
+                        $(activities_input[i]).prop('checked', true);
+                    }
+                }
             }
         },
 
@@ -379,12 +407,13 @@ window.LocalitySidebar = (function () {
         },
 
         showDefaultEdit: function (evt) {
-            this.$scope_of_service_input.html("");
-            this.$ancillary_service_input.html("");
-            this.$activities_input.html("");
+            this.addedNewOptons("scope"); // this.$scope_of_service_input
+            this.addedNewOptons("ancillary"); // this.$ancillary_service_input
+            this.addedNewOptons("activities"); // this.$ancillary_service_input
             $(this.$nature_of_facility_input.find('option')[0]).prop('selected', true);
             $(this.$operation_input.find('option')[0]).prop('selected', true);
-            this.$phone_input.val("");
+            this.$phone_input_int.val("");
+            this.$phone_input_number.val("");
             this.$coordinates_lat_input.val(0);
             this.$coordinates_long_input.val(0);
             this.$operation_specify_input.val("");
@@ -473,15 +502,6 @@ window.LocalitySidebar = (function () {
                 }
             }
 
-            // PHONE
-            {
-                var phone = this.locality_data.values['phone'];
-                if (this.isHasValue(phone)) {
-                    this.$phone.text(phone);
-                    this.$phone_input.val(phone);
-                }
-            }
-
             // SCOPE OF SERVICE
             {
                 var scope = this.locality_data.values['scope_of_service'];
@@ -493,7 +513,7 @@ window.LocalitySidebar = (function () {
                             html += '<li><i class="fa fa-caret-right"></i>';
                             html += scopes[i];
                             html += '</li>';
-                            this.addedNewOption("scope", scopes[i]);
+                            this.checkingOptions("scope", scopes[i]);
                         }
                     }
                     html += '</ul>';
@@ -516,7 +536,7 @@ window.LocalitySidebar = (function () {
                             html += '<li><i class="fa fa-caret-right"></i>';
                             html += ancillary[i];
                             html += '</li>';
-                            this.addedNewOption("ancillary", ancillary[i]);
+                            this.checkingOptions("ancillary", ancillary[i]);
                         }
                     }
                     html += '</ul>';
@@ -539,7 +559,7 @@ window.LocalitySidebar = (function () {
                             html += '<li><i class="fa fa-caret-right"></i>';
                             html += activities[i];
                             html += '</li>';
-                            this.addedNewOption("activities", activities[i]);
+                            this.checkingOptions("activities", activities[i]);
                         }
                     }
                     html += '</ul>';
@@ -626,6 +646,18 @@ window.LocalitySidebar = (function () {
                 }
             }
 
+            // PHONE
+            {
+                var phone = this.locality_data.values['phone'];
+                if (this.isHasValue(phone)) {
+                    this.$phone.text(phone);
+                    phone = phone.replace("+", "");
+                    var phones = phone.split("-");
+                    this.$phone_input_int.val(phones[0]);
+                    this.$phone_input_number.val(phones[1]);
+                }
+            }
+
             if (this.locality_data.values['url']) {
                 this.$url.text(this.locality_data.values['url']);
                 if (!this.locality_data.values['url'].startsWith('http://')) {
@@ -673,9 +705,6 @@ window.LocalitySidebar = (function () {
 
             $APP.on('locality.show-info-adjust', function (evt, payload) {
                 self.$sidebar.trigger('show-info-adjust');
-            });
-            $APP.on('sidebar.add-option', function (evt, payload) {
-                self.addedNewOption(payload.wrapper, "");
             });
             $APP.on('sidebar.option-onchange', function (evt, payload) {
                 self.onchange(payload.element);
