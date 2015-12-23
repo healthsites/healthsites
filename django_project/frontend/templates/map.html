@@ -214,7 +214,8 @@
                                 <span id="locality-phone" class="call">0141 636 6116</span>
                                 <span id="locality-phone-input" style="display: none">+<input type="number"
                                                                                               id="locality-phone-input-int"
-                                                                                              style="width: 50px; margin-right: 5px"/><input
+                                                                                              style="width: 50px; margin-right: 5px"
+                                                                                              onkeypress="onKeyPress(this)"/><input
                                         type="number"
                                         id="locality-phone-input-number"/></span>
                             </p>
@@ -231,10 +232,14 @@
                                        placeholder="Operations" style="display: none"/>
                             </p>
 
-                            <p class="url">
-                                <i class="fa fa-link"></i>
-                                <a href="#" id="locality-url">www.msf.org</a>
-                            </p>
+                            <p id="locality-url-input-add" style="cursor: pointer; display: none"
+                               onclick="addOption(this)"> add
+                                link</p>
+
+                            <div id="locality-url">
+                            </div>
+                            <div id="locality-url-input" style="display: none">
+                            </div>
                         </div>
                     </div>
                     <div class="line services">
@@ -415,6 +420,24 @@
         function onChange(element) {
             $APP.trigger('sidebar.option-onchange', {'element': element});
         }
+        function onKeyPress(element) {
+            if (element.id == "locality-phone-input-int") {
+                var val = $(element).val();
+                console.log(val);
+                if (val.length > 3) {
+                    val = val.substring(0, 3);
+                    $(element).val(val);
+                }
+            }
+        }
+        function addOption(element) {
+            $APP.trigger('sidebar.option-add', {'element': element});
+        }
+        $('body').on("click", ".remove_option", function (e) { //user click on remove text
+            e.preventDefault();
+            $(this).parent('p').remove();
+        })
+
     </script>
 {% endblock extra_js %}
 

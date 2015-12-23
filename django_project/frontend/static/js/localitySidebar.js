@@ -69,6 +69,8 @@ window.LocalitySidebar = (function () {
         this.$coordinates_input = $('#locality-coordinates-input');
         this.$coordinates_lat_input = $('#locality-coordinates-lat-input');
         this.$coordinates_long_input = $('#locality-coordinates-long-input');
+        this.$url_input = $('#locality-url-input');
+        this.$url_input_add = $('#locality-url-input-add');
 
         // create nature options
         for (var i = 0; i < nature_options.length; i++) {
@@ -98,6 +100,7 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$inpatient_service);
         info_fields.push(this.$staff);
         info_fields.push(this.$coordinates);
+        info_fields.push(this.$url);
 
         // set editfield array
         edit_fields.push(this.$cancelButton);
@@ -116,6 +119,8 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$inpatient_service_input);
         edit_fields.push(this.$staff_input);
         edit_fields.push(this.$coordinates_input);
+        edit_fields.push(this.$url_input);
+        edit_fields.push(this.$url_input_add);
 
         this.setEnable(is_enable_edit);
         this.showDefaultInfo();
@@ -174,6 +179,20 @@ window.LocalitySidebar = (function () {
                     } else if (long < -180) {
                         long = -180;
                     }
+
+                    // GET URL
+                    var urls = that.$url_input.find('p');
+                    var url_value = "";
+                    for (var i = 0; i < urls.length; i++) {
+                        var val = $(urls[i]).find("input").val();
+                        if (val.length > 0) {
+                            url_value += val + "|";
+                        }
+                    }
+                    if (url_value == "|") {
+                        url_value = "";
+                    }
+                    console.log(url_value);
 
                     // GET OPERATIONS
                     var operation = that.$operation_input.val();
@@ -235,7 +254,7 @@ window.LocalitySidebar = (function () {
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
                     }
-                    fields += '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
+                    fields += '&url_value=' + url_value + '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope-of-service=' + encodeURIComponent(scope) +
                         "&ancillary=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient-service=" + encodeURIComponent(inpatient) +
                         "&staff=" + encodeURIComponent(staffs) + "&operation=" + encodeURIComponent(operation);
@@ -245,14 +264,14 @@ window.LocalitySidebar = (function () {
                 // POST
                 // ------------------------------------------------------------
                 {
-                    // Send the data using post
+                    //Send the data using post
                     var posting = $.post(url, fields);
                     // Put the results in a div
                     posting.done(function (data) {
-                        console.log(data);
                         var data = JSON.parse(data);
                         if (data["valid"]) {
                             that.locality_uuid = data["uuid"];
+                            $APP.trigger('set.hash.silent', {'locality': that.locality_uuid});
                             that.getInfo();
                         } else {
                             alert(data["key"] + " can't be empty");
@@ -406,6 +425,10 @@ window.LocalitySidebar = (function () {
             this.$coordinates_lat_input.val(payload.latlng.lat);
         },
 
+        addUrl: function (url, name) {
+            this.$url.append("<p class=\"url\"><i class=\"fa fa-link\"></i><a href=\"" + url + "\">" + name + "</a></p>");
+        },
+
         showDefaultEdit: function (evt) {
             this.addedNewOptons("scope"); // this.$scope_of_service_input
             this.addedNewOptons("ancillary"); // this.$ancillary_service_input
@@ -427,6 +450,7 @@ window.LocalitySidebar = (function () {
             this.$inpatient_service_part_input.val("");
             this.$staff_doctor_input.val("");
             this.$staff_nurse_input.val("");
+            this.$url_input.html("");
 
         },
         showDefaultInfo: function (evt) {
@@ -439,7 +463,6 @@ window.LocalitySidebar = (function () {
             this.$physical_address.text(no_physical_address);
             this.$phone.text(no_phone_found);
             this.$operation.text(no_operation_hours_found);
-            this.$url.text(no_url_found);
             this.$url.removeAttr('href');
             this.$scope_of_service.html('');
             this.$scope_of_service.text(need_information);
@@ -450,6 +473,8 @@ window.LocalitySidebar = (function () {
             this.$staff.text(need_information);
             this.$ownership.text(need_information);
             this.$inpatient_service.text(need_information);
+            this.$url.html("");
+            this.addUrl("", no_url_found);
         },
 
         showInfo: function (evt) {
@@ -646,6 +671,21 @@ window.LocalitySidebar = (function () {
                 }
             }
 
+            // URLs
+            {
+                var urls = this.locality_data.values['url'];
+                if (this.isHasValue(urls)) {
+                    var urls = urls.split("|");
+                    this.$url.html("");
+                    for (i = 0; i < urls.length; ++i) {
+                        if (urls[i] != "") {
+                            this.addUrl(urls[i], urls[i]);
+                            this.addOptionUrl(urls[i]);
+                        }
+                    }
+                }
+            }
+
             // PHONE
             {
                 var phone = this.locality_data.values['phone'];
@@ -656,14 +696,6 @@ window.LocalitySidebar = (function () {
                     this.$phone_input_int.val(phones[0]);
                     this.$phone_input_number.val(phones[1]);
                 }
-            }
-
-            if (this.locality_data.values['url']) {
-                this.$url.text(this.locality_data.values['url']);
-                if (!this.locality_data.values['url'].startsWith('http://')) {
-                    this.locality_data.values['url'] = 'http://' + this.locality_data.values['url'];
-                }
-                this.$url.attr('href', this.locality_data.values['url']);
             }
         },
         isHasValue: function (value) {
@@ -709,6 +741,9 @@ window.LocalitySidebar = (function () {
             $APP.on('sidebar.option-onchange', function (evt, payload) {
                 self.onchange(payload.element);
             });
+            $APP.on('sidebar.option-add', function (evt, payload) {
+                self.addOption(payload.element, "");
+            });
         },
         onchange: function (element) {
             if (element.id == this.$operation_input.attr('id')) {
@@ -721,6 +756,14 @@ window.LocalitySidebar = (function () {
                 $APP.trigger('locality.coordinate-changed', {'geom': [this.$coordinates_long_input.val(), this.$coordinates_lat_input.val()]});
             } else if (element.id == this.$coordinates_long_input.attr('id')) {
                 $APP.trigger('locality.coordinate-changed', {'geom': [this.$coordinates_long_input.val(), this.$coordinates_lat_input.val()]});
+            }
+        },
+        addOptionUrl: function (value) {
+            this.$url_input.append("<p class=\"url\"><i class=\"fa fa-link\"></i><input type=\"text\" value=\"" + value + "\" /><span class=\"add_remove_optional_button remove_option\">  -  </p>");
+        },
+        addOption: function (element, value) {
+            if (element.id == this.$url_input_add.attr('id')) {
+                this.addOptionUrl(value);
             }
         }
     }

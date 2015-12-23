@@ -189,9 +189,11 @@ def get_json_from_request(request):
     request_activities = request.POST.get('activities')
     request_inpatient = request.POST.get('inpatient-service')
     request_staff = request.POST.get('staff')
+    request_url = request.POST.get('url_value')
 
     json = {}
     json['name'] = request_name
+    json['url'] = request_url
     json['physical_address'] = request_physical_address
     json['phone'] = request_phone
     json['operation'] = request_operation
@@ -235,6 +237,7 @@ def get_json_from_request(request):
 
 
 def locality_edit(request):
+    print request
     if request.method == 'POST':
         if request.user.is_authenticated():
             json_request = get_json_from_request(request)
