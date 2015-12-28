@@ -312,11 +312,10 @@
                                                                                       id="locality-staff-doctor-input"
                                                                                       min="0"
                                                                                       style="width: 50px"/>
-                                full time equivalent doctors and <input type="number" id="locality-staff-nurse-input"
+                                full time doctors, <input type="number" id="locality-staff-nurse-input"
                                                                         min="0"
                                                                         style="width: 50px"/>
-                                full time equivalent
-                                nurses</p>
+                                full time nurses</p>
                         </div>
                     </div>
                     <div class="line ownership">
@@ -433,10 +432,6 @@
         function addOption(element) {
             $APP.trigger('sidebar.option-add', {'element': element});
         }
-        $('body').on("click", ".remove_option", function (e) { //user click on remove text
-            e.preventDefault();
-            $(this).parent('p').remove();
-        })
 
     </script>
 {% endblock extra_js %}
