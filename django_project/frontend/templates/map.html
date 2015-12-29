@@ -154,13 +154,13 @@
             <div class="details" id="sidebar-info">
                 <div class="header">
                     <h1 id="locality-name">No Name</h1>
-                    <input type="text" id="locality-name-input" name="locality-name"
+                    <input type="text" id="locality-name-input" name="name"
                            placeholder="Locality name" style="display: none; width: 100%"/>
 
                     <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
 
                     <p style="margin-top: 5px">
-                        <select id="locality-nature-of-facility-input" name="nature-of-facility" style="display: none">
+                        <select id="locality-nature-of-facility-input" name="nature_of_facility" style="display: none">
                         </select>
                     </p>
                 </div>
@@ -194,7 +194,7 @@
                         <div class="data">
                             <p class="address" id="locality-physical-address">54, Praed st, London, W2 NY<br/>
                                 Unighted Kingdom</p>
-                            <input type="text" id="locality-physical-address-input" name="physical-address"
+                            <input type="text" id="locality-physical-address-input" name="physical_address"
                                    placeholder="Physical Address" style="display: none"/>
 
                             <p class="coordinates" id="locality-coordinates">lat: 0, long: 0</p>
@@ -297,8 +297,12 @@
                         <div class="icon-holder">
                             <i class="fa fa-sticky-note"></i>
                         </div>
-                        <div class="data">
-                            <p><strong>Note:</strong> Outpatient consultation and in-patient hospitalization</p>
+                        <div class="data" id="locality-note">
+                            <p><strong>Note: </strong><span id="locality-note-text"> Outpatient consultation and in-patient hospitalization</span>
+                            </p>
+                        </div>
+                        <div class="data" id="locality-note-input"
+                             style="display: none; margin-bottom: 10px;">
                         </div>
                     </div>
                     <div class="line doctors">
@@ -313,8 +317,8 @@
                                                                                       min="0"
                                                                                       style="width: 50px"/>
                                 full time doctors, <input type="number" id="locality-staff-nurse-input"
-                                                                        min="0"
-                                                                        style="width: 50px"/>
+                                                          min="0"
+                                                          style="width: 50px"/>
                                 full time nurses</p>
                         </div>
                     </div>
@@ -328,6 +332,20 @@
                                 <select id="locality-ownership-input" name="ownership"
                                         style="display: none">
                                 </select></p>
+                        </div>
+                    </div>
+                    <div id="others" class="line ">
+                        <div class="icon-holder">
+                            <b>others</b>
+                        </div>
+                        <div class="data">
+                            <p id="others-add" onclick="addOthers()" style="display: none; cursor: pointer"><b>add new
+                                information</b></p>
+
+                            <div id="others-data">
+                            </div>
+                            <div id="others-data-input" style="display: none">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -432,6 +450,13 @@
         function addOption(element) {
             $APP.trigger('sidebar.option-add', {'element': element});
         }
+        function addOthers() {
+            $APP.trigger('sidebar.other-add');
+        }
+        $('body').on("click", ".remove_option", function (e) { //user click on remove text
+            e.preventDefault();
+            $(this).parent('div').remove();
+        })
 
     </script>
 {% endblock extra_js %}

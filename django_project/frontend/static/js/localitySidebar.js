@@ -6,15 +6,18 @@ window.LocalitySidebar = (function () {
     var activities_options = ["medicine and medical specialties", "surgery and surgical specialties", "Maternal and women health", "pediatric care", "mental health", "geriatric care", "social care"];
     var ownership_options = ["", "public", "private not for profit", "private commercial"];
     var operation_options = ["", "24/24 & 7/7", "open only during business hours", "other"];
+    var notes_options = ["Outpatient consultation", "In-patient hospitalization"];
     var need_information = "needs information";
     var no_physical_address = "No Physical Address";
     var no_phone_found = "No phone found";
     var no_operation_hours_found = "No operation hours found";
     var no_url_found = "No url found";
+    var no_others_found = "No other informations";
     var no_name = "No Name";
     var is_enable_edit = false;
     var info_fields = [];
     var edit_fields = [];
+    var others_attr = [];
     // private variables and functions
 
     // constructor
@@ -37,6 +40,8 @@ window.LocalitySidebar = (function () {
         this.$ownership = $('#locality-ownership');
         this.$inpatient_service = $('#locality-inpatient-service');
         this.$staff = $('#locality-staff');
+        this.$note = $('#locality-note');
+        this.$note_text = $('#locality-note-text');
 
         // form
         this.$form = $('#locality-form');
@@ -70,6 +75,11 @@ window.LocalitySidebar = (function () {
         this.$coordinates_lat_input = $('#locality-coordinates-lat-input');
         this.$coordinates_long_input = $('#locality-coordinates-long-input');
         this.$url_input = $('#locality-url-input');
+        this.$note_input = $('#locality-note-input');
+
+        this.$other_add = $('#others-add');
+        this.$other_data = $('#others-data');
+        this.$other_data_input = $('#others-data-input');
 
         // create nature options
         for (var i = 0; i < nature_options.length; i++) {
@@ -100,6 +110,8 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$staff);
         info_fields.push(this.$coordinates);
         info_fields.push(this.$url);
+        info_fields.push(this.$note);
+        info_fields.push(this.$other_data);
 
         // set editfield array
         edit_fields.push(this.$cancelButton);
@@ -119,6 +131,9 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$staff_input);
         edit_fields.push(this.$coordinates_input);
         edit_fields.push(this.$url_input);
+        edit_fields.push(this.$note_input);
+        edit_fields.push(this.$other_add);
+        edit_fields.push(this.$other_data_input);
 
         this.setEnable(is_enable_edit);
         this.showDefaultInfo();
@@ -180,12 +195,10 @@ window.LocalitySidebar = (function () {
 
                     // GET URL
                     var urls = that.$url_input.find('p');
-                    var url_value = "";
+                    var urls_output = [];
                     for (var i = 0; i < urls.length; i++) {
                         var val = $(urls[i]).find("input").val();
-                        if (val.length > 0) {
-                            url_value += val;
-                        }
+                        urls_output.push(val);
                     }
 
                     // GET OPERATIONS
@@ -230,6 +243,18 @@ window.LocalitySidebar = (function () {
                         activities = "";
                     }
 
+                    // GET ACTIVITIES CHILD
+                    var notes_input = that.$note_input.find('input');
+                    var notes = "";
+                    for (var i = 0; i < notes_input.length; i++) {
+                        if ($(notes_input[i]).prop('checked')) {
+                            notes += notes_options[i] + "|";
+                        }
+                    }
+                    if (notes == "|") {
+                        notes = "";
+                    }
+
                     // GET INPATIENT CHILD
                     var inpatient = that.$inpatient_service_full_input.val() + "|" + that.$inpatient_service_part_input.val();
                     if (inpatient == "|") {
@@ -251,10 +276,29 @@ window.LocalitySidebar = (function () {
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
                     }
-                    fields += '&url_value=' + url_value + '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
-                        '&scope-of-service=' + encodeURIComponent(scope) +
-                        "&ancillary=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient-service=" + encodeURIComponent(inpatient) +
-                        "&staff=" + encodeURIComponent(staffs) + "&operation=" + encodeURIComponent(operation);
+                    fields += '&url=' + encodeURIComponent(urls_output[0]) + '&data_source=' + encodeURIComponent(urls_output[1]) + '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
+                        '&scope_of_service=' + encodeURIComponent(scope) +
+                        "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient) +
+                        "&staff=" + encodeURIComponent(staffs) + "&operation=" + encodeURIComponent(operation) + "&notes=" + notes;
+
+                    // GET OTHERS
+                    var others = that.$other_data_input.find("div");
+                    for (var i = 0; i < others.length; i++) {
+                        var attr = $(others[i]).find(".attribute").val();
+                        attr = attr.replace(" ", "_");
+                        var value = $(others[i]).find(".value").val();
+                        if (attr != "" && value != "") {
+                            fields += "&" + attr + "=" + encodeURIComponent(value);
+                            delete others_attr[that.getIndex(others_attr, attr)];
+                        }
+                    }
+
+                    // check the attribute that should be deleted
+                    for (var i = 0; i < others_attr.length; i++) {
+                        if (typeof others_attr[i] !== 'undefined') {
+                            fields += "&" + others_attr[i] + "=" + encodeURIComponent("");
+                        }
+                    }
                 }
 
                 // ------------------------------------------------------------
@@ -308,6 +352,16 @@ window.LocalitySidebar = (function () {
                 html += "";
                 this.$activities_input.html(html);
             }
+            // NOTES OPTIONS
+            else if (wrapper == "notes") {
+                var html = "";
+                // create nature options
+                for (var i = 0; i < notes_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + notes_options[i] + "<br>";
+                }
+                html += "";
+                this.$note_input.html(html);
+            }
 
         },
         checkingOptions: function (wrapper, selected) {
@@ -338,6 +392,16 @@ window.LocalitySidebar = (function () {
                 for (var i = 0; i < activities_options.length; i++) {
                     if (selected == activities_options[i]) {
                         $(activities_input[i]).prop('checked', true);
+                    }
+                }
+            }
+            // NOTES UPDATES
+            else if (wrapper == "notes") {
+                var note_input = this.$note_input.find('input');
+                // create nature options
+                for (var i = 0; i < notes_options.length; i++) {
+                    if (selected == note_input[i]) {
+                        $(note_input[i]).prop('checked', true);
                     }
                 }
             }
@@ -430,6 +494,7 @@ window.LocalitySidebar = (function () {
             this.addedNewOptons("scope"); // this.$scope_of_service_input
             this.addedNewOptons("ancillary"); // this.$ancillary_service_input
             this.addedNewOptons("activities"); // this.$ancillary_service_input
+            this.addedNewOptons("notes"); // this.$notes_input
             $(this.$nature_of_facility_input.find('option')[0]).prop('selected', true);
             $(this.$operation_input.find('option')[0]).prop('selected', true);
             this.$phone_input_int.val("");
@@ -472,6 +537,11 @@ window.LocalitySidebar = (function () {
             this.$inpatient_service.text(need_information);
             this.$url.html("");
             this.addUrl("", no_url_found);
+            this.$note_text.text(need_information);
+
+            this.$other_data.html(no_others_found);
+            this.$other_data_input.html("");
+            others_attr = [];
         },
 
         showInfo: function (evt) {
@@ -491,9 +561,13 @@ window.LocalitySidebar = (function () {
                 this.$coordinates_long_input.val(this.locality_data.geom[0]);
             }
 
+            var keys = [];
+            for (var k in this.locality_data.values) keys.push(k);
+
             // LOCALITY NAME
             {
                 var name = this.locality_data.values['name'];
+                delete keys[this.getIndex(keys, 'name')];
                 if (this.isHasValue(name)) {
                     this.$name.text(name);
                     this.$name_input.val(name);
@@ -503,6 +577,7 @@ window.LocalitySidebar = (function () {
             // NATURE OF LOCALITY
             {
                 var nature = this.locality_data.values['nature_of_facility'];
+                delete keys[this.getIndex(keys, 'nature_of_facility')];
                 if (this.isHasValue(nature)) {
                     this.$nature_of_facility.text(nature);
                     for (var i = 0; i < nature_options.length; i++) {
@@ -517,6 +592,7 @@ window.LocalitySidebar = (function () {
             // PHYSICAL ADDRESS
             {
                 var address = this.locality_data.values['physical_address'];
+                delete keys[this.getIndex(keys, 'physical_address')];
                 if (this.isHasValue(address)) {
                     this.$physical_address.text(address);
                     this.$physical_address_input.val(address);
@@ -526,6 +602,7 @@ window.LocalitySidebar = (function () {
             // SCOPE OF SERVICE
             {
                 var scope = this.locality_data.values['scope_of_service'];
+                delete keys[this.getIndex(keys, 'scope_of_service')];
                 if (this.isHasValue(scope)) {
                     var scopes = scope.split("|");
                     var html = '<ul>';
@@ -549,6 +626,7 @@ window.LocalitySidebar = (function () {
             // ANCILLARY OF SERVICE
             {
                 var ancillary = this.locality_data.values['ancillary_services'];
+                delete keys[this.getIndex(keys, 'ancillary_services')];
                 if (this.isHasValue(ancillary)) {
                     var ancillary = ancillary.split("|");
                     var html = '<ul>';
@@ -572,6 +650,7 @@ window.LocalitySidebar = (function () {
             // ACTIVITIES OF SERVICE
             {
                 var activities = this.locality_data.values['activities'];
+                delete keys[this.getIndex(keys, 'activities')];
                 if (this.isHasValue(activities)) {
                     var activities = activities.split("|");
                     var html = '<ul>';
@@ -592,9 +671,23 @@ window.LocalitySidebar = (function () {
                 }
             }
 
+            // NOTE
+            {
+                var notes = this.locality_data.values['notes'];
+                delete keys[this.getIndex(keys, 'notes')];
+                if (this.isHasValue(notes)) {
+                    var notes = notes.split("|");
+                    notes.pop();
+                    this.$note_text.html(notes.join(" and "));
+                } else {
+                    //this.addedNewOption("activities", "");
+                }
+            }
+
             // INPATIENT-SERVICE
             {
                 var inpatient = this.locality_data.values['inpatient_service'];
+                delete keys[this.getIndex(keys, 'inpatient_service')];
                 if (this.isHasValue(inpatient)) {
                     var inpatient = inpatient.split("|");
                     if (inpatient.length >= 1 && (inpatient[0] != "" | inpatient[1] != "")) {
@@ -618,6 +711,7 @@ window.LocalitySidebar = (function () {
             // STAFFS
             {
                 var staff = this.locality_data.values['staff'];
+                delete keys[this.getIndex(keys, 'staff')];
                 if (this.isHasValue(staff)) {
                     var staff = staff.split("|");
                     if (staff.length >= 1 && (staff[0] != "" | staff[1] != "")) {
@@ -641,6 +735,7 @@ window.LocalitySidebar = (function () {
             // OWNERSHIP
             {
                 var ownership = this.locality_data.values['ownership'];
+                delete keys[this.getIndex(keys, 'ownership')];
                 if (this.isHasValue(ownership)) {
                     this.$ownership.text(ownership);
                     for (var i = 0; i < ownership_options.length; i++) {
@@ -655,6 +750,7 @@ window.LocalitySidebar = (function () {
             // OPERATION
             {
                 var operation = this.locality_data.values['operation'];
+                delete keys[this.getIndex(keys, 'operation')];
                 if (this.isHasValue(operation)) {
                     this.$operation.text(operation);
                     for (var i = 0; i < operation_options.length; i++) {
@@ -671,11 +767,29 @@ window.LocalitySidebar = (function () {
                 }
             }
 
-            // URLs
+            // URL
+            var isUrlRendered = false;
             {
                 var url = this.locality_data.values['url'];
+                delete keys[this.getIndex(keys, 'url')];
                 if (this.isHasValue(url)) {
                     this.$url.html("");
+                    isUrlRendered = true;
+                    this.addUrl(url, url);
+                    this.addOptionUrl(url);
+                } else {
+                    this.addOptionUrl("");
+                }
+            }
+
+            // DATA-SOURCE
+            {
+                var url = this.locality_data.values['data_source'];
+                delete keys[this.getIndex(keys, 'data_source')];
+                if (this.isHasValue(url)) {
+                    if (!isUrlRendered) {
+                        this.$url.html("");
+                    }
                     this.addUrl(url, url);
                     this.addOptionUrl(url);
                 } else {
@@ -686,12 +800,26 @@ window.LocalitySidebar = (function () {
             // PHONE
             {
                 var phone = this.locality_data.values['phone'];
+                delete keys[this.getIndex(keys, 'phone')];
                 if (this.isHasValue(phone)) {
                     this.$phone.text(phone);
                     phone = phone.replace("+", "");
                     var phones = phone.split("-");
                     this.$phone_input_int.val(phones[0]);
                     this.$phone_input_number.val(phones[1]);
+                }
+            }
+
+            // OTHER
+            {
+                if (keys.length > 0) {
+                    this.$other_data.html("");
+                }
+                for (var i = 0; i < keys.length; i++) {
+                    if (typeof keys[i] !== 'undefined') {
+                        this.addOther(keys[i].replace("_", " "), this.locality_data.values[keys[i]]);
+                        others_attr.push(keys[i]);
+                    }
                 }
             }
         },
@@ -701,6 +829,16 @@ window.LocalitySidebar = (function () {
             } else {
                 return false;
             }
+        },
+        getIndex: function (array, value) {
+            var index = -99;
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] == value) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
         },
 
         getInfo: function (evt, payload) {
@@ -742,6 +880,9 @@ window.LocalitySidebar = (function () {
             $APP.on('sidebar.option-add', function (evt, payload) {
                 self.addOption(payload.element, "");
             });
+            $APP.on('sidebar.other-add', function (evt, payload) {
+                self.addOther("", "");
+            });
         },
         onchange: function (element) {
             if (element.id == this.$operation_input.attr('id')) {
@@ -762,6 +903,20 @@ window.LocalitySidebar = (function () {
         addOption: function (element, value) {
             if (element.id == this.$url_input_add.attr('id')) {
                 this.addOptionUrl(value);
+            }
+        },
+        addOther: function (attribute, value) {
+            var html = "<div class=\"input\">";
+            html += "<input type=\"text\" placeholder=\"Attribute\" class=\"attribute\" value=\"" + attribute + "\" />";
+            html += "<input type=\"text\" placeholder=\"Value\"  class=\"value\" value=\"" + value + "\" />";
+            html += "<span class=\"add_remove_optional_button remove_option\">  -  </span>"
+            html += "</div>";
+            this.$other_data_input.append(html);
+
+            if (attribute != "" && value != "") {
+                var html = "<p><strong>" + attribute + ": </strong>";
+                html += "<span>" + value + "</span></p>";
+                this.$other_data.append(html);
             }
         }
     }

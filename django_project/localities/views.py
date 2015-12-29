@@ -107,7 +107,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         # get attributes
-        attribute_count = Attribute.objects.all().count() + 1  # geom
+        attribute_count = 18
         # count completeness based attributes
         obj_repr = self.object.repr_dict()
         data_repr = render_fragment(
@@ -175,50 +175,47 @@ class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
 
 
 def get_json_from_request(request):
-    request_uuid = request.POST.get('uuid')
-    request_lat = request.POST.get('lat')
-    request_long = request.POST.get('long')
-    request_name = request.POST.get('locality-name')
-    request_physical_address = request.POST.get('physical-address')
-    request_phone = request.POST.get('phone')
-    request_operation = request.POST.get('operation')
-    request_nature = request.POST.get('nature-of-facility')
-    request_scope = request.POST.get('scope-of-service')
-    request_ancillary = request.POST.get('ancillary')
-    request_ownership = request.POST.get('ownership')
-    request_activities = request.POST.get('activities')
-    request_inpatient = request.POST.get('inpatient-service')
-    request_staff = request.POST.get('staff')
-    request_url = request.POST.get('url_value')
+    # special request:
+    special_request = ["long", "lat", "csrfmiddlewaretoken", "no uuid"]
 
+    mstring = []
     json = {}
-    json['name'] = request_name
-    json['url'] = request_url
-    json['physical_address'] = request_physical_address
-    json['phone'] = request_phone
-    json['operation'] = request_operation
-    json['nature_of_facility'] = request_nature
-    json['scope_of_service'] = request_scope
-    json['ancillary_services'] = request_ancillary
-    json['ownership'] = request_ownership
-    json['activities'] = request_activities
-    json['inpatient_service'] = request_inpatient
-    json['staff'] = request_staff
+    for key in request.POST.iterkeys():  # "for key in request.GET" works too.
+        # Add filtering logic here.
+        valuelist = request.POST.getlist(key)
+        mstring.extend(['%s=%s' % (key, val) for val in valuelist])
 
-    json['param_uuid'] = request_uuid
-    json['param_lat'] = request_lat
-    json['param_long'] = request_long
+    for str in mstring:
+        req = str.split('=', 1)
+        json[req[0].lower()] = req[1]
+        try:
+            Attribute.objects.get(key=req[0].lower())
+        except:
+            if req[0] not in special_request:
+                tmp_changeset = Changeset.objects.create(
+                    social_user=request.user
+                )
+                attribute = Attribute()
+                attribute.key = req[0]
+                attribute.changeset = tmp_changeset
+                attribute.save()
+                domain = Domain.objects.get(name="Health")
+                specification = Specification()
+                specification.domain = domain
+                specification.attribute = attribute
+                specification.changeset = tmp_changeset
+                specification.save()
 
     # check mandatory
     is_valid = True
 
-    if not json['param_lat'] or json['param_lat'] == "":
+    if not json['lat'] or json['lat'] == "":
         is_valid = False
-        json['param_invalid_key'] = "latitude"
+        json['invalid_key'] = "latitude"
 
-    if not json['param_long'] or json['param_long'] == "":
+    if not json['long'] or json['long'] == "":
         is_valid = False
-        json['param_invalid_key'] = "longitude"
+        json['invalid_key'] = "longitude"
 
     if is_valid:
         domain = Domain.objects.get(name="Health")
@@ -227,7 +224,7 @@ def get_json_from_request(request):
             try:
                 if len(json[attribute.attribute.key]) == 0:
                     is_valid = False
-                    json['param_invalid_key'] = attribute.attribute.key
+                    json['invalid_key'] = attribute.attribute.key
                     break
             except:
                 print "except"
@@ -243,15 +240,15 @@ def locality_edit(request):
             json_request = get_json_from_request(request)
             # checking mandatory
             if json_request['is_valid'] == True:
-                locality = Locality.objects.get(uuid=json_request['param_uuid'])
-                locality.set_geom(float(json_request['param_long']), float(json_request['param_lat']))
+                locality = Locality.objects.get(uuid=json_request['uuid'])
+                locality.set_geom(float(json_request['long']), float(json_request['lat']))
                 locality.save()
                 locality.set_values(json_request, request.user)
                 return HttpResponse(json.dumps(
-                    {"valid": json_request['is_valid'], "uuid": json_request['param_uuid']}))
+                    {"valid": json_request['is_valid'], "uuid": json_request['uuid']}))
             else:
                 return HttpResponse(
-                    json.dumps({"valid": json_request['is_valid'], "key": json_request['param_invalid_key']}))
+                    json.dumps({"valid": json_request['is_valid'], "key": json_request['invalid_key']}))
 
     else:
         print "not logged in"
@@ -279,7 +276,7 @@ def locality_create(request):
                 loc.upstream_id = u'web¶{}'.format(tmp_uuid)
 
                 loc.geom = Point(
-                    float(json_request['param_long']), float(json_request['param_lat'])
+                    float(json_request['long']), float(json_request['lat'])
                 )
                 loc.save()
                 loc.set_values(json_request, request.user)
@@ -287,7 +284,7 @@ def locality_create(request):
                     {"valid": json_request['is_valid'], "uuid": tmp_uuid}))
             else:
                 return HttpResponse(
-                    json.dumps({"valid": json_request['is_valid'], "key": json_request['param_invalid_key']}))
+                    json.dumps({"valid": json_request['is_valid'], "key": json_request['invalid_key']}))
 
     else:
         print "not logged in"
@@ -518,7 +515,7 @@ def search_locality_by_country(request):
                 data__exact='').values('locality').annotate(
                 value_count=Count('locality'))
             # get attributes
-            attribute_count = Attribute.objects.all().count() + 1  # geom
+            attribute_count = 18
             # count completeness based attributes
             # this make long waiting, need to more good query
             complete = values.filter(value_count__gte=attribute_count).count()
