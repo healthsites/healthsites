@@ -262,6 +262,10 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
+    def update_history(self, data_loader):
+        history = DataHistory(locality=self, data_loader=data_loader)
+        history.save()
+
     def __unicode__(self):
         return u'{}'.format(self.id)
 
@@ -557,9 +561,23 @@ def load_data(sender, instance, **kwargs):
 post_save.connect(load_data, sender=DataLoader)
 
 
-#-------------------------------------------------
+# -------------------------------------------------
+# HISTORY UPDATE
+# -------------------------------------------------
+class DataHistory(models.Model):
+    """
+    Data History of data loader
+    """
+
+    locality = models.ForeignKey(
+        'Locality')
+    data_loader = models.ForeignKey(
+        'DataLoader')
+
+
+# -------------------------------------------------
 # BOUNDARY OF COUNTRY
-#-------------------------------------------------
+# -------------------------------------------------
 class Boundary(models.Model):
     """This is an abstract model that vectors can inherit from. e.g. country"""
     name = models.CharField(
@@ -582,6 +600,7 @@ class Boundary(models.Model):
 
     class Meta:
         abstract = True
+
 
 class Country(Boundary):
     """Class for Country."""

@@ -6,7 +6,7 @@ from .models import (
     Specification,
     Changeset,
     DataLoader,
-    Country
+    DataHistory
 )
 from .forms import DomainModelForm
 
@@ -53,3 +53,11 @@ class DataUpdateAdmin(admin.ModelAdmin):
 
 
 admin.site.register(DataLoader, DataUpdateAdmin)
+
+
+class HistoryAdmin(admin.ModelAdmin):
+    list_display = (
+        'locality', 'data_loader')
+
+
+admin.site.register(DataHistory, HistoryAdmin)

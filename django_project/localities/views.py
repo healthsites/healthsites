@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from django.core.serializers.json import DjangoJSONEncoder
 
 LOG = logging.getLogger(__name__)
 
@@ -19,10 +20,9 @@ import googlemaps
 from .models import Locality, Domain, Changeset, Value
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
-from .tasks import load_data_task, test_task
 from .map_clustering import cluster
 import logging
-from localities.models import Country
+from localities.models import Country, DataHistory
 from django.db.models import Count
 
 LOG = logging.getLogger(__name__)
@@ -115,6 +115,18 @@ class LocalityInfo(JSONResponseMixin, DetailView):
         # 16 = 4 mandatory + 12 core
         completeness = num_data / 16.0 * 100  # percentage
         obj_repr.update({'completeness': '%s%%' % completeness})
+
+        # getting last update
+        try:
+            updates = []
+            last_update = DataHistory.objects.filter(locality=self.object).order_by('data_loader__date_time_applied')[
+                          :10]
+            for last_update in last_update:
+                updates.append({"last_update": last_update.data_loader.date_time_applied,
+                                "uploader": last_update.data_loader.author.username});
+            obj_repr.update({'updates': updates})
+        except DataHistory.DoesNotExist:
+            print "DataHistory not exist"
 
         return self.render_json_response(obj_repr)
 
@@ -400,30 +412,43 @@ def search_locality_by_country(request):
             partial = values.filter(value_count__gte=4).filter(value_count__lte=14).count()
             basic = values.filter(value_count__lte=3).count()
 
-            # values = values.values("value_count")
-            # for value in values:
-            #     value_count = value["value_count"] + 1
-            #     # 16 = 4 mandatory + 12 core
-            #     if value_count >= 16:
-            #         complete += 1
-            #     elif value_count <= 4:
-            #         basic += 1
-            #     else:
-            #         partial += 1
+            # updates
+            last_updates = []
+            historys = DataHistory.objects.filter(locality__in=healthsites).order_by(
+                '-data_loader__date_time_applied').values('data_loader__pk', 'data_loader__author__username',
+                                                         'data_loader__date_time_applied',
+                                                         'data_loader__data_loader_mode').annotate(
+                value_count=Count('data_loader'))[:5]
+            for update in historys:
+                update['locality'] = ""
+                update['locality_uuid'] = ""
+                if update['value_count'] == 1:
+                    # get the locality
+                    history = DataHistory.objects.get(data_loader__pk=update['data_loader__pk']);
+                    locality_name = Value.objects.filter(locality=history.locality).filter(
+                        specification__attribute__key='name')
+                    update['locality'] = locality_name[0].data
+                    update['locality_uuid'] = history.locality.uuid
+
+                last_updates.append({"author": update['data_loader__author__username'],
+                                     "date_applied": update['data_loader__date_time_applied'],
+                                     "mode": update['data_loader__data_loader_mode'], "locality": update['locality'],
+                                     "locality_uuid": update['locality_uuid'],
+                                     "data_count": update['value_count']})
 
             output = {"numbers": {"hospital": hospital_number, "medical_clinic": medical_clinic_number
                 , "orthopaedic_clinic": orthopaedic_clinic_number},
                       "completeness": {"complete": complete, "partial": partial, "basic": basic},
                       "localities": healthsites_number,
                       "viewport": {"northeast_lat": northeast_lat, "northeast_lng": northeast_lng,
-                                   "southwest_lat": southwest_lat, "southwest_lng": southwest_lng}}
+                                   "southwest_lat": southwest_lat, "southwest_lng": southwest_lng},
+                      "last_update": last_updates}
 
-            result = json.dumps(output)
+            result = json.dumps(output, cls=DjangoJSONEncoder)
         except Country.DoesNotExist:
             result = []
-            result = json.dumps(result)
+            result = json.dumps(result, cls=DjangoJSONEncoder)
 
-        result = json.dumps(output)
         return HttpResponse(result, content_type='application/json')
 
 
