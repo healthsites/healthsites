@@ -124,7 +124,38 @@
 <section id="map-full" class="js-fullheight fluid-container">
     <form id="locality-form" action="localities/edit" method="post">
         {% csrf_token %}
-        <div class="location-info pad0x col-md-4">
+        <div id="locality-statistic" class="location-info pad0x col-md-4">
+            <div class="details" id="sidebar-info">
+                <div class="header" style="font-size: 24px; padding-bottom: 10px;">
+                    <strong id="tag-name">No Tag</strong> - <span id="number-locality"
+                                                                  style="margin-left: 5px; margin-right: 5px"> 0 </span>
+                    healthsites
+                </div>
+
+                <div style="padding: 20px">
+                    <div>
+                        <h3>Number of heathsites per type</h3>
+
+                        <div class="graph">
+                            <div id="chart1"></div>
+
+                            <script>
+                            </script>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Completeness of attributes</h3>
+
+                        <div class="graph">
+                            <div id="piechart"></div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="locality-info" class="location-info pad0x col-md-4" style="display: none">
             <div class="profile">
                 {% if user.is_authenticated %}
                     <div class="person col-xs-8 pad0x">
@@ -334,6 +365,21 @@
                                 </select></p>
                         </div>
                     </div>
+                    <div id="tag" class="line services">
+                        <div class="icon-holder">
+                            <b>tag</b>
+                        </div>
+                        <div class="data">
+                            <ul id="tag-data"></ul>
+                            <div id="tag-input-text" style="display: none">
+                                <input type="text" placeholder="fill new tag"
+                                       style="margin-bottom: 10px;"
+                                       onkeyup="if (event.keyCode == 13) { addTag($(this).val()); $(this).val('') }"/>
+                                <i style="margin-left: 10px; color: #f44a52">enter to add tag with minimal 3 letters</i>
+                            </div>
+                            <ul id="tag-input" style="display: none"></ul>
+                        </div>
+                    </div>
                     <div id="others" class="line ">
                         <div class="icon-holder">
                             <b>others</b>
@@ -453,11 +499,146 @@
         function addOthers() {
             $APP.trigger('sidebar.other-add');
         }
+        function addTag(value) {
+            $APP.trigger('sidebar.tag-add', {'value': value});
+        }
         $('body').on("click", ".remove_option", function (e) { //user click on remove text
             e.preventDefault();
             $(this).parent('div').remove();
         })
+        $('body').on("click", ".remove_tag", function (e) { //user click on remove text
+            e.preventDefault();
+            $(this).parent('li').remove();
+        })
+        var chart = c3.generate({
+            bindto: '#chart1',
+            size: {
+                height: 220
+            },
+            bar: {
+                width: 18
+            },
+            data: {
+                x: 'x',
+                y: 'percent',
+                columns: [
+                    //the healthsites names
+                    ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
+                    //the healthsites number
+                    ['number', 12, 12, 12],
+                    //the healthsites percentgage
+                    ['percent', 0.33, 0.33, 0.34]
+                ],
+                axes: {
+                    number: 'y2'
+                },
+                types: {
+                    percent: 'bar',
+                    number: 'bar'
+                },
+                order: 'asc',
 
+                labels: {
+                    format: {
+                        number: function (v, id, i, j) {
+                            return v;
+                        },
+                    }
+                },
+
+
+            },
+            axis: {
+                rotated: true,
+                x: {
+                    type: 'category',
+
+                },
+                y: {
+                    max: 1,
+                    tick: {
+                        values: [0, 0.5, 1],
+                        format: d3.format('%,')
+
+                    }
+                }
+            },
+            legend: {
+                show: false
+            },
+            color: {
+                pattern: ['#b6cccc', '#f89ea1']
+            }
+        });
+
+        var piechart = c3.generate({
+            bindto: '#piechart',
+            size: {
+                height: 220
+            },
+            data: {
+                // iris data from R
+                columns: [
+                    ['complete', 33],
+                    ['partial', 33],
+                    ['basic', 34],
+                ],
+                colors: {
+                    complete: '#f89ea1',
+                    partial: '#b6cccc',
+                    basic: '#8698a4'
+                },
+                type: 'pie',
+                onclick: function (d, i) {
+                    console.log("onclick", d, i);
+                },
+                onmouseover: function (d, i) {
+                    console.log("onmouseover", d, i);
+                },
+                onmouseout: function (d, i) {
+                    console.log("onmouseout", d, i);
+                }
+            }
+        });
+
+
+        {# FOR UPDATING CHART #}
+        function updateChart(hospital, medical, orthopedic) {
+            var hospital_per = hospital / (hospital + medical + orthopedic);
+            var medical_per = medical / (hospital + medical + orthopedic);
+            var orthopedic_per = orthopedic / (hospital + medical + orthopedic);
+            chart.load({
+                columns: [
+                    //the healthsites names
+                    ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
+                    //the healthsites number
+                    ['number', hospital, medical, orthopedic],
+                    //the healthsites percentgage
+                    ['percent', hospital_per, medical_per, orthopedic_per]
+                ]
+            });
+        }
+
+        function updatePieChart(basic, partial, complete) {
+            piechart.load({
+                columns: [
+                    ['complete', complete],
+                    ['partial', partial],
+                    ['basic', basic],
+                ],
+            });
+        }
+        {% if tag %}
+            $("#locality-statistic").show();
+            $("#locality-info").hide();
+            $("#tag-name").html("{{ tag }}");
+            $("#number-locality").html("{{ localities }}");
+            updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
+            updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
+        {% else %}
+            $("#locality-statistic").hide();
+            $("#locality-info").show();
+        {% endif %}
     </script>
 {% endblock extra_js %}
 

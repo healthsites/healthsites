@@ -212,17 +212,21 @@
     cursor: pointer;
 }
 
-.add_remove_optional_button {
-    color: black;
-    cursor: pointer;
-}
-
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
 
-input[type='checkbox']{
+input[type='checkbox'] {
     margin-right: 5px;
+}
+
+.remove_tag {
+    cursor: pointer;
+}
+
+.remove_option {
+    cursor: pointer;
+    color: black;
 }

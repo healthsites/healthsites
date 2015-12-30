@@ -1,5 +1,10 @@
 window.LocalitySidebar = (function () {
     "use strict";
+    var separator = "|";
+    var special_attribute = ["uuid", "geom", "long", "lat", "nature_of_facility", "inpatient_service", "staff", "ownership", "nature_of_facility",
+        "scope_of_service", "notes", "ancillary_services", "operation", "activities", "data_source",
+        "name", "url", "email", "mobile", "phone", "physical_address", "services", "tags"];
+
     var nature_options = ["", "clinic without beds", "clinic with beds", "first referral hospital", "second referral hospital or General hospital", "tertiary level including University hospital"];
     var scope_options = ["specialized care", "general acute care", "rehabilitation care", "old age/hospice care"];
     var ancillary_options = ["Operating theater", "laboratory", "imaging equipment", "intensive care unit", "Emergency department"];
@@ -12,6 +17,7 @@ window.LocalitySidebar = (function () {
     var no_phone_found = "No phone found";
     var no_operation_hours_found = "No operation hours found";
     var no_url_found = "No url found";
+    var no_tag_found = "No tag found";
     var no_others_found = "No other informations";
     var no_name = "No Name";
     var is_enable_edit = false;
@@ -42,6 +48,7 @@ window.LocalitySidebar = (function () {
         this.$staff = $('#locality-staff');
         this.$note = $('#locality-note');
         this.$note_text = $('#locality-note-text');
+        this.$tag_data = $('#tag-data');
 
         // form
         this.$form = $('#locality-form');
@@ -81,6 +88,9 @@ window.LocalitySidebar = (function () {
         this.$other_data = $('#others-data');
         this.$other_data_input = $('#others-data-input');
 
+        this.$tag_input = $('#tag-input');
+        this.$tag_input_text = $('#tag-input-text');
+
         // create nature options
         for (var i = 0; i < nature_options.length; i++) {
             this.$nature_of_facility_input.append("<option value=\"" + nature_options[i] + "\">" + nature_options[i] + "</option>");
@@ -112,6 +122,7 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$url);
         info_fields.push(this.$note);
         info_fields.push(this.$other_data);
+        info_fields.push(this.$tag_data);
 
         // set editfield array
         edit_fields.push(this.$cancelButton);
@@ -134,6 +145,8 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$note_input);
         edit_fields.push(this.$other_add);
         edit_fields.push(this.$other_data_input);
+        edit_fields.push(this.$tag_input);
+        edit_fields.push(this.$tag_input_text);
 
         this.setEnable(is_enable_edit);
         this.showDefaultInfo();
@@ -172,6 +185,7 @@ window.LocalitySidebar = (function () {
             this.$form.submit(function (event) {
                 var url = that.$form.attr("action");
                 var fields = that.$form.serialize();
+                var isFormValid = true;
                 // Stop form from submitting normally
                 event.preventDefault();
                 // ------------------------------------------------------------
@@ -212,10 +226,10 @@ window.LocalitySidebar = (function () {
                     var scope = "";
                     for (var i = 0; i < scope_inputs.length; i++) {
                         if ($(scope_inputs[i]).prop('checked')) {
-                            scope += scope_options[i] + "|";
+                            scope += scope_options[i] + separator;
                         }
                     }
-                    if (scope == "|") {
+                    if (scope == separator) {
                         scope = "";
                     }
 
@@ -224,10 +238,10 @@ window.LocalitySidebar = (function () {
                     var ancillary = "";
                     for (var i = 0; i < ancillary_inputs.length; i++) {
                         if ($(ancillary_inputs[i]).prop('checked')) {
-                            ancillary += ancillary_options[i] + "|";
+                            ancillary += ancillary_options[i] + separator;
                         }
                     }
-                    if (ancillary == "|") {
+                    if (ancillary == separator) {
                         ancillary = "";
                     }
 
@@ -236,10 +250,10 @@ window.LocalitySidebar = (function () {
                     var activities = "";
                     for (var i = 0; i < activities_input.length; i++) {
                         if ($(activities_input[i]).prop('checked')) {
-                            activities += activities_options[i] + "|";
+                            activities += activities_options[i] + separator;
                         }
                     }
-                    if (activities == "|") {
+                    if (activities == separator) {
                         activities = "";
                     }
 
@@ -248,22 +262,22 @@ window.LocalitySidebar = (function () {
                     var notes = "";
                     for (var i = 0; i < notes_input.length; i++) {
                         if ($(notes_input[i]).prop('checked')) {
-                            notes += notes_options[i] + "|";
+                            notes += notes_options[i] + separator;
                         }
                     }
-                    if (notes == "|") {
+                    if (notes == separator) {
                         notes = "";
                     }
 
                     // GET INPATIENT CHILD
-                    var inpatient = that.$inpatient_service_full_input.val() + "|" + that.$inpatient_service_part_input.val();
-                    if (inpatient == "|") {
+                    var inpatient = that.$inpatient_service_full_input.val() + separator + that.$inpatient_service_part_input.val();
+                    if (inpatient == separator) {
                         inpatient = "";
                     }
 
                     // GET STAFFS CHILD
-                    var staffs = that.$staff_doctor_input.val() + "|" + that.$staff_nurse_input.val();
-                    if (staffs == "|") {
+                    var staffs = that.$staff_doctor_input.val() + separator + that.$staff_nurse_input.val();
+                    if (staffs == separator) {
                         staffs = "";
                     }
 
@@ -273,23 +287,50 @@ window.LocalitySidebar = (function () {
                         phone = "+" + that.$phone_input_int.val() + "-" + that.$phone_input_number.val();
                     }
 
+                    // GET TAG
+                    var tag_inputs = that.$tag_input.find(".tag-text");
+                    var tags = [];
+                    for (var i = 0; i < tag_inputs.length; i++) {
+                        tags.push(tag_inputs[i].innerHTML);
+                    }
+                    tags = tags.join(separator);
+                    if (tags != "") {
+                        tags = separator + tags + separator;
+                    }
+                    console.log(tags);
+
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
                     }
                     fields += '&url=' + encodeURIComponent(urls_output[0]) + '&data_source=' + encodeURIComponent(urls_output[1]) + '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient) +
-                        "&staff=" + encodeURIComponent(staffs) + "&operation=" + encodeURIComponent(operation) + "&notes=" + notes;
+                        "&staff=" + encodeURIComponent(staffs) + "&operation=" + encodeURIComponent(operation) + "&notes=" + encodeURIComponent(notes) + "&tags=" + tags;
 
                     // GET OTHERS
                     var others = that.$other_data_input.find("div");
                     for (var i = 0; i < others.length; i++) {
                         var attr = $(others[i]).find(".attribute").val();
-                        attr = attr.replace(" ", "_");
+                        var newattr = attr.replace(" ", "_").toLowerCase();
                         var value = $(others[i]).find(".value").val();
-                        if (attr != "" && value != "") {
-                            fields += "&" + attr + "=" + encodeURIComponent(value);
-                            delete others_attr[that.getIndex(others_attr, attr)];
+
+                        var isValid = true;
+                        for (var j = 0; j < special_attribute.length; j++) {
+                            if (newattr == special_attribute[j]) {
+                                isValid = false;
+                                break;
+                            }
+                        }
+
+                        if (!isValid) {
+                            alert("cannot create " + attr + " as new attribute");
+                            isFormValid = false;
+                            break;
+                        }
+
+                        if (newattr != "" && value != "") {
+                            fields += "&" + newattr + "=" + encodeURIComponent(value);
+                            delete others_attr[that.getIndex(others_attr, newattr)];
                         }
                     }
 
@@ -305,19 +346,21 @@ window.LocalitySidebar = (function () {
                 // POST
                 // ------------------------------------------------------------
                 {
-                    //Send the data using post
-                    var posting = $.post(url, fields);
-                    // Put the results in a div
-                    posting.done(function (data) {
-                        var data = JSON.parse(data);
-                        if (data["valid"]) {
-                            that.locality_uuid = data["uuid"];
-                            $APP.trigger('set.hash.silent', {'locality': that.locality_uuid});
-                            that.getInfo();
-                        } else {
-                            alert(data["key"] + " can't be empty");
-                        }
-                    });
+                    if (isFormValid) {
+                        //Send the data using post
+                        var posting = $.post(url, fields);
+                        // Put the results in a div
+                        posting.done(function (data) {
+                            var data = JSON.parse(data);
+                            if (data["valid"]) {
+                                that.locality_uuid = data["uuid"];
+                                $APP.trigger('set.hash.silent', {'locality': that.locality_uuid});
+                                that.getInfo();
+                            } else {
+                                alert(data["key"] + " can't be empty");
+                            }
+                        });
+                    }
                 }
             });
         },
@@ -513,6 +556,8 @@ window.LocalitySidebar = (function () {
             this.$staff_doctor_input.val("");
             this.$staff_nurse_input.val("");
             this.$url_input.html("");
+            this.$tag_input.html("");
+            this.$tag_input_text.val("");
 
         },
         showDefaultInfo: function (evt) {
@@ -541,6 +586,7 @@ window.LocalitySidebar = (function () {
 
             this.$other_data.html(no_others_found);
             this.$other_data_input.html("");
+            this.$tag_data.html(no_tag_found);
             others_attr = [];
         },
 
@@ -604,7 +650,7 @@ window.LocalitySidebar = (function () {
                 var scope = this.locality_data.values['scope_of_service'];
                 delete keys[this.getIndex(keys, 'scope_of_service')];
                 if (this.isHasValue(scope)) {
-                    var scopes = scope.split("|");
+                    var scopes = scope.split(separator);
                     var html = '<ul>';
                     for (i = 0; i < scopes.length; ++i) {
                         if (scopes[i].length > 0) {
@@ -628,7 +674,7 @@ window.LocalitySidebar = (function () {
                 var ancillary = this.locality_data.values['ancillary_services'];
                 delete keys[this.getIndex(keys, 'ancillary_services')];
                 if (this.isHasValue(ancillary)) {
-                    var ancillary = ancillary.split("|");
+                    var ancillary = ancillary.split(separator);
                     var html = '<ul>';
                     for (i = 0; i < ancillary.length; ++i) {
                         if (ancillary[i].length > 0) {
@@ -652,7 +698,7 @@ window.LocalitySidebar = (function () {
                 var activities = this.locality_data.values['activities'];
                 delete keys[this.getIndex(keys, 'activities')];
                 if (this.isHasValue(activities)) {
-                    var activities = activities.split("|");
+                    var activities = activities.split(separator);
                     var html = '<ul>';
                     for (i = 0; i < activities.length; ++i) {
                         if (activities[i].length > 0) {
@@ -676,7 +722,7 @@ window.LocalitySidebar = (function () {
                 var notes = this.locality_data.values['notes'];
                 delete keys[this.getIndex(keys, 'notes')];
                 if (this.isHasValue(notes)) {
-                    var notes = notes.split("|");
+                    var notes = notes.split(separator);
                     notes.pop();
                     this.$note_text.html(notes.join(" and "));
                 } else {
@@ -689,7 +735,7 @@ window.LocalitySidebar = (function () {
                 var inpatient = this.locality_data.values['inpatient_service'];
                 delete keys[this.getIndex(keys, 'inpatient_service')];
                 if (this.isHasValue(inpatient)) {
-                    var inpatient = inpatient.split("|");
+                    var inpatient = inpatient.split(separator);
                     if (inpatient.length >= 1 && (inpatient[0] != "" | inpatient[1] != "")) {
                         // reinit view
                         this.$inpatient_service.html("<span id=\"locality-inpatient-service-full\">-</span> full time beds, <span id=\"locality-inpatient-service-part\">-</span> part time beds");
@@ -713,7 +759,7 @@ window.LocalitySidebar = (function () {
                 var staff = this.locality_data.values['staff'];
                 delete keys[this.getIndex(keys, 'staff')];
                 if (this.isHasValue(staff)) {
-                    var staff = staff.split("|");
+                    var staff = staff.split(separator);
                     if (staff.length >= 1 && (staff[0] != "" | staff[1] != "")) {
                         // reinit view
                         this.$staff.html("<span id=\"locality-staff-doctor\">-</span> full time doctors, <span id=\"locality-staff-nurse\">-</span> full time nurses");
@@ -810,8 +856,28 @@ window.LocalitySidebar = (function () {
                 }
             }
 
+
+            // TAGS
+            {
+                var tags = this.locality_data.values['tags'];
+                delete keys[this.getIndex(keys, 'tags')];
+                if (this.isHasValue(tags)) {
+                    var tags = tags.split(separator);
+                    for (var i = 0; i < tags.length; i++) {
+                        if (tags[i] != "") {
+                            // render
+                            if (this.$tag_data.html() == no_tag_found) {
+                                this.$tag_data.html("");
+                            }
+                            this.$tag_data.append("<li><i class=\"fa fa-caret-right\"></i> <a href=\"\">" + tags[i] + "</a></li>");
+                            this.addTag(tags[i]);
+                        }
+                    }
+                }
+            }
             // OTHER
             {
+                keys = cleanArray(keys);
                 if (keys.length > 0) {
                     this.$other_data.html("");
                 }
@@ -883,6 +949,9 @@ window.LocalitySidebar = (function () {
             $APP.on('sidebar.other-add', function (evt, payload) {
                 self.addOther("", "");
             });
+            $APP.on('sidebar.tag-add', function (evt, payload) {
+                self.addTag(payload.value);
+            });
         },
         onchange: function (element) {
             if (element.id == this.$operation_input.attr('id')) {
@@ -909,7 +978,7 @@ window.LocalitySidebar = (function () {
             var html = "<div class=\"input\">";
             html += "<input type=\"text\" placeholder=\"Attribute\" class=\"attribute\" value=\"" + attribute + "\" />";
             html += "<input type=\"text\" placeholder=\"Value\"  class=\"value\" value=\"" + value + "\" />";
-            html += "<span class=\"add_remove_optional_button remove_option\">  -  </span>"
+            html += "<span class=\"remove_option\">  -  </span>"
             html += "</div>";
             this.$other_data_input.append(html);
 
@@ -917,6 +986,21 @@ window.LocalitySidebar = (function () {
                 var html = "<p><strong>" + attribute + ": </strong>";
                 html += "<span>" + value + "</span></p>";
                 this.$other_data.append(html);
+            }
+        },
+        addTag: function (value) {
+            if (value.length >= 3) {
+                var inputs = this.$tag_input.find(".tag-text");
+                var isValid = true;
+                for (var i = 0; i < inputs.length; i++) {
+                    if (inputs[i].innerHTML == value) {
+                        isValid = false;
+                        break;
+                    }
+                }
+                if (isValid) {
+                    this.$tag_input.append("<li><span class=\"tag-text\">" + value + "</span> <span class=\"fa fa-times remove_tag\"></span></li>");
+                }
             }
         }
     }
