@@ -6,11 +6,11 @@ if (typeof APP == 'undefined') {
 window.APP = (function () {
     "use strict";
     // private variables and functions
-
+    var _MAP;
     // constructor
     var module = function () {
         // init map
-        new MAP();
+        _MAP = new MAP();
 
         // init localitySidebar
         this.$sidebar = new LocalitySidebar();
@@ -89,6 +89,10 @@ window.APP = (function () {
         _closeSidebar: function () {
 
         },
+
+        _updateTag: function (tag) {
+            _MAP._updateTag(tag);
+        }
     }
 
     // return module

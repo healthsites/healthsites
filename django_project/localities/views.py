@@ -42,7 +42,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         """
 
         if not (all(param in request.GET for param in [
-            'bbox', 'zoom', 'iconsize', 'geoname'])):
+            'bbox', 'zoom', 'iconsize', 'geoname', 'tag'])):
             raise Http404
 
         try:
@@ -50,6 +50,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             zoom = int(request.GET.get('zoom'))
             icon_size = map(int, request.GET.get('iconsize').split(','))
             geoname = request.GET.get('geoname');
+            tag = request.GET.get('tag');
 
         except:
             # return 404 if any of parameters are missing or not parsable
@@ -62,11 +63,11 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             # icon sizes should be positive
             raise Http404
 
-        return (bbox_poly, zoom, icon_size, geoname)
+        return (bbox_poly, zoom, icon_size, geoname, tag)
 
     def get(self, request, *args, **kwargs):
         # parse request params
-        bbox, zoom, iconsize, geoname = self._parse_request_params(request)
+        bbox, zoom, iconsize, geoname, tag = self._parse_request_params(request)
         # cluster Localites for a view
         locatities = Locality.objects.in_bbox(bbox)
         exception = False
@@ -80,6 +81,13 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         except Country.DoesNotExist:
             if geoname != "" and geoname != "undefined":
                 exception = True
+            else:
+                # searching by tag
+                if tag != "" and tag != "undefined":
+                    locatities = Value.objects.filter(
+                            specification__attribute__key='tags').filter(
+                            data__icontains="|" + tag + "|").values_list('locality')
+                    locatities = Locality.objects.filter(pk__in=locatities)
 
         object_list = []
         if not exception:

@@ -215,6 +215,11 @@ window.MAP = (function () {
             this.clusterLayer.update();
         },
 
+        _updateTag: function (tag) {
+            this.clusterLayer.updateTag(tag);
+            this.clusterLayer.update();
+        },
+
         _setFitBound: function (southwest_lat, southwest_lng, northeast_lat, northeast_lng) {
             this.MAP.fitBounds([
                 [southwest_lat, southwest_lng],

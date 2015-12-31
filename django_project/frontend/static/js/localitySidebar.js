@@ -869,7 +869,7 @@ window.LocalitySidebar = (function () {
                             if (this.$tag_data.html() == no_tag_found) {
                                 this.$tag_data.html("");
                             }
-                            this.$tag_data.append("<li><i class=\"fa fa-caret-right\"></i> <a href=\"\">" + tags[i] + "</a></li>");
+                            this.$tag_data.append("<li><i class=\"fa fa-caret-right\"></i> <a href=\"map?tag=" + tags[i] + "\">" + tags[i] + "</a></li>");
                             this.addTag(tags[i]);
                         }
                     }

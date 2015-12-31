@@ -478,7 +478,20 @@
             {% endif %}
 
             // initialize the app
-            new APP();
+            APP = new APP();
+            {% if tag %}
+                $("#locality-statistic").show();
+                $("#locality-info").hide();
+                $("#tag-name").html("{{ tag }}");
+                $("#number-locality").html("{{ localities }}");
+                updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
+                updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
+                console.log(APP);
+                APP._updateTag("{{ tag }}");
+            {% else %}
+                $("#locality-statistic").hide();
+                $("#locality-info").show();
+            {% endif %}
         });
         function onChange(element) {
             $APP.trigger('sidebar.option-onchange', {'element': element});
@@ -628,17 +641,6 @@
                 ],
             });
         }
-        {% if tag %}
-            $("#locality-statistic").show();
-            $("#locality-info").hide();
-            $("#tag-name").html("{{ tag }}");
-            $("#number-locality").html("{{ localities }}");
-            updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
-            updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
-        {% else %}
-            $("#locality-statistic").hide();
-            $("#locality-info").show();
-        {% endif %}
     </script>
 {% endblock extra_js %}
 
