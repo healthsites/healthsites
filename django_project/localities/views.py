@@ -16,7 +16,7 @@ from django.db import transaction
 from django.conf import settings
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 import googlemaps
-from .models import Locality, Domain, Changeset, Value, Attribute, Specification
+from .models import Locality, Domain, Changeset, Value, Attribute, Specification, Tag
 from .utils import render_fragment, parse_bbox
 from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .tasks import load_data_task, test_task
@@ -69,7 +69,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         # parse request params
         bbox, zoom, iconsize, geoname, tag = self._parse_request_params(request)
         # cluster Localites for a view
-        locatities = Locality.objects.in_bbox(bbox)
+        localities = Locality.objects.in_bbox(bbox)
         exception = False
         try:
             if geoname != "":
@@ -77,21 +77,19 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 country = Country.objects.get(
                         name__iexact=geoname)
                 polygon = country.polygon_geometry
-                locatities = locatities.in_polygon(polygon)
+                localities = localities.in_polygon(polygon)
         except Country.DoesNotExist:
             if geoname != "" and geoname != "undefined":
                 exception = True
             else:
                 # searching by tag
                 if tag != "" and tag != "undefined":
-                    locatities = Value.objects.filter(
-                            specification__attribute__key='tags').filter(
-                            data__icontains="|" + tag + "|").values_list('locality')
-                    locatities = Locality.objects.filter(pk__in=locatities)
+                    tags = Tag.objects.filter(tag=tag).values_list('locality')
+                    localities = Locality.objects.filter(pk__in=tags)
 
         object_list = []
         if not exception:
-            object_list = cluster(locatities, zoom, *iconsize)
+            object_list = cluster(localities, zoom, *iconsize)
 
         return self.render_json_response(object_list)
 
@@ -125,6 +123,15 @@ class LocalityInfo(JSONResponseMixin, DetailView):
         num_data = len(obj_repr['values']) + 1  # geom
         completeness = (num_data + 0.0) / (attribute_count + 0.0) * 100  # percentage
         obj_repr.update({'completeness': '%s%%' % format(completeness, '.2f')})
+
+        # get all tags of locality
+        tags = Tag.objects.filter(locality=self.object).order_by('tag')
+        tags_text = ""
+        for tag in tags:
+            tags_text += tag.tag + "|"
+
+        obj_repr.update({'tags': tags_text})
+        print obj_repr
 
         return self.render_json_response(obj_repr)
 
@@ -184,7 +191,7 @@ class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
 
 def get_json_from_request(request):
     # special request:
-    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid"]
+    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid", "tags"]
 
     mstring = []
     json = {}
@@ -241,6 +248,32 @@ def get_json_from_request(request):
     return json
 
 
+def extract_tag_and_save(locality, tag_text, user):
+    tags = tag_text.split('|')
+    print tags
+    # delete all in not in tags
+    dbtags = Tag.objects.filter(locality=locality)
+    for dbtag in dbtags:
+        if any(dbtag.tag in s for s in tags):
+            tags.remove(dbtag.tag)
+        else:
+            dbtag.delete()
+
+    print tags
+    tmp_changeset = Changeset.objects.create(
+            social_user=user
+    )
+    for tag_text in tags:
+        if len(tag_text) > 0:
+            tag = Tag()
+            tag.locality = locality
+            tag.tag = tag_text
+            tag.changeset = tmp_changeset
+            tag.save()
+
+    print tags
+
+
 def locality_edit(request):
     print request
     if request.method == 'POST':
@@ -252,6 +285,7 @@ def locality_edit(request):
                 locality.set_geom(float(json_request['long']), float(json_request['lat']))
                 locality.save()
                 locality.set_values(json_request, request.user)
+                extract_tag_and_save(locality, json_request['tags'], request.user)
                 return HttpResponse(json.dumps(
                         {"valid": json_request['is_valid'], "uuid": json_request['uuid']}))
             else:
@@ -288,6 +322,7 @@ def locality_create(request):
                 )
                 loc.save()
                 loc.set_values(json_request, request.user)
+                extract_tag_and_save(loc, json_request['tags'], request.user)
                 return HttpResponse(json.dumps(
                         {"valid": json_request['is_valid'], "uuid": tmp_uuid}))
             else:
@@ -497,9 +532,8 @@ def get_statistic(healthsites):
 
 def search_locality_by_tag(query):
     try:
-        localities = Value.objects.filter(
-                specification__attribute__key='tags').filter(
-                data__icontains="|" + query + "|").values_list('locality')
+        tags = Tag.objects.filter(tag=query).values_list('locality')
+        localities = Locality.objects.filter(pk__in=tags)
         return get_statistic(localities)
     except Country.DoesNotExist:
         return []
@@ -564,5 +598,17 @@ def search_countries(request):
         result = []
         for country in countries:
             result.append(country.name)
+        result = json.dumps(result)
+        return HttpResponse(result, content_type='application/json')
+
+
+def search_tags(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+        values = Tag.objects.exclude(tag__isnull=True).exclude(
+                tag__exact='').filter(tag__istartswith=query)
+        result = []
+        for value in values:
+            result.append(value.tag)
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')

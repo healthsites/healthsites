@@ -6,7 +6,8 @@ from .models import (
     Specification,
     Changeset,
     DataLoader,
-    Country
+    Country,
+    Tag
 )
 from .forms import DomainModelForm
 
@@ -53,3 +54,11 @@ class DataUpdateAdmin(admin.ModelAdmin):
 
 
 admin.site.register(DataLoader, DataUpdateAdmin)
+
+
+class TagAdmin(admin.ModelAdmin):
+    list_display = (
+        'locality', 'tag')
+
+
+admin.site.register(Tag, TagAdmin)

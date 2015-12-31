@@ -294,10 +294,6 @@ window.LocalitySidebar = (function () {
                         tags.push(tag_inputs[i].innerHTML);
                     }
                     tags = tags.join(separator);
-                    if (tags != "") {
-                        tags = separator + tags + separator;
-                    }
-                    console.log(tags);
 
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
@@ -859,8 +855,7 @@ window.LocalitySidebar = (function () {
 
             // TAGS
             {
-                var tags = this.locality_data.values['tags'];
-                delete keys[this.getIndex(keys, 'tags')];
+                var tags = this.locality_data.tags;
                 if (this.isHasValue(tags)) {
                     var tags = tags.split(separator);
                     for (var i = 0; i < tags.length; i++) {

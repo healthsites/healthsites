@@ -372,7 +372,7 @@
                         <div class="data">
                             <ul id="tag-data"></ul>
                             <div id="tag-input-text" style="display: none">
-                                <input type="text" placeholder="fill new tag"
+                                <input id="tag-input-text-box" type="text" placeholder="fill new tag"
                                        style="margin-bottom: 10px;"
                                        onkeyup="if (event.keyCode == 13) { addTag($(this).val()); $(this).val('') }"/>
                                 <i style="margin-left: 10px; color: #f44a52">enter to add tag with minimal 3 letters</i>
@@ -492,6 +492,31 @@
                 $("#locality-statistic").hide();
                 $("#locality-info").show();
             {% endif %}
+
+            $("#tag-input-text-box").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "{% url 'tags' %}",
+                        dataType: 'json',
+                        data: {
+                            q: request.term
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                },
+                open: function () {
+                    $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                },
+                close: function () {
+                    $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                }
+            });
         });
         function onChange(element) {
             $APP.trigger('sidebar.option-onchange', {'element': element});

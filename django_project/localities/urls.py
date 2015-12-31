@@ -49,6 +49,12 @@ urlpatterns = patterns(
     ),
 
     url(
+        r'^tags$',
+        'localities.views.search_tags',
+        name='tags'
+    ),
+
+    url(
         r'^search/localities/country$',
         'localities.views.search_locality_by_country',
         name='locality-country-search'

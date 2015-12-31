@@ -211,7 +211,7 @@ class Locality(UpdateMixin, ChangesetMixin):
                 if obj.tracker.changed():
                     if not (tmp_changeset):
                         tmp_changeset = Changeset.objects.create(
-                            social_user=social_user
+                                social_user=social_user
                         )
                     obj.changeset = tmp_changeset
                     obj.save()
@@ -222,12 +222,12 @@ class Locality(UpdateMixin, ChangesetMixin):
             else:
                 # attr_id was not found (maybe a bad attribute)
                 LOG.warning(
-                    'Locality %s has no attribute key %s', self.pk, key
+                        'Locality %s has no attribute key %s', self.pk, key
                 )
 
         # send values_updated signal
         signals.SIG_locality_values_updated.send(
-            sender=self.__class__, instance=self
+                sender=self.__class__, instance=self
         )
 
         return changed_values
@@ -255,9 +255,9 @@ class Locality(UpdateMixin, ChangesetMixin):
         """
 
         data_values = itertools.groupby(
-            self.value_set.order_by('specification__fts_rank')
-                .values_list('specification__fts_rank', 'data'),
-            lambda x: x[0]
+                self.value_set.order_by('specification__fts_rank')
+                    .values_list('specification__fts_rank', 'data'),
+                lambda x: x[0]
         )
 
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
@@ -301,7 +301,7 @@ class Value(UpdateMixin, ChangesetMixin):
 
     def __unicode__(self):
         return u'({}) {}={}'.format(
-            self.locality.id, self.specification.attribute.key, self.data
+                self.locality.id, self.specification.attribute.key, self.data
         )
 
 
@@ -468,74 +468,74 @@ class DataLoader(models.Model):
     )
 
     organisation_name = models.CharField(
-        verbose_name='Organization\'s Name',
-        help_text='Organization\'s Name',
-        null=False,
-        blank=False,
-        max_length=100
+            verbose_name='Organization\'s Name',
+            help_text='Organization\'s Name',
+            null=False,
+            blank=False,
+            max_length=100
     )
 
     json_concept_mapping = models.FileField(
-        verbose_name='JSON Concept Mapping',
-        help_text='JSON Concept Mapping File.',
-        upload_to='json_mapping/%Y/%m/%d',
-        max_length=100
+            verbose_name='JSON Concept Mapping',
+            help_text='JSON Concept Mapping File.',
+            upload_to='json_mapping/%Y/%m/%d',
+            max_length=100
     )
 
     csv_data = models.FileField(
-        verbose_name='CSV Data',
-        help_text='CSV data that contains the data.',
-        upload_to='csv_data/%Y/%m/%d',
-        max_length=100
+            verbose_name='CSV Data',
+            help_text='CSV data that contains the data.',
+            upload_to='csv_data/%Y/%m/%d',
+            max_length=100
     )
 
     data_loader_mode = models.IntegerField(
-        choices=DATA_LOADER_MODE_CHOICES,
-        verbose_name="Data Loader Mode",
-        help_text='The mode of the data loader.',
-        blank=False,
-        null=False
+            choices=DATA_LOADER_MODE_CHOICES,
+            verbose_name="Data Loader Mode",
+            help_text='The mode of the data loader.',
+            blank=False,
+            null=False
     )
 
     applied = models.BooleanField(
-        verbose_name='Applied',
-        help_text='Whether the data update has been applied or not.',
-        default=False
+            verbose_name='Applied',
+            help_text='Whether the data update has been applied or not.',
+            default=False
     )
 
     author = models.ForeignKey(
-        User,
-        verbose_name='Author',
-        help_text='The user who propose the data loader.',
-        null=False
+            User,
+            verbose_name='Author',
+            help_text='The user who propose the data loader.',
+            null=False
     )
 
     date_time_uploaded = models.DateTimeField(
-        verbose_name='Uploaded (time)',
-        help_text='Timestamp (UTC) when the data uploaded',
-        null=False,
+            verbose_name='Uploaded (time)',
+            help_text='Timestamp (UTC) when the data uploaded',
+            null=False,
     )
 
     date_time_applied = models.DateTimeField(
-        verbose_name='Applied (time)',
-        help_text='When the data applied (loaded)',
-        null=True
+            verbose_name='Applied (time)',
+            help_text='When the data applied (loaded)',
+            null=True
     )
 
     separator = models.IntegerField(
-        choices=SEPARATOR_CHOICES,
-        verbose_name="Separator Character",
-        help_text='Separator character.',
-        null=False,
-        default=COMMA_CODE
+            choices=SEPARATOR_CHOICES,
+            verbose_name="Separator Character",
+            help_text='Separator character.',
+            null=False,
+            default=COMMA_CODE
     )
 
     notes = models.TextField(
-        verbose_name='Notes',
-        help_text='Notes',
-        null=True,
-        blank=True,
-        default=''
+            verbose_name='Notes',
+            help_text='Notes',
+            null=True,
+            blank=True,
+            default=''
     )
 
     def __str__(self):
@@ -557,23 +557,32 @@ def load_data(sender, instance, **kwargs):
 post_save.connect(load_data, sender=DataLoader)
 
 
-#-------------------------------------------------
+class Tag(UpdateMixin, ChangesetMixin):
+    """
+    Association of tag and locality
+    """
+
+    locality = models.ForeignKey('Locality')
+    tag = models.TextField()
+
+
+# -------------------------------------------------
 # BOUNDARY OF COUNTRY
-#-------------------------------------------------
+# -------------------------------------------------
 class Boundary(models.Model):
     """This is an abstract model that vectors can inherit from. e.g. country"""
     name = models.CharField(
-        verbose_name='',
-        help_text='',
-        max_length=50,
-        null=False,
-        blank=False)
+            verbose_name='',
+            help_text='',
+            max_length=50,
+            null=False,
+            blank=False)
 
     polygon_geometry = models.MultiPolygonField(
-        srid=4326)
+            srid=4326)
 
     id = models.AutoField(
-        primary_key=True)
+            primary_key=True)
 
     objects = models.GeoManager()
 
@@ -582,6 +591,7 @@ class Boundary(models.Model):
 
     class Meta:
         abstract = True
+
 
 class Country(Boundary):
     """Class for Country."""
