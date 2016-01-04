@@ -104,7 +104,6 @@ $(window).scroll(function () {
 
 });
 
-
 $(window).resize(function () {
     var h_height = $('.masthead').height();
     var v_height = $(window).height();
@@ -123,7 +122,7 @@ $(window).resize(function () {
     else {
         $('.location-info').css('margin-top', 0);
         $('#map-home').css('width', '50%');
-        $('#map-home').css('height', 400);
+        $('#map-home').css('height', 621);
     }
 });
 

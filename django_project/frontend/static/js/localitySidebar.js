@@ -90,6 +90,8 @@ window.LocalitySidebar = (function () {
 
         this.$tag_input = $('#tag-input');
         this.$tag_input_text = $('#tag-input-text');
+        this.$uploader = $('#uploader');
+        this.$lastupdate = $('#last_update');
 
         // create nature options
         for (var i = 0; i < nature_options.length; i++) {
@@ -103,7 +105,6 @@ window.LocalitySidebar = (function () {
         for (var i = 0; i < operation_options.length; i++) {
             this.$operation_input.append("<option value=\"" + operation_options[i] + "\">" + operation_options[i] + "</option>");
         }
-
         // set info field array
         info_fields.push(this.$editButton);
         info_fields.push(this.$addButton);
@@ -551,10 +552,13 @@ window.LocalitySidebar = (function () {
             this.$inpatient_service_part_input.val("");
             this.$staff_doctor_input.val("");
             this.$staff_nurse_input.val("");
-            this.$url_input.html("");
             this.$tag_input.html("");
             this.$tag_input_text.val("");
-
+            this.$url.html("");
+            this.$url_input.html("");
+            this.addOptionUrl("");
+            this.addOptionUrl("");
+            this.$other_data_input.html("");
         },
         showDefaultInfo: function (evt) {
             this.showDefaultEdit();
@@ -584,6 +588,9 @@ window.LocalitySidebar = (function () {
             this.$other_data_input.html("");
             this.$tag_data.html(no_tag_found);
             others_attr = [];
+            this.$lastupdate.text("11 may 2015 17:23:15");
+            this.$uploader.text("@sharehealthdata");
+            this.$uploader.attr("href", "profile/sharehealthdata");
         },
 
         showInfo: function (evt) {
@@ -601,6 +608,15 @@ window.LocalitySidebar = (function () {
                 this.$coordinates.text('lat: ' + this.locality_data.geom[1] + ', long: ' + this.locality_data.geom[0]);
                 this.$coordinates_lat_input.val(this.locality_data.geom[1]);
                 this.$coordinates_long_input.val(this.locality_data.geom[0]);
+            }
+
+            if (this.locality_data.updates) {
+                var updates = this.locality_data.updates;
+                if (updates[0]) {
+                    this.$lastupdate.text(getDateString(updates[0]['last_update']));
+                    this.$uploader.text("@" + updates[0]['uploader']);
+                    this.$uploader.attr("href", "profile/" + updates[0]['uploader']);
+                }
             }
 
             var keys = [];
@@ -640,7 +656,6 @@ window.LocalitySidebar = (function () {
                     this.$physical_address_input.val(address);
                 }
             }
-
             // SCOPE OF SERVICE
             {
                 var scope = this.locality_data.values['scope_of_service'];
@@ -810,6 +825,7 @@ window.LocalitySidebar = (function () {
             }
 
             // URL
+            this.$url_input.html("");
             var isUrlRendered = false;
             {
                 var url = this.locality_data.values['url'];

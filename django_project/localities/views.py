@@ -1,31 +1,29 @@
 # -*- coding: utf-8 -*-
 import logging
+from django.core.serializers.json import DjangoJSONEncoder
 
 LOG = logging.getLogger(__name__)
 
-import uuid
+import googlemaps
 import json
+import uuid
 # register signals
 import signals  # noqa
-from django.views.generic import DetailView, ListView, FormView
-from django.views.generic.detail import SingleObjectMixin
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse, Http404
-from django.contrib.gis.geos import Point
-from django.db import transaction
-from django.conf import settings
-from braces.views import JSONResponseMixin, LoginRequiredMixin
-import googlemaps
+from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
+from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification, Tag
 from .utils import render_fragment, parse_bbox
-from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
-from .tasks import load_data_task, test_task
-from .map_clustering import cluster
-import logging
-from localities.models import Country
+from braces.views import JSONResponseMixin, LoginRequiredMixin
+from datetime import datetime
+from django.conf import settings
+from django.contrib.gis.geos import Point
+from django.core.urlresolvers import reverse
+from django.db import transaction
 from django.db.models import Count
-
-LOG = logging.getLogger(__name__)
+from django.http import HttpResponse, Http404
+from django.views.generic import DetailView, ListView, FormView
+from django.views.generic.detail import SingleObjectMixin
+from localities.models import Country, DataHistory, DataLoader
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -131,7 +129,19 @@ class LocalityInfo(JSONResponseMixin, DetailView):
             tags_text += tag.tag + "|"
 
         obj_repr.update({'tags': tags_text})
-        print obj_repr
+
+        # getting last update
+        try:
+            updates = []
+            last_updates = DataHistory.objects.filter(locality=self.object).order_by('-time_changed')[
+                           :10]
+            print last_updates
+            for last_update in last_updates:
+                updates.append({"last_update": last_update.time_changed,
+                                "uploader": last_update.author.username});
+            obj_repr.update({'updates': updates})
+        except DataHistory.DoesNotExist:
+            print "DataHistory not exist"
 
         return self.render_json_response(obj_repr)
 
@@ -259,7 +269,6 @@ def extract_tag_and_save(locality, tag_text, user):
         else:
             dbtag.delete()
 
-    print tags
     tmp_changeset = Changeset.objects.create(
             social_user=user
     )
@@ -270,8 +279,6 @@ def extract_tag_and_save(locality, tag_text, user):
             tag.tag = tag_text
             tag.changeset = tmp_changeset
             tag.save()
-
-    print tags
 
 
 def locality_edit(request):
@@ -286,6 +293,10 @@ def locality_edit(request):
                 locality.save()
                 locality.set_values(json_request, request.user)
                 extract_tag_and_save(locality, json_request['tags'], request.user)
+                # create history
+                time = datetime.utcnow()
+                locality.update_history(time, 2, request.user)
+
                 return HttpResponse(json.dumps(
                         {"valid": json_request['is_valid'], "uuid": json_request['uuid']}))
             else:
@@ -323,6 +334,10 @@ def locality_create(request):
                 loc.save()
                 loc.set_values(json_request, request.user)
                 extract_tag_and_save(loc, json_request['tags'], request.user)
+
+                # create history
+                time = datetime.utcnow()
+                loc.update_history(time, 1, request.user)
                 return HttpResponse(json.dumps(
                         {"valid": json_request['is_valid'], "uuid": tmp_uuid}))
             else:
@@ -576,16 +591,40 @@ def search_locality_by_country(request):
                 healthsites = Locality.objects.all()
                 output = get_statistic(healthsites)
 
+            # updates
+            last_updates = []
+            historys = DataHistory.objects.filter(locality__in=healthsites).order_by(
+                    '-time_changed').values('time_changed', 'author__username',
+                                            'mode').annotate(
+                    value_count=Count('time_changed'))[:5]
+            for update in historys:
+                update['locality_uuid'] = ""
+                update['locality'] = ""
+                if update['value_count'] == 1:
+                    # get the locality
+                    data_history = DataHistory.objects.filter(time_changed=update['time_changed'],
+                                                              author__username=update['author__username'],
+                                                              mode=update['mode'])
+                    locality_name = Value.objects.filter(locality=data_history[0].locality).filter(
+                            specification__attribute__key='name')
+                    update['locality_uuid'] = data_history[0].locality.uuid
+                    update['locality'] = locality_name[0].data
+
+                last_updates.append({"author": update['author__username'],
+                                     "date_applied": update['time_changed'],
+                                     "mode": update['mode'], "locality": update['locality'],
+                                     "locality_uuid": update['locality_uuid'],
+                                     "data_count": update['value_count']})
+
             output["viewport"] = {"northeast_lat": northeast_lat, "northeast_lng": northeast_lng,
                                   "southwest_lat": southwest_lat, "southwest_lng": southwest_lng}
+            output["last_update"] = last_updates;
 
-            print output
-            result = json.dumps(output)
+            result = json.dumps(output, cls=DjangoJSONEncoder)
         except Country.DoesNotExist:
             result = []
-            result = json.dumps(result)
+            result = json.dumps(result, cls=DjangoJSONEncoder)
 
-        result = json.dumps(output)
         return HttpResponse(result, content_type='application/json')
 
 

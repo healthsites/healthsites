@@ -262,6 +262,10 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
+    def update_history(self, time, mode, user):
+        history = DataHistory(locality=self, time_changed=time, mode=mode, author=user)
+        history.save()
+
     def __unicode__(self):
         return u'{}'.format(self.id)
 
@@ -564,6 +568,49 @@ class Tag(UpdateMixin, ChangesetMixin):
 
     locality = models.ForeignKey('Locality')
     tag = models.TextField()
+
+
+# -------------------------------------------------
+# HISTORY UPDATE
+# -------------------------------------------------
+class DataHistory(models.Model):
+    """
+    Data History of data loader
+    """
+    REPLACE_DATA_CODE = 1
+    UPDATE_DATA_CODE = 2
+
+    DATA_LOADER_MODE_CHOICES = (
+        (REPLACE_DATA_CODE, 'Replace Data'),
+        (UPDATE_DATA_CODE, 'Update Data')
+    )
+
+    locality = models.ForeignKey(
+            'Locality')
+
+    time_changed = models.DateTimeField(
+            verbose_name='Uploaded (time)',
+            help_text='Timestamp (UTC) when the data uploaded',
+            null=False,
+            default=None,
+    )
+
+    mode = models.IntegerField(
+            choices=DATA_LOADER_MODE_CHOICES,
+            verbose_name="Data Loader Mode",
+            help_text='The mode of the data loader.',
+            blank=False,
+            null=False,
+            default=1,
+    )
+
+    author = models.ForeignKey(
+            User,
+            verbose_name='Author',
+            help_text='The user who edit or add data',
+            null=False,
+            default=None,
+    )
 
 
 # -------------------------------------------------
