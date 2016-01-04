@@ -90,6 +90,7 @@ window.LocalitySidebar = (function () {
 
         this.$tag_input = $('#tag-input');
         this.$tag_input_text = $('#tag-input-text');
+        this.$tag_input_text_box = $('#tag-input-text-box');
         this.$uploader = $('#uploader');
         this.$lastupdate = $('#last_update');
 
@@ -553,7 +554,7 @@ window.LocalitySidebar = (function () {
             this.$staff_doctor_input.val("");
             this.$staff_nurse_input.val("");
             this.$tag_input.html("");
-            this.$tag_input_text.val("");
+            this.$tag_input_text_box.val("");
             this.$url.html("");
             this.$url_input.html("");
             this.addOptionUrl("");
@@ -1001,6 +1002,7 @@ window.LocalitySidebar = (function () {
         },
         addTag: function (value) {
             if (value.length >= 3) {
+                value = value.toLowerCase();
                 var inputs = this.$tag_input.find(".tag-text");
                 var isValid = true;
                 for (var i = 0; i < inputs.length; i++) {

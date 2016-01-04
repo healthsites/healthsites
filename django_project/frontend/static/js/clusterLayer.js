@@ -159,7 +159,6 @@
 
             if (this._curReq && this._curReq.abort)
                 this._curReq.abort();       //prevent parallel requests
-            console.log(this.tag);
             var url = this.options.url + L.Util.getParamString({
                     'bbox': bb.toBBoxString(),
                     'zoom': this._map.getZoom(),

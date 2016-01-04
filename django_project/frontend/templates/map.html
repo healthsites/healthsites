@@ -152,6 +152,13 @@
 
                         </div>
                     </div>
+                    <div>
+                        <h3>Latest updates</h3>
+
+                        <div id="updates" class="graph updates">
+                            <div class="entry">-</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -470,7 +477,6 @@
 
             // Set viewport if exist
             {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
-                console.log({{ northeast_lat }} +" " + {{ northeast_lng }} +" " + {{ southwest_lat }} +" " + {{ southwest_lng }});
                 sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
                 sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
                 sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
@@ -486,11 +492,37 @@
                 $("#number-locality").html("{{ localities }}");
                 updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
                 updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
-                console.log(APP);
                 APP._updateTag("{{ tag }}");
             {% else %}
                 $("#locality-statistic").hide();
                 $("#locality-info").show();
+            {% endif %}
+
+            $("#updates").html("<div class=\"entry\">no updates</div>");
+            {% if last_update %}
+                $("#updates").html("");
+                {% for updates in last_update %}
+                    var html = "<div class=\"entry\">";
+                    html += "<div class=\"entry\">";
+                    html += "<span class=\"date\">" + getDateString("{{ updates.date_applied.isoformat }}") + "</span> - ";
+                    html += "<span class=\"name\">";
+                    html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author }}" + "</a></span> - ";
+                    var mode = "";
+                    if ("{{ updates.mode }}" == 1) {
+                        mode = "added";
+                    } else {
+                        mode = "amended";
+                    }
+                    {# update the html #}
+                    if ("{{ updates.data_count }}" == 1) {
+                        html += "<a href=\"map#!/locality/" + "{{ updates.locality_uuid }}" + "\" class=\"location-name\">" + "{{ updates.locality }}" + "</a>";
+                        html += "<span class=\"location-name\"> " + mode + " </span>";
+                    } else {
+                        html += "<span class=\"location-name\">" + "{{ updates.data_count }}" + " HS/" + mode + "</span>";
+                    }
+                    html += "</div>";
+                    $("#updates").append(html);
+                {% endfor %}
             {% endif %}
 
             $("#tag-input-text-box").autocomplete({
@@ -502,7 +534,6 @@
                             q: request.term
                         },
                         success: function (data) {
-                            console.log(data);
                             response(data);
                         }
                     });

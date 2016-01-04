@@ -260,7 +260,6 @@ def get_json_from_request(request):
 
 def extract_tag_and_save(locality, tag_text, user):
     tags = tag_text.split('|')
-    print tags
     # delete all in not in tags
     dbtags = Tag.objects.filter(locality=locality)
     for dbtag in dbtags:
@@ -276,7 +275,7 @@ def extract_tag_and_save(locality, tag_text, user):
         if len(tag_text) > 0:
             tag = Tag()
             tag.locality = locality
-            tag.tag = tag_text
+            tag.tag = tag_text.lower()
             tag.changeset = tmp_changeset
             tag.save()
 
@@ -542,6 +541,31 @@ def get_statistic(healthsites):
         , "orthopaedic_clinic": orthopaedic_clinic_number},
               "completeness": {"complete": complete, "partial": partial, "basic": basic},
               "localities": healthsites_number}
+    # updates
+    last_updates = []
+    historys = DataHistory.objects.filter(locality__in=healthsites).order_by(
+            '-time_changed').values('time_changed', 'author__username',
+                                    'mode').annotate(
+            value_count=Count('time_changed'))[:5]
+    for update in historys:
+        update['locality_uuid'] = ""
+        update['locality'] = ""
+        if update['value_count'] == 1:
+            # get the locality
+            data_history = DataHistory.objects.filter(time_changed=update['time_changed'],
+                                                      author__username=update['author__username'],
+                                                      mode=update['mode'])
+            locality_name = Value.objects.filter(locality=data_history[0].locality).filter(
+                    specification__attribute__key='name')
+            update['locality_uuid'] = data_history[0].locality.uuid
+            update['locality'] = locality_name[0].data
+
+        last_updates.append({"author": update['author__username'],
+                             "date_applied": update['time_changed'],
+                             "mode": update['mode'], "locality": update['locality'],
+                             "locality_uuid": update['locality_uuid'],
+                             "data_count": update['value_count']})
+    output["last_update"] = last_updates;
     return output
 
 
@@ -591,34 +615,8 @@ def search_locality_by_country(request):
                 healthsites = Locality.objects.all()
                 output = get_statistic(healthsites)
 
-            # updates
-            last_updates = []
-            historys = DataHistory.objects.filter(locality__in=healthsites).order_by(
-                    '-time_changed').values('time_changed', 'author__username',
-                                            'mode').annotate(
-                    value_count=Count('time_changed'))[:5]
-            for update in historys:
-                update['locality_uuid'] = ""
-                update['locality'] = ""
-                if update['value_count'] == 1:
-                    # get the locality
-                    data_history = DataHistory.objects.filter(time_changed=update['time_changed'],
-                                                              author__username=update['author__username'],
-                                                              mode=update['mode'])
-                    locality_name = Value.objects.filter(locality=data_history[0].locality).filter(
-                            specification__attribute__key='name')
-                    update['locality_uuid'] = data_history[0].locality.uuid
-                    update['locality'] = locality_name[0].data
-
-                last_updates.append({"author": update['author__username'],
-                                     "date_applied": update['time_changed'],
-                                     "mode": update['mode'], "locality": update['locality'],
-                                     "locality_uuid": update['locality_uuid'],
-                                     "data_count": update['value_count']})
-
             output["viewport"] = {"northeast_lat": northeast_lat, "northeast_lng": northeast_lng,
                                   "southwest_lat": southwest_lat, "southwest_lng": southwest_lng}
-            output["last_update"] = last_updates;
 
             result = json.dumps(output, cls=DjangoJSONEncoder)
         except Country.DoesNotExist:
@@ -645,9 +643,10 @@ def search_tags(request):
     if request.method == 'GET':
         query = request.GET.get('q')
         values = Tag.objects.exclude(tag__isnull=True).exclude(
-                tag__exact='').filter(tag__istartswith=query)
+                tag__exact='').filter(tag__istartswith=query).values('tag').annotate(
+                value_count=Count('tag'))
         result = []
         for value in values:
-            result.append(value.tag)
+            result.append(value['tag'])
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')
