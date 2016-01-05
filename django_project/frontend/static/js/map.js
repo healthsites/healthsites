@@ -167,6 +167,18 @@ window.MAP = (function () {
                     self.MAP.panTo(self.original_marker_position);
                 }
             });
+
+            $APP.on('map.update-tag', function (evt, payload) {
+                self._updateTag(payload.tag);
+            });
+
+            $APP.on('map.update-geoname', function (evt, payload) {
+                self._updateGeoname(payload.geoname);
+            });
+
+            $APP.on('map.update-bound', function (evt, payload) {
+                self._setFitBound(payload.southwest_lat, payload.southwest_lng, payload.northeast_lat, payload.northeast_lng);
+            });
         },
 
         _setupNewLocalityLayer: function () {

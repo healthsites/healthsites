@@ -89,10 +89,6 @@ window.APP = (function () {
         _closeSidebar: function () {
 
         },
-
-        _updateTag: function (tag) {
-            _MAP._updateTag(tag);
-        }
     }
 
     // return module

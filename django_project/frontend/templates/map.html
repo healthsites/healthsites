@@ -127,8 +127,8 @@
         <div id="locality-statistic" class="location-info pad0x col-md-4">
             <div class="details" id="sidebar-info">
                 <div class="header" style="font-size: 24px; padding-bottom: 10px;">
-                    <strong id="tag-name">No Tag</strong> - <span id="number-locality"
-                                                                  style="margin-left: 5px; margin-right: 5px"> 0 </span>
+                    <strong id="title-name">No Title</strong> - <span id="number-locality"
+                                                                      style="margin-left: 5px; margin-right: 5px"> 0 </span>
                     healthsites
                 </div>
 
@@ -485,17 +485,36 @@
 
             // initialize the app
             APP = new APP();
-            {% if tag %}
+            {% if tag or country %}
                 $("#locality-statistic").show();
                 $("#locality-info").hide();
-                $("#tag-name").html("{{ tag }}");
                 $("#number-locality").html("{{ localities }}");
                 updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
                 updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
-                APP._updateTag("{{ tag }}");
             {% else %}
                 $("#locality-statistic").hide();
                 $("#locality-info").show();
+            {% endif %}
+            {% if tag %}
+                $("#title-name").html("{{ tag }}");
+                $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
+            {% elif country %}
+                $("#title-name").html("{{ country }}");
+                $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
+            {% endif %}
+            {% if viewport %}
+                var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");
+                var northeast_lng = parseFloat("{{ viewport.northeast_lng }}");
+                var southwest_lat = parseFloat("{{ viewport.southwest_lat }}");
+                var southwest_lng = parseFloat("{{ viewport.southwest_lng }}");
+                if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
+                    $APP.trigger('map.update-bound', {
+                        'southwest_lat': southwest_lat,
+                        'southwest_lng': southwest_lng,
+                        'northeast_lat': northeast_lat,
+                        'northeast_lng': northeast_lng
+                    });
+                }
             {% endif %}
 
             $("#updates").html("<div class=\"entry\">no updates</div>");

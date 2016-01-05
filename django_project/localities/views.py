@@ -578,52 +578,54 @@ def search_locality_by_tag(query):
         return []
 
 
+def get_country_statistic(query):
+    output = ""
+    try:
+        northeast_lat = 0.0
+        northeast_lng = 0.0
+        southwest_lat = 0.0
+        southwest_lng = 0.0
+        if query != "":
+            # getting viewport
+            try:
+                google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+                gmaps = googlemaps.Client(key=google_maps_api_key)
+                geocode_result = gmaps.geocode(query)[0]
+                viewport = geocode_result['geometry']['viewport']
+                northeast_lat = viewport['northeast']['lat']
+                northeast_lng = viewport['northeast']['lng']
+                southwest_lat = viewport['southwest']['lat']
+                southwest_lng = viewport['southwest']['lng']
+            except:
+                print "except"
+            # getting country's polygon
+            country = Country.objects.get(
+                    name__iexact=query)
+            polygons = country.polygon_geometry
+
+            # query for each of attribute
+            healthsites = Locality.objects.in_polygon(
+                    polygons)
+            output = get_statistic(healthsites)
+        else:
+            # query for each of attribute
+            healthsites = Locality.objects.all()
+            output = get_statistic(healthsites)
+
+        output["viewport"] = {"northeast_lat": northeast_lat, "northeast_lng": northeast_lng,
+                              "southwest_lat": southwest_lat, "southwest_lng": southwest_lng}
+    except Country.DoesNotExist:
+        output = ""
+    return output
+
+
 def search_locality_by_country(request):
     if request.method == 'GET':
         query = request.GET.get('q')
-        result = []
-        try:
-            output = ""
-            northeast_lat = 0.0
-            northeast_lng = 0.0
-            southwest_lat = 0.0
-            southwest_lng = 0.0
-            if query != "":
-                # getting viewport
-                try:
-                    google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
-                    gmaps = googlemaps.Client(key=google_maps_api_key)
-                    geocode_result = gmaps.geocode(query)[0]
-                    viewport = geocode_result['geometry']['viewport']
-                    northeast_lat = viewport['northeast']['lat']
-                    northeast_lng = viewport['northeast']['lng']
-                    southwest_lat = viewport['southwest']['lat']
-                    southwest_lng = viewport['southwest']['lng']
-                except:
-                    print "except"
-                # getting country's polygon
-                country = Country.objects.get(
-                        name__iexact=query)
-                polygons = country.polygon_geometry
+        output = get_country_statistic(query)
+        result = json.dumps(output, cls=DjangoJSONEncoder)
 
-                # query for each of attribute
-                healthsites = Locality.objects.in_polygon(
-                        polygons)
-                output = get_statistic(healthsites)
-            else:
-                # query for each of attribute
-                healthsites = Locality.objects.all()
-                output = get_statistic(healthsites)
-
-            output["viewport"] = {"northeast_lat": northeast_lat, "northeast_lng": northeast_lng,
-                                  "southwest_lat": southwest_lat, "southwest_lng": southwest_lng}
-
-            result = json.dumps(output, cls=DjangoJSONEncoder)
-        except Country.DoesNotExist:
-            result = []
-            result = json.dumps(result, cls=DjangoJSONEncoder)
-
-        return HttpResponse(result, content_type='application/json')
+    return HttpResponse(result, content_type='application/json')
 
 
 def search_countries(request):

@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 import googlemaps
 from localities.models import Locality, Value
-from localities.views import search_locality_by_tag
+from localities.views import search_locality_by_tag, get_country_statistic
 
 
 class MainView(TemplateView):
@@ -111,11 +111,16 @@ def map(request):
             return HttpResponseRedirect(
                     map_url + "#!/locality/%s" % locality_uuid)
     else:
-        query = request.GET.get('tag')
+        tag = request.GET.get('tag')
+        country = request.GET.get('country')
         result = ""
-        if query:
-            result = search_locality_by_tag(query)
-            result['tag'] = query
+        if tag:
+            result = search_locality_by_tag(tag)
+            result['tag'] = tag
+            print result
+        if country:
+            result = get_country_statistic(country)
+            result['country'] = country
             print result
         return render_to_response(
                 'map.html',

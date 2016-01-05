@@ -250,8 +250,9 @@
             </div>
         </div>
         <div class="col-md-6 country-data pad10x">
-            <h2 class="col-md-12"><strong id="country-title">World</strong> - <span id="country-locality-number"
-                                                                                    class="number">{{ locality_count }}</span>
+            <h2 class="col-md-12"><strong><a id="country-title" href="#">World</a></strong> - <span
+                    id="country-locality-number"
+                    class="number">{{ locality_count }}</span>
                 healthsites</h2>
 
             <div class="col-md-6">
@@ -555,7 +556,7 @@
                         q: country
                     },
                     success: function (data) {
-                        map._updateGeoname(country);
+                        $APP.trigger('map.update-geoname', {'geoname': country});
                         {# default #}
                         $("#country-locality-number").html(0);
                         $("#updates").html("<div class=\"entry\">no updates</div>");
@@ -563,7 +564,12 @@
 
                         {# show the real data #}
                         {# country title #}
-                        if (country == "") country = "World";
+                        if (country == "") {
+                            country = "World";
+                            $("#country-title").attr('href', "#");
+                        } else {
+                            $("#country-title").attr('href', "map?country=" + country);
+                        }
                         $("#country-title").html(country);
 
                         {# country healthsite number #}
@@ -611,6 +617,12 @@
                             var southwest_lng = parseFloat(data.viewport.southwest_lng);
                             if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
                                 map._setFitBound(southwest_lat, southwest_lng, northeast_lat, northeast_lng);
+                                $APP.trigger('map.update-bound', {
+                                    'southwest_lat': southwest_lat,
+                                    'southwest_lng': southwest_lng,
+                                    'northeast_lat': northeast_lat,
+                                    'northeast_lng': northeast_lng
+                                });
                             }
                         }
                     }
