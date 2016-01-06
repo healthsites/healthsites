@@ -42,6 +42,12 @@ urlpatterns = patterns(
     ),
 
     url(
+        r'^countries/simpledata$',
+        'localities.views.get_simple_statistic_by_country',
+        name='countries-simple-data'
+    ),
+
+    url(
         r'^search/localities/country$',
         'localities.views.search_locality_by_country',
         name='locality-country-search'

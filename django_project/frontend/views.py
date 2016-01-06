@@ -112,7 +112,6 @@ def map(request):
         result = {}
         result['locality_count'] = Locality.objects.count()
         result['countries'] = Country.objects.order_by('name').values('name').distinct()
-        print result
         return render_to_response(
                 'map.html',
                 result,

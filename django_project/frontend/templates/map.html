@@ -349,17 +349,42 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-            var $country_table = $('#country-table');
-            // render country data list
-            {% if countries %}
-                {% for country in countries %}
-                    var country = "{{ country.name }}";
-                    var country_id = country.split(".").join("-");
-                    country_id = country_id.split(" ").join("-");
-                    var html = "<tr><td><a style=\"cursor:pointer;\">" + country + "<a></td><td id=\"" + country_id + "-number\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\"><i style=\"opacity:0.5\">loading</i></td></tr>";
-                    $country_table.append(html);
-                {% endfor %}
-            {% endif %}
+            var url = window.location.href;
+            if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
+                var $country_table = $('#country-table');
+                // render country data list
+                {% if countries %}
+                    {% for country in countries %}
+                        var country = "{{ country.name }}";
+                        var country_id = country.split(".").join("-");
+                        country_id = country_id.split("&#39;").join("-");
+                        country_id = country_id.split(" ").join("-");
+                        country_id = country_id.split("(").join("-");
+                        country_id = country_id.split(")").join("-");
+                        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "<a></td><td id=\"" + country_id + "-number\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\"><i style=\"opacity:0.5\">loading</i></td></tr>";
+                        $country_table.append(html);
+                        $.ajax({
+                            number: country_id + "-number",
+                            completeness: country_id + "-complete",
+                            url: "{% url 'countries-simple-data' %}",
+                            dataType: 'json',
+                            data: {
+                                q: country
+                            },
+                            success: function (data) {
+                                $("#" + this.number).html("fail");
+                                $("#" + this.completeness).html("fail");
+                                $("#" + this.number).html(data.number);
+                                $("#" + this.completeness).html(data.completeness);
+                            },
+                            fail: function (data) {
+                                $("#" + this.number).html("fail");
+                                $("#" + this.completeness).html("fail");
+                            }
+                        });
+                    {% endfor %}
+                {% endif %}
+            }
             // set share url
             var baseURL = location.protocol + "//" + location.hostname + "/";
             $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
