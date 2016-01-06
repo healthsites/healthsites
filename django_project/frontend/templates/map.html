@@ -161,9 +161,9 @@
                 <div>
                     <table id="country-table" style="width:100%">
                         <tr>
-                            <th>Country</th>
-                            <th>Healthsite Number</th>
-                            <th>% of completness</th>
+                            <th width="60%">Country</th>
+                            <th width="20%">Healthsite Number</th>
+                            <th width="20%">% of completness</th>
                         </tr>
                     </table>
                 </div>
@@ -361,7 +361,7 @@
                         country_id = country_id.split(" ").join("-");
                         country_id = country_id.split("(").join("-");
                         country_id = country_id.split(")").join("-");
-                        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "<a></td><td id=\"" + country_id + "-number\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\"><i style=\"opacity:0.5\">loading</i></td></tr>";
+                        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "<a></td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
                         $country_table.append(html);
                         $.ajax({
                             number: country_id + "-number",

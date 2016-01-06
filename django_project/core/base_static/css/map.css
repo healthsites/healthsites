@@ -227,3 +227,16 @@
     box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
     font-family: "Ubuntu", sans-serif;
 }
+
+th, td {
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #3c4c57;
+}
