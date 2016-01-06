@@ -126,9 +126,11 @@ window.MAP = (function () {
             });
 
             $APP.on('locality.create', function (evt, payload) {
-                self.pointLayer.setLatLng([payload.geom[1], payload.geom[0]]);
+                var geom = self.MAP.getCenter();
+                $APP.trigger('locality.map.move', {'latlng': geom});
+                self.pointLayer.setLatLng(geom);
                 self.MAP.addLayer(self.pointLayer);
-                self.MAP.panTo([payload.geom[1], payload.geom[0]]);
+                self.MAP.panTo(geom);
             });
 
             $APP.on('locality.edit', function (evt, payload) {

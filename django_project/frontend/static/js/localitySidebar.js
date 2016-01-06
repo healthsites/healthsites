@@ -28,7 +28,7 @@ window.LocalitySidebar = (function () {
 
     // constructor
     var module = function () {
-        this.$sidebar = $('#sidebar-info');
+        this.$sidebar = $('#locality-info');
 
         // new style
         this.$line_updates = $('#line-updates');
@@ -169,11 +169,7 @@ window.LocalitySidebar = (function () {
 
             this.$sidebar.on('get-info', this.getInfo.bind(this));
             this.$sidebar.on('show-info', this.showInfo.bind(this));
-
             this.$sidebar.on('update-coordinates', this.updateCoordinates.bind(this));
-
-            this.$sidebar.on('update-coordinates', this.updateCoordinates.bind(this));
-
             this.$editButton.on('click', this.showEdit.bind(this, "edit"));
             this.$saveButton.on('click', this.sendEdit.bind(this));
             this.$addButton.on('click', this.showEdit.bind(this, "create"));
@@ -455,14 +451,14 @@ window.LocalitySidebar = (function () {
             this.$line_updates.show();
             if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create" && isLoggedIn))) {
                 if (mode == "edit" && is_enable_edit) {
-                    $APP.trigger('locality.edit');
                     this.$saveButton.show();
                     this.showInfo();
+                    $APP.trigger('locality.edit');
                 } else {
-                    $APP.trigger('locality.create', {'geom': [0, 0]});
                     this.$createButton.show();
                     this.$line_updates.hide();
                     this.showDefaultEdit();
+                    $APP.trigger('locality.create');
                 }
                 //this.showInfo();
                 for (var i = 0; i < info_fields.length; i++) {
@@ -947,10 +943,6 @@ window.LocalitySidebar = (function () {
             });
             $APP.on('locality.map.move', function (evt, payload) {
                 self.$sidebar.trigger('update-coordinates', payload);
-            });
-
-            $APP.on('locality.show-info-adjust', function (evt, payload) {
-                self.$sidebar.trigger('show-info-adjust');
             });
             $APP.on('sidebar.option-onchange', function (evt, payload) {
                 self.onchange(payload.element);

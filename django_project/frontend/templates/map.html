@@ -124,8 +124,34 @@
 <section id="map-full" class="js-fullheight fluid-container">
     <form id="locality-form" action="localities/edit" method="post">
         {% csrf_token %}
-        <div id="locality-statistic" class="location-info pad0x col-md-4">
-            <div class="details" id="sidebar-info">
+        <div class="location-info pad0x col-md-4">
+            <div class="profile">
+                {% if user.is_authenticated %}
+                    <div class="person col-xs-8 pad0x">
+                        <div class="avatar-holder">
+                            <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
+                            <img src="http://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"/>
+                        </div>
+
+                    <span class="name">
+                        <a href="{% url 'userprofilepage' %}">{{ user }}</a>
+                    </span>
+                    </div>
+                    <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
+                            class="fa fa-sign-out"></i> sign out</a>
+                {% else %}
+                    <div class="person col-xs-8 pad0x">
+                <span class="name">
+                        You are not signed in
+                    </span>
+                    </div>
+                    <a href="{% url 'usersignpage' %}" class="button col-xs-4 pad0x blue stroke"><i
+                            class="fa fa-sign-in"></i> sign in</a>
+                {% endif %}
+
+                <div style="clear: both;"></div>
+            </div>
+            <div id="locality-statistic" class="details" id="sidebar-info">
                 <div class="header" style="font-size: 24px; padding-bottom: 10px;">
                     <strong id="title-name">No Title</strong> - <span id="number-locality"
                                                                       style="margin-left: 5px; margin-right: 5px"> 0 </span>
@@ -161,35 +187,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div id="locality-info" class="location-info pad0x col-md-4" style="display: none">
-            <div class="profile">
-                {% if user.is_authenticated %}
-                    <div class="person col-xs-8 pad0x">
-                        <div class="avatar-holder">
-                            <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
-                            <img src="http://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"/>
-                        </div>
-
-                    <span class="name">
-                        <a href="{% url 'userprofilepage' %}">{{ user }}</a>
-                    </span>
-                    </div>
-                    <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
-                            class="fa fa-sign-out"></i> sign out</a>
-                {% else %}
-                    <div class="person col-xs-8 pad0x">
-                <span class="name">
-                        You are not signed in
-                    </span>
-                    </div>
-                    <a href="{% url 'usersignpage' %}" class="button col-xs-4 pad0x blue stroke"><i
-                            class="fa fa-sign-in"></i> sign in</a>
-                {% endif %}
-
-                <div style="clear: both;"></div>
-            </div>
-            <div class="details" id="sidebar-info">
+            <div id="locality-info" class="details" style="display: none">
                 <div class="header">
                     <h1 id="locality-name">No Name</h1>
                     <input type="text" id="locality-name-input" name="name"
