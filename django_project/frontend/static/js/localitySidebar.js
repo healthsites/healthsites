@@ -11,7 +11,10 @@ window.LocalitySidebar = (function () {
     // constructor
     var module = function () {
 
-        this.$sidebar = $('#sidebar-info');
+        this.$sidebar_default = $('#locality-default');
+        this.$sidebar_info = $('#locality-info');
+
+        this.$sidebar = $('#locality-info');
         this.$sidebar_head = this.$sidebar.find('.sidebar-info-header');
         this.$sidebar_body = this.$sidebar.find('.sidebar-info-body');
         this.$sidebar_footer = this.$sidebar.find('.sidebar-info-footer');
@@ -213,6 +216,10 @@ window.LocalitySidebar = (function () {
             }
             this.$inpatient_service.text(this.locality_data.values['inpatient_service']);
             this.$staff.text(this.locality_data.values['staff']);
+
+            // show locality info
+            this.$sidebar_info.show();
+            this.$sidebar_default.hide();
         },
 
         setInfoWindowHeight: function () {
