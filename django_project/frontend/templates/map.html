@@ -25,6 +25,9 @@
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css"
           media="screen, projection"/>
+    <link href="http://wvega.github.io/timepicker/resources/jquery-timepicker/jquery.timepicker.min.css"
+          rel="stylesheet" type="text/css"
+          media="screen, projection"/>
     {% stylesheet 'project' %}
     {% stylesheet 'map_page' %}
 
@@ -268,6 +271,26 @@
                                        placeholder="Operations" style="display: none"/>
                             </p>
 
+                            <p id="locality-operating-hours-section">
+                                <i class="fa fa-clock-o"></i>
+                                <span id="locality-operating-hours" class="call">define operation</span>
+                            </p>
+
+                            <div id="locality-operating-hours-input"
+                                 style="display: none;">
+                                <div style="border: 1px solid black; padding: 10px;">
+                                    <table id="locality-operating-hours-input-table" style="width:100%">
+
+                                    </table>
+                                    <hr>
+                                    <div>
+                                        <strong>RESULT :</strong><br>
+                                        <span id="locality-operating-hours-input-result"></span>
+                                    </div>
+                                </div>
+                                <br>
+                            </div>
+
                             <p id="locality-url-input-add" style="cursor: pointer; display: none"
                                onclick="addOption(this)"> add
                                 link</p>
@@ -458,6 +481,8 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
+<script type="text/javascript"
+        src="http://wvega.github.io/timepicker/resources/jquery-timepicker/jquery.timepicker.min.js"></script>
 
 {% javascript 'project' %}
 {% javascript 'map_page' %}
@@ -588,14 +613,6 @@
         function addTag(value) {
             $APP.trigger('sidebar.tag-add', {'value': value});
         }
-        $('body').on("click", ".remove_option", function (e) { //user click on remove text
-            e.preventDefault();
-            $(this).parent('div').remove();
-        })
-        $('body').on("click", ".remove_tag", function (e) { //user click on remove text
-            e.preventDefault();
-            $(this).parent('li').remove();
-        })
         var chart = c3.generate({
             bindto: '#chart1',
             size: {
@@ -713,6 +730,35 @@
                     ['basic', basic],
                 ],
             });
+        }
+        $('body').on("click", ".remove_option", function (e) { //user click on remove text
+            e.preventDefault();
+            $(this).parent('div').remove();
+        })
+        $('body').on("click", ".remove_tag", function (e) { //user click on remove text
+            e.preventDefault();
+            $(this).parent('li').remove();
+        })
+        function split(element) {
+            $(element).html('and');
+            $(element).parent('tr').find('.time2').css({'opacity': 1});
+            $(element).parent('tr').find('.unsplit').css({'opacity': 1});
+            $(element).parent('tr').find('.unsplit').css({'cursor': 'pointer'});
+            // change disable/enabled
+            $(element).parent('tr').find('.time2').find('input').prop('disabled', false);
+            $APP.trigger('sidebar.split-event');
+
+        }
+        function unsplit(element) {
+            $(element).css({'opacity': 0.0});
+            $(element).parent('tr').find('.time2').css({'opacity': 0.0});
+            $(element).parent('tr').find('.split').html('<a>split</a>');
+            $(element).parent('tr').find('.unsplit').css({'cursor': 'default'});
+            $(element).parent('tr').find('.time2').find('input').val('00:00');
+            // change disable/enabled
+            $(element).parent('tr').find('.time2').find('input').prop('disabled', true);
+            $APP.trigger('sidebar.split-event');
+
         }
     </script>
 {% endblock extra_js %}

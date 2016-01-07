@@ -250,3 +250,15 @@ input[type='checkbox'] {
 #locality-statistic .name a {
     color: #f44a52;
 }
+
+table, td, th {
+    padding-right: 5px;
+}
+
+td input[type="text"] {
+    width: 50px;
+}
+
+.ui-timepicker-standard {
+    font-size: 12px;
+}
