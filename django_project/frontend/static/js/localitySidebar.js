@@ -727,6 +727,7 @@ window.LocalitySidebar = (function () {
             this.$lastupdate.text("11 may 2015 17:23:15");
             this.$uploader.text("@sharehealthdata");
             this.$uploader.attr("href", "profile/sharehealthdata");
+            this.$defining_hours.html(need_information);
         },
 
         showInfo: function (evt) {
@@ -1014,9 +1015,9 @@ window.LocalitySidebar = (function () {
                         var hours = hours_each_day[i].split("-");
                         this.setDefiningHour(i, hours[0], hours[1], hours[2], hours[3]);
                     }
+                    this.$defining_hours_input_result.html(this.getDefiningHoursFormat()["format2"]);
+                    this.$defining_hours.html(this.getDefiningHoursFormat()["format2"]);
                 }
-                this.$defining_hours_input_result.html(this.getDefiningHoursFormat()["format2"]);
-                this.$defining_hours.html(this.getDefiningHoursFormat()["format2"]);
             }
 
 
