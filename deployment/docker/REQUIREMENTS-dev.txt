@@ -14,4 +14,4 @@ Sphinx
 pdbpp
 
 # hizashi-utils
-hizashi-utils
+# hizashi-utils

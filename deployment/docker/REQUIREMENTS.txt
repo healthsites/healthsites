@@ -7,7 +7,7 @@ django-grappelli
 django-hashedfilenamestorage
 django-model-utils<=2.3.1
 django-pg-fts
-django-pipeline>=1.4
+django-pipeline>=1.4,<1.6
 googlemaps
 nodeenv
 psycopg2

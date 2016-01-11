@@ -74,7 +74,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             if geoname != "":
                 # getting country's polygon
                 country = Country.objects.get(
-                    name__iexact=geoname)
+                        name__iexact=geoname)
                 polygon = country.polygon_geometry
                 locatities = locatities.in_polygon(polygon)
         except Country.DoesNotExist:
@@ -108,13 +108,13 @@ class LocalityInfo(JSONResponseMixin, DetailView):
         self.object = self.get_object()
         obj_repr = self.object.repr_dict()
         data_repr = render_fragment(
-            self.object.domain.template_fragment, obj_repr
+                self.object.domain.template_fragment, obj_repr
         )
         obj_repr.update({'repr': data_repr})
         num_data = len(obj_repr['values']) + 1  # geom
         # 16 = 4 mandatory + 12 core
         completeness = num_data / 16.0 * 100  # percentage
-        obj_repr.update({'completeness': '%s%%' % completeness})
+        obj_repr.update({'completeness': "%.2f" % completeness})
 
         return self.render_json_response(obj_repr)
 
@@ -149,18 +149,18 @@ class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
         # update everything in one transaction
         with transaction.atomic():
             self.object.set_geom(
-                form.cleaned_data.pop('lon'),
-                form.cleaned_data.pop('lat')
+                    form.cleaned_data.pop('lon'),
+                    form.cleaned_data.pop('lat')
             )
             if self.object.tracker.changed():
                 # there are some changes so create a new changeset
                 tmp_changeset = Changeset.objects.create(
-                    social_user=self.request.user
+                        social_user=self.request.user
                 )
                 self.object.changeset = tmp_changeset
             self.object.save()
             self.object.set_values(
-                form.cleaned_data, social_user=self.request.user
+                    form.cleaned_data, social_user=self.request.user
             )
 
             return HttpResponse('OK')
@@ -206,7 +206,7 @@ class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
         # create new as a single transaction
         with transaction.atomic():
             tmp_changeset = Changeset.objects.create(
-                social_user=self.request.user
+                    social_user=self.request.user
             )
 
             # generate new uuid
@@ -221,7 +221,7 @@ class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
             loc.upstream_id = u'web¶{}'.format(tmp_uuid)
 
             loc.geom = Point(
-                form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
+                    form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
             )
             loc.save()
             loc.set_values(form.cleaned_data, social_user=self.request.user)
@@ -281,9 +281,9 @@ def load_data(request):
             #         'and they are not added.' % response['duplicated']
             #     )
             return HttpResponse(json.dumps(
-                response,
-                ensure_ascii=False),
-                content_type='application/javascript')
+                    response,
+                    ensure_ascii=False),
+                    content_type='application/javascript')
         else:
             error_message = form.errors
             response = {
@@ -292,9 +292,9 @@ def load_data(request):
                 'message': 'You have failed to load data.'
             }
             return HttpResponse(json.dumps(
-                response,
-                ensure_ascii=False),
-                content_type='application/javascript')
+                    response,
+                    ensure_ascii=False),
+                    content_type='application/javascript')
     else:
         pass
 
@@ -320,8 +320,8 @@ def search_locality_by_name(request):
     if request.method == 'GET':
         query = request.GET.get('q')
         locality_values = Value.objects.filter(
-            specification__attribute__key='name').filter(
-            data__istartswith=query)
+                specification__attribute__key='name').filter(
+                data__istartswith=query)
         result = []
         for locality_value in locality_values:
             result.append(locality_value.data)
@@ -359,41 +359,41 @@ def search_locality_by_country(request):
                     print "except"
                 # getting country's polygon
                 country = Country.objects.get(
-                    name__iexact=query)
+                        name__iexact=query)
                 polygons = country.polygon_geometry
 
                 # query for each of attribute
                 healthsites = Locality.objects.in_polygon(
-                    polygons)
+                        polygons)
                 healthsites_number = healthsites.count()
                 filtered_value = Value.objects.filter(
-                    locality__geom__within=polygons)
+                        locality__geom__within=polygons)
                 hospital_number = filtered_value.filter(
-                    specification__attribute__key='type').filter(
-                    data__iexact='hospital').count()
+                        specification__attribute__key='type').filter(
+                        data__iexact='hospital').count()
                 medical_clinic_number = filtered_value.filter(
-                    specification__attribute__key='type').filter(
-                    data__iexact='clinic').count()
+                        specification__attribute__key='type').filter(
+                        data__iexact='clinic').count()
                 orthopaedic_clinic_number = filtered_value.filter(
-                    specification__attribute__key='type').filter(
-                    data__iexact='orthopaedic clinic').count()
+                        specification__attribute__key='type').filter(
+                        data__iexact='orthopaedic clinic').count()
             else:
                 # query for each of attribute
                 healthsites = Locality.objects.all()
                 healthsites_number = healthsites.count()
                 hospital_number = Value.objects.filter(
-                    specification__attribute__key='type').filter(
-                    data__iexact='hospital').count()
+                        specification__attribute__key='type').filter(
+                        data__iexact='hospital').count()
                 medical_clinic_number = Value.objects.filter(
-                    specification__attribute__key='type').filter(
-                    data__iexact='clinic').count()
+                        specification__attribute__key='type').filter(
+                        data__iexact='clinic').count()
                 orthopaedic_clinic_number = Value.objects.filter(
-                    specification__attribute__key='type').filter(
-                    data__iexact='orthopaedic').count()
+                        specification__attribute__key='type').filter(
+                        data__iexact='orthopaedic').count()
 
             # check completnees
             values = Value.objects.filter(locality__in=healthsites).values('locality').annotate(
-                value_count=Count('locality'))
+                    value_count=Count('locality'))
             # 16 = 4 mandatory + 12 core
             # this make long waiting, need to more good query
             complete = values.filter(value_count__gte=15).count()
@@ -432,9 +432,48 @@ def search_countries(request):
         query = request.GET.get('q')
 
         countries = Country.objects.filter(
-            name__istartswith=query)
+                name__istartswith=query)
         result = []
         for country in countries:
             result.append(country.name)
         result = json.dumps(result)
+        return HttpResponse(result, content_type='application/json')
+
+
+def get_simple_statistic_by_country(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+        result = []
+        try:
+            output = {}
+            # getting country's polygon
+            print query
+            country = Country.objects.get(
+                    name__iexact=query)
+            polygons = country.polygon_geometry
+
+            # query for each of attribute
+            healthsites = Locality.objects.in_polygon(
+                    polygons)
+            output['number'] = healthsites.count()
+
+            # check completnees
+            values = Value.objects.filter(locality__in=healthsites).values('locality').annotate(
+                    value_count=Count('locality'))
+            # 16 = 4 mandatory + 12 core
+            # this make long waiting, need to more good query
+            complete = values.filter(value_count__gte=15).count()
+            if values.count() > 0:
+                complete = complete * 100.0 / values.count()
+            else:
+                complete = 0.0
+            output['completeness'] = "%.2f" % complete
+
+            result = json.dumps(output)
+        except Country.DoesNotExist:
+            print "not exist"
+            result = []
+            result = json.dumps(result)
+
+        result = json.dumps(output)
         return HttpResponse(result, content_type='application/json')
