@@ -1,5 +1,11 @@
 window.LocalitySidebar = (function () {
     "use strict";
+    var need_information = "needs information";
+    var no_physical_address = "No Physical Address";
+    var no_phone_found = "No phone found";
+    var no_operation_hours_found = "No operation hours found";
+    var no_url_found = "No url found";
+    var no_name = "No Name";
     // private variables and functions
 
     // constructor
@@ -29,12 +35,6 @@ window.LocalitySidebar = (function () {
 
         this._bindExternalEvents();
         this._bindInternalEvents();
-
-        // check if a locality was clicked, and restore it's view
-        if (sessionStorage.key('locality-uuid')) {
-            this.locality_uuid = sessionStorage.getItem('locality-uuid');
-            this.$sidebar.trigger('get-info');
-        }
 
     };
 
@@ -131,7 +131,31 @@ window.LocalitySidebar = (function () {
             this.showInfo();
         },
 
+        showDefaultInfo: function (evt) {
+            this.$name.text(no_name);
+            this.$nature_of_facility.text(need_information);
+            this.$completenees.attr('style', 'width:0%');
+            this.$completenees.text('0% Complete');
+            this.$coordinates.text(
+                'lat: ' + 'n/a' + ', long: ' + 'n/a');
+            this.$physical_address.text(no_physical_address);
+            this.$phone.text(no_phone_found);
+            this.$operation.text(no_operation_hours_found);
+            this.$url.text(no_url_found);
+            this.$url.removeAttr('href');
+            this.$scope_of_service.html('');
+            this.$scope_of_service.text(need_information);
+            this.$ancilary_service.html('');
+            this.$ancilary_service.text(need_information);
+            this.$activities.html('');
+            this.$activities.text(need_information);
+            this.$inpatient_service.text(need_information);
+            this.$staff.text(need_information);
+        },
+
         showInfo: function (evt) {
+            // reset first
+            this.showDefaultInfo();
             console.log(this.locality_data);
             this.$name.text(this.locality_data.values['name']);
             this.$nature_of_facility.text(this.locality_data.values['nature_of_facility']);
@@ -191,28 +215,6 @@ window.LocalitySidebar = (function () {
             this.$staff.text(this.locality_data.values['staff']);
         },
 
-        showDefaultInfo: function (evt) {
-            this.$name.text("No Name");
-            this.$nature_of_facility.text("No information");
-            this.$completenees.attr('style', 'width:0%');
-            this.$completenees.text('0% Complete');
-            this.$coordinates.text(
-                'lat: ' + 'n/a' + ', long: ' + 'n/a');
-            this.$physical_address.text("No Physical Address");
-            this.$phone.text('No phone found');
-            this.$operation.text('No operation hours found');
-            this.$url.text('No url found');
-            this.$url.removeAttr('href');
-            this.$scope_of_service.html('');
-            this.$scope_of_service.text('No information');
-            this.$ancilary_service.html('');
-            this.$ancilary_service.text('No information');
-            this.$activities.html('');
-            this.$activities.text('No information');
-            this.$inpatient_service.text('No information');
-            this.$staff.text('No information');
-        },
-
         setInfoWindowHeight: function () {
             var nlfH = this.$sidebar_footer.height() + 15;
             this.$sidebar_body.height($(window).height() - this.$sidebar_body.offset().top - nlfH);
@@ -222,10 +224,6 @@ window.LocalitySidebar = (function () {
             var self = this;
             $.getJSON('/localities/' + this.locality_uuid, function (data) {
                 self.locality_data = data;
-
-                // store lastClicked localityID to the session storage
-                sessionStorage.setItem('locality-uuid', self.locality_uuid);
-
                 self.$sidebar.trigger('show-info');
                 if (payload) {
                     var zoomto = payload.zoomto;

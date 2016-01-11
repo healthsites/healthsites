@@ -201,75 +201,76 @@ h2.fancy {
   }
 }
 
-/* CTA
+/* share-data
 
 -------------------------------------------------- */
-#cta {
+#share-data {
 	font-family: "Raleway", sans-serif;
+	overflow: hidden;
 }
-#cta .content {
+#share-data .content {
 	color: #fff;
 	background: #3c4c57;
 	height: 219px;
 	padding: 0 60px;
 	border-right: 1px solid #fff;
 }
-#cta .center:last-child .content {
+#share-data .center:last-child .content {
 	border-right: none;
 }
-#cta .icon-holder {
+#share-data .icon-holder {
 	padding-top: 25px;
 	font-size: 36px;
 }
-#cta h3 {
+#share-data h3 {
 	font-weight: 600;
 	font-size: 18px;
 	margin: 5px 0;
 }
-#cta .text {
+#share-data .text {
 	display: block;
 	color: #a3a8ac;
 }
-#cta .links {
+#share-data .links {
 	margin-top: 10px;
 }
-#cta .links a {
+#share-data .links a {
 	color: #fff;
 	text-decoration: underline;
 	margin: 0 5px;
 }
-#cta .links a:hover {
+#share-data .links a:hover {
 	color: #f44a52;
 }
 @media only screen and (max-width:1525px) {
-	#cta .content {
+	#share-data .content {
 		padding: 0 20px;
 	}
-	#cta .text {
+	#share-data .text {
 		font-size: 14px;
 	}
 }
 @media only screen and (max-width:1190px) {
-	#cta .content {
+	#share-data .content {
 		height: 250px;
 	}
 }
 @media only screen and (max-width:1009px) {
-	#cta .content {
+	#share-data .content {
 		height: 265px;
 	}
 }
 @media only screen and (max-width:993px) {
-	#cta .content {
+	#share-data .content {
 		height: auto;
 		border-right: none;
 		border-bottom: 1px solid #fff;
 		padding-bottom: 40px;
 	}
-	#cta .text {
+	#share-data .text {
 		font-size: 16px;
 	}
-	#cta .icon-holder {
+	#share-data .icon-holder {
        font-size: 48px;
     }
 }
@@ -277,20 +278,16 @@ h2.fancy {
 /* Map
 
 -------------------------------------------------- */
-#map-data {
-	height: 1px;
-}
 .map-data {
 	overflow: hidden;
 }
 #map-home {
 	height: 645px;
 	position: relative;
-	background: url(../img/ruanda.png);
 }
 .select-country {
 	position: absolute;
-	bottom: 10px;
+	bottom: 20px;
 	left: 50%;
 	width: 234px;
 	margin-left: -114px;
@@ -432,4 +429,17 @@ h2.fancy {
   .partners-list {
 	  margin: 0;
   }
+}
+.marker-icon {
+    width: 48px;
+    height: 46px;
+    background: url("/static/img/healthsite-cluster-marker.png");
+    line-height: 46px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.map{
+	padding: 0px;
 }

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load pipeline %}
+{% load static %}
+
+{% block title %}Healthsites{% endblock %}
+
+{% block content %}
+    <section class="white about">
+        <div class="container pad0x">
+            <div class="center profile-image-size">
+                {% if user.profile_picture == "" %}
+                    <img class="profile-image profile-image-size" src="{% static "img/no-profile-img.gif" %}"/>
+                {% else %}
+                    <img class="profile-image profile-image-size" src="/media/{{ user.profile_picture }}"/>
+                {% endif %}
+            </div>
+            <div class="center header">
+                <h1>{{ user.username }}</h1>
+            </div>
+            <div class="center">
+                <strong>Name</strong>
+            </div>
+            <div class="center">
+                {% if user.get_full_name == "" %}
+                    -
+                {% else %}
+                    {{ user.get_full_name }}
+                {% endif %}
+            </div>
+            <div class="center">
+                <strong>Email</strong>
+            </div>
+            <div class="center">
+                {% if user.email == "" %}
+                    -
+                {% else %}
+                    {{ user.email }}
+                {% endif %}</div>
+        </div>
+    </section>
+{% endblock content %}

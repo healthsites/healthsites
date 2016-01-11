@@ -30,12 +30,19 @@ $(document).ready(function(){
         $('html,body').animate({
           scrollTop: target.offset().top
         }, 1000);
+		   window.history.pushState("", "", '#'+this.hash.slice(1));
         return false;
       }
     }
   });
 	
- 
+   
+  $("#locality-name").bind("DOMSubtreeModified",function(){
+      $(this).parent().stop().animate({ backgroundColor: "#f44a52",
+	                                    color: "#fff" }, 100)
+	                         .animate({ backgroundColor: "white",
+							            color: "#3c4c57" }, 550);
+  });
   
   var v_width = $(window).width();
   var v_height = $(window).height();
@@ -48,16 +55,16 @@ $(document).ready(function(){
      
 	  var pad = v_height/2;
 	  $('.location-info').css('margin-top',pad);
-	  $('#map, #map-home').css('height',pad);
-	  $('#map, #map-home').css('width',v_width);
+	  $('.map-page #map, #map-home').css('height',pad);
+	  $('.map-page #map, #map-home').css('width',v_width);
 	   
   
  
   }
 	else {
 		 $('.location-info').css('margin-top',0);
-         $('#map').css('height', v_height - h_height);
-         $('#map').css('width', v_width - s_width);
+         $('.map-page #map').css('height', v_height - h_height);
+         $('.map-page #map').css('width', v_width - s_width);
 	}
 	
 	var v_count = '0';
@@ -105,19 +112,19 @@ $(window).resize(function() {
   var v_width = $(window).width();
   var s_width = $('.location-info').width();
   $('.js-fullheight').css('height', $(window).height());
-  $('#map').css('height', v_height - h_height);
-  $('#map').css('width', v_width - s_width);
+  $('.map-page #map').css('height', v_height - h_height);
+  $('.map-page #map').css('width', v_width - s_width);
   if (v_width<=991) {
 	  var pad = v_height/2;
 	  $('.location-info').css('margin-top',pad);
-	  $('#map, #map-home').css('height',pad);
-	  $('#map, #map-home').css('width',v_width);
+	  $('.map-page #map, #map-home').css('height',pad);
+	  $('.map-page #map, #map-home').css('width',v_width);
 	  var getslidewd= $('.main-img').width();
   }
   else {
 	   $('.location-info').css('margin-top',0);
 	   $('#map-home').css('width','50%');
-	   $('#map-home').css('height', 645);
+	   $('#map-home').css('height', 400);
   }
 });
 
