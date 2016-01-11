@@ -1,171 +1,207 @@
 #map-full {
-	background: #eff0f0;
-	margin-top: 53px;
+    background: #eff0f0;
+    margin-top: 53px;
 }
+
 .location-info {
-	background: #fff;
-	font-family: "Raleway", sans-serif;
-	color: #3c4c57;
-	padding-bottom: 64px;
-	z-index: 1;
+    background: #fff;
+    font-family: "Raleway", sans-serif;
+    color: #3c4c57;
+    padding-bottom: 64px;
+    z-index: 1;
 }
+
 .location-info .profile, .location-info .header {
-	padding: 0 20px;
+    padding: 0 20px;
 }
+
 .location-info .profile {
-	background: #eff0f0;
-	padding-top: 10px;
-	padding-bottom: 10px;
+    background: #eff0f0;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
+
 .avatar-holder {
-	display: inline-block;
-	height: 48px;
-	width: 48px;
-	position: relative;
-	margin-right: 10px;
+    display: inline-block;
+    height: 48px;
+    width: 48px;
+    position: relative;
+    margin-right: 10px;
 }
+
 .frame {
-	position: absolute;
-	top: 0;
-	left: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
+
 .location-info .profile .name, .location-info .profile .name a {
-	text-transform: uppercase;
-	font-weight: 600;
-	color: #3c4c57;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: #3c4c57;
 }
+
 .details .header {
-	padding-top: 18px;
-	border-bottom: 1px solid #eff0f0;
+    padding-top: 18px;
+    border-bottom: 1px solid #eff0f0;
 }
+
 .details h1 {
-	font-size: 24px;
-	font-weight: bold;
-	margin: 0;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
 }
+
 .details .sub {
-	color: #737c83;
+    color: #737c83;
 }
+
 .location-info {
-	position: relative;
+    position: relative;
 }
+
 .location-info .icon-holder {
-	float: left;
-	width: 53px;
-	text-align: center;
-	padding: 10px 0;
+    float: left;
+    width: 53px;
+    text-align: center;
+    padding: 10px 0;
 }
+
 .location-info .icon-holder i {
-	color: #afb4b7;
-	font-size: 21px;
+    color: #afb4b7;
+    font-size: 21px;
 }
+
 .location-info .data {
-	margin-left: 48px;
-	background: #f9f9f9;
-	padding: 10px 20px 1px;
-	font-family: "Ubuntu", sans-serif;
+    margin-left: 48px;
+    background: #f9f9f9;
+    padding: 10px 20px 1px;
+    font-family: "Ubuntu", sans-serif;
 }
+
 .details .line {
-	border-bottom: 1px solid #eff0f0;
-	clear: both;
+    border-bottom: 1px solid #eff0f0;
+    clear: both;
 }
+
 .updates p {
-	font-style: italic;
-	color: #919393;
+    font-style: italic;
+    color: #919393;
 }
+
 .updates .date, .updates a {
-	font-weight: 500;
-	color: #3c4c57;
+    font-weight: 500;
+    color: #3c4c57;
 }
+
 .updates .full-list {
-	display: block;
+    display: block;
 }
+
 .find .address {
-	font-size: 18px;
-	font-weight: 400;
-	margin-bottom: 5px;
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 5px;
 }
+
 .find .coordinates {
-	font-style: italic;
-	color: #919393;
+    font-style: italic;
+    color: #919393;
 }
+
 .find .data i {
-	font-size: 18px;
-	margin-right: 4px;
+    font-size: 18px;
+    margin-right: 4px;
 }
+
 .find .call {
-	font-size: 18px;
-	font-weight: 700;
-	margin-bottom: 0;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 0;
 }
+
 .find .call .hours {
-	margin-left: 20px;
+    margin-left: 20px;
 }
+
 .find .url {
-	font-size: 16px;
-	font-style: italic;
-	margin-bottom: 0;
+    font-size: 16px;
+    font-style: italic;
+    margin-bottom: 0;
 }
+
 .find .url:last-child {
-	margin-bottom: 10px;
+    margin-bottom: 10px;
 }
+
 .services h3 {
-	margin-top: 0;
-	font-style: italic;
-	color: #919393;
-	font-size: 16px;
-	font-weight: 400;
-	margin-bottom: 5px;
+    margin-top: 0;
+    font-style: italic;
+    color: #919393;
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 5px;
 }
+
 .services ul {
-	padding: 0;
-	max-width: 310px;
+    padding: 0;
+    max-width: 310px;
 }
+
 .services li {
-	display: inline-block;
-	font-size: 16px;
-	margin-right: 10px;
+    display: inline-block;
+    font-size: 16px;
+    margin-right: 10px;
 }
+
 .services li i {
-	margin-right: 3px;
+    margin-right: 3px;
 }
+
 .beds p, .doctors p {
-	font-size: 16px;
+    font-size: 16px;
 }
+
 .location-info .buttons {
-	position: fixed;
-	bottom: 0;
-	padding: 10px;
-	background: #fff;
+    position: fixed;
+    bottom: 0;
+    padding: 10px;
+    background: #fff;
 }
+
 .buttons .button {
-	display: block;
+    display: block;
 }
+
 .map-page {
-	position: relative;
+    position: relative;
 }
+
 #map {
-	background: #c8e6ff;
-	position: fixed;
-	top: 53px;
-	right: 0;
-	width:100%;
-	height: 100%
+    background: #c8e6ff;
+    position: fixed;
+    top: 53px;
+    right: 0;
+    width: 100%;
+    height: 100%
 }
-@media only screen and (max-width:991px) {
-.map-page {
-	background: #c8e6ff;
-	position: absolute;
-	top: 0;
-	right: 0;
-	left: 0;
-	width: 100%;
+
+@media only screen and (max-width: 991px) {
+    .map-page {
+        background: #c8e6ff;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    #map {
+        position: relative;
+        top: 0;
+    }
 }
-#map {
-	position: relative;
-	top: 0;
-}
-}
+
 .marker-icon {
     width: 48px;
     height: 46px;
@@ -177,5 +213,30 @@
 }
 
 #twitter_share_map:hover {
-	cursor: pointer;
+    cursor: pointer;
+}
+
+#locality-default {
+    background: #fff;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    /* height: 216px; */
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
+    font-family: "Ubuntu", sans-serif;
+}
+
+th, td {
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #3c4c57;
 }

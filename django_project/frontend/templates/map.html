@@ -144,151 +144,179 @@
 
             <div style="clear: both;"></div>
         </div>
-        <div class="details" id="sidebar-info">
-            <div class="header">
-                <h1 id="locality-name">Priory Hospital Glasgow</h1>
 
-                <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
+        <div id="locality-default">
+            <div style="padding: 20px;">
+                <p>
+                    We aim to provide a single point of reference for healthcare workers, aid agencies,
+                    contingency planners, government agencies and citizens who need access to highly curated
+                    global dataset of healthcare facilities.
+                    By simply clicking on the map, users can discover what healthcare facilities exist at any global
+                    location
+                    and find out what resources exist at any individual healthcare facility.
+                </p>
+                <h2 class="fancy "><span class="timer" data-speed="2500"
+                                         data-to="{{ locality_count }}">{{ locality_count }}</span>
+                    healthsites added</h2>
+                <div>
+                    <table id="country-table" style="width:100%">
+                        <tr>
+                            <th width="60%">Country</th>
+                            <th width="20%">Healthsite Number</th>
+                            <th width="20%">% of completness</th>
+                        </tr>
+                    </table>
+                </div>
             </div>
-            <div class="info">
-                <div class="line updates">
-                    <div class="icon-holder">
-                        <i class="fa fa-info-circle"></i>
-                    </div>
-                    <div class="data">
-                        <p>last update: <span class="date">11 may 2015</span>, by
+        </div>
+        <div id="locality-info" style="display: none">
+            <div class="details" id="sidebar-info">
+                <div class="header">
+                    <h1 id="locality-name">Priory Hospital Glasgow</h1>
+
+                    <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
+                </div>
+                <div class="info">
+                    <div class="line updates">
+                        <div class="icon-holder">
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div class="data">
+                            <p>last update: <span class="date">11 may 2015</span>, by
                             <span class="name">
                                 <a href="profile/sharehealthdata">@sharehealthdata</a>
                             </span>
                             <span class="more">
                                 <a href="#" class="full-list">see full list <i class="fa fa-angle-down"></i></a>
                             </span>
-                        </p>
+                            </p>
 
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
-                                 aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
-                                90% Complete
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
+                                     aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
+                                    90% Complete
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="line find">
-                    <div class="icon-holder">
-                        <i class="fa fa-map-marker"></i>
-                    </div>
-                    <div class="data">
-                        <p class="address" id="locality-physical_address">54, Praed st, London, W2 NY<br/>
-                            Unighted Kingdom</p>
+                    <div class="line find">
+                        <div class="icon-holder">
+                            <i class="fa fa-map-marker"></i>
+                        </div>
+                        <div class="data">
+                            <p class="address" id="locality-physical_address">54, Praed st, London, W2 NY<br/>
+                                Unighted Kingdom</p>
 
-                        <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
+                            <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
 
-                        <p class="call">
-                            <i class="fa fa-phone"></i>
-                            <span id="locality-phone"> 0141 636 6116</span>
+                            <p class="call">
+                                <i class="fa fa-phone"></i>
+                                <span id="locality-phone"> 0141 636 6116</span>
                             <span class="hours">
                                 <i class="fa fa-clock-o"></i>
                                 <span id="locality-operation">24/24 & 7/7</span>
                             </span>
-                        </p>
+                            </p>
 
-                        <p class="url">
-                            <i class="fa fa-link"></i>
-                            <a href="#" id="locality-url">www.msf.org</a>
-                        </p>
-                    </div>
-                </div>
-                <div class="line services">
-                    <div class="icon-holder">
-                        <i class="fa fa-tags"></i>
-                    </div>
-                    <div class="data">
-                        <div class="scope-of-service">
-                            <h3>scope of service</h3>
-
-                            <div id="locality-scope-of-service">
-                                <ul>
-                                    <li><i class="fa fa-caret-right"></i>Specialized care</li>
-                                    <li><i class="fa fa-caret-right"></i>General acute care</li>
-                                    <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="ancillary">
-                            <h3>ancillary services</h3>
-
-                            <div id="locality-ancilary-service">
-                                <ul>
-                                    <li><i class="fa fa-caret-right"></i>Operating theater</li>
-                                    <li><i class="fa fa-caret-right"></i>Laboratory</li>
-                                    <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
-                                    <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="services">
-                            <h3>services</h3>
-
-                            <div id="locality-activities">
-                                <ul>
-                                    <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
-                                    <li><i class="fa fa-caret-right"></i>Pediatric care</li>
-                                    <li><i class="fa fa-caret-right"></i>Mental health</li>
-                                    <li><i class="fa fa-caret-right"></i>Geriatric care</li>
-                                </ul>
-                            </div>
+                            <p class="url">
+                                <i class="fa fa-link"></i>
+                                <a href="#" id="locality-url">www.msf.org</a>
+                            </p>
                         </div>
                     </div>
-                </div>
-                <div class="line beds">
-                    <div class="icon-holder">
-                        <i class="fa fa-bed"></i>
+                    <div class="line services">
+                        <div class="icon-holder">
+                            <i class="fa fa-tags"></i>
+                        </div>
+                        <div class="data">
+                            <div class="scope-of-service">
+                                <h3>scope of service</h3>
+
+                                <div id="locality-scope-of-service">
+                                    <ul>
+                                        <li><i class="fa fa-caret-right"></i>Specialized care</li>
+                                        <li><i class="fa fa-caret-right"></i>General acute care</li>
+                                        <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="ancillary">
+                                <h3>ancillary services</h3>
+
+                                <div id="locality-ancilary-service">
+                                    <ul>
+                                        <li><i class="fa fa-caret-right"></i>Operating theater</li>
+                                        <li><i class="fa fa-caret-right"></i>Laboratory</li>
+                                        <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
+                                        <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="services">
+                                <h3>services</h3>
+
+                                <div id="locality-activities">
+                                    <ul>
+                                        <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
+                                        <li><i class="fa fa-caret-right"></i>Pediatric care</li>
+                                        <li><i class="fa fa-caret-right"></i>Mental health</li>
+                                        <li><i class="fa fa-caret-right"></i>Geriatric care</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="data">
-                        <p id="locality-inpatient-service">20 full time beds, 50 part time beds</p>
+                    <div class="line beds">
+                        <div class="icon-holder">
+                            <i class="fa fa-bed"></i>
+                        </div>
+                        <div class="data">
+                            <p id="locality-inpatient-service">20 full time beds, 50 part time beds</p>
+                        </div>
                     </div>
-                </div>
-                <div class="line note">
-                    <div class="icon-holder">
-                        <i class="fa fa-sticky-note"></i>
+                    <div class="line note">
+                        <div class="icon-holder">
+                            <i class="fa fa-sticky-note"></i>
+                        </div>
+                        <div class="data">
+                            <p><strong>Note:</strong> Outpatient consultation and in-patient hospitalization</p>
+                        </div>
                     </div>
-                    <div class="data">
-                        <p><strong>Note:</strong> Outpatient consultation and in-patient hospitalization</p>
+                    <div class="line doctors">
+                        <div class="icon-holder">
+                            <i class="fa fa-user-md"></i>
+                        </div>
+                        <div class="data">
+                            <p id="locality-staff">20 full time equivalent doctors and 50 full time equivalent
+                                nurses</p>
+                        </div>
                     </div>
-                </div>
-                <div class="line doctors">
-                    <div class="icon-holder">
-                        <i class="fa fa-user-md"></i>
-                    </div>
-                    <div class="data">
-                        <p id="locality-staff">20 full time equivalent doctors and 50 full time equivalent nurses</p>
-                    </div>
-                </div>
-                <div class="line ownership">
-                    <div class="icon-holder">
-                        <i class="fa fa-briefcase"></i>
-                    </div>
-                    <div class="data">
-                        <p><strong>Ownership:</strong> public</p>
+                    <div class="line ownership">
+                        <div class="icon-holder">
+                            <i class="fa fa-briefcase"></i>
+                        </div>
+                        <div class="data">
+                            <p><strong>Ownership:</strong> public</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="buttons col-md-4 col-sm-12 col-xs-12">
-            <div class="button-wrapper col-xs-4">
-                <a id="twitter_share_map" class="button share stroke blue">
-                    <i class="fa fa-twitter"></i> share
-                </a>
-            </div>
-            <div class="button-wrapper col-xs-4">
-                <a class="button edit stroke blue" href="#"><i
-                        class="fa fa-pencil"></i> edit
-                </a>
-            </div>
-            <div class="button-wrapper col-xs-4">
-                <a class="button add" href="#">
-                    <i class="fa fa-plus"></i> add new
-                </a>
+            <div class="buttons col-md-4 col-sm-12 col-xs-12">
+                <div class="button-wrapper col-xs-4">
+                    <a id="twitter_share_map" class="button share stroke blue">
+                        <i class="fa fa-twitter"></i> share
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4">
+                    <a class="button edit stroke blue" href="#"><i
+                            class="fa fa-pencil"></i> edit
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4">
+                    <a class="button add" href="#">
+                        <i class="fa fa-plus"></i> add new
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -321,6 +349,42 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
+            var url = window.location.href;
+            if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
+                var $country_table = $('#country-table');
+                // render country data list
+                {% if countries %}
+                    {% for country in countries %}
+                        var country = "{{ country.name }}";
+                        var country_id = country.split(".").join("-");
+                        country_id = country_id.split("&#39;").join("-");
+                        country_id = country_id.split(" ").join("-");
+                        country_id = country_id.split("(").join("-");
+                        country_id = country_id.split(")").join("-");
+                        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "<a></td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
+                        $country_table.append(html);
+                        $.ajax({
+                            number: country_id + "-number",
+                            completeness: country_id + "-complete",
+                            url: "{% url 'countries-simple-data' %}",
+                            dataType: 'json',
+                            data: {
+                                q: country
+                            },
+                            success: function (data) {
+                                $("#" + this.number).html("fail");
+                                $("#" + this.completeness).html("fail");
+                                $("#" + this.number).html(data.number);
+                                $("#" + this.completeness).html(data.completeness);
+                            },
+                            fail: function (data) {
+                                $("#" + this.number).html("fail");
+                                $("#" + this.completeness).html("fail");
+                            }
+                        });
+                    {% endfor %}
+                {% endif %}
+            }
             // set share url
             var baseURL = location.protocol + "//" + location.hostname + "/";
             $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);

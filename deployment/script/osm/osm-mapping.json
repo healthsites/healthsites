@@ -1,0 +1,17 @@
+{
+    "uuid": "uuid",
+    "upstream_id": "osm_id",
+    "geom": ["x", "y"],
+    "date_modified": "date_modified",
+    "attributes": {
+        "name": "name",
+        "type": "nature",
+        "ownership": "ownership",
+        "operation": "operation",
+        "phone": "phone",
+        "email": "email",
+        "url": "website",
+        "physical_address": "address",
+        "data_source": "data_source"
+    }
+}

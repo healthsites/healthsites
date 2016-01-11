@@ -11,7 +11,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 import googlemaps
-from localities.models import Locality, Value
+from localities.models import Locality, Value, Country
 
 
 class MainView(TemplateView):
@@ -75,41 +75,45 @@ def map(request):
                 southwest_lng = viewport['southwest']['lng']
                 request.session['tempe_bongkrek'] = 'alfonso'
                 return render_to_response(
-                    'map.html',
-                    {
-                        'northeast_lat': "%f" % northeast_lat,
-                        'northeast_lng': "%f" % northeast_lng,
-                        'southwest_lat': "%f" % southwest_lat,
-                        'southwest_lng': "%f" % southwest_lng
-                    },
-                    context_instance=RequestContext(request)
+                        'map.html',
+                        {
+                            'northeast_lat': "%f" % northeast_lat,
+                            'northeast_lng': "%f" % northeast_lng,
+                            'southwest_lat': "%f" % southwest_lat,
+                            'southwest_lng': "%f" % southwest_lng
+                        },
+                        context_instance=RequestContext(request)
                 )
             except:
                 return HttpResponseRedirect(reverse('map'))
 
         elif option == 'healthsite':
             locality_values = Value.objects.filter(
-                specification__attribute__key='name').filter(
-                data=search_query)
+                    specification__attribute__key='name').filter(
+                    data=search_query)
             if locality_values:
                 locality_value = locality_values[0]
             else:
                 locality_values = Value.objects.filter(
-                    specification__attribute__key='name').filter(
-                    data__istartswith=search_query)
+                        specification__attribute__key='name').filter(
+                        data__istartswith=search_query)
                 if locality_values:
                     locality_value = locality_values[0]
                 else:
                     return render_to_response(
-                        'map.html',
-                        context_instance=RequestContext(request)
+                            'map.html',
+                            context_instance=RequestContext(request)
                     )
             locality_uuid = locality_value.locality.uuid
             map_url = reverse('map')
             return HttpResponseRedirect(
-                map_url + "#!/locality/%s" % locality_uuid)
+                    map_url + "#!/locality/%s" % locality_uuid)
     else:
+        result = {}
+        result['locality_count'] = Locality.objects.count()
+        result['countries'] = Country.objects.order_by('name').values('name').distinct()
         return render_to_response(
-            'map.html',
-            context_instance=RequestContext(request)
+                'map.html',
+                result,
+                context_instance=RequestContext(request)
         )
