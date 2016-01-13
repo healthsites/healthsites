@@ -5,6 +5,7 @@ core.settings.base
 # Django settings for projecta project.
 
 from .utils import absolute_path
+from django.contrib.messages import constants as messages
 
 ADMINS = (
     ('Tim Sutton', 'tim@kartoza.com'),
@@ -97,7 +98,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
-    'django.template.context_processors.i18n'
+    'django.template.context_processors.i18n',
+    'django.contrib.messages.context_processors.messages'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -157,4 +159,13 @@ LOGGING = {
             'propagate': True,
         },
     }
+}
+
+# Override djangos default message tags as recommended by envelope
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger' # 'error' by default
 }

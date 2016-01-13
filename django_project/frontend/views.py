@@ -3,6 +3,8 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+from braces.views import FormMessagesMixin
+from envelope.views import ContactView
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.shortcuts import render_to_response
@@ -31,8 +33,12 @@ class MainView(TemplateView):
         return context
 
 
-class ContactView(TemplateView):
+class ContactView(FormMessagesMixin, ContactView):
     template_name = 'envelope/contact.html'
+    form_invalid_message = 'There was an error in the contact form.'
+
+    def get_form_valid_message(self):
+        return u"{0} created!".format(self.object.title)
 
 
 class MapView(TemplateView):
