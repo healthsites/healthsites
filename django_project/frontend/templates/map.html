@@ -157,13 +157,14 @@
                 </p>
                 <h2 class="fancy "><span class="timer" data-speed="2500"
                                          data-to="{{ locality_count }}">{{ locality_count }}</span>
-                    healthsites added</h2>
+                    healthsites listed</h2>
                 <div>
                     <table id="country-table" style="width:100%">
                         <tr>
                             <th width="60%">Country</th>
-                            <th width="20%">Healthsite Number</th>
-                            <th width="20%">% of completness</th>
+                            <th width="20%"># of sites</th>
+                            {# disabled links and completeness for #429 #}
+                            {# <th width="20%">% complete</th> #}
                         </tr>
                     </table>
                 </div>
@@ -361,7 +362,8 @@
                         country_id = country_id.split(" ").join("-");
                         country_id = country_id.split("(").join("-");
                         country_id = country_id.split(")").join("-");
-                        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "<a></td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
+                        {# disabled links and completeness for #429 #}
+                        var html = "<tr><td>{# <a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">#}" + country + "{# <a> #}</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td>{# <td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td> #}</tr>";
                         $country_table.append(html);
                         $.ajax({
                             number: country_id + "-number",
@@ -373,13 +375,16 @@
                             },
                             success: function (data) {
                                 $("#" + this.number).html("fail");
-                                $("#" + this.completeness).html("fail");
+                                {# disabled links and completeness for #429 #}
+                                {#  $("#" + this.completeness).html("fail"); #}
                                 $("#" + this.number).html(data.number);
-                                $("#" + this.completeness).html(data.completeness);
+                                {# disabled links and completeness for #429 #}
+                                {# $("#" + this.completeness).html(data.completeness); #}
                             },
                             fail: function (data) {
                                 $("#" + this.number).html("fail");
-                                $("#" + this.completeness).html("fail");
+                                {# disabled links and completeness for #429 #}
+                                {# $("#" + this.completeness).html("fail"); #}
                             }
                         });
                     {% endfor %}
