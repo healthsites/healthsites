@@ -597,7 +597,6 @@ window.LocalitySidebar = (function () {
             } else {
                 $(list_input[0]).prop('checked', false);
             }
-            console.log(list_input[0]);
             if (typeof from1 !== 'undefined' && from1 != "") $(list_input[1]).val(from1);
             if (typeof to1 !== 'undefined' && to1 != "") $(list_input[2]).val(to1);
             if (typeof from2 !== 'undefined' && from2 != "") {
@@ -668,7 +667,6 @@ window.LocalitySidebar = (function () {
                     // get access to this TimePicker instance
                     var timepicker = element.timepicker();
                     text = 'Selected time is: ' + timepicker.format(time);
-                    console.log(text);
                     that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
                 },
             })
@@ -1031,7 +1029,6 @@ window.LocalitySidebar = (function () {
             var self = this;
             $.getJSON('/localities/' + this.locality_uuid, function (data) {
                 self.locality_data = data;
-                console.log(data);
                 self.$sidebar.trigger('show-info');
                 if (payload) {
                     var zoomto = payload.zoomto;
