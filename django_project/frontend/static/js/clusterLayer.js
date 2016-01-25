@@ -129,8 +129,8 @@
                     if (evt.target.data['count'] === 1) {
                         $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
                         $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
-                        if(typeof that.geoname != undefined){
-                            window.location.href = "/map#!/locality/"+evt.target.data['uuid'];
+                        if (typeof that.geoname != undefined) {
+                            window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
                         }
                     }
                     else {
@@ -164,6 +164,7 @@
                     'zoom': this._map.getZoom(),
                     'iconsize': [48, 46],
                     'geoname': this.geoname,
+                    'tag': this.tag,
                 });
 
             // when using cached data we don't need to make any new requests
@@ -226,6 +227,10 @@
 
         updateGeoname: function (geoname) {
             this.geoname = geoname;
+        },
+
+        updateTag: function (tag) {
+            this.tag = tag;
         }
     });
 

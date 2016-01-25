@@ -1,39 +1,155 @@
 window.LocalitySidebar = (function () {
     "use strict";
+    var separator = "|";
+    var special_attribute = ["uuid", "geom", "long", "lat", "nature_of_facility", "inpatient_service", "staff", "ownership", "nature_of_facility",
+        "scope_of_service", "notes", "ancillary_services", "operation", "activities", "data_source",
+        "name", "url", "email", "mobile", "phone", "physical_address", "services", "tags"];
+
+    var nature_options = ["", "clinic without beds", "clinic with beds", "first referral hospital", "second referral hospital or General hospital", "tertiary level including University hospital"];
+    var scope_options = ["specialized care", "general acute care", "rehabilitation care", "old age/hospice care"];
+    var ancillary_options = ["Operating theater", "laboratory", "imaging equipment", "intensive care unit", "Emergency department"];
+    var activities_options = ["medicine and medical specialties", "surgery and surgical specialties", "Maternal and women health", "pediatric care", "mental health", "geriatric care", "social care"];
+    var ownership_options = ["", "public", "private not for profit", "private commercial"];
+    var operation_options = ["", "24/24 & 7/7", "open only during business hours", "other"];
+    var notes_options = ["Outpatient consultation", "In-patient hospitalization"];
     var need_information = "needs information";
     var no_physical_address = "No Physical Address";
     var no_phone_found = "No phone found";
     var no_operation_hours_found = "No operation hours found";
     var no_url_found = "No url found";
+    var no_tag_found = "No tag found";
+    var no_others_found = "No other informations";
     var no_name = "No Name";
+    var is_enable_edit = false;
+    var info_fields = [];
+    var edit_fields = [];
+    var others_attr = [];
     // private variables and functions
 
     // constructor
     var module = function () {
-
-        this.$sidebar_default = $('#locality-default');
-        this.$sidebar_info = $('#locality-info');
-
         this.$sidebar = $('#locality-info');
-        this.$sidebar_head = this.$sidebar.find('.sidebar-info-header');
-        this.$sidebar_body = this.$sidebar.find('.sidebar-info-body');
-        this.$sidebar_footer = this.$sidebar.find('.sidebar-info-footer');
-
         // new style
+        this.$line_updates = $('#line-updates');
         this.$name = $('#locality-name');
         this.$nature_of_facility = $('#locality-nature-of-facility');
         this.$completenees = $('#locality-completeness');
         this.$coordinates = $('#locality-coordinates');
-        this.$physical_address = $('#locality-physical_address');
+        this.$physical_address = $('#locality-physical-address');
         this.$phone = $('#locality-phone');
         this.$operation = $('#locality-operation');
         this.$url = $('#locality-url');
         this.$scope_of_service = $('#locality-scope-of-service');
-        this.$ancilary_service = $('#locality-ancilary-service');
+        this.$ancillary_service = $('#locality-ancillary-service');
         this.$activities = $('#locality-activities');
+        this.$ownership = $('#locality-ownership');
         this.$inpatient_service = $('#locality-inpatient-service');
         this.$staff = $('#locality-staff');
+        this.$note = $('#locality-note');
+        this.$note_text = $('#locality-note-text');
+        this.$tag_data = $('#tag-data');
 
+        // form
+        this.$form = $('#locality-form');
+        this.$editButton = $('#edit-button');
+        this.$saveButton = $('#save-button');
+        this.$createButton = $('#create-button');
+        this.$addButton = $('#add-button');
+        this.$cancelButton = $('#cancel-button');
+        this.$physical_address_input = $('#locality-physical-address-input');
+        this.$name_input = $('#locality-name-input');
+        this.$phone_input = $('#locality-phone-input');
+        this.$phone_input_number = $('#locality-phone-input-number');
+        this.$phone_input_int = $('#locality-phone-input-int');
+        this.$operation_input = $('#locality-operation-input');
+        this.$operation_specify_input = $('#locality-operation-specify-input');
+        this.$nature_of_facility_input = $('#locality-nature-of-facility-input');
+        this.$scope_of_service_input = $('#locality-scope-of-service-input');
+        this.$scope_of_service_add = $('#locality-scope-of-service-add');
+        this.$ownership_input = $('#locality-ownership-input');
+        this.$ancillary_service_input = $('#locality-ancillary-service-input');
+        this.$ancillary_service_add = $('#locality-ancillary-service-add');
+        this.$activities_input = $('#locality-activities-input');
+        this.$activities_add = $('#locality-activities-add');
+        this.$inpatient_service_input = $('#locality-inpatient-service-input');
+        this.$inpatient_service_full_input = $('#locality-inpatient-service-full-input');
+        this.$inpatient_service_part_input = $('#locality-inpatient-service-part-input');
+        this.$staff_input = $('#locality-staff-input');
+        this.$staff_doctor_input = $('#locality-staff-doctor-input');
+        this.$staff_nurse_input = $('#locality-staff-nurse-input');
+        this.$coordinates_input = $('#locality-coordinates-input');
+        this.$coordinates_lat_input = $('#locality-coordinates-lat-input');
+        this.$coordinates_long_input = $('#locality-coordinates-long-input');
+        this.$url_input = $('#locality-url-input');
+        this.$note_input = $('#locality-note-input');
+
+        this.$other_add = $('#others-add');
+        this.$other_data = $('#others-data');
+        this.$other_data_input = $('#others-data-input');
+
+        this.$tag_input = $('#tag-input');
+        this.$tag_input_text = $('#tag-input-text');
+        this.$tag_input_text_box = $('#tag-input-text-box');
+        this.$uploader = $('#uploader');
+        this.$lastupdate = $('#last_update');
+
+        // create nature options
+        for (var i = 0; i < nature_options.length; i++) {
+            this.$nature_of_facility_input.append("<option value=\"" + nature_options[i] + "\">" + nature_options[i] + "</option>");
+        }
+        // create ownershipe options
+        for (var i = 0; i < ownership_options.length; i++) {
+            this.$ownership_input.append("<option value=\"" + ownership_options[i] + "\">" + ownership_options[i] + "</option>");
+        }
+        // create operations options
+        for (var i = 0; i < operation_options.length; i++) {
+            this.$operation_input.append("<option value=\"" + operation_options[i] + "\">" + operation_options[i] + "</option>");
+        }
+        // set info field array
+        info_fields.push(this.$editButton);
+        info_fields.push(this.$addButton);
+        info_fields.push(this.$name);
+        info_fields.push(this.$physical_address);
+        info_fields.push(this.$phone);
+        info_fields.push(this.$operation);
+        info_fields.push(this.$nature_of_facility);
+        info_fields.push(this.$scope_of_service);
+        info_fields.push(this.$ownership);
+        info_fields.push(this.$ancillary_service);
+        info_fields.push(this.$activities);
+        info_fields.push(this.$inpatient_service);
+        info_fields.push(this.$staff);
+        info_fields.push(this.$coordinates);
+        info_fields.push(this.$url);
+        info_fields.push(this.$note);
+        info_fields.push(this.$other_data);
+        info_fields.push(this.$tag_data);
+
+        // set editfield array
+        edit_fields.push(this.$cancelButton);
+        edit_fields.push(this.$name_input);
+        edit_fields.push(this.$physical_address_input);
+        edit_fields.push(this.$phone_input);
+        edit_fields.push(this.$operation_input);
+        edit_fields.push(this.$nature_of_facility_input);
+        edit_fields.push(this.$ownership_input);
+        edit_fields.push(this.$scope_of_service_input);
+        edit_fields.push(this.$scope_of_service_add);
+        edit_fields.push(this.$ancillary_service_input);
+        edit_fields.push(this.$ancillary_service_add);
+        edit_fields.push(this.$activities_input);
+        edit_fields.push(this.$activities_add);
+        edit_fields.push(this.$inpatient_service_input);
+        edit_fields.push(this.$staff_input);
+        edit_fields.push(this.$coordinates_input);
+        edit_fields.push(this.$url_input);
+        edit_fields.push(this.$note_input);
+        edit_fields.push(this.$other_add);
+        edit_fields.push(this.$other_data_input);
+        edit_fields.push(this.$tag_input);
+        edit_fields.push(this.$tag_input_text);
+
+        this.setEnable(is_enable_edit);
         this.showDefaultInfo();
 
         this._bindExternalEvents();
@@ -44,11 +160,6 @@ window.LocalitySidebar = (function () {
     // prototype
     module.prototype = {
         constructor: module,
-        template: [
-            '<div class="sidebar-info-header"></div>',
-            '<div class="sidebar-info-body">Click a marker on the map to load locality info</div>',
-            '<div class="sidebar-info-footer"></div>',
-        ].join(''),
 
         _bindInternalEvents: function () {
             var self = this;
@@ -57,44 +168,341 @@ window.LocalitySidebar = (function () {
 
             this.$sidebar.on('get-info', this.getInfo.bind(this));
             this.$sidebar.on('show-info', this.showInfo.bind(this));
-            this.$sidebar.on('show-info-adjust', this.setInfoWindowHeight.bind(this));
-            this.$sidebar.on('show-edit', this.showEdit.bind(this));
-
             this.$sidebar.on('update-coordinates', this.updateCoordinates.bind(this));
+            this.$editButton.on('click', this.showEdit.bind(this, "edit"));
+            this.$saveButton.on('click', this.sendEdit.bind(this));
+            this.$addButton.on('click', this.showEdit.bind(this, "create"));
+            this.$createButton.on('click', this.sendCreate.bind(this));
+            this.$cancelButton.on('click', this.showEdit.bind(this));
 
-            this.$sidebar_footer.on('click', '.edit', this.showEditForm.bind(this));
-            this.$sidebar_footer.on('click', '.save', this.saveForm.bind(this));
-            this.$sidebar_footer.on('click', '.cancel', this.cancelEdit.bind(this));
+            // -------------------------------------------------------------------
+            // FORM IF SUBMIT
+            // -------------------------------------------------------------------
+            var that = this;
+            this.$form.submit(function (event) {
+                var url = that.$form.attr("action");
+                var fields = that.$form.serialize();
+                var isFormValid = true;
+                // Stop form from submitting normally
+                event.preventDefault();
+                // ------------------------------------------------------------
+                // PARSING FORM
+                // ------------------------------------------------------------
+                {
+                    // GET LAT
+                    var lat = that.$coordinates_lat_input.val();
+                    if (lat > 180) {
+                        lat = 180;
+                    } else if (lat < -180) {
+                        lat = -180;
+                    }
+                    // GET LONG
+                    var long = that.$coordinates_long_input.val();
+                    if (long > 180) {
+                        long = 180;
+                    } else if (long < -180) {
+                        long = -180;
+                    }
 
-            this.$sidebar_footer.on('click', '.nl-execute', function () {
-                var val = $('#nl-form-1').val();
-                if (val === '1') {
-                    self.showEditForm.call(self);
-                }
-                if (val === '2') {
-                    var val2 = $('#nl-form-2').val();
-                    if (val2 === '1') {
-                        var loc = 'https://twitter.com/intent/tweet?text=See%20' + self.locality_data.values.name + '.%20Please%20validate&url=http://healthsites.io/%23!/locality/' + self.locality_uuid;
-                        self.sendTweet(loc);
+                    // GET URL
+                    var urls = that.$url_input.find('p');
+                    var urls_output = [];
+                    for (var i = 0; i < urls.length; i++) {
+                        var val = $(urls[i]).find("input").val();
+                        urls_output.push(val);
+                    }
+
+                    // GET OPERATIONS
+                    var operation = that.$operation_input.val();
+                    if (operation == operation_options[operation_options.length - 1]) {
+                        operation = that.$operation_specify_input.val();
+                    }
+
+                    // GET SCOPE CHILD
+                    var scope_inputs = that.$scope_of_service_input.find('input');
+                    var scope = "";
+                    for (var i = 0; i < scope_inputs.length; i++) {
+                        if ($(scope_inputs[i]).prop('checked')) {
+                            scope += scope_options[i] + separator;
+                        }
+                    }
+                    if (scope == separator) {
+                        scope = "";
+                    }
+
+                    // GET ANCILLARY CHILD
+                    var ancillary_inputs = that.$ancillary_service_input.find('input');
+                    var ancillary = "";
+                    for (var i = 0; i < ancillary_inputs.length; i++) {
+                        if ($(ancillary_inputs[i]).prop('checked')) {
+                            ancillary += ancillary_options[i] + separator;
+                        }
+                    }
+                    if (ancillary == separator) {
+                        ancillary = "";
+                    }
+
+                    // GET ACTIVITIES CHILD
+                    var activities_input = that.$activities_input.find('input');
+                    var activities = "";
+                    for (var i = 0; i < activities_input.length; i++) {
+                        if ($(activities_input[i]).prop('checked')) {
+                            activities += activities_options[i] + separator;
+                        }
+                    }
+                    if (activities == separator) {
+                        activities = "";
+                    }
+
+                    // GET ACTIVITIES CHILD
+                    var notes_input = that.$note_input.find('input');
+                    var notes = "";
+                    for (var i = 0; i < notes_input.length; i++) {
+                        if ($(notes_input[i]).prop('checked')) {
+                            notes += notes_options[i] + separator;
+                        }
+                    }
+                    if (notes == separator) {
+                        notes = "";
+                    }
+
+                    // GET INPATIENT CHILD
+                    var inpatient = that.$inpatient_service_full_input.val() + separator + that.$inpatient_service_part_input.val();
+                    if (inpatient == separator) {
+                        inpatient = "";
+                    }
+
+                    // GET STAFFS CHILD
+                    var staffs = that.$staff_doctor_input.val() + separator + that.$staff_nurse_input.val();
+                    if (staffs == separator) {
+                        staffs = "";
+                    }
+
+                    // GET PHONE
+                    var phone = "";
+                    if (that.$phone_input_int.val().length > 0 || that.$phone_input_number.val().length > 0) {
+                        phone = "+" + that.$phone_input_int.val() + "-" + that.$phone_input_number.val();
+                    }
+
+                    // GET TAG
+                    var tag_inputs = that.$tag_input.find(".tag-text");
+                    var tags = [];
+                    for (var i = 0; i < tag_inputs.length; i++) {
+                        tags.push(tag_inputs[i].innerHTML);
+                    }
+                    tags = tags.join(separator);
+
+                    if (that.locality_data != null) {
+                        fields += '&uuid=' + that.locality_data.uuid;
+                    }
+                    fields += '&url=' + encodeURIComponent(urls_output[0]) + '&data_source=' + encodeURIComponent(urls_output[1]) + '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
+                        '&scope_of_service=' + encodeURIComponent(scope) +
+                        "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient) +
+                        "&staff=" + encodeURIComponent(staffs) + "&operation=" + encodeURIComponent(operation) + "&notes=" + encodeURIComponent(notes) + "&tags=" + tags;
+
+                    // GET OTHERS
+                    var others = that.$other_data_input.find("div");
+                    for (var i = 0; i < others.length; i++) {
+                        var attr = $(others[i]).find(".attribute").val();
+                        var newattr = attr.replace(" ", "_").toLowerCase();
+                        var value = $(others[i]).find(".value").val();
+
+                        var isValid = true;
+                        for (var j = 0; j < special_attribute.length; j++) {
+                            if (newattr == special_attribute[j]) {
+                                isValid = false;
+                                break;
+                            }
+                        }
+
+                        if (!isValid) {
+                            alert("cannot create " + attr + " as new attribute");
+                            isFormValid = false;
+                            break;
+                        }
+
+                        if (newattr != "" && value != "") {
+                            fields += "&" + newattr + "=" + encodeURIComponent(value);
+                            delete others_attr[that.getIndex(others_attr, newattr)];
+                        }
+                    }
+
+                    // check the attribute that should be deleted
+                    for (var i = 0; i < others_attr.length; i++) {
+                        if (typeof others_attr[i] !== 'undefined') {
+                            fields += "&" + others_attr[i] + "=" + encodeURIComponent("");
+                        }
                     }
                 }
-                if (val === '3') {
-                    var val2 = $('#nl-form-2').val();
-                    if (val2 === '1') {
-                        var loc = 'https://twitter.com/intent/tweet?text=See%20' + self.locality_data.values.name + '&url=http://healthsites.io/%23!/locality/' + self.locality_uuid;
-                        self.sendTweet(loc);
+
+                // ------------------------------------------------------------
+                // POST
+                // ------------------------------------------------------------
+                {
+                    if (isFormValid) {
+                        //Send the data using post
+                        var posting = $.post(url, fields);
+                        // Put the results in a div
+                        posting.done(function (data) {
+                            var data = JSON.parse(data);
+                            if (data["valid"]) {
+                                that.locality_uuid = data["uuid"];
+                                $APP.trigger('set.hash.silent', {'locality': that.locality_uuid});
+                                that.getInfo();
+                            } else {
+                                alert(data["key"] + " can't be empty");
+                            }
+                        });
                     }
                 }
             });
+        },
+        addedNewOptons: function (wrapper) {
+            // SCOPE OPTIONS
+            if (wrapper == "scope") {
+                var html = "";
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + scope_options[i] + "<br>";
+                }
+                html += "";
+                this.$scope_of_service_input.html(html);
+            }
+            // ANCILLARY OPTIONS
+            else if (wrapper == "ancillary") {
+                var html = "";
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + ancillary_options[i] + "<br>";
+                }
+                html += "";
+                this.$ancillary_service_input.html(html);
+            }
+            // ACTIVITIES OPTIONS
+            else if (wrapper == "activities") {
+                var html = "";
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + activities_options[i] + "<br>";
+                }
+                html += "";
+                this.$activities_input.html(html);
+            }
+            // NOTES OPTIONS
+            else if (wrapper == "notes") {
+                var html = "";
+                // create nature options
+                for (var i = 0; i < notes_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + notes_options[i] + "<br>";
+                }
+                html += "";
+                this.$note_input.html(html);
+            }
 
+        },
+        checkingOptions: function (wrapper, selected) {
+            // SCOPE UPDATES
+            if (wrapper == "scope") {
+                var scope_inputs = this.$scope_of_service_input.find('input');
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    if (selected == scope_options[i]) {
+                        $(scope_inputs[i]).prop('checked', true);
+                    }
+                }
+            }
+            // ANCILLARY UPDATES
+            else if (wrapper == "ancillary") {
+                var ancillary_service_input = this.$ancillary_service_input.find('input');
+                // create nature options
+                for (var i = 0; i < ancillary_options.length; i++) {
+                    if (selected == ancillary_options[i]) {
+                        $(ancillary_service_input[i]).prop('checked', true);
+                    }
+                }
+            }
+            // ACTIVITIES UPDATES
+            else if (wrapper == "activities") {
+                var activities_input = this.$activities_input.find('input');
+                // create nature options
+                for (var i = 0; i < activities_options.length; i++) {
+                    if (selected == activities_options[i]) {
+                        $(activities_input[i]).prop('checked', true);
+                    }
+                }
+            }
+            // NOTES UPDATES
+            else if (wrapper == "notes") {
+                var note_input = this.$note_input.find('input');
+                // create nature options
+                for (var i = 0; i < notes_options.length; i++) {
+                    if (selected == note_input[i]) {
+                        $(note_input[i]).prop('checked', true);
+                    }
+                }
+            }
+        },
 
-            this.$sidebar_head.on('mouseover', '.label-status', function () {
-                self.$sidebar_head.find('.modal-info-information').addClass('modal-info-expanded').animate({height: "100px"}, 500);
-            });
+        showEdit: function (mode, event) {
+            var isEditingMode = !(this.$editButton.is(":visible") && this.$createButton.is(":visible"));
+            this.$saveButton.hide();
+            this.$createButton.hide();
+            this.$line_updates.show();
+            if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create" && isLoggedIn))) {
+                if (mode == "edit" && is_enable_edit) {
+                    this.$saveButton.show();
+                    this.showInfo();
+                    $APP.trigger('locality.edit');
+                } else {
+                    this.$createButton.show();
+                    this.$line_updates.hide();
+                    this.showDefaultEdit();
+                    $APP.trigger('locality.create');
+                }
+                //this.showInfo();
+                for (var i = 0; i < info_fields.length; i++) {
+                    info_fields[i].hide();
+                }
+                for (var i = 0; i < edit_fields.length; i++) {
+                    edit_fields[i].show();
+                }
+                var operation = this.$operation_input.val();
+                if (operation == operation_options[operation_options.length - 1]) {
+                    this.$operation_specify_input.show()
+                }
+            } else {
+                $APP.trigger('locality.cancel');
+                this.$operation_specify_input.hide();
+                for (var i = 0; i < info_fields.length; i++) {
+                    info_fields[i].show();
+                }
+                for (var i = 0; i < edit_fields.length; i++) {
+                    edit_fields[i].hide();
+                }
+            }
+        },
 
-            this.$sidebar_head.on('mouseout', '.label-status', function () {
-                self.$sidebar_head.find('.modal-info-information').animate({height: "1px"}, 100).removeClass('modal-info-expanded');
-            });
+        setEnable: function (input) {
+            this.$addButton.css({'opacity': 0.7});
+            if (isLoggedIn) {
+                this.$addButton.css({'opacity': 1});
+            }
+            is_enable_edit = input;
+            if (input) {
+                this.$editButton.css({'opacity': 1});
+            } else {
+                this.$editButton.css({'opacity': 0.7});
+            }
+        },
+
+        sendEdit: function (evt, payload) {
+            this.$form.attr('action', "localities/edit");
+            this.$form.submit();
+        },
+
+        sendCreate: function (evt, payload) {
+            this.$form.attr('action', "localities/create");
+            this.$form.submit();
         },
 
         handleXHRError: function (evt, payload) {
@@ -110,127 +518,410 @@ window.LocalitySidebar = (function () {
 
         updateCoordinates: function (evt, payload) {
             // set new values
-            $('#id_lon').val(payload.latlng.lng);
-            $('#id_lat').val(payload.latlng.lat);
+            this.$coordinates_long_input.val(payload.latlng.lng);
+            this.$coordinates_lat_input.val(payload.latlng.lat);
         },
 
-        sendTweet: function (text) {
-            var windowOptions = 'scrollbars=yes,resizable=yes,toolbar=no,location=yes';
-            var width = 550;
-            var height = 420;
-            var winHeight = screen.height;
-            var winWidth = screen.width;
-            var left = Math.round((winWidth / 2) - (width / 2));
-            var top = 0;
-            if (winHeight > height) {
-                top = Math.round((winHeight / 2) - (height / 2));
+        addUrl: function (url, name) {
+            this.$url.append("<p class=\"url\"><i class=\"fa fa-link\"></i><a href=\"" + url + "\">" + name + "</a></p>");
+        },
+
+        showDefaultEdit: function (evt) {
+            $("#locality-statistic").hide();
+            $("#locality-info").show();
+            $("#locality-default").hide();
+            this.addedNewOptons("scope"); // this.$scope_of_service_input
+            this.addedNewOptons("ancillary"); // this.$ancillary_service_input
+            this.addedNewOptons("activities"); // this.$ancillary_service_input
+            this.addedNewOptons("notes"); // this.$notes_input
+            $(this.$nature_of_facility_input.find('option')[0]).prop('selected', true);
+            $(this.$operation_input.find('option')[0]).prop('selected', true);
+            this.$phone_input_int.val("");
+            this.$phone_input_number.val("");
+            this.$coordinates_lat_input.val(0);
+            this.$coordinates_long_input.val(0);
+            this.$operation_specify_input.val("");
+            this.$operation_specify_input.hide();
+            if (this.$cancelButton.is(":visible")) {
+                this.$cancelButton.click();
             }
-            window.open(text, 'intent', windowOptions + ',width=' + width + ',height=' + height + ',left=' + left + ',top=' + top);
+            this.$name_input.val("");
+            this.$physical_address_input.val("");
+            this.$inpatient_service_full_input.val("");
+            this.$inpatient_service_part_input.val("");
+            this.$staff_doctor_input.val("");
+            this.$staff_nurse_input.val("");
+            this.$tag_input.html("");
+            this.$tag_input_text_box.val("");
+            this.$url.html("");
+            this.$url_input.html("");
+            this.addOptionUrl("");
+            this.addOptionUrl("");
+            this.$other_data_input.html("");
         },
-
-        cancelEdit: function (evt) {
-            $APP.trigger('locality.cancel');
-            // show data
-            this.showInfo();
-        },
-
         showDefaultInfo: function (evt) {
+            this.showDefaultEdit();
             this.$name.text(no_name);
             this.$nature_of_facility.text(need_information);
             this.$completenees.attr('style', 'width:0%');
             this.$completenees.text('0% Complete');
-            this.$coordinates.text(
-                'lat: ' + 'n/a' + ', long: ' + 'n/a');
+            this.$coordinates.text('lat: ' + 'n/a' + ', long: ' + 'n/a');
             this.$physical_address.text(no_physical_address);
             this.$phone.text(no_phone_found);
             this.$operation.text(no_operation_hours_found);
-            this.$url.text(no_url_found);
             this.$url.removeAttr('href');
             this.$scope_of_service.html('');
             this.$scope_of_service.text(need_information);
-            this.$ancilary_service.html('');
-            this.$ancilary_service.text(need_information);
+            this.$ancillary_service.html('');
+            this.$ancillary_service.text(need_information);
             this.$activities.html('');
             this.$activities.text(need_information);
-            this.$inpatient_service.text(need_information);
             this.$staff.text(need_information);
+            this.$ownership.text(need_information);
+            this.$inpatient_service.text(need_information);
+            this.$url.html("");
+            this.addUrl("", no_url_found);
+            this.$note_text.text(need_information);
+
+            this.$other_data.html(no_others_found);
+            this.$other_data_input.html("");
+            this.$tag_data.html(no_tag_found);
+            others_attr = [];
+            this.$lastupdate.text("11 may 2015 17:23:15");
+            this.$uploader.text("@sharehealthdata");
+            this.$uploader.attr("href", "profile/sharehealthdata");
         },
 
         showInfo: function (evt) {
             // reset first
             this.showDefaultInfo();
-            console.log(this.locality_data);
-            this.$name.text(this.locality_data.values['name']);
-            this.$nature_of_facility.text(this.locality_data.values['nature_of_facility']);
-            this.$completenees.attr('style', 'width:' + this.locality_data.completeness);
-            this.$completenees.text(this.locality_data.completeness + ' Complete');
-            this.$coordinates.text(
-                'lat: ' + this.locality_data.geom[0] + ', long: ' + this.locality_data.geom[1]);
-            this.$physical_address.text(this.locality_data.values['physical_address']);
-            this.$phone.text(this.locality_data.values['phone']);
-            this.$operation.text(this.locality_data.values['operation']);
-
-            if (this.locality_data.values['url']) {
-                this.$url.text(this.locality_data.values['url']);
-                if (!this.locality_data.values['url'].startsWith('http://')) {
-                    this.locality_data.values['url'] = 'http://' + this.locality_data.values['url'];
-                }
-                this.$url.attr('href', this.locality_data.values['url']);
+            // set disable
+            if (isLoggedIn) {
+                this.setEnable(true);
             }
 
-            var i;
-            if (this.locality_data.values['scope_of_service']) {
-                var scope_of_service_html = '<ul>';
-                for (i = 0; i < this.locality_data.values['scope_of_service'].length; ++i) {
-                    scope_of_service_html += '<li><i class="fa fa-caret-right"></i>';
-                    scope_of_service_html += this.locality_data.values['scope_of_service'][i];
-                    scope_of_service_html += '</li>';
-                }
-                scope_of_service_html += '</ul>';
-                this.$scope_of_service.text('');
-                this.$scope_of_service.html(scope_of_service_html);
+            // COORDINATE AND COMPLETNESS
+            {
+                this.$completenees.attr('style', 'width:' + this.locality_data.completeness);
+                this.$completenees.text(this.locality_data.completeness + ' Complete');
+                this.$coordinates.text('lat: ' + this.locality_data.geom[1] + ', long: ' + this.locality_data.geom[0]);
+                this.$coordinates_lat_input.val(this.locality_data.geom[1]);
+                this.$coordinates_long_input.val(this.locality_data.geom[0]);
             }
 
-            if (this.locality_data.values['ancilary_service']) {
-                var ancilary_service_html = '<ul>';
-                for (i = 0; i < this.locality_data.values['ancilary_service'].length; ++i) {
-                    ancilary_service_html += '<li><i class="fa fa-caret-right"></i>';
-                    ancilary_service_html += this.locality_data.values['ancilary_service'][i];
-                    ancilary_service_html += '</li>';
+            if (this.locality_data.updates) {
+                var updates = this.locality_data.updates;
+                if (updates[0]) {
+                    this.$lastupdate.text(getDateString(updates[0]['last_update']));
+                    this.$uploader.text("@" + updates[0]['uploader']);
+                    this.$uploader.attr("href", "profile/" + updates[0]['uploader']);
                 }
-                ancilary_service_html += '</ul>';
-                this.$ancilary_service.text('');
-                this.$ancilary_service.html(ancilary_service_html);
             }
 
-            if (this.locality_data.values['activities']) {
-                var activities_html = '<ul>';
-                for (i = 0; i < this.locality_data.values['activities'].length; ++i) {
-                    activities_html += '<li><i class="fa fa-caret-right"></i>';
-                    activities_html += this.locality_data.values['activities'][i];
-                    activities_html += '</li>';
-                }
-                activities_html += '</ul>';
-                this.$activities.text('');
-                this.$activities.html(activities_html);
-            }
-            this.$inpatient_service.text(this.locality_data.values['inpatient_service']);
-            this.$staff.text(this.locality_data.values['staff']);
+            var keys = [];
+            for (var k in this.locality_data.values) keys.push(k);
 
-            // show locality info
-            this.$sidebar_info.show();
-            this.$sidebar_default.hide();
+            // LOCALITY NAME
+            {
+                var name = this.locality_data.values['name'];
+                delete keys[this.getIndex(keys, 'name')];
+                if (this.isHasValue(name)) {
+                    this.$name.text(name);
+                    this.$name_input.val(name);
+                }
+            }
+
+            // NATURE OF LOCALITY
+            {
+                var nature = this.locality_data.values['nature_of_facility'];
+                delete keys[this.getIndex(keys, 'nature_of_facility')];
+                if (this.isHasValue(nature)) {
+                    this.$nature_of_facility.text(nature);
+                    for (var i = 0; i < nature_options.length; i++) {
+                        if (nature == nature_options[i]) {
+                            $(this.$nature_of_facility_input.find('option')[i]).prop('selected', true);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // PHYSICAL ADDRESS
+            {
+                var address = this.locality_data.values['physical_address'];
+                delete keys[this.getIndex(keys, 'physical_address')];
+                if (this.isHasValue(address)) {
+                    this.$physical_address.text(address);
+                    this.$physical_address_input.val(address);
+                }
+            }
+            // SCOPE OF SERVICE
+            {
+                var scope = this.locality_data.values['scope_of_service'];
+                delete keys[this.getIndex(keys, 'scope_of_service')];
+                if (this.isHasValue(scope)) {
+                    var scopes = scope.split(separator);
+                    var html = '<ul>';
+                    for (i = 0; i < scopes.length; ++i) {
+                        if (scopes[i].length > 0) {
+                            html += '<li><i class="fa fa-caret-right"></i>';
+                            html += scopes[i];
+                            html += '</li>';
+                            this.checkingOptions("scope", scopes[i]);
+                        }
+                    }
+                    html += '</ul>';
+                    if (html != "<ul></ul>") {
+                        this.$scope_of_service.html(html);
+                    }
+                } else {
+                    //this.addedNewOption("scope", "");
+                }
+            }
+
+            // ANCILLARY OF SERVICE
+            {
+                var ancillary = this.locality_data.values['ancillary_services'];
+                delete keys[this.getIndex(keys, 'ancillary_services')];
+                if (this.isHasValue(ancillary)) {
+                    var ancillary = ancillary.split(separator);
+                    var html = '<ul>';
+                    for (i = 0; i < ancillary.length; ++i) {
+                        if (ancillary[i].length > 0) {
+                            html += '<li><i class="fa fa-caret-right"></i>';
+                            html += ancillary[i];
+                            html += '</li>';
+                            this.checkingOptions("ancillary", ancillary[i]);
+                        }
+                    }
+                    html += '</ul>';
+                    if (html != "<ul></ul>") {
+                        this.$ancillary_service.html(html);
+                    }
+                } else {
+                    //this.addedNewOption("ancillary", "");
+                }
+            }
+
+            // ACTIVITIES OF SERVICE
+            {
+                var activities = this.locality_data.values['activities'];
+                delete keys[this.getIndex(keys, 'activities')];
+                if (this.isHasValue(activities)) {
+                    var activities = activities.split(separator);
+                    var html = '<ul>';
+                    for (i = 0; i < activities.length; ++i) {
+                        if (activities[i].length > 0) {
+                            html += '<li><i class="fa fa-caret-right"></i>';
+                            html += activities[i];
+                            html += '</li>';
+                            this.checkingOptions("activities", activities[i]);
+                        }
+                    }
+                    html += '</ul>';
+                    if (html != "<ul></ul>") {
+                        this.$activities.html(html);
+                    }
+                } else {
+                    //this.addedNewOption("activities", "");
+                }
+            }
+
+            // NOTE
+            {
+                var notes = this.locality_data.values['notes'];
+                delete keys[this.getIndex(keys, 'notes')];
+                if (this.isHasValue(notes)) {
+                    var notes = notes.split(separator);
+                    notes.pop();
+                    this.$note_text.html(notes.join(" and "));
+                } else {
+                    //this.addedNewOption("activities", "");
+                }
+            }
+
+            // INPATIENT-SERVICE
+            {
+                var inpatient = this.locality_data.values['inpatient_service'];
+                delete keys[this.getIndex(keys, 'inpatient_service')];
+                if (this.isHasValue(inpatient)) {
+                    var inpatient = inpatient.split(separator);
+                    if (inpatient.length >= 1 && (inpatient[0] != "" | inpatient[1] != "")) {
+                        // reinit view
+                        this.$inpatient_service.html("<span id=\"locality-inpatient-service-full\">-</span> full time beds, <span id=\"locality-inpatient-service-part\">-</span> part time beds");
+                        this.$inpatient_service_full = $('#locality-inpatient-service-full');
+                        this.$inpatient_service_part = $('#locality-inpatient-service-part');
+                    }
+                    if (inpatient.length >= 1 && inpatient[0] != "") {
+                        // fill value
+                        this.$inpatient_service_full.text(parseInt(inpatient[0], 10));
+                        this.$inpatient_service_full_input.val(parseInt(inpatient[0], 10));
+                    }
+                    if (inpatient.length >= 2 && inpatient[1] != "") {
+                        this.$inpatient_service_part.text(parseInt(inpatient[1], 10));
+                        this.$inpatient_service_part_input.val(parseInt(inpatient[1], 10));
+                    }
+                }
+            }
+
+            // STAFFS
+            {
+                var staff = this.locality_data.values['staff'];
+                delete keys[this.getIndex(keys, 'staff')];
+                if (this.isHasValue(staff)) {
+                    var staff = staff.split(separator);
+                    if (staff.length >= 1 && (staff[0] != "" | staff[1] != "")) {
+                        // reinit view
+                        this.$staff.html("<span id=\"locality-staff-doctor\">-</span> full time doctors, <span id=\"locality-staff-nurse\">-</span> full time nurses");
+                        this.$staff_doctor = $('#locality-staff-doctor');
+                        this.$staff_nurse = $('#locality-staff-nurse');
+                    }
+                    if (staff[0] != "") {
+                        // fill value
+                        this.$staff_doctor.text(parseInt(staff[0], 10));
+                        this.$staff_doctor_input.val(parseInt(staff[0], 10));
+                    }
+                    if (staff[1] != "") {
+                        this.$staff_nurse.text(parseInt(staff[1], 10));
+                        this.$staff_nurse_input.val(parseInt(staff[1], 10));
+                    }
+                }
+            }
+
+            // OWNERSHIP
+            {
+                var ownership = this.locality_data.values['ownership'];
+                delete keys[this.getIndex(keys, 'ownership')];
+                if (this.isHasValue(ownership)) {
+                    this.$ownership.text(ownership);
+                    for (var i = 0; i < ownership_options.length; i++) {
+                        if (ownership == ownership_options[i]) {
+                            $(this.$ownership_input.find('option')[i]).prop('selected', true);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // OPERATION
+            {
+                var operation = this.locality_data.values['operation'];
+                delete keys[this.getIndex(keys, 'operation')];
+                if (this.isHasValue(operation)) {
+                    this.$operation.text(operation);
+                    for (var i = 0; i < operation_options.length; i++) {
+                        if (operation == operation_options[i]) {
+                            $(this.$operation_input.find('option')[i]).prop('selected', true);
+                            break;
+                        } else {
+                            if (i == operation_options.length - 1) {
+                                $(this.$operation_input.find('option')[operation_options.length - 1]).prop('selected', true);
+                                this.$operation_specify_input.val(operation);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // URL
+            this.$url_input.html("");
+            var isUrlRendered = false;
+            {
+                var url = this.locality_data.values['url'];
+                delete keys[this.getIndex(keys, 'url')];
+                if (this.isHasValue(url)) {
+                    this.$url.html("");
+                    isUrlRendered = true;
+                    this.addUrl(url, url);
+                    this.addOptionUrl(url);
+                } else {
+                    this.addOptionUrl("");
+                }
+            }
+
+            // DATA-SOURCE
+            {
+                var url = this.locality_data.values['data_source'];
+                delete keys[this.getIndex(keys, 'data_source')];
+                if (this.isHasValue(url)) {
+                    if (!isUrlRendered) {
+                        this.$url.html("");
+                    }
+                    this.addUrl(url, url);
+                    this.addOptionUrl(url);
+                } else {
+                    this.addOptionUrl("");
+                }
+            }
+
+            // PHONE
+            {
+                var phone = this.locality_data.values['phone'];
+                delete keys[this.getIndex(keys, 'phone')];
+                if (this.isHasValue(phone)) {
+                    this.$phone.text(phone);
+                    phone = phone.replace("+", "");
+                    var phones = phone.split("-");
+                    this.$phone_input_int.val(phones[0]);
+                    this.$phone_input_number.val(phones[1]);
+                }
+            }
+
+
+            // TAGS
+            {
+                var tags = this.locality_data.tags;
+                if (this.isHasValue(tags)) {
+                    var tags = tags.split(separator);
+                    for (var i = 0; i < tags.length; i++) {
+                        if (tags[i] != "") {
+                            // render
+                            if (this.$tag_data.html() == no_tag_found) {
+                                this.$tag_data.html("");
+                            }
+                            this.$tag_data.append("<li><i class=\"fa fa-caret-right\"></i> <a href=\"map?tag=" + tags[i] + "\">" + tags[i] + "</a></li>");
+                            this.addTag(tags[i]);
+                        }
+                    }
+                }
+            }
+            // OTHER
+            {
+                keys = cleanArray(keys);
+                if (keys.length > 0) {
+                    this.$other_data.html("");
+                }
+                for (var i = 0; i < keys.length; i++) {
+                    if (typeof keys[i] !== 'undefined') {
+                        this.addOther(keys[i].replace("_", " "), this.locality_data.values[keys[i]]);
+                        others_attr.push(keys[i]);
+                    }
+                }
+            }
         },
-
-        setInfoWindowHeight: function () {
-            var nlfH = this.$sidebar_footer.height() + 15;
-            this.$sidebar_body.height($(window).height() - this.$sidebar_body.offset().top - nlfH);
+        isHasValue: function (value) {
+            if (value && value.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        getIndex: function (array, value) {
+            var index = -99;
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] == value) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
         },
 
         getInfo: function (evt, payload) {
             var self = this;
             $.getJSON('/localities/' + this.locality_uuid, function (data) {
                 self.locality_data = data;
+                console.log(data);
                 self.$sidebar.trigger('show-info');
                 if (payload) {
                     var zoomto = payload.zoomto;
@@ -245,59 +936,6 @@ window.LocalitySidebar = (function () {
             });
         },
 
-        showEdit: function (evt, payload) {
-            this.$sidebar_body.html(payload.data);
-            this.$sidebar_footer.html([
-                '<button type="button" class="btn btn-default cancel">Cancel</button>',
-                '<button type="button" class="btn btn-warning save">Save changes</button>'
-            ].join(''))
-
-            this.$sidebar_body.find('input:text').filter(function () {
-                return $(this).val() == "";
-            }).each(function () {
-                $(this).parents('.form-group').detach().appendTo('#empty-form-tab');
-            });
-
-        },
-
-
-        showEditForm: function (evt) {
-            var self = this;
-            $.get('/localities/' + this.locality_uuid + '/form', function (data) {
-                self.$sidebar.trigger('show-edit', {'data': data});
-                // show red-marker on the map
-                $APP.trigger('locality.edit', {'geom': [self.locality_data.geom[1], self.locality_data.geom[0]]});
-            }).fail(function (xhr, status, error) {
-                self.$sidebar.trigger('handle-xhr-error', {'xhr': xhr});
-            });
-        },
-
-        saveForm: function (evt) {
-            var self = this;
-            var form = this.$sidebar_body.find('form');
-            var latlng = [$('#id_lat').val(), $('#id_lon').val()];
-            var data = form.serializeArray();
-
-            $.ajax('/localities/' + this.locality_uuid + '/form', {
-                'type': 'POST',
-                'data': data,
-                'success': function (data, status, xhr) {
-                    if (data !== 'OK') {
-                        // there were some form processing errors
-                        self.$sidebar.trigger('show-edit', {'data': data});
-                    } else {
-                        // everything went ok, get new data from the server and show info
-                        self.$sidebar.trigger('get-info');
-
-                        $APP.trigger('locality.save');
-                    }
-                },
-                'error': function (xhr, status, error) {
-                    self.$sidebar.trigger('handle-xhr-error', {'xhr': xhr});
-                }
-            })
-        },
-
         _bindExternalEvents: function () {
             var self = this;
 
@@ -308,10 +946,69 @@ window.LocalitySidebar = (function () {
             $APP.on('locality.map.move', function (evt, payload) {
                 self.$sidebar.trigger('update-coordinates', payload);
             });
-
-            $APP.on('locality.show-info-adjust', function (evt, payload) {
-                self.$sidebar.trigger('show-info-adjust');
+            $APP.on('sidebar.option-onchange', function (evt, payload) {
+                self.onchange(payload.element);
             });
+            $APP.on('sidebar.option-add', function (evt, payload) {
+                self.addOption(payload.element, "");
+            });
+            $APP.on('sidebar.other-add', function (evt, payload) {
+                self.addOther("", "");
+            });
+            $APP.on('sidebar.tag-add', function (evt, payload) {
+                self.addTag(payload.value);
+            });
+        },
+        onchange: function (element) {
+            if (element.id == this.$operation_input.attr('id')) {
+                if (element.value == operation_options[operation_options.length - 1]) {
+                    this.$operation_specify_input.show();
+                } else {
+                    this.$operation_specify_input.hide();
+                }
+            } else if (element.id == this.$coordinates_lat_input.attr('id')) {
+                $APP.trigger('locality.coordinate-changed', {'geom': [this.$coordinates_long_input.val(), this.$coordinates_lat_input.val()]});
+            } else if (element.id == this.$coordinates_long_input.attr('id')) {
+                $APP.trigger('locality.coordinate-changed', {'geom': [this.$coordinates_long_input.val(), this.$coordinates_lat_input.val()]});
+            }
+        },
+        addOptionUrl: function (value) {
+            this.$url_input.append("<p class=\"url\"><i class=\"fa fa-link\"></i><input type=\"text\" value=\"" + value + "\" />");
+        },
+        addOption: function (element, value) {
+            if (element.id == this.$url_input_add.attr('id')) {
+                this.addOptionUrl(value);
+            }
+        },
+        addOther: function (attribute, value) {
+            var html = "<div class=\"input\">";
+            html += "<input type=\"text\" placeholder=\"Attribute\" class=\"attribute\" value=\"" + attribute + "\" />";
+            html += "<input type=\"text\" placeholder=\"Value\"  class=\"value\" value=\"" + value + "\" />";
+            html += "<span class=\"remove_option\">  -  </span>"
+            html += "</div>";
+            this.$other_data_input.append(html);
+
+            if (attribute != "" && value != "") {
+                var html = "<p><strong>" + attribute + ": </strong>";
+                html += "<span>" + value + "</span></p>";
+                this.$other_data.append(html);
+            }
+        },
+        addTag: function (value) {
+            if (value.length >= 3) {
+                value = value.toLowerCase();
+                var inputs = this.$tag_input.find(".tag-text");
+                var isValid = true;
+                for (var i = 0; i < inputs.length; i++) {
+                    if (inputs[i].innerHTML == value) {
+                        isValid = false;
+                        break;
+                    }
+                }
+                if (isValid) {
+                    this.$tag_input.append("<li><span class=\"tag-text\">" + value + "</span> <span class=\"fa fa-times remove_tag\"></span></li>");
+                }
+            }
         }
     }
 

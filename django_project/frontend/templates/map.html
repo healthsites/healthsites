@@ -46,7 +46,12 @@
     <![endif]-->
 
 </head>
-
+<script>
+    var isLoggedIn = false;
+    {% if user.is_authenticated %}
+        isLoggedIn = true;
+    {% endif %}
+</script>
 <body class="map-page">
 <nav class="navbar navbar-fixed-top masthead no-tag">
     <div class="container-fluid">
@@ -117,75 +122,117 @@
 </nav>
 
 <section id="map-full" class="js-fullheight fluid-container">
-    <div class="location-info pad0x col-md-4">
-        <div class="profile">
-            {% if user.is_authenticated %}
-                <div class="person col-xs-8 pad0x">
-                    <div class="avatar-holder">
-                        <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
-                        <img src="http://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"/>
-                    </div>
+    <form id="locality-form" action="localities/edit" method="post">
+        {% csrf_token %}
+        <div class="location-info pad0x col-md-4">
+            <div class="profile">
+                {% if user.is_authenticated %}
+                    <div class="person col-xs-8 pad0x">
+                        <div class="avatar-holder">
+                            <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
+                            <img src="http://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"/>
+                        </div>
 
                     <span class="name">
                         <a href="{% url 'userprofilepage' %}">{{ user }}</a>
                     </span>
-                </div>
-                <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
-                        class="fa fa-sign-out"></i> sign out</a>
-            {% else %}
-                <div class="person col-xs-8 pad0x">
+                    </div>
+                    <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
+                            class="fa fa-sign-out"></i> sign out</a>
+                {% else %}
+                    <div class="person col-xs-8 pad0x">
                 <span class="name">
                         You are not signed in
                     </span>
-                </div>
-                <a href="{% url 'usersignpage' %}" class="button col-xs-4 pad0x blue stroke"><i
-                        class="fa fa-sign-in"></i> sign in</a>
-            {% endif %}
+                    </div>
+                    <a href="{% url 'usersignpage' %}" class="button col-xs-4 pad0x blue stroke"><i
+                            class="fa fa-sign-in"></i> sign in</a>
+                {% endif %}
 
-            <div style="clear: both;"></div>
-        </div>
-
-        <div id="locality-default">
-            <div style="padding: 20px;">
-                <p>
-                    We aim to provide a single point of reference for healthcare workers, aid agencies,
-                    contingency planners, government agencies and citizens who need access to highly curated
-                    global dataset of healthcare facilities.
-                    By simply clicking on the map, users can discover what healthcare facilities exist at any global
-                    location
-                    and find out what resources exist at any individual healthcare facility.
-                </p>
-                <h2 class="fancy "><span class="timer" data-speed="2500"
-                                         data-to="{{ locality_count }}">{{ locality_count }}</span>
-                    healthsites listed</h2>
-                <div>
-                    <table id="country-table" style="width:100%">
-                        <tr>
-                            <th width="60%">Country</th>
-                            <th width="20%"># of sites</th>
-                            {# disabled links and completeness for #429 #}
-                            {# <th width="20%">% complete</th> #}
-                        </tr>
-                    </table>
+                <div style="clear: both;"></div>
+            </div>
+            <div id="locality-default" style="display: none">
+                <div style="padding: 20px;">
+                    <p>
+                        We aim to provide a single point of reference for healthcare workers, aid agencies,
+                        contingency planners, government agencies and citizens who need access to highly curated
+                        global dataset of healthcare facilities.
+                        By simply clicking on the map, users can discover what healthcare facilities exist at any global
+                        location
+                        and find out what resources exist at any individual healthcare facility.
+                    </p>
+                    <h2 class="fancy "><span class="timer" data-speed="2500"
+                                             data-to="{{ locality_count }}">{{ locality_count }}</span>
+                        healthsites listed</h2>
+                    <div>
+                        <table id="country-table" style="width:100%">
+                            <tr>
+                                <th width="60%">Country</th>
+                                <th width="20%"># of sites</th>
+                                <th width="20%">% complete</th>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="locality-info" style="display: none">
-            <div class="details" id="sidebar-info">
+            <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
+                <div class="header" style="font-size: 24px; padding-bottom: 10px;">
+                    <strong id="title-name">No Title</strong> - <span id="number-locality"
+                                                                      style="margin-left: 5px; margin-right: 5px"> 0 </span>
+                    healthsites
+                </div>
+
+                <div style="padding: 20px">
+                    <div>
+                        <h3>Number of heathsites per type</h3>
+
+                        <div class="graph">
+                            <div id="chart1"></div>
+
+                            <script>
+                            </script>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Completeness of attributes</h3>
+
+                        <div class="graph">
+                            <div id="piechart"></div>
+
+
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Latest updates</h3>
+
+                        <div id="updates" class="graph updates">
+                            <div class="entry">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="locality-info" class="details" style="display: none">
                 <div class="header">
-                    <h1 id="locality-name">Priory Hospital Glasgow</h1>
+                    <h1 id="locality-name">No Name</h1>
+                    <input type="text" id="locality-name-input" name="name"
+                           placeholder="Locality name" style="display: none; width: 100%"/>
 
                     <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
+
+                    <p style="margin-top: 5px">
+                        <select id="locality-nature-of-facility-input" name="nature_of_facility" style="display: none">
+                        </select>
+                    </p>
                 </div>
                 <div class="info">
-                    <div class="line updates">
+                    <div id="line-updates" class="line updates">
                         <div class="icon-holder">
                             <i class="fa fa-info-circle"></i>
                         </div>
                         <div class="data">
-                            <p>last update: <span class="date">11 may 2015</span>, by
+                            <p>last update: <span id="last_update" class="date">11 may 2015 17:23:15</span>, by
                             <span class="name">
-                                <a href="profile/sharehealthdata">@sharehealthdata</a>
+                                <a id="uploader" href="profile/sharehealthdata">@sharehealthdata</a>
                             </span>
                             <span class="more">
                                 <a href="#" class="full-list">see full list <i class="fa fa-angle-down"></i></a>
@@ -205,24 +252,54 @@
                             <i class="fa fa-map-marker"></i>
                         </div>
                         <div class="data">
-                            <p class="address" id="locality-physical_address">54, Praed st, London, W2 NY<br/>
+                            <p class="address" id="locality-physical-address">54, Praed st, London, W2 NY<br/>
                                 Unighted Kingdom</p>
+                            <input type="text" id="locality-physical-address-input" name="physical_address"
+                                   placeholder="Physical Address" style="display: none"/>
 
-                            <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
+                            <p class="coordinates" id="locality-coordinates">lat: 0, long: 0</p>
 
-                            <p class="call">
+                            <p class="coordinates" id="locality-coordinates-input" style="display: none">lat: <input
+                                    type="number"
+                                    id="locality-coordinates-lat-input"
+                                    style="width: 80px"
+                                    min="-180" max="180" onchange="onChange(this)"/>,
+                                long: <input type="number"
+                                             id="locality-coordinates-long-input" style="width: 80px" min="-180"
+                                             max="180" onchange="onChange(this)"/></p>
+
+
+                            <p>
                                 <i class="fa fa-phone"></i>
-                                <span id="locality-phone"> 0141 636 6116</span>
-                            <span class="hours">
-                                <i class="fa fa-clock-o"></i>
-                                <span id="locality-operation">24/24 & 7/7</span>
-                            </span>
+                                <span id="locality-phone" class="call">0141 636 6116</span>
+                                <span id="locality-phone-input" style="display: none">+<input type="number"
+                                                                                              id="locality-phone-input-int"
+                                                                                              style="width: 50px; margin-right: 5px"
+                                                                                              onkeypress="onKeyPress(this)"/><input
+                                        type="number"
+                                        id="locality-phone-input-number"/></span>
                             </p>
 
-                            <p class="url">
-                                <i class="fa fa-link"></i>
-                                <a href="#" id="locality-url">www.msf.org</a>
+                            <p>
+                                <i class="fa fa-clock-o"></i>
+                                <span id="locality-operation" class="call">24/24 & 7/7</span>
+                                <span>
+                                    <select id="locality-operation-input"
+                                            style="display: none" onchange="onChange(this)">
+                                    </select>
+                                </span>
+                                <input type="text" id="locality-operation-specify-input"
+                                       placeholder="Operations" style="display: none"/>
                             </p>
+
+                            <p id="locality-url-input-add" style="cursor: pointer; display: none"
+                               onclick="addOption(this)"> add
+                                link</p>
+
+                            <div id="locality-url">
+                            </div>
+                            <div id="locality-url-input" style="display: none">
+                            </div>
                         </div>
                     </div>
                     <div class="line services">
@@ -234,35 +311,27 @@
                                 <h3>scope of service</h3>
 
                                 <div id="locality-scope-of-service">
-                                    <ul>
-                                        <li><i class="fa fa-caret-right"></i>Specialized care</li>
-                                        <li><i class="fa fa-caret-right"></i>General acute care</li>
-                                        <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
-                                    </ul>
+                                </div>
+                                <div id="locality-scope-of-service-input"
+                                     style="display: none; margin-bottom: 10px;">
                                 </div>
                             </div>
                             <div class="ancillary">
                                 <h3>ancillary services</h3>
 
-                                <div id="locality-ancilary-service">
-                                    <ul>
-                                        <li><i class="fa fa-caret-right"></i>Operating theater</li>
-                                        <li><i class="fa fa-caret-right"></i>Laboratory</li>
-                                        <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
-                                        <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
-                                    </ul>
+                                <div id="locality-ancillary-service">
+                                </div>
+                                <div id="locality-ancillary-service-input"
+                                     style="display: none; margin-bottom: 10px;">
                                 </div>
                             </div>
-                            <div class="services">
-                                <h3>services</h3>
+                            <div class="activities">
+                                <h3>activities</h3>
 
                                 <div id="locality-activities">
-                                    <ul>
-                                        <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
-                                        <li><i class="fa fa-caret-right"></i>Pediatric care</li>
-                                        <li><i class="fa fa-caret-right"></i>Mental health</li>
-                                        <li><i class="fa fa-caret-right"></i>Geriatric care</li>
-                                    </ul>
+                                </div>
+                                <div id="locality-activities-input"
+                                     style="display: none; margin-bottom: 10px;">
                                 </div>
                             </div>
                         </div>
@@ -272,15 +341,28 @@
                             <i class="fa fa-bed"></i>
                         </div>
                         <div class="data">
-                            <p id="locality-inpatient-service">20 full time beds, 50 part time beds</p>
+                            <p id="locality-inpatient-service"></p>
+
+                            <p id="locality-inpatient-service-input" style="display: none"><input type="number"
+                                                                                                  id="locality-inpatient-service-full-input"
+                                                                                                  min="0"
+                                                                                                  style="width: 50px"/>
+                                full
+                                time beds, <input type="number" id="locality-inpatient-service-part-input" min="0"
+                                                  style="width: 50px"/>
+                                part time beds</p>
                         </div>
                     </div>
                     <div class="line note">
                         <div class="icon-holder">
                             <i class="fa fa-sticky-note"></i>
                         </div>
-                        <div class="data">
-                            <p><strong>Note:</strong> Outpatient consultation and in-patient hospitalization</p>
+                        <div class="data" id="locality-note">
+                            <p><strong>Note: </strong><span id="locality-note-text"> Outpatient consultation and in-patient hospitalization</span>
+                            </p>
+                        </div>
+                        <div class="data" id="locality-note-input"
+                             style="display: none; margin-bottom: 10px;">
                         </div>
                     </div>
                     <div class="line doctors">
@@ -288,8 +370,16 @@
                             <i class="fa fa-user-md"></i>
                         </div>
                         <div class="data">
-                            <p id="locality-staff">20 full time equivalent doctors and 50 full time equivalent
-                                nurses</p>
+                            <p id="locality-staff"></p>
+
+                            <p id="locality-staff-input" style="display: none"><input type="number"
+                                                                                      id="locality-staff-doctor-input"
+                                                                                      min="0"
+                                                                                      style="width: 50px"/>
+                                full time doctors, <input type="number" id="locality-staff-nurse-input"
+                                                          min="0"
+                                                          style="width: 50px"/>
+                                full time nurses</p>
                         </div>
                     </div>
                     <div class="line ownership">
@@ -297,7 +387,40 @@
                             <i class="fa fa-briefcase"></i>
                         </div>
                         <div class="data">
-                            <p><strong>Ownership:</strong> public</p>
+                            <p><strong>Ownership:</strong>
+                                <span id="locality-ownership"></span>
+                                <select id="locality-ownership-input" name="ownership"
+                                        style="display: none">
+                                </select></p>
+                        </div>
+                    </div>
+                    <div id="tag" class="line services">
+                        <div class="icon-holder">
+                            <b>tag</b>
+                        </div>
+                        <div class="data">
+                            <ul id="tag-data"></ul>
+                            <div id="tag-input-text" style="display: none">
+                                <input id="tag-input-text-box" type="text" placeholder="fill new tag"
+                                       style="margin-bottom: 10px;"
+                                       onkeyup="if (event.keyCode == 13) { addTag($(this).val()); $(this).val('') }"/>
+                                <i style="margin-left: 10px; color: #f44a52">enter to add tag with minimal 3 letters</i>
+                            </div>
+                            <ul id="tag-input" style="display: none"></ul>
+                        </div>
+                    </div>
+                    <div id="others" class="line ">
+                        <div class="icon-holder">
+                            <b>others</b>
+                        </div>
+                        <div class="data">
+                            <p id="others-add" onclick="addOthers()" style="display: none; cursor: pointer"><b>add new
+                                information</b></p>
+
+                            <div id="others-data">
+                            </div>
+                            <div id="others-data-input" style="display: none">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -308,26 +431,43 @@
                         <i class="fa fa-twitter"></i> share
                     </a>
                 </div>
-                {# disabling edit and add until they are working - see #433 #}
-                {# <div class="button-wrapper col-xs-4"> #}
-                    {# <a class="button edit stroke blue" href="#"><i  #}
-                    {#         class="fa fa-pencil"></i> edit  #}
-                    {# </a>  #}
-                {# </div>  #}
-                {# <div class="button-wrapper col-xs-4"> #}
-                {#     <a class="button add" href="#"> #}
-                {#         <i class="fa fa-plus"></i> add new #}
-                {#     </a> #}
-                {# </div> #}
+                <div class="button-wrapper col-xs-4" id="edit-button">
+                    <a class="button edit stroke blue"
+                       style="cursor: pointer"><i
+                            class="fa fa-pencil"></i> edit
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4" id="save-button" style="display: none">
+                    <a class="button edit stroke blue"
+                       style="cursor: pointer"><i
+                            class="fa fa-pencil"></i> save
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4" id="create-button" style="display: none">
+                    <a class="button edit stroke blue"
+                       style="cursor: pointer"><i
+                            class="fa fa-pencil"></i> create
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4" id="add-button">
+                    <a class="button add" style="cursor: pointer">
+                        <i class="fa fa-plus"></i> add new
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4" id="cancel-button" style="display: none">
+                    <a class="button edit stroke blue"
+                       style="cursor: pointer"><i
+                            class="fa fa-pencil"></i> cancel
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="map-page pad0x col-md-8">
-        <div id="map">
+        <div class="map-page pad0x col-md-8">
+            <div id="map">
+            </div>
         </div>
-    </div>
+    </form>
 </section>
-
 <script type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 {#<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>#}
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
@@ -347,10 +487,16 @@
 {% javascript 'map_page' %}
 {% javascript 'map_app' %}
 
+
 {% block extra_js %}
     <script type="text/javascript">
-
+        var APP;
         $(document).ready(function () {
+            // set share url
+            var baseURL = location.protocol + "//" + location.hostname + "/";
+            $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
+            $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
+            $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
             var url = window.location.href;
             if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
                 var $country_table = $('#country-table');
@@ -364,7 +510,7 @@
                         country_id = country_id.split("(").join("-");
                         country_id = country_id.split(")").join("-");
                         {# disabled links and completeness for #429 #}
-                        var html = "<tr><td>{# <a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">#}" + country + "{# <a> #}</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td>{# <td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td> #}</tr>";
+                        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
                         $country_table.append(html);
                         $.ajax({
                             number: country_id + "-number",
@@ -375,31 +521,21 @@
                                 q: country
                             },
                             success: function (data) {
-                                $("#" + this.number).html("fail");
                                 {# disabled links and completeness for #429 #}
-                                {#  $("#" + this.completeness).html("fail"); #}
                                 $("#" + this.number).html(data.number);
-                                {# disabled links and completeness for #429 #}
-                                {# $("#" + this.completeness).html(data.completeness); #}
+                                $("#" + this.completeness).html(data.completeness);
                             },
                             fail: function (data) {
                                 $("#" + this.number).html("fail");
-                                {# disabled links and completeness for #429 #}
-                                {# $("#" + this.completeness).html("fail"); #}
+                                $("#" + this.completeness).html("fail");
                             }
                         });
                     {% endfor %}
                 {% endif %}
             }
-            // set share url
-            var baseURL = location.protocol + "//" + location.hostname + "/";
-            $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
-            $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
-            $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
 
             // Set viewport if exist
             {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
-                console.log({{ northeast_lat }} +" " + {{ northeast_lng }} +" " + {{ southwest_lat }} +" " + {{ southwest_lng }});
                 sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
                 sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
                 sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
@@ -407,8 +543,241 @@
             {% endif %}
 
             // initialize the app
-            new APP();
+            APP = new APP();
+            $("#locality-statistic").hide();
+            $("#locality-info").hide();
+            $("#locality-default").hide();
+            {% if tag or country %}
+                $("#locality-statistic").show();
+                $("#number-locality").html("{{ localities }}");
+                updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
+                updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
+            {% elif countries %}
+                $("#locality-default").show();
+            {% else %}
+                $("#locality-info").show();
+            {% endif %}
+            {% if tag %}
+                $("#title-name").html("{{ tag }}");
+                $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
+            {% elif country %}
+                $("#title-name").html("{{ country }}");
+                $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
+            {% endif %}
+            {% if viewport %}
+                var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");
+                var northeast_lng = parseFloat("{{ viewport.northeast_lng }}");
+                var southwest_lat = parseFloat("{{ viewport.southwest_lat }}");
+                var southwest_lng = parseFloat("{{ viewport.southwest_lng }}");
+                if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
+                    $APP.trigger('map.update-bound', {
+                        'southwest_lat': southwest_lat,
+                        'southwest_lng': southwest_lng,
+                        'northeast_lat': northeast_lat,
+                        'northeast_lng': northeast_lng
+                    });
+                }
+            {% endif %}
+
+            $("#updates").html("<div class=\"entry\">no updates</div>");
+            {% if last_update %}
+                $("#updates").html("");
+                {% for updates in last_update %}
+                    var html = "<div class=\"entry\">";
+                    html += "<div class=\"entry\">";
+                    html += "<span class=\"date\">" + getDateString("{{ updates.date_applied.isoformat }}") + "</span> - ";
+                    html += "<span class=\"name\">";
+                    html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author }}" + "</a></span> - ";
+                    var mode = "";
+                    if ("{{ updates.mode }}" == 1) {
+                        mode = "added";
+                    } else {
+                        mode = "amended";
+                    }
+                    {# update the html #}
+                    if ("{{ updates.data_count }}" == 1) {
+                        html += "<a href=\"map#!/locality/" + "{{ updates.locality_uuid }}" + "\" class=\"location-name\">" + "{{ updates.locality }}" + "</a>";
+                        html += "<span class=\"location-name\"> " + mode + " </span>";
+                    } else {
+                        html += "<span class=\"location-name\">" + "{{ updates.data_count }}" + " HS/" + mode + "</span>";
+                    }
+                    html += "</div>";
+                    $("#updates").append(html);
+                {% endfor %}
+            {% endif %}
+
+            $("#tag-input-text-box").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "{% url 'tags' %}",
+                        dataType: 'json',
+                        data: {
+                            q: request.term
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                },
+                open: function () {
+                    $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+                },
+                close: function () {
+                    $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                }
+            });
         });
+        function onChange(element) {
+            $APP.trigger('sidebar.option-onchange', {'element': element});
+        }
+        function onKeyPress(element) {
+            if (element.id == "locality-phone-input-int") {
+                var val = $(element).val();
+                console.log(val);
+                if (val.length > 3) {
+                    val = val.substring(0, 3);
+                    $(element).val(val);
+                }
+            }
+        }
+        function addOption(element) {
+            $APP.trigger('sidebar.option-add', {'element': element});
+        }
+        function addOthers() {
+            $APP.trigger('sidebar.other-add');
+        }
+        function addTag(value) {
+            $APP.trigger('sidebar.tag-add', {'value': value});
+        }
+        $('body').on("click", ".remove_option", function (e) { //user click on remove text
+            e.preventDefault();
+            $(this).parent('div').remove();
+        })
+        $('body').on("click", ".remove_tag", function (e) { //user click on remove text
+            e.preventDefault();
+            $(this).parent('li').remove();
+        })
+        var chart = c3.generate({
+            bindto: '#chart1',
+            size: {
+                height: 220
+            },
+            bar: {
+                width: 18
+            },
+            data: {
+                x: 'x',
+                y: 'percent',
+                columns: [
+                    //the healthsites names
+                    ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
+                    //the healthsites number
+                    ['number', 12, 12, 12],
+                    //the healthsites percentgage
+                    ['percent', 0.33, 0.33, 0.34]
+                ],
+                axes: {
+                    number: 'y2'
+                },
+                types: {
+                    percent: 'bar',
+                    number: 'bar'
+                },
+                order: 'asc',
+
+                labels: {
+                    format: {
+                        number: function (v, id, i, j) {
+                            return v;
+                        },
+                    }
+                },
+
+
+            },
+            axis: {
+                rotated: true,
+                x: {
+                    type: 'category',
+
+                },
+                y: {
+                    max: 1,
+                    tick: {
+                        values: [0, 0.5, 1],
+                        format: d3.format('%,')
+
+                    }
+                }
+            },
+            legend: {
+                show: false
+            },
+            color: {
+                pattern: ['#b6cccc', '#f89ea1']
+            }
+        });
+
+        var piechart = c3.generate({
+            bindto: '#piechart',
+            size: {
+                height: 220
+            },
+            data: {
+                // iris data from R
+                columns: [
+                    ['complete', 33],
+                    ['partial', 33],
+                    ['basic', 34],
+                ],
+                colors: {
+                    complete: '#f89ea1',
+                    partial: '#b6cccc',
+                    basic: '#8698a4'
+                },
+                type: 'pie',
+                onclick: function (d, i) {
+                    console.log("onclick", d, i);
+                },
+                onmouseover: function (d, i) {
+                    console.log("onmouseover", d, i);
+                },
+                onmouseout: function (d, i) {
+                    console.log("onmouseout", d, i);
+                }
+            }
+        });
+
+
+        {# FOR UPDATING CHART #}
+        function updateChart(hospital, medical, orthopedic) {
+            var hospital_per = hospital / (hospital + medical + orthopedic);
+            var medical_per = medical / (hospital + medical + orthopedic);
+            var orthopedic_per = orthopedic / (hospital + medical + orthopedic);
+            chart.load({
+                columns: [
+                    //the healthsites names
+                    ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
+                    //the healthsites number
+                    ['number', hospital, medical, orthopedic],
+                    //the healthsites percentgage
+                    ['percent', hospital_per, medical_per, orthopedic_per]
+                ]
+            });
+        }
+
+        function updatePieChart(basic, partial, complete) {
+            piechart.load({
+                columns: [
+                    ['complete', complete],
+                    ['partial', partial],
+                    ['basic', basic],
+                ],
+            });
+        }
     </script>
 {% endblock extra_js %}
 

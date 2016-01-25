@@ -62,9 +62,11 @@
                 <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
                    class="withripple twitter-href" target="_blank">
                     <i class="fa fa-twitter"></i></a>
-                <a class="facebook-hs-share withripple facebook-href"target="_blank">
+                <a class="facebook-hs-share withripple facebook-href" target="_blank">
                     <i class="fa fa-facebook"></i></a>
-                <a class="googleplus-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+                <a class="googleplus-href"
+                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+                   target="_blank">
                     <i class="fa fa-google-plus"></i>
 
                 </a>
@@ -175,7 +177,8 @@
                                                 onerror="this.onerror=null; this.src='image.png'"></div>
                 <div class="col-md-8 pad0x">
                     <strong>Accessible</strong><br/>
-                    We will make the data accessible over the Internet through an API and other formats such as GeoJSON, Shape files, KML, CSV
+                    We will make the data accessible over the Internet through an API and other formats such as GeoJSON,
+                    Shape files, KML, CSV
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
@@ -236,7 +239,7 @@
 <span class="scroll" id="country-data"></span>
 <section class="map-data">
     <div class="container-fluid pad0x">
-        <div id="map-home" class="col-md-6 map" style="height: 400px">
+        <div id="map-home" class="col-md-6 map" style="height: 621px">
             <div id="map" style="height: 100%">
             </div>
             <div class="select-country">
@@ -247,8 +250,9 @@
             </div>
         </div>
         <div class="col-md-6 country-data pad10x">
-            <h2 class="col-md-12"><strong id="country-title">World</strong> - <span id="country-locality-number"
-                                                                                    class="number">{{ locality_count }}</span>
+            <h2 class="col-md-12"><strong><a id="country-title" href="#">World</a></strong> - <span
+                    id="country-locality-number"
+                    class="number">{{ locality_count }}</span>
                 healthsites</h2>
 
             <div class="col-md-6">
@@ -270,33 +274,15 @@
 
                 </div>
             </div>
-{#            <div class="col-md-12">#}
-{#                <h3>Latest updates</h3>#}
-{##}
-{#                <div class="graph updates">#}
-{#                    <div class="entry">#}
-{#                        <span class="date">2015-10-14</span> <span class="time">17:23:15</span> - <span class="name"><a#}
-{#                            href="#">@who</a></span> - <span class="location-name">Priory Hosp Glasgow</span>#}
-{#                    </div>#}
-{#                    <div class="entry">#}
-{#                        <span class="date">2015-10-11</span> <span class="time">17:23:15</span> - <span class="name"><a#}
-{#                            href="#">@sagovernment</a></span> - <span class="location-name">50 hs/added</span>#}
-{#                    </div>#}
-{#                    <div class="entry">#}
-{#                        <span class="date">2015-10-09</span> <span class="time">17:23:15</span> - <span class="name"><a#}
-{#                            href="#">@jimbob</a></span> - <span class="location-name">75 hs/added 20/amended </span>#}
-{#                    </div>#}
-{#                    <div class="entry">#}
-{#                        <span class="date">2015-09-09</span> <span class="time">17:23:15</span> - <span class="name"><a#}
-{#                            href="#">@arryedwards</a></span> - <span class="location-name">22 hs/added</span>#}
-{#                    </div>#}
-{#                    <div class="entry">#}
-{#                        <span class="date">2015-08-14</span> <span class="time">17:23:15</span> - <span class="name"><a#}
-{#                            href="#">@nev</a></span> - <span class="location-name">Accrington Victoria Hosp</span>#}
-{#                    </div>#}
-{#                </div>#}
-{#            </div>#}
+            <div class="col-md-12">
+                <h3>Latest updates</h3>
+
+                <div id="updates" class="graph updates">
+                    <div class="entry">-</div>
+                </div>
+            </div>
         </div>
+    </div>
     </div>
 </section>
 <span class="scroll" id="lifecycle"></span>
@@ -342,8 +328,10 @@
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road
                     map</a></li>
                 <li><a href="/contact">Contact</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use">Terms of use</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites.io---ip-policy">IP policy</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use">Terms of
+                    use</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites.io---ip-policy">IP policy</a>
+                </li>
             </ul>
         </div>
         <div class="col-md-3 pad0x">
@@ -569,14 +557,20 @@
                         q: country
                     },
                     success: function (data) {
-                        map._updateGeoname(country);
+                        $APP.trigger('map.update-geoname', {'geoname': country});
                         {# default #}
                         $("#country-locality-number").html(0);
+                        $("#updates").html("<div class=\"entry\">no updates</div>");
                         updateChart(0, 0, 0);
 
                         {# show the real data #}
                         {# country title #}
-                        if (country == "") country = "World";
+                        if (country == "") {
+                            country = "World";
+                            $("#country-title").attr('href', "#");
+                        } else {
+                            $("#country-title").attr('href', "map?country=" + country);
+                        }
                         $("#country-title").html(country);
 
                         {# country healthsite number #}
@@ -589,6 +583,32 @@
                         if (data.completeness) {
                             updatePieChart(data.completeness.basic, data.completeness.partial, data.completeness.complete);
                         }
+                        if (data.last_update.length > 0) {
+                            $("#updates").html("");
+                            for (var i = 0; i < data.last_update.length; i++) {
+                                var update = data.last_update[i];
+                                var html = "<div class=\"entry\">";
+                                html += "<div class=\"entry\">";
+                                html += "<span class=\"date\">" + getDateString(update.date_applied) + "</span> - ";
+                                html += "<span class=\"name\">";
+                                html += "<a href=\"profile/" + update.author + "\">@" + update.author + "</a></span> - ";
+                                var mode = "";
+                                if (update.mode == 1) {
+                                    mode = "added";
+                                } else {
+                                    mode = "amended";
+                                }
+                                {# update the html #}
+                                if (update.data_count == 1) {
+                                    html += "<a href=\"map#!/locality/" + update.locality_uuid + "\" class=\"location-name\">" + data.last_update[i].locality + "</a>";
+                                    html += "<span class=\"location-name\"> " + mode + " </span>";
+                                } else {
+                                    html += "<span class=\"location-name\">" + data.last_update[i].data_count + " HS/" + mode + "</span>";
+                                }
+                                html += "</div>";
+                                $("#updates").append(html);
+                            }
+                        }
 
                         {# set view port #}
                         if (data.viewport) {
@@ -598,9 +618,14 @@
                             var southwest_lng = parseFloat(data.viewport.southwest_lng);
                             if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
                                 map._setFitBound(southwest_lat, southwest_lng, northeast_lat, northeast_lng);
+                                $APP.trigger('map.update-bound', {
+                                    'southwest_lat': southwest_lat,
+                                    'southwest_lng': southwest_lng,
+                                    'northeast_lat': northeast_lat,
+                                    'northeast_lng': northeast_lng
+                                });
                             }
                         }
-                        console.log(data);
                     }
                 });
             }

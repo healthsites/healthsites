@@ -84,17 +84,17 @@
     clear: both;
 }
 
-.updates p {
+#locality-info .updates p {
     font-style: italic;
     color: #919393;
 }
 
-.updates .date, .updates a {
+#locality-info .updates .date, #locality-info .updates a {
     font-weight: 500;
     color: #3c4c57;
 }
 
-.updates .full-list {
+#locality-info .updates .full-list {
     display: block;
 }
 
@@ -216,7 +216,26 @@
     cursor: pointer;
 }
 
-#locality-default {
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type='checkbox'] {
+    margin-right: 5px;
+}
+
+.remove_tag {
+    cursor: pointer;
+}
+
+.remove_option {
+    cursor: pointer;
+    color: black;
+}
+
+#locality-statistic, #locality-default {
     background: #fff;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -226,6 +245,14 @@
     -moz-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
     box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
     font-family: "Ubuntu", sans-serif;
+}
+
+#locality-statistic .date, #locality-statistic .time {
+    font-style: italic;
+}
+
+#locality-statistic .name a {
+    color: #f44a52;
 }
 
 th, td {
