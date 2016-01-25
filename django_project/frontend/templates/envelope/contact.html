@@ -4,8 +4,30 @@
 {% block title %}Healthsites{% endblock %}
 
 {% block content %}
+
     <section class="slideshow js-fullheight fluid-container" style="padding: 40px; padding-top: 100px; ">
+
+    <div class="panel panel-info">
+        <div class="panel-heading"><h3 class="panel-title">Share your ideas</h3></div>
+        <div class="panel-body">
+            We would love to hear your ideas and feedback on how to make
+            healthsites.io better! Please use the form below to share your ideas.
+        </div>
+    </div>
         {% render_contact_form %}
+
+    {% if messages %}
+    <div class="panel panel-info">
+        <div class="panel-heading"><h3 class="panel-title">Messages for you!</h3></div>
+        <div class="panel-body">
+        {% for message in messages %}
+            <div {% if message.tags %} class="text-{{ message.tags }}"{% endif %}>
+                {{ message }}
+            </div>
+        {% endfor %}
+        </div>
+    </ul>
+    {% endif %}
     </section>
 
 {% endblock %}

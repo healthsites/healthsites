@@ -1,25 +1,29 @@
 {% extends 'base.html' %}
 
 {% block title %}Healthsites{% endblock %}
-
 {% block content %}
-<div class="container">
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Sign in</h2>
-            <h4>Please sign in with one of your existing third party accounts.</h4>
-            <p class="text-warning"><span class="label label-warning">Important!</span> If you already connected one 3rd party service, first login using that service and add more authorisation options on profile page</p>
+    <section class="slideshow js-fullheight fluid-container" style="padding: 40px; padding-top: 100px; ">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Sign in</h2>
+                    <h4>Please sign in with one of your existing third party accounts.</h4>
+
+                    <p class="text-warning"><span class="label label-warning">Important!</span> If you already connected
+                        one 3rd party service, first login using that service and add more authorisation options on
+                        profile page</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="{% url 'social:begin' 'openstreetmap' %}" class="btn btn-primary">OSM</a>
+                    <a href="{% url 'social:begin' 'github' %}" class="btn btn-primary">Github</a>
+                    <a href="{% url 'social:begin' 'twitter' %}" class="btn btn-primary">Twitter</a>
+                    <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-primary">Google</a>
+                    <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-primary">Facebook</a>
+                    <a href="{% url 'social:begin' 'linkedin-oauth2' %}" class="btn btn-primary">LinkedIn</a>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <a href="{% url 'social:begin' 'openstreetmap' %}" class="btn btn-primary">OSM</a>
-            <a href="{% url 'social:begin' 'github' %}" class="btn btn-primary">Github</a>
-            <a href="{% url 'social:begin' 'twitter' %}" class="btn btn-primary">Twitter</a>
-            <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-primary">Google</a>
-            <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-primary">Facebook</a>
-            <a href="{% url 'social:begin' 'linkedin-oauth2' %}" class="btn btn-primary">LinkedIn</a>
-        </div>
-    </div>
-</div>
-{% endblock content %}
+    </section>
+{% endblock %}
