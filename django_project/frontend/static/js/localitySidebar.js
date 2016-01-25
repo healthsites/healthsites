@@ -29,7 +29,6 @@ window.LocalitySidebar = (function () {
     // constructor
     var module = function () {
         this.$sidebar = $('#locality-info');
-
         // new style
         this.$line_updates = $('#line-updates');
         this.$name = $('#locality-name');
@@ -528,6 +527,9 @@ window.LocalitySidebar = (function () {
         },
 
         showDefaultEdit: function (evt) {
+            $("#locality-statistic").hide();
+            $("#locality-info").show();
+            $("#locality-default").hide();
             this.addedNewOptons("scope"); // this.$scope_of_service_input
             this.addedNewOptons("ancillary"); // this.$ancillary_service_input
             this.addedNewOptons("activities"); // this.$ancillary_service_input

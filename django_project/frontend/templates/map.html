@@ -151,7 +151,31 @@
 
                 <div style="clear: both;"></div>
             </div>
-            <div id="locality-statistic" class="details" id="sidebar-info">
+            <div id="locality-default" style="display: none">
+                <div style="padding: 20px;">
+                    <p>
+                        We aim to provide a single point of reference for healthcare workers, aid agencies,
+                        contingency planners, government agencies and citizens who need access to highly curated
+                        global dataset of healthcare facilities.
+                        By simply clicking on the map, users can discover what healthcare facilities exist at any global
+                        location
+                        and find out what resources exist at any individual healthcare facility.
+                    </p>
+                    <h2 class="fancy "><span class="timer" data-speed="2500"
+                                             data-to="{{ locality_count }}">{{ locality_count }}</span>
+                        healthsites listed</h2>
+                    <div>
+                        <table id="country-table" style="width:100%">
+                            <tr>
+                                <th width="60%">Country</th>
+                                <th width="20%"># of sites</th>
+                                <th width="20%">% complete</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
                 <div class="header" style="font-size: 24px; padding-bottom: 10px;">
                     <strong id="title-name">No Title</strong> - <span id="number-locality"
                                                                       style="margin-left: 5px; margin-right: 5px"> 0 </span>
@@ -463,6 +487,7 @@
 {% javascript 'map_page' %}
 {% javascript 'map_app' %}
 
+
 {% block extra_js %}
     <script type="text/javascript">
         var APP;
@@ -472,6 +497,42 @@
             $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
             $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
             $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
+            var url = window.location.href;
+            if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
+                var $country_table = $('#country-table');
+                // render country data list
+                {% if countries %}
+                    {% for country in countries %}
+                        var country = "{{ country.name }}";
+                        var country_id = country.split(".").join("-");
+                        country_id = country_id.split("&#39;").join("-");
+                        country_id = country_id.split(" ").join("-");
+                        country_id = country_id.split("(").join("-");
+                        country_id = country_id.split(")").join("-");
+                        {# disabled links and completeness for #429 #}
+                        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
+                        $country_table.append(html);
+                        $.ajax({
+                            number: country_id + "-number",
+                            completeness: country_id + "-complete",
+                            url: "{% url 'countries-simple-data' %}",
+                            dataType: 'json',
+                            data: {
+                                q: country
+                            },
+                            success: function (data) {
+                                {# disabled links and completeness for #429 #}
+                                $("#" + this.number).html(data.number);
+                                $("#" + this.completeness).html(data.completeness);
+                            },
+                            fail: function (data) {
+                                $("#" + this.number).html("fail");
+                                $("#" + this.completeness).html("fail");
+                            }
+                        });
+                    {% endfor %}
+                {% endif %}
+            }
 
             // Set viewport if exist
             {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
@@ -483,14 +544,17 @@
 
             // initialize the app
             APP = new APP();
+            $("#locality-statistic").hide();
+            $("#locality-info").hide();
+            $("#locality-default").hide();
             {% if tag or country %}
                 $("#locality-statistic").show();
-                $("#locality-info").hide();
                 $("#number-locality").html("{{ localities }}");
                 updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
                 updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
+            {% elif countries %}
+                $("#locality-default").show();
             {% else %}
-                $("#locality-statistic").hide();
                 $("#locality-info").show();
             {% endif %}
             {% if tag %}

@@ -652,3 +652,42 @@ def search_tags(request):
             result.append(value['tag'])
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')
+
+
+def get_simple_statistic_by_country(request):
+    if request.method == 'GET':
+        query = request.GET.get('q')
+        result = []
+        try:
+            output = {}
+            # getting country's polygon
+            print query
+            country = Country.objects.get(
+                    name__iexact=query)
+            polygons = country.polygon_geometry
+
+            # query for each of attribute
+            healthsites = Locality.objects.in_polygon(
+                    polygons)
+            output['number'] = healthsites.count()
+
+            # check completnees
+            values = Value.objects.filter(locality__in=healthsites).values('locality').annotate(
+                    value_count=Count('locality'))
+            # 16 = 4 mandatory + 12 core
+            # this make long waiting, need to more good query
+            complete = values.filter(value_count__gte=15).count()
+            if values.count() > 0:
+                complete = complete * 100.0 / values.count()
+            else:
+                complete = 0.0
+            output['completeness'] = "%.2f" % complete
+
+            result = json.dumps(output)
+        except Country.DoesNotExist:
+            print "not exist"
+            result = []
+            result = json.dumps(result)
+
+        result = json.dumps(output)
+        return HttpResponse(result, content_type='application/json')

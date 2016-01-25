@@ -120,6 +120,10 @@
     margin-bottom: 0;
 }
 
+.find .call .hours {
+    margin-left: 20px;
+}
+
 .find .url {
     font-size: 16px;
     font-style: italic;
@@ -231,7 +235,7 @@ input[type='checkbox'] {
     color: black;
 }
 
-#locality-statistic {
+#locality-statistic, #locality-default {
     background: #fff;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -249,4 +253,17 @@ input[type='checkbox'] {
 
 #locality-statistic .name a {
     color: #f44a52;
+}
+
+th, td {
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #3c4c57;
 }
