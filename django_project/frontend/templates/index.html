@@ -213,7 +213,8 @@
                 <div class="icon-holder"><i class="fa fa-map-marker"></i></div>
                 <h3 class="col-md-12">Share healthsite data</h3>
                 <span class="col-md-12 text">Contact us should you need assistance or share your data using our upload form</span>
-                <span class="col-md-12 links">{# disabled for now - see #432 <a href="/upload-form">Upload form</a>#} <a href="/contact">Contact
+                <span class="col-md-12 links">{# disabled for now - see #432 <a href="/upload-form">Upload form</a>#} <a
+                        href="/contact">Contact
                     us</a></span></div>
         </div>
         <div class="center col-md-3 pad0x">
@@ -638,5 +639,22 @@
     </script>
 {% endblock extra_js %}
 
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-56378524-1', 'auto');
+    ga('send', 'pageview');
+
+</script>
 </body>
 </html>
