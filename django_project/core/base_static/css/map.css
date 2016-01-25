@@ -255,15 +255,23 @@ input[type='checkbox'] {
     color: #f44a52;
 }
 
-th, td {
-    padding-right: 5px;
+#locality-default table, #locality-default td, #locality-default th {
+    border: 1px solid #3c4c57;
     padding-left: 5px;
+}
+
+table, td, th {
+    padding-right: 5px;
+}
+
+td input[type="text"] {
+    width: 50px;
+}
+
+.ui-timepicker-standard {
+    font-size: 12px;
 }
 
 table {
     border-collapse: collapse;
-}
-
-table, th, td {
-    border: 1px solid #3c4c57;
 }

@@ -3,15 +3,16 @@ window.LocalitySidebar = (function () {
     var separator = "|";
     var special_attribute = ["uuid", "geom", "long", "lat", "nature_of_facility", "inpatient_service", "staff", "ownership", "nature_of_facility",
         "scope_of_service", "notes", "ancillary_services", "operation", "activities", "data_source",
-        "name", "url", "email", "mobile", "phone", "physical_address", "services", "tags"];
+        "name", "url", "email", "mobile", "phone", "physical_address", "services", "tags", "defining_hours"];
 
     var nature_options = ["", "clinic without beds", "clinic with beds", "first referral hospital", "second referral hospital or General hospital", "tertiary level including University hospital"];
     var scope_options = ["specialized care", "general acute care", "rehabilitation care", "old age/hospice care"];
     var ancillary_options = ["Operating theater", "laboratory", "imaging equipment", "intensive care unit", "Emergency department"];
     var activities_options = ["medicine and medical specialties", "surgery and surgical specialties", "Maternal and women health", "pediatric care", "mental health", "geriatric care", "social care"];
     var ownership_options = ["", "public", "private not for profit", "private commercial"];
-    var operation_options = ["", "24/24 & 7/7", "open only during business hours", "other"];
     var notes_options = ["Outpatient consultation", "In-patient hospitalization"];
+    var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+    var time_default = ["09:00", "17:00"];
     var need_information = "needs information";
     var no_physical_address = "No Physical Address";
     var no_phone_found = "No phone found";
@@ -37,7 +38,6 @@ window.LocalitySidebar = (function () {
         this.$coordinates = $('#locality-coordinates');
         this.$physical_address = $('#locality-physical-address');
         this.$phone = $('#locality-phone');
-        this.$operation = $('#locality-operation');
         this.$url = $('#locality-url');
         this.$scope_of_service = $('#locality-scope-of-service');
         this.$ancillary_service = $('#locality-ancillary-service');
@@ -48,6 +48,8 @@ window.LocalitySidebar = (function () {
         this.$note = $('#locality-note');
         this.$note_text = $('#locality-note-text');
         this.$tag_data = $('#tag-data');
+        this.$defining_hours_section = $('#locality-operating-hours-section');
+        this.$defining_hours = $('#locality-operating-hours');
 
         // form
         this.$form = $('#locality-form');
@@ -61,8 +63,6 @@ window.LocalitySidebar = (function () {
         this.$phone_input = $('#locality-phone-input');
         this.$phone_input_number = $('#locality-phone-input-number');
         this.$phone_input_int = $('#locality-phone-input-int');
-        this.$operation_input = $('#locality-operation-input');
-        this.$operation_specify_input = $('#locality-operation-specify-input');
         this.$nature_of_facility_input = $('#locality-nature-of-facility-input');
         this.$scope_of_service_input = $('#locality-scope-of-service-input');
         this.$scope_of_service_add = $('#locality-scope-of-service-add');
@@ -93,6 +93,10 @@ window.LocalitySidebar = (function () {
         this.$uploader = $('#uploader');
         this.$lastupdate = $('#last_update');
 
+        this.$defining_hours_input = $('#locality-operating-hours-input');
+        this.$defining_hours_input_table = $('#locality-operating-hours-input-table');
+        this.$defining_hours_input_result = $('#locality-operating-hours-input-result');
+
         // create nature options
         for (var i = 0; i < nature_options.length; i++) {
             this.$nature_of_facility_input.append("<option value=\"" + nature_options[i] + "\">" + nature_options[i] + "</option>");
@@ -101,17 +105,12 @@ window.LocalitySidebar = (function () {
         for (var i = 0; i < ownership_options.length; i++) {
             this.$ownership_input.append("<option value=\"" + ownership_options[i] + "\">" + ownership_options[i] + "</option>");
         }
-        // create operations options
-        for (var i = 0; i < operation_options.length; i++) {
-            this.$operation_input.append("<option value=\"" + operation_options[i] + "\">" + operation_options[i] + "</option>");
-        }
         // set info field array
         info_fields.push(this.$editButton);
         info_fields.push(this.$addButton);
         info_fields.push(this.$name);
         info_fields.push(this.$physical_address);
         info_fields.push(this.$phone);
-        info_fields.push(this.$operation);
         info_fields.push(this.$nature_of_facility);
         info_fields.push(this.$scope_of_service);
         info_fields.push(this.$ownership);
@@ -124,13 +123,13 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$note);
         info_fields.push(this.$other_data);
         info_fields.push(this.$tag_data);
+        info_fields.push(this.$defining_hours_section);
 
         // set editfield array
         edit_fields.push(this.$cancelButton);
         edit_fields.push(this.$name_input);
         edit_fields.push(this.$physical_address_input);
         edit_fields.push(this.$phone_input);
-        edit_fields.push(this.$operation_input);
         edit_fields.push(this.$nature_of_facility_input);
         edit_fields.push(this.$ownership_input);
         edit_fields.push(this.$scope_of_service_input);
@@ -148,6 +147,7 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$other_data_input);
         edit_fields.push(this.$tag_input);
         edit_fields.push(this.$tag_input_text);
+        edit_fields.push(this.$defining_hours_input);
 
         this.setEnable(is_enable_edit);
         this.showDefaultInfo();
@@ -210,12 +210,6 @@ window.LocalitySidebar = (function () {
                     for (var i = 0; i < urls.length; i++) {
                         var val = $(urls[i]).find("input").val();
                         urls_output.push(val);
-                    }
-
-                    // GET OPERATIONS
-                    var operation = that.$operation_input.val();
-                    if (operation == operation_options[operation_options.length - 1]) {
-                        operation = that.$operation_specify_input.val();
                     }
 
                     // GET SCOPE CHILD
@@ -298,8 +292,10 @@ window.LocalitySidebar = (function () {
                     fields += '&url=' + encodeURIComponent(urls_output[0]) + '&data_source=' + encodeURIComponent(urls_output[1]) + '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient) +
-                        "&staff=" + encodeURIComponent(staffs) + "&operation=" + encodeURIComponent(operation) + "&notes=" + encodeURIComponent(notes) + "&tags=" + tags;
+                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + tags;
 
+                    // GET DEFINING HOURS
+                    fields += "&defining_hours=" + that.getDefiningHoursFormat()["format1"];
                     // GET OTHERS
                     var others = that.$other_data_input.find("div");
                     for (var i = 0; i < others.length; i++) {
@@ -466,13 +462,8 @@ window.LocalitySidebar = (function () {
                 for (var i = 0; i < edit_fields.length; i++) {
                     edit_fields[i].show();
                 }
-                var operation = this.$operation_input.val();
-                if (operation == operation_options[operation_options.length - 1]) {
-                    this.$operation_specify_input.show()
-                }
             } else {
                 $APP.trigger('locality.cancel');
-                this.$operation_specify_input.hide();
                 for (var i = 0; i < info_fields.length; i++) {
                     info_fields[i].show();
                 }
@@ -526,6 +517,95 @@ window.LocalitySidebar = (function () {
             this.$url.append("<p class=\"url\"><i class=\"fa fa-link\"></i><a href=\"" + url + "\">" + name + "</a></p>");
         },
 
+        getDefiningHoursFormat: function () {
+            var format1 = ""; // for send to database
+            var format2 = ""; // for show in UI
+            var list_hours = [];
+            for (var i = 0; i < days.length; i++) {
+                var list_input = $('#' + days[i]).find('input');
+                var checked = $(list_input[0]).prop('checked');
+                var split = $('#' + days[i]).find('.unsplit').css('opacity') == 1 ? true : false;
+                var time1 = [$(list_input[1]).val(), $(list_input[2]).val()];
+                var time2 = [$(list_input[3]).val(), $(list_input[4]).val()];
+
+                //format1
+                if (checked) {
+                    //format 1
+                    format1 += time1.join("-");
+                    format1 += "-";
+                    if (split) {
+                        format1 += time2.join("-");
+                    } else {
+                        format1 += "-";
+                    }
+                } else {
+                    //format 1
+                    format1 += "-";
+                }
+                format1 += "|"
+
+                time1 = ["<b>" + $(list_input[1]).val() + "</b>", "<b>" + $(list_input[2]).val() + "</b>"];
+                time2 = ["<b>" + $(list_input[3]).val() + "</b>", "<b>" + $(list_input[4]).val() + "</b>"];
+                //format2
+                var isSame = false;
+                if (i != 0) {
+                    var isChecked = checked == list_hours[i - 1][1];
+                    var isSplit = split == list_hours[i - 1][2];
+                    var isTime1Same = time1[0] == list_hours[i - 1][3][0] && time1[1] == list_hours[i - 1][3][1];
+                    var isTime2Same = time2[0] == list_hours[i - 1][4][0] && time2[1] == list_hours[i - 1][4][1];
+                    if (isChecked && isSplit && isTime1Same && isTime2Same) {
+                        isSame = true;
+                    }
+                }
+                list_hours.push([days[i], checked, split, time1, time2, isSame]);
+            }
+            list_hours.push([days]);
+            // lets render the text
+            var last_init_hour = 0;
+            for (var i = 0; i < list_hours.length; i++) {
+                if (i != 0) {
+                    if (list_hours[i][5] != true || i == list_hours.length - 1) {
+                        // render
+                        if (last_init_hour != i - 1) {
+                            // render to
+                            if (list_hours[i - 1][1] == true) {
+                                format2 += list_hours[last_init_hour][0] + " to " + list_hours[i - 1][0] + " : " + list_hours[last_init_hour][3].join("-");
+                                if (list_hours[last_init_hour][2] == true) {
+                                    format2 += " and " + list_hours[last_init_hour][4].join("-");
+                                }
+                                format2 += "<br>";
+                            }
+                        } else {
+                            if (list_hours[i - 1][1] == true) {
+                                format2 += list_hours[last_init_hour][0] + " : " + list_hours[last_init_hour][3].join("-");
+                                if (list_hours[last_init_hour][2] == true) {
+                                    format2 += " and " + list_hours[last_init_hour][4].join("-");
+                                }
+                                format2 += "<br>";
+                            }
+                        }
+                        last_init_hour = i;
+                    }
+                }
+            }
+            return {"format1": format1, "format2": format2};
+        },
+        setDefiningHour: function (days_index, from1, to1, from2, to2) {
+            var list_input = $('#' + days[days_index]).find('input');
+            if (typeof from1 !== 'undefined' && from1 != "") {
+                $(list_input[0]).prop('checked', true);
+            } else {
+                $(list_input[0]).prop('checked', false);
+            }
+            console.log(list_input[0]);
+            if (typeof from1 !== 'undefined' && from1 != "") $(list_input[1]).val(from1);
+            if (typeof to1 !== 'undefined' && to1 != "") $(list_input[2]).val(to1);
+            if (typeof from2 !== 'undefined' && from2 != "") {
+                $('#' + days[days_index]).find('.split').click();
+                $(list_input[3]).val(from2);
+            }
+            if (typeof to2 !== 'undefined' && to2 != "") $(list_input[4]).val(to2);
+        },
         showDefaultEdit: function (evt) {
             $("#locality-statistic").hide();
             $("#locality-info").show();
@@ -535,13 +615,10 @@ window.LocalitySidebar = (function () {
             this.addedNewOptons("activities"); // this.$ancillary_service_input
             this.addedNewOptons("notes"); // this.$notes_input
             $(this.$nature_of_facility_input.find('option')[0]).prop('selected', true);
-            $(this.$operation_input.find('option')[0]).prop('selected', true);
             this.$phone_input_int.val("");
             this.$phone_input_number.val("");
             this.$coordinates_lat_input.val(0);
             this.$coordinates_long_input.val(0);
-            this.$operation_specify_input.val("");
-            this.$operation_specify_input.hide();
             if (this.$cancelButton.is(":visible")) {
                 this.$cancelButton.click();
             }
@@ -558,6 +635,44 @@ window.LocalitySidebar = (function () {
             this.addOptionUrl("");
             this.addOptionUrl("");
             this.$other_data_input.html("");
+
+            // defining hours setup
+            this.$defining_hours_input_table.html("");
+            for (var i = 0; i < days.length; i++) {
+                var checked = "";
+                if (i < 5) {
+                    checked = "checked";
+                }
+                var html = '<tr id="' + days[i] + '"><td>';
+                html += '<input class="daycheckbox" type="checkbox" ' + checked + '>' + days[i] + '</td>';
+                html += '<td class="time1" style="cursor: default"> from <input class="timepicker" type="text" value="' + time_default[0] + '"/> to <input class="timepicker" type="text" value="' + time_default[1] + '"/>';
+                html += '<td class="split" onclick="split(this)" style="cursor: pointer"><a>split</a>';
+                html += '</td>';
+                html += '<td class="time2" style="opacity: 0.0; cursor: default"> from <input class="timepicker" type="text" value="' + time_default[0] + '" disabled /> to <input class="timepicker" type="text" value="' + time_default[1] + '" disabled/>';
+                html += '<td class="unsplit" onclick="unsplit(this)" style="opacity: 0.0; cursor: default"><a>unsplit</a>';
+                html += '</td></tr>';
+                this.$defining_hours_input_table.append(html);
+            }
+            this.$defining_hours_input_result.html(this.getDefiningHoursFormat()["format2"]);
+
+            var that = this;
+            $("input.daycheckbox").change(function () {
+                that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
+            });
+            $('input.timepicker').timepicker({
+                timeFormat: 'HH:mm',
+                interval: 15, // 15 minutes});
+                change: function (time) {
+                    // the input field
+                    var element = $(this), text;
+                    // get access to this TimePicker instance
+                    var timepicker = element.timepicker();
+                    text = 'Selected time is: ' + timepicker.format(time);
+                    console.log(text);
+                    that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
+                },
+            })
+
         },
         showDefaultInfo: function (evt) {
             this.showDefaultEdit();
@@ -568,7 +683,6 @@ window.LocalitySidebar = (function () {
             this.$coordinates.text('lat: ' + 'n/a' + ', long: ' + 'n/a');
             this.$physical_address.text(no_physical_address);
             this.$phone.text(no_phone_found);
-            this.$operation.text(no_operation_hours_found);
             this.$url.removeAttr('href');
             this.$scope_of_service.html('');
             this.$scope_of_service.text(need_information);
@@ -590,6 +704,7 @@ window.LocalitySidebar = (function () {
             this.$lastupdate.text("11 may 2015 17:23:15");
             this.$uploader.text("@sharehealthdata");
             this.$uploader.attr("href", "profile/sharehealthdata");
+            this.$defining_hours.html(no_operation_hours_found);
         },
 
         showInfo: function (evt) {
@@ -803,26 +918,6 @@ window.LocalitySidebar = (function () {
                 }
             }
 
-            // OPERATION
-            {
-                var operation = this.locality_data.values['operation'];
-                delete keys[this.getIndex(keys, 'operation')];
-                if (this.isHasValue(operation)) {
-                    this.$operation.text(operation);
-                    for (var i = 0; i < operation_options.length; i++) {
-                        if (operation == operation_options[i]) {
-                            $(this.$operation_input.find('option')[i]).prop('selected', true);
-                            break;
-                        } else {
-                            if (i == operation_options.length - 1) {
-                                $(this.$operation_input.find('option')[operation_options.length - 1]).prop('selected', true);
-                                this.$operation_specify_input.val(operation);
-                            }
-                        }
-                    }
-                }
-            }
-
             // URL
             this.$url_input.html("");
             var isUrlRendered = false;
@@ -864,6 +959,21 @@ window.LocalitySidebar = (function () {
                     var phones = phone.split("-");
                     this.$phone_input_int.val(phones[0]);
                     this.$phone_input_number.val(phones[1]);
+                }
+            }
+
+            // DEFINING HOURS
+            {
+                var hours = this.locality_data.values['defining_hours'];
+                delete keys[this.getIndex(keys, 'defining_hours')];
+                if (this.isHasValue(hours)) {
+                    var hours_each_day = hours.split(separator);
+                    for (var i = 0; i < hours_each_day.length; i++) {
+                        var hours = hours_each_day[i].split("-");
+                        this.setDefiningHour(i, hours[0], hours[1], hours[2], hours[3]);
+                    }
+                    this.$defining_hours_input_result.html(this.getDefiningHoursFormat()["format2"]);
+                    this.$defining_hours.html(this.getDefiningHoursFormat()["format2"]);
                 }
             }
 
@@ -958,15 +1068,12 @@ window.LocalitySidebar = (function () {
             $APP.on('sidebar.tag-add', function (evt, payload) {
                 self.addTag(payload.value);
             });
+            $APP.on('sidebar.split-event', function (evt, payload) {
+                self.$defining_hours_input_result.html(self.getDefiningHoursFormat()["format2"]);
+            });
         },
         onchange: function (element) {
-            if (element.id == this.$operation_input.attr('id')) {
-                if (element.value == operation_options[operation_options.length - 1]) {
-                    this.$operation_specify_input.show();
-                } else {
-                    this.$operation_specify_input.hide();
-                }
-            } else if (element.id == this.$coordinates_lat_input.attr('id')) {
+            if (element.id == this.$coordinates_lat_input.attr('id')) {
                 $APP.trigger('locality.coordinate-changed', {'geom': [this.$coordinates_long_input.val(), this.$coordinates_lat_input.val()]});
             } else if (element.id == this.$coordinates_long_input.attr('id')) {
                 $APP.trigger('locality.coordinate-changed', {'geom': [this.$coordinates_long_input.val(), this.$coordinates_lat_input.val()]});
