@@ -1,14 +1,3 @@
-// Will remove all falsy values: undefined, null, 0, false, NaN and "" (empty string)
-function cleanArray(actual) {
-    var newArray = new Array();
-    for (var i = 0; i < actual.length; i++) {
-        if (actual[i]) {
-            newArray.push(actual[i]);
-        }
-    }
-    return newArray;
-}
-
 window.LocalitySidebar = (function () {
     "use strict";
     var separator = "|";
@@ -1006,7 +995,7 @@ window.LocalitySidebar = (function () {
             }
             // OTHER
             {
-                keys = cleanArray(keys);
+                keys = this.cleanArray(keys);
                 if (keys.length > 0) {
                     this.$other_data.html("");
                 }
@@ -1124,6 +1113,16 @@ window.LocalitySidebar = (function () {
                     this.$tag_input.append("<li><span class=\"tag-text\">" + value + "</span> <span class=\"fa fa-times remove_tag\"></span></li>");
                 }
             }
+        },
+        // Will remove all falsy values: undefined, null, 0, false, NaN and "" (empty string)
+        cleanArray: function (actual) {
+            var newArray = new Array();
+            for (var i = 0; i < actual.length; i++) {
+                if (actual[i]) {
+                    newArray.push(actual[i]);
+                }
+            }
+            return newArray;
         }
     }
 
