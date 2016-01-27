@@ -18,3 +18,14 @@ function getDateString(date_input) {
 
     return day + ' ' + monthNames[monthIndex] + ' ' + year + ' ' + hour + ':' + minute + ':' + second;
 }
+
+// Will remove all false values: undefined, null, 0, false, NaN and "" (empty string)
+function cleanArray(actual) {
+    var newArray = new Array();
+    for (var i = 0; i < actual.length; i++) {
+        if (actual[i]) {
+            newArray.push(actual[i]);
+        }
+    }
+    return newArray;
+}
