@@ -12,13 +12,19 @@
 
     <title>Healthsites.io</title>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet"
+          type="text/css" media="screen, projection"/>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
+          media="screen, projection"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css" media="screen, projection"/>
+    <link href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" rel="stylesheet" type="text/css"
+          media="screen, projection"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet"
+          type="text/css" media="screen, projection"/>
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css"
+          media="screen, projection"/>
     {% stylesheet 'project' %}
     {% stylesheet 'map_page' %}
 
@@ -62,15 +68,15 @@
 
             <div class="hidden" id="site-social" style="width: 115px;">
                 <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
-                <a href="https://twitter.com/intent/tweet?text=Share and develop critical health facility data on http://healthsites.io"
-                   class=" withripple">
+                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+                   class="withripple twitter-href">
                     <i class="fa fa-twitter"></i>
                 </a>
-                <a class="facebook-hs-share withripple" href="https://www.facebook.com/sharer/sharer.php?u=http%3A//healthsites.io">
+                <a class="facebook-hs-share withripple facebook-href">
                     <i class="fa fa-facebook"></i>
                 </a>
-                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   href="https://plus.google.com/share?url=http://healthsites.io/">
+                <a class="googleplus-href"
+                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-google-plus"></i>
                 </a>
             </div>
@@ -80,27 +86,34 @@
             <ul class="nav navbar-nav">
                 <li><a href="/#about">About</a></li>
                 <li><a href="{% url "map" %}">Map</a></li>
-                <li><a href="/#map-data">Country data</a></li>
+                <li><a href="/#country-data">Country data</a></li>
                 <li><a href="/#lifecycle">How it works</a></li>
-                <li><a href="/#cta">Share data</a></li>
+                <li><a href="/#share-data">Share data</a></li>
                 <li><a href="/#partners">Partners</a></li>
                 <li><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
-                <li><a class="navbar-chat" href="https://gitter.im/healthsites/healthsites"><i class="fa fa-comments"></i></a></li>
+                <li><a class="navbar-chat" href="https://gitter.im/healthsites/healthsites"><i
+                        class="fa fa-comments"></i></a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->
 
     </div>
-    
+
     <div class="nav-searchbar container-fluid">
-      	<form action="">
-          <div class="option-group">
-            <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite" value="healthsite"><span></span><label class="option" for="radio-healthsite">healthsite</label></div>
-            <div class="option"><span></span><input type="radio" name="option" id="radio-place" value="place"><span></span><label class="option" for="radio-healthsite">place</label></div>
-          </div>
-          <input type="search" name="q" placeholder="search..."><input type="submit" value="search">
+        <form action="map" method="POST">
+            <div class="option-group">
+                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
+                                                        value="healthsite" checked><span></span><label class="option"
+                                                                                                       for="radio-healthsite">healthsite</label>
+                </div>
+                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
+                                                        value="place"><span></span><label class="option"
+                                                                                          for="radio-healthsite">place</label>
+                </div>
+            </div>
+            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
         </form>
-	</div> 
+    </div>
 </nav>
 
 <section id="map-full" class="js-fullheight fluid-container">
@@ -131,150 +144,179 @@
 
             <div style="clear: both;"></div>
         </div>
-        <div class="details" id="sidebar-info">
-            <div class="header">
-                <h1 id="locality-name">Priory Hospital Glasgow</h1>
 
-                <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
+        <div id="locality-default">
+            <div style="padding: 20px;">
+                <p>
+                    We aim to provide a single point of reference for healthcare workers, aid agencies,
+                    contingency planners, government agencies and citizens who need access to highly curated
+                    global dataset of healthcare facilities.
+                    By simply clicking on the map, users can discover what healthcare facilities exist at any global
+                    location
+                    and find out what resources exist at any individual healthcare facility.
+                </p>
+                <h2 class="fancy "><span class="timer" data-speed="2500"
+                                         data-to="{{ locality_count }}">{{ locality_count }}</span>
+                    healthsites added</h2>
+                <div>
+                    <table id="country-table" style="width:100%">
+                        <tr>
+                            <th width="60%">Country</th>
+                            <th width="20%">Healthsite Number</th>
+                            <th width="20%">% of completness</th>
+                        </tr>
+                    </table>
+                </div>
             </div>
-            <div class="info">
-                <div class="line updates">
-                    <div class="icon-holder">
-                        <i class="fa fa-info-circle"></i>
-                    </div>
-                    <div class="data">
-                        <p>last update: <span class="date">11 may 2015</span>, by
+        </div>
+        <div id="locality-info" style="display: none">
+            <div class="details" id="sidebar-info">
+                <div class="header">
+                    <h1 id="locality-name">Priory Hospital Glasgow</h1>
+
+                    <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
+                </div>
+                <div class="info">
+                    <div class="line updates">
+                        <div class="icon-holder">
+                            <i class="fa fa-info-circle"></i>
+                        </div>
+                        <div class="data">
+                            <p>last update: <span class="date">11 may 2015</span>, by
                             <span class="name">
-                                <a href="#">@MSF</a>
+                                <a href="profile/sharehealthdata">@sharehealthdata</a>
                             </span>
                             <span class="more">
                                 <a href="#" class="full-list">see full list <i class="fa fa-angle-down"></i></a>
                             </span>
-                        </p>
+                            </p>
 
-                        <div class="progress">
-                            <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
-                                 aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
-                                90% Complete
+                            <div class="progress">
+                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
+                                     aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
+                                    90% Complete
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="line find">
-                    <div class="icon-holder">
-                        <i class="fa fa-map-marker"></i>
-                    </div>
-                    <div class="data">
-                        <p class="address" id="locality-physical_address">54, Praed st, London, W2 NY<br/>
-                            Unighted Kingdom</p>
+                    <div class="line find">
+                        <div class="icon-holder">
+                            <i class="fa fa-map-marker"></i>
+                        </div>
+                        <div class="data">
+                            <p class="address" id="locality-physical_address">54, Praed st, London, W2 NY<br/>
+                                Unighted Kingdom</p>
 
-                        <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
+                            <p class="coordinates" id="locality-coordinates">lat: 6.68926542, long: 9.72791643</p>
 
-                        <p class="call">
-                            <i class="fa fa-phone"></i>
-                            <span id="locality-phone"> 0141 636 6116</span>
+                            <p class="call">
+                                <i class="fa fa-phone"></i>
+                                <span id="locality-phone"> 0141 636 6116</span>
                             <span class="hours">
                                 <i class="fa fa-clock-o"></i>
                                 <span id="locality-operation">24/24 & 7/7</span>
                             </span>
-                        </p>
+                            </p>
 
-                        <p class="url">
-                            <i class="fa fa-link"></i>
-                            <a href="#" id="locality-url">www.msf.org</a>
-                        </p>
-                    </div>
-                </div>
-                <div class="line services">
-                    <div class="icon-holder">
-                        <i class="fa fa-tags"></i>
-                    </div>
-                    <div class="data">
-                        <div class="scope-of-service">
-                            <h3>scope of service</h3>
-
-                            <div id="locality-scope-of-service">
-                                <ul>
-                                    <li><i class="fa fa-caret-right"></i>Specialized care</li>
-                                    <li><i class="fa fa-caret-right"></i>General acute care</li>
-                                    <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="ancillary">
-                            <h3>ancillary services</h3>
-
-                            <div id="locality-ancilary-service">
-                                <ul>
-                                    <li><i class="fa fa-caret-right"></i>Operating theater</li>
-                                    <li><i class="fa fa-caret-right"></i>Laboratory</li>
-                                    <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
-                                    <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="services">
-                            <h3>services</h3>
-                            <div id="locality-activities">
-                                <ul>
-                                    <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
-                                    <li><i class="fa fa-caret-right"></i>Pediatric care</li>
-                                    <li><i class="fa fa-caret-right"></i>Mental health</li>
-                                    <li><i class="fa fa-caret-right"></i>Geriatric care</li>
-                                </ul>
-                            </div>
+                            <p class="url">
+                                <i class="fa fa-link"></i>
+                                <a href="#" id="locality-url">www.msf.org</a>
+                            </p>
                         </div>
                     </div>
+                    <div class="line services">
+                        <div class="icon-holder">
+                            <i class="fa fa-tags"></i>
+                        </div>
+                        <div class="data">
+                            <div class="scope-of-service">
+                                <h3>scope of service</h3>
+
+                                <div id="locality-scope-of-service">
+                                    <ul>
+                                        <li><i class="fa fa-caret-right"></i>Specialized care</li>
+                                        <li><i class="fa fa-caret-right"></i>General acute care</li>
+                                        <li><i class="fa fa-caret-right"></i>Rehabilitation care</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="ancillary">
+                                <h3>ancillary services</h3>
+
+                                <div id="locality-ancilary-service">
+                                    <ul>
+                                        <li><i class="fa fa-caret-right"></i>Operating theater</li>
+                                        <li><i class="fa fa-caret-right"></i>Laboratory</li>
+                                        <li><i class="fa fa-caret-right"></i>Imaging equipement</li>
+                                        <li><i class="fa fa-caret-right"></i>Intensive care unit</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="services">
+                                <h3>services</h3>
+
+                                <div id="locality-activities">
+                                    <ul>
+                                        <li><i class="fa fa-caret-right"></i>Maternal and women health</li>
+                                        <li><i class="fa fa-caret-right"></i>Pediatric care</li>
+                                        <li><i class="fa fa-caret-right"></i>Mental health</li>
+                                        <li><i class="fa fa-caret-right"></i>Geriatric care</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="line beds">
+                        <div class="icon-holder">
+                            <i class="fa fa-bed"></i>
+                        </div>
+                        <div class="data">
+                            <p id="locality-inpatient-service">20 full time beds, 50 part time beds</p>
+                        </div>
+                    </div>
+                    <div class="line note">
+                        <div class="icon-holder">
+                            <i class="fa fa-sticky-note"></i>
+                        </div>
+                        <div class="data">
+                            <p><strong>Note:</strong> Outpatient consultation and in-patient hospitalization</p>
+                        </div>
+                    </div>
+                    <div class="line doctors">
+                        <div class="icon-holder">
+                            <i class="fa fa-user-md"></i>
+                        </div>
+                        <div class="data">
+                            <p id="locality-staff">20 full time equivalent doctors and 50 full time equivalent
+                                nurses</p>
+                        </div>
+                    </div>
+                    <div class="line ownership">
+                        <div class="icon-holder">
+                            <i class="fa fa-briefcase"></i>
+                        </div>
+                        <div class="data">
+                            <p><strong>Ownership:</strong> public</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="line beds">
-                    <div class="icon-holder">
-                        <i class="fa fa-bed"></i>
-                    </div>
-                    <div class="data">
-                        <p id="locality-inpatient-service">20 full time beds, 50 part time beds</p>
-                    </div>
-                </div>
-                <div class="line note">
-                    <div class="icon-holder">
-                        <i class="fa fa-sticky-note"></i>
-                    </div>
-                    <div class="data">
-                        <p><strong>Note:</strong> Outpatient consultation and in-patient hospitalization</p>
-                    </div>
-                </div>
-                <div class="line doctors">
-                    <div class="icon-holder">
-                        <i class="fa fa-user-md"></i>
-                    </div>
-                    <div class="data">
-                        <p id="locality-staff">20 full time equivalent doctors and 50 full time equivalent nurses</p>
-                    </div>
-                </div>
-                <div class="line ownership">
-                    <div class="icon-holder">
-                        <i class="fa fa-briefcase"></i>
-                    </div>
-                    <div class="data">
-                        <p><strong>Ownership:</strong> public</p>
-                    </div>
-            	</div>
             </div>
-        </div>
-        <div class="buttons col-md-4 col-sm-12 col-xs-12">
-            <div class="button-wrapper col-xs-4">
-                <a id="twitter_share_map" class="button share stroke blue">
-                    <i class="fa fa-twitter"></i> share
-                </a>
-            </div>
-            <div class="button-wrapper col-xs-4">
-                <a class="button edit stroke blue" href="#"><i
-                        class="fa fa-pencil"></i> edit
-                </a>
-            </div>
-            <div class="button-wrapper col-xs-4">
-                <a class="button add" href="#">
-                    <i class="fa fa-plus"></i> add new
-                </a>
+            <div class="buttons col-md-4 col-sm-12 col-xs-12">
+                <div class="button-wrapper col-xs-4">
+                    <a id="twitter_share_map" class="button share stroke blue">
+                        <i class="fa fa-twitter"></i> share
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4">
+                    <a class="button edit stroke blue" href="#"><i
+                            class="fa fa-pencil"></i> edit
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-4">
+                    <a class="button add" href="#">
+                        <i class="fa fa-plus"></i> add new
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -284,18 +326,20 @@
     </div>
 </section>
 
-<script  type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
 {#<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>#}
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-<script  type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript"
-            src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
+        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
 
 {% javascript 'project' %}
 {% javascript 'map_page' %}
@@ -303,9 +347,53 @@
 
 {% block extra_js %}
     <script type="text/javascript">
+
         $(document).ready(function () {
+            var url = window.location.href;
+            if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
+                var $country_table = $('#country-table');
+                // render country data list
+                {% if countries %}
+                    {% for country in countries %}
+                        var country = "{{ country.name }}";
+                        var country_id = country.split(".").join("-");
+                        country_id = country_id.split("&#39;").join("-");
+                        country_id = country_id.split(" ").join("-");
+                        country_id = country_id.split("(").join("-");
+                        country_id = country_id.split(")").join("-");
+                        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "<a></td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
+                        $country_table.append(html);
+                        $.ajax({
+                            number: country_id + "-number",
+                            completeness: country_id + "-complete",
+                            url: "{% url 'countries-simple-data' %}",
+                            dataType: 'json',
+                            data: {
+                                q: country
+                            },
+                            success: function (data) {
+                                $("#" + this.number).html("fail");
+                                $("#" + this.completeness).html("fail");
+                                $("#" + this.number).html(data.number);
+                                $("#" + this.completeness).html(data.completeness);
+                            },
+                            fail: function (data) {
+                                $("#" + this.number).html("fail");
+                                $("#" + this.completeness).html("fail");
+                            }
+                        });
+                    {% endfor %}
+                {% endif %}
+            }
+            // set share url
+            var baseURL = location.protocol + "//" + location.hostname + "/";
+            $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
+            $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
+            $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
+
             // Set viewport if exist
-            {% if northeast_lat and northeast_lng and  southwest_lat and southwest_lng %}
+            {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
+                console.log({{ northeast_lat }} +" " + {{ northeast_lng }} +" " + {{ southwest_lat }} +" " + {{ southwest_lng }});
                 sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
                 sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
                 sessionStorage.setItem('southwest_lat', {{ southwest_lat }});

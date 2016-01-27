@@ -36,7 +36,25 @@ urlpatterns = patterns(
     ),
 
     url(
-        r'^data-loader$', DataLoaderView.as_view(), name='data-loader'
+        r'^countries$',
+        'localities.views.search_countries',
+        name='countries'
+    ),
+
+    url(
+        r'^countries/simpledata$',
+        'localities.views.get_simple_statistic_by_country',
+        name='countries-simple-data'
+    ),
+
+    url(
+        r'^search/localities/country$',
+        'localities.views.search_locality_by_country',
+        name='locality-country-search'
+    ),
+
+    url(
+        r'^upload-form$', DataLoaderView.as_view(), name='upload-form'
     ),
     url(
         r'^load-data$', 'localities.views.load_data', name='load-data'

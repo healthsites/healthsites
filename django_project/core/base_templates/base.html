@@ -1,160 +1,166 @@
 {% load pipeline %}
+{% load static %}
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{% block title%} Generic page {% endblock title%}</title>
-    <meta http-equiv="content-type" content="text/html;charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {# The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags #}
+
+    <title>Healthsites.io</title>
+
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css" media="screen, projection"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css"
+          media="screen, projection"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet"
+          type="text/css" media="screen, projection"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.5.7/slick.css"/>
+
+    <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,300,500,700' rel='stylesheet'
+          type='text/css'>
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
+          media="screen, projection"/>
 
 
-    <meta property="og:url" content="http://healthsites.io/" />
-    <meta property="og:title" content="Healthsites" />
-    <meta property="og:description" content="Share and develop critical health facility related data on http://healthsites.io/" />
+    {% stylesheet 'project' %}
+    {% stylesheet 'home' %}
 
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    {# HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries  #}
+    {# WARNING: Respond.js doesn't work if you view the page via file://  #}
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/material.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet" type="text/css" media="screen, projection" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/css/ripples.min.css" rel="stylesheet" type="text/css" media="screen, projection" />
-
-    {% stylesheet 'map' %}
-    {% stylesheet 'project' %}
-
-    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
-
 </head>
 
-<body>
-<nav class="navbar-custom navbar navbar-fixed-top" role="navigation" xmlns="http://www.w3.org/1999/html">
-<div class="container-fluid">
-<div class="navbar-header">
-  <button type="button" class="navbar-toggle collapsed sidebar-toggle">
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-    <span class="icon-bar"></span>
-  </button>
-  <a href="/">
-  <img height="40px" class="pull-left" style="padding-top: 8px; padding-right: 8px;" src="/static/img/logo.png"/>
-  <span id="about" class="navbar-brand">
-    healthsites.io
-  </span>
-  </a>
-  <div id="site-social" class="hidden-xs hidden-sm">
-    <i id="site-social-icon-open" class="mdi-social-share medium-size-icon"></i>
-    <a href="https://twitter.com/intent/tweet?text=Share and develop critical health facility data on http://healthsites.io">
-      <span class="socicon">a</span>
-    </a>
-    <a href="#" class="facebook-hs-share">
-      <span class="socicon">b</span>
-    </a>
-    <a href="https://plus.google.com/share?url=http://healthsites.io/"
-        onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
-        <span class="socicon">c</span>
-    </a>
-  </div>
-  </div>
-  <div class="navbar-right nav navbar-nav">
-    {% if user.is_authenticated %}
-      <a id="data-loader-button" class="custom-navbar-item"
-         data-toggle="modal"
-         href="/data-loader"
-         data-target="#data-loader-modal"><i
-              class="mdi-action-face-unlock"></i> <span
-              class="hidden-xs">Data Loader</span></a>
-    {% endif %}
-    <a id="about-button" class="custom-navbar-item"
-            data-toggle="modal"
-            href="/about"
-            data-target="#about-modal"><i class="mdi-action-face-unlock"></i> <span class="hidden-xs">About</span></a>
-    <a id="help-button" class="custom-navbar-item"
-            data-toggle="modal"
-            href="/help"
-            data-target="#help-modal"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> <span class="hidden-xs">Help</span></a>
-  </div>
-</div>
+<body class="body">
+<nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
+    <div class="container-fluid">
+        <div class="navbar-header">
+
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar"><span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
+            <button type="button" class="search-toggle collapsed"><span class="sr-only">Search</span><a
+                    class="navbar-search" href="#"><i class="fa fa-search"></i></a></button>
+            <a class="navbar-brand" href="#"><span class="hs-logo"></span>healthsites.io</a>
+            <a class="navbar-share closed" href="#"><img class="share" src="static/img/share.svg" width="20"/><img
+                    class="close" src="static/img/close.svg" width="16"/></a>
+
+            <div class="hidden" id="site-social">
+                <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
+                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+                   class="withripple twitter-href" target="_blank">
+                    <i class="fa fa-twitter"></i></a>
+                <a class="facebook-hs-share withripple facebook-href"target="_blank">
+                    <i class="fa fa-facebook"></i></a>
+                <a class="googleplus-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;" target="_blank">
+                    <i class="fa fa-google-plus"></i>
+
+                </a>
+            </div>
+            <span class="tagline">A free, curated, global, canonical source of healthcare location data</span>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse pull-right">
+            <ul class="nav navbar-nav">
+                <li><a href="#about">About</a></li>
+                <li><a target="_blank" href="/map">Map</a></li>
+                <li><a href="#country-data">Country data</a></li>
+                <li><a href="#lifecycle">How it works</a></li>
+                <li><a href="#share-data">Share data</a></li>
+                <li><a href="#partners">Partners</a></li>
+                <li class="nav-search-wrap"><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
+                <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i
+                        class="fa fa-comments"></i></a></li>
+            </ul>
+
+        </div>
+        <!--/.nav-collapse -->
+
+    </div>
+    <div class="nav-searchbar container-fluid">
+        <form action="map" method="POST">
+            <div class="option-group">
+                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
+                                                        value="healthsite" checked><span></span><label class="option"
+                                                                                                       for="radio-healthsite">healthsite</label>
+                </div>
+                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
+                                                        value="place"><span></span><label class="option"
+                                                                                          for="radio-healthsite">place</label>
+                </div>
+            </div>
+            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
+        </form>
+    </div>
 </nav>
 {% block content %}
 
 {% endblock content %}
+<footer id="colophon">
+    <div class="container">
+        <div class="col-md-3 pad0x">
+            <ul class="footer-nav-1">
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Vision" target="_blank">Vision</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Participate"
+                       target="_blank">Participate</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road
+                    map</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </div>
+        <div class="col-md-3 pad0x">
+            <ul class="footer-nav-2">
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data</a></li>
+                <li><a href="https://github.com/healthsites/healthsites" target="_blank">Source code</a></li>
+                <li><a href="/map-edit">Map edit</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">Data
+                    lifecycle</a></li>
+            </ul>
+        </div>
+        <div class="col-md-3 pad0x">
+            <ul class="footer-nav-2">
+                <li><a href="upload-form">Upload form</a></li>
+                <li><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat space</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/API" target="_blank">API</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a></li>
+            </ul>
+        </div>
+        <div class="col-md-3 right pad0x">
+            <ul class="footer-nav-2 social">
+                <li><a href="https://twitter.com/sharehealthdata" target="_blank"><i
+                        class="fa fa-twitter-square"></i></a></li>
+                <li><a href="https://www.facebook.com/healthsites.io" target="_blank"><i
+                        class="fa fa-facebook-square"></i></a></li>
+                <li><a href="https://www.linkedin.com/company/healthsites-io?trk=biz-companies-cym" target="_blank"><i
+                        class="fa fa-linkedin-square"></i></a></li>
+                <li><a href="https://plus.google.com/u/2/117257570769390062756" target="_blank"><i
+                        class="fa fa-envelope-square"></i></a></li>
+            </ul>
+        </div>
+        <div style="clear:both;"></div>
+        <div class="copy">
 
-<!-- Data Loader Modal -->
-<div class="modal fade" id="data-loader-modal" tabindex="-1" role="dialog"
-     aria-labelledby="data-loader-modal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+        </div>
+    </div>
+    <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
+</footer>
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 
-        </div> <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
-</div> <!-- /.modal -->
-
-<!-- About Modal -->
-<div class="modal fade" id="about-modal" tabindex="-1" role="dialog"
-     aria-labelledby="about-modal" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div> <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
-</div> <!-- /.modal -->
-
-<!-- Help Modal -->
-<div class="modal fade" id="help-modal" tabindex="-1" role="dialog"
-     aria-labelledby="help-modal" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-      </div> <!-- /.modal-content -->
-    </div> <!-- /.modal-dialog -->
-</div> <!-- /.modal -->
-
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-<script  type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<script  type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script  type="text/javascript" src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
-<script  type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-material-design/0.3.0/js/material.min.js"></script>
-
-
-{% javascript 'map' %}
 {% javascript 'project' %}
+{% javascript 'home' %}
+{% javascript 'map_app' %}
 
 {% block extra_js %}
 
 {% endblock extra_js %}
-
-{% if not debug %}
-<script>   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');    ga('create', 'UA-56378524-1', 'auto');   ga('send', 'pageview');
-</script>
-{% endif %}
-<script>
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '739607739442410',
-      xfbml      : true,
-      version    : 'v2.1'
-    });
-  };
-
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
 
 </body>
 </html>

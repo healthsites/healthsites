@@ -10,6 +10,7 @@ import os  # noqa
 from django.utils.translation import ugettext_lazy as _
 from .utils import absolute_path
 from .contrib import *  # noqa
+from .secret import *  # secret
 
 # Project apps
 INSTALLED_APPS += (
@@ -18,6 +19,7 @@ INSTALLED_APPS += (
     'social_users',
     'api',
     'django_hashedfilenamestorage',
+    'envelope'
 )
 
 # How many versions to list in each project box
@@ -46,6 +48,7 @@ PIPELINE_JS['project'] = {
     'source_filenames': (
         'js/clusterLayer.js',
         'js/csrf-ajax.js',
+        'js/nav_bar.js',
         'js/localitySidebar.js',
         'js/map.js',
         'js/app.js',
@@ -58,6 +61,7 @@ PIPELINE_JS['project'] = {
 PIPELINE_CSS['project'] = {
     'source_filenames': (
         'css/site.css',
+        'css/profile.css',
     ),
     'output_filename': 'css/project.css',
     'extra_context': {
