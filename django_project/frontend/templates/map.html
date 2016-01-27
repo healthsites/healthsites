@@ -500,337 +500,336 @@
 {% javascript 'map_page' %}
 {% javascript 'map_app' %}
 
+<script type="text/javascript" src="static/js/utilities.js"></script>
 
-{% block extra_js %}
-    <script>
-        (function (i, s, o, g, r, a, m) {
-            i['GoogleAnalyticsObject'] = r;
-            i[r] = i[r] || function () {
-                        (i[r].q = i[r].q || []).push(arguments)
-                    }, i[r].l = 1 * new Date();
-            a = s.createElement(o),
-                    m = s.getElementsByTagName(o)[0];
-            a.async = 1;
-            a.src = g;
-            m.parentNode.insertBefore(a, m)
-        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+<script>
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
+                    (i[r].q = i[r].q || []).push(arguments)
+                }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
-        ga('create', 'UA-56378524-1', 'auto');
-        ga('send', 'pageview');
+    ga('create', 'UA-56378524-1', 'auto');
+    ga('send', 'pageview');
 
-    </script>
-    <script type="text/javascript">
-        var APP;
-        $(document).ready(function () {
-            // set share url
-            var baseURL = location.protocol + "//" + location.hostname + "/";
-            $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
-            $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
-            $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
-            var url = window.location.href;
-            if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
-                var $country_table = $('#country-table');
-                // render country data list
-                {% if countries %}
-                    {% for country in countries %}
-                        var country = "{{ country.name }}";
-                        var country_id = country.split(".").join("-");
-                        country_id = country_id.split("&#39;").join("-");
-                        country_id = country_id.split(" ").join("-");
-                        country_id = country_id.split("(").join("-");
-                        country_id = country_id.split(")").join("-");
-                        {# disabled links and completeness for #429 #}
-                        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
-                        $country_table.append(html);
-                        $.ajax({
-                            number: country_id + "-number",
-                            completeness: country_id + "-complete",
-                            url: "{% url 'countries-simple-data' %}",
-                            dataType: 'json',
-                            data: {
-                                q: country
-                            },
-                            success: function (data) {
-                                {# disabled links and completeness for #429 #}
-                                $("#" + this.number).html(data.number);
-                                $("#" + this.completeness).html(data.completeness);
-                            },
-                            fail: function (data) {
-                                $("#" + this.number).html("fail");
-                                $("#" + this.completeness).html("fail");
-                            }
-                        });
-                    {% endfor %}
-                {% endif %}
-            }
-
-            // Set viewport if exist
-            {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
-                sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
-                sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
-                sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
-                sessionStorage.setItem('southwest_lng', {{ southwest_lng }});
-            {% endif %}
-
-            // initialize the app
-            APP = new APP();
-            $("#locality-statistic").hide();
-            $("#locality-info").hide();
-            $("#locality-default").hide();
-            {% if tag or country %}
-                $("#locality-statistic").show();
-                $("#number-locality").html("{{ localities }}");
-                updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
-                updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
-            {% elif countries %}
-                $("#locality-default").show();
-            {% else %}
-                $("#locality-info").show();
-            {% endif %}
-            {% if tag %}
-                $("#title-name").html("{{ tag }}");
-                $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
-            {% elif country %}
-                $("#title-name").html("{{ country }}");
-                $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
-            {% endif %}
-            {% if viewport %}
-                var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");
-                var northeast_lng = parseFloat("{{ viewport.northeast_lng }}");
-                var southwest_lat = parseFloat("{{ viewport.southwest_lat }}");
-                var southwest_lng = parseFloat("{{ viewport.southwest_lng }}");
-                if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
-                    $APP.trigger('map.update-bound', {
-                        'southwest_lat': southwest_lat,
-                        'southwest_lng': southwest_lng,
-                        'northeast_lat': northeast_lat,
-                        'northeast_lng': northeast_lng
-                    });
-                }
-            {% endif %}
-
-            $("#updates").html("<div class=\"entry\">no updates</div>");
-            {% if last_update %}
-                $("#updates").html("");
-                {% for updates in last_update %}
-                    var html = "<div class=\"entry\">";
-                    html += "<div class=\"entry\">";
-                    html += "<span class=\"date\">" + getDateString("{{ updates.date_applied.isoformat }}") + "</span> - ";
-                    html += "<span class=\"name\">";
-                    html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author }}" + "</a></span> - ";
-                    var mode = "";
-                    if ("{{ updates.mode }}" == 1) {
-                        mode = "added";
-                    } else {
-                        mode = "amended";
-                    }
-                    {# update the html #}
-                    if ("{{ updates.data_count }}" == 1) {
-                        html += "<a href=\"map#!/locality/" + "{{ updates.locality_uuid }}" + "\" class=\"location-name\">" + "{{ updates.locality }}" + "</a>";
-                        html += "<span class=\"location-name\"> " + mode + " </span>";
-                    } else {
-                        html += "<span class=\"location-name\">" + "{{ updates.data_count }}" + " HS/" + mode + "</span>";
-                    }
-                    html += "</div>";
-                    $("#updates").append(html);
-                {% endfor %}
-            {% endif %}
-
-            $("#tag-input-text-box").autocomplete({
-                source: function (request, response) {
+</script>
+<script type="text/javascript">
+    var APP;
+    $(document).ready(function () {
+        // set share url
+        var baseURL = location.protocol + "//" + location.hostname + "/";
+        $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
+        $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
+        $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
+        var url = window.location.href;
+        if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
+            var $country_table = $('#country-table');
+            // render country data list
+            {% if countries %}
+                {% for country in countries %}
+                    var country = "{{ country.name }}";
+                    var country_id = country.split(".").join("-");
+                    country_id = country_id.split("&#39;").join("-");
+                    country_id = country_id.split(" ").join("-");
+                    country_id = country_id.split("(").join("-");
+                    country_id = country_id.split(")").join("-");
+                    {# disabled links and completeness for #429 #}
+                    var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
+                    $country_table.append(html);
                     $.ajax({
-                        url: "{% url 'tags' %}",
+                        number: country_id + "-number",
+                        completeness: country_id + "-complete",
+                        url: "{% url 'countries-simple-data' %}",
                         dataType: 'json',
                         data: {
-                            q: request.term
+                            q: country
                         },
                         success: function (data) {
-                            response(data);
+                            {# disabled links and completeness for #429 #}
+                            $("#" + this.number).html(data.number);
+                            $("#" + this.completeness).html(data.completeness);
+                        },
+                        fail: function (data) {
+                            $("#" + this.number).html("fail");
+                            $("#" + this.completeness).html("fail");
                         }
                     });
-                },
-                minLength: 3,
-                select: function (event, ui) {
-                },
-                open: function () {
-                    $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-                },
-                close: function () {
-                    $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-                }
-            });
-        });
-        function onChange(element) {
-            $APP.trigger('sidebar.option-onchange', {'element': element});
+                {% endfor %}
+            {% endif %}
         }
-        function onKeyPress(element) {
-            if (element.id == "locality-phone-input-int") {
-                var val = $(element).val();
-                console.log(val);
-                if (val.length > 3) {
-                    val = val.substring(0, 3);
-                    $(element).val(val);
-                }
-            }
-        }
-        function addOption(element) {
-            $APP.trigger('sidebar.option-add', {'element': element});
-        }
-        function addOthers() {
-            $APP.trigger('sidebar.other-add');
-        }
-        function addTag(value) {
-            $APP.trigger('sidebar.tag-add', {'value': value});
-        }
-        var chart = c3.generate({
-            bindto: '#chart1',
-            size: {
-                height: 220
-            },
-            bar: {
-                width: 18
-            },
-            data: {
-                x: 'x',
-                y: 'percent',
-                columns: [
-                    //the healthsites names
-                    ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
-                    //the healthsites number
-                    ['number', 12, 12, 12],
-                    //the healthsites percentgage
-                    ['percent', 0.33, 0.33, 0.34]
-                ],
-                axes: {
-                    number: 'y2'
-                },
-                types: {
-                    percent: 'bar',
-                    number: 'bar'
-                },
-                order: 'asc',
 
-                labels: {
-                    format: {
-                        number: function (v, id, i, j) {
-                            return v;
-                        },
+        // Set viewport if exist
+        {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
+            sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
+            sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
+            sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
+            sessionStorage.setItem('southwest_lng', {{ southwest_lng }});
+        {% endif %}
+
+        // initialize the app
+        APP = new APP();
+        $("#locality-statistic").hide();
+        $("#locality-info").hide();
+        $("#locality-default").hide();
+        {% if tag or country %}
+            $("#locality-statistic").show();
+            $("#number-locality").html("{{ localities }}");
+            updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
+            updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
+        {% elif countries %}
+            $("#locality-default").show();
+        {% else %}
+            $("#locality-info").show();
+        {% endif %}
+        {% if tag %}
+            $("#title-name").html("{{ tag }}");
+            $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
+        {% elif country %}
+            $("#title-name").html("{{ country }}");
+            $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
+        {% endif %}
+        {% if viewport %}
+            var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");
+            var northeast_lng = parseFloat("{{ viewport.northeast_lng }}");
+            var southwest_lat = parseFloat("{{ viewport.southwest_lat }}");
+            var southwest_lng = parseFloat("{{ viewport.southwest_lng }}");
+            if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
+                $APP.trigger('map.update-bound', {
+                    'southwest_lat': southwest_lat,
+                    'southwest_lng': southwest_lng,
+                    'northeast_lat': northeast_lat,
+                    'northeast_lng': northeast_lng
+                });
+            }
+        {% endif %}
+
+        $("#updates").html("<div class=\"entry\">no updates</div>");
+        {% if last_update %}
+            $("#updates").html("");
+            {% for updates in last_update %}
+                var html = "<div class=\"entry\">";
+                html += "<div class=\"entry\">";
+                html += "<span class=\"date\">" + getDateString("{{ updates.date_applied.isoformat }}") + "</span> - ";
+                html += "<span class=\"name\">";
+                html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author }}" + "</a></span> - ";
+                var mode = "";
+                if ("{{ updates.mode }}" == 1) {
+                    mode = "added";
+                } else {
+                    mode = "amended";
+                }
+                {# update the html #}
+                if ("{{ updates.data_count }}" == 1) {
+                    html += "<a href=\"map#!/locality/" + "{{ updates.locality_uuid }}" + "\" class=\"location-name\">" + "{{ updates.locality }}" + "</a>";
+                    html += "<span class=\"location-name\"> " + mode + " </span>";
+                } else {
+                    html += "<span class=\"location-name\">" + "{{ updates.data_count }}" + " HS/" + mode + "</span>";
+                }
+                html += "</div>";
+                $("#updates").append(html);
+            {% endfor %}
+        {% endif %}
+
+        $("#tag-input-text-box").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "{% url 'tags' %}",
+                    dataType: 'json',
+                    data: {
+                        q: request.term
+                    },
+                    success: function (data) {
+                        response(data);
                     }
-                },
-
-
+                });
             },
-            axis: {
-                rotated: true,
-                x: {
-                    type: 'category',
-
-                },
-                y: {
-                    max: 1,
-                    tick: {
-                        values: [0, 0.5, 1],
-                        format: d3.format('%,')
-
-                    }
-                }
+            minLength: 3,
+            select: function (event, ui) {
             },
-            legend: {
-                show: false
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
             },
-            color: {
-                pattern: ['#b6cccc', '#f89ea1']
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
             }
         });
-
-        var piechart = c3.generate({
-            bindto: '#piechart',
-            size: {
-                height: 220
+    });
+    function onChange(element) {
+        $APP.trigger('sidebar.option-onchange', {'element': element});
+    }
+    function onKeyPress(element) {
+        if (element.id == "locality-phone-input-int") {
+            var val = $(element).val();
+            console.log(val);
+            if (val.length > 3) {
+                val = val.substring(0, 3);
+                $(element).val(val);
+            }
+        }
+    }
+    function addOption(element) {
+        $APP.trigger('sidebar.option-add', {'element': element});
+    }
+    function addOthers() {
+        $APP.trigger('sidebar.other-add');
+    }
+    function addTag(value) {
+        $APP.trigger('sidebar.tag-add', {'value': value});
+    }
+    var chart = c3.generate({
+        bindto: '#chart1',
+        size: {
+            height: 220
+        },
+        bar: {
+            width: 18
+        },
+        data: {
+            x: 'x',
+            y: 'percent',
+            columns: [
+                //the healthsites names
+                ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
+                //the healthsites number
+                ['number', 12, 12, 12],
+                //the healthsites percentgage
+                ['percent', 0.33, 0.33, 0.34]
+            ],
+            axes: {
+                number: 'y2'
             },
-            data: {
-                // iris data from R
-                columns: [
-                    ['complete', 33],
-                    ['partial', 33],
-                    ['basic', 34],
-                ],
-                colors: {
-                    complete: '#f89ea1',
-                    partial: '#b6cccc',
-                    basic: '#8698a4'
-                },
-                type: 'pie',
-                onclick: function (d, i) {
-                    console.log("onclick", d, i);
-                },
-                onmouseover: function (d, i) {
-                    console.log("onmouseover", d, i);
-                },
-                onmouseout: function (d, i) {
-                    console.log("onmouseout", d, i);
+            types: {
+                percent: 'bar',
+                number: 'bar'
+            },
+            order: 'asc',
+
+            labels: {
+                format: {
+                    number: function (v, id, i, j) {
+                        return v;
+                    },
+                }
+            },
+
+
+        },
+        axis: {
+            rotated: true,
+            x: {
+                type: 'category',
+
+            },
+            y: {
+                max: 1,
+                tick: {
+                    values: [0, 0.5, 1],
+                    format: d3.format('%,')
+
                 }
             }
+        },
+        legend: {
+            show: false
+        },
+        color: {
+            pattern: ['#b6cccc', '#f89ea1']
+        }
+    });
+
+    var piechart = c3.generate({
+        bindto: '#piechart',
+        size: {
+            height: 220
+        },
+        data: {
+            // iris data from R
+            columns: [
+                ['complete', 33],
+                ['partial', 33],
+                ['basic', 34],
+            ],
+            colors: {
+                complete: '#f89ea1',
+                partial: '#b6cccc',
+                basic: '#8698a4'
+            },
+            type: 'pie',
+            onclick: function (d, i) {
+                console.log("onclick", d, i);
+            },
+            onmouseover: function (d, i) {
+                console.log("onmouseover", d, i);
+            },
+            onmouseout: function (d, i) {
+                console.log("onmouseout", d, i);
+            }
+        }
+    });
+
+
+    {# FOR UPDATING CHART #}
+    function updateChart(hospital, medical, orthopedic) {
+        var hospital_per = hospital / (hospital + medical + orthopedic);
+        var medical_per = medical / (hospital + medical + orthopedic);
+        var orthopedic_per = orthopedic / (hospital + medical + orthopedic);
+        chart.load({
+            columns: [
+                //the healthsites names
+                ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
+                //the healthsites number
+                ['number', hospital, medical, orthopedic],
+                //the healthsites percentgage
+                ['percent', hospital_per, medical_per, orthopedic_per]
+            ]
         });
+    }
 
+    function updatePieChart(basic, partial, complete) {
+        piechart.load({
+            columns: [
+                ['complete', complete],
+                ['partial', partial],
+                ['basic', basic],
+            ],
+        });
+    }
+    $('body').on("click", ".remove_option", function (e) { //user click on remove text
+        e.preventDefault();
+        $(this).parent('div').remove();
+    })
+    $('body').on("click", ".remove_tag", function (e) { //user click on remove text
+        e.preventDefault();
+        $(this).parent('li').remove();
+    })
+    function split(element) {
+        $(element).html('and');
+        $(element).parent('tr').find('.time2').css({'opacity': 1});
+        $(element).parent('tr').find('.unsplit').css({'opacity': 1});
+        $(element).parent('tr').find('.unsplit').css({'cursor': 'pointer'});
+        // change disable/enabled
+        $(element).parent('tr').find('.time2').find('input').prop('disabled', false);
+        $APP.trigger('sidebar.split-event');
 
-        {# FOR UPDATING CHART #}
-        function updateChart(hospital, medical, orthopedic) {
-            var hospital_per = hospital / (hospital + medical + orthopedic);
-            var medical_per = medical / (hospital + medical + orthopedic);
-            var orthopedic_per = orthopedic / (hospital + medical + orthopedic);
-            chart.load({
-                columns: [
-                    //the healthsites names
-                    ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
-                    //the healthsites number
-                    ['number', hospital, medical, orthopedic],
-                    //the healthsites percentgage
-                    ['percent', hospital_per, medical_per, orthopedic_per]
-                ]
-            });
-        }
+    }
+    function unsplit(element) {
+        $(element).css({'opacity': 0.0});
+        $(element).parent('tr').find('.time2').css({'opacity': 0.0});
+        $(element).parent('tr').find('.split').html('<a>split</a>');
+        $(element).parent('tr').find('.unsplit').css({'cursor': 'default'});
+        $(element).parent('tr').find('.time2').find('input').val('00:00');
+        // change disable/enabled
+        $(element).parent('tr').find('.time2').find('input').prop('disabled', true);
+        $APP.trigger('sidebar.split-event');
 
-        function updatePieChart(basic, partial, complete) {
-            piechart.load({
-                columns: [
-                    ['complete', complete],
-                    ['partial', partial],
-                    ['basic', basic],
-                ],
-            });
-        }
-        $('body').on("click", ".remove_option", function (e) { //user click on remove text
-            e.preventDefault();
-            $(this).parent('div').remove();
-        })
-        $('body').on("click", ".remove_tag", function (e) { //user click on remove text
-            e.preventDefault();
-            $(this).parent('li').remove();
-        })
-        function split(element) {
-            $(element).html('and');
-            $(element).parent('tr').find('.time2').css({'opacity': 1});
-            $(element).parent('tr').find('.unsplit').css({'opacity': 1});
-            $(element).parent('tr').find('.unsplit').css({'cursor': 'pointer'});
-            // change disable/enabled
-            $(element).parent('tr').find('.time2').find('input').prop('disabled', false);
-            $APP.trigger('sidebar.split-event');
-
-        }
-        function unsplit(element) {
-            $(element).css({'opacity': 0.0});
-            $(element).parent('tr').find('.time2').css({'opacity': 0.0});
-            $(element).parent('tr').find('.split').html('<a>split</a>');
-            $(element).parent('tr').find('.unsplit').css({'cursor': 'default'});
-            $(element).parent('tr').find('.time2').find('input').val('00:00');
-            // change disable/enabled
-            $(element).parent('tr').find('.time2').find('input').prop('disabled', true);
-            $APP.trigger('sidebar.split-event');
-
-        }
-    </script>
-{% endblock extra_js %}
+    }
+</script>
 
 <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
 </body>
