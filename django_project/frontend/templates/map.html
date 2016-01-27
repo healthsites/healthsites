@@ -522,11 +522,24 @@
 <script type="text/javascript">
     var APP;
     $(document).ready(function () {
+        // Set viewport if exist
+        {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
+            sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
+            sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
+            sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
+            sessionStorage.setItem('southwest_lng', {{ southwest_lng }});
+        {% endif %}
+
+        // initialize the app
+        APP = new APP();
+
         // set share url
         var baseURL = location.protocol + "//" + location.hostname + "/";
         $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
         $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
         $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
+
+        // checking default view
         var url = window.location.href;
         if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
             var $country_table = $('#country-table');
@@ -563,17 +576,6 @@
                 {% endfor %}
             {% endif %}
         }
-
-        // Set viewport if exist
-        {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
-            sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
-            sessionStorage.setItem('northeast_lng', {{ northeast_lng }});
-            sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
-            sessionStorage.setItem('southwest_lng', {{ southwest_lng }});
-        {% endif %}
-
-        // initialize the app
-        APP = new APP();
         $("#locality-statistic").hide();
         $("#locality-info").hide();
         $("#locality-default").hide();
