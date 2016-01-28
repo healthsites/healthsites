@@ -28,7 +28,7 @@
 	background: #f44a52;
 	color: #fff;
 	font-family: "Raleway", sans-serif;
-	min-height: 600px;
+	min-height: 800px;
 }
 @media only screen and (max-width:640px) {
   #tophome {
@@ -56,6 +56,9 @@ h2.fancy {
 }
 .slideshow-container {
 	padding: 20px 0;
+}
+#tophome {
+	min-height: 600px;
 }
 }
 
