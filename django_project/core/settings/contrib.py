@@ -157,3 +157,9 @@ BROKER_URL = 'amqp://guest:guest@%s:5672//' % os.environ['RABBITMQ_HOST']
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+
+# Django envelop for contact forms
+DEFAULT_FROM_EMAIL = 'enquiry@healthsites.io'
+ENVELOPE_EMAIL_RECIPIENTS = ['info@healthsites.io']
+ENVELOPE_SUBJECT_INTRO = '[HEALTHSITES.IO CONTACT REQUEST] '
