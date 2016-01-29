@@ -257,6 +257,9 @@ input[type='checkbox'] {
 
 #locality-default table, #locality-default td, #locality-default th {
     border: 1px solid #3c4c57;
+<<<<<<< HEAD
+}
+=======
     padding-left: 5px;
 }
 
@@ -275,3 +278,4 @@ td input[type="text"] {
 table {
     border-collapse: collapse;
 }
+>>>>>>> upstream/develop

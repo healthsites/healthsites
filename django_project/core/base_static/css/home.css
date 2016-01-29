@@ -30,6 +30,18 @@
 }
 
 #tophome {
+<<<<<<< HEAD
+  padding-top: 72px;
+  background: #f44a52;
+  color: #fff;
+  font-family: "Raleway", sans-serif;
+  min-height: 800px;
+}
+@media only screen and (max-width:640px) {
+  #tophome {
+    padding-top: 53px;
+  }
+=======
     padding-top: 72px;
     background: #f44a52;
     color: #fff;
@@ -41,10 +53,15 @@
     #tophome {
         padding-top: 53px;
     }
+>>>>>>> upstream/develop
 }
 
 .slideshow-container {
+<<<<<<< HEAD
+  margin: auto;
+=======
     margin: auto;
+>>>>>>> upstream/develop
 }
 
 h2.fancy {
@@ -54,12 +71,30 @@ h2.fancy {
 }
 
 .link-left {
+<<<<<<< HEAD
+  margin-right: 20px;
+}
+.isopad {
+  position: relative;
+  overflow: hidden
+=======
     margin-right: 20px;
+>>>>>>> upstream/develop
 }
 
 .isopad {
+<<<<<<< HEAD
+    margin-top: 50px;
+}
+.slideshow-container {
+  padding: 20px 0;
+}
+#tophome {
+  min-height: 600px;
+=======
     position: relative;
     overflow: hidden
+>>>>>>> upstream/develop
 }
 
 @media only screen and (max-width: 991px) {
@@ -73,11 +108,37 @@ h2.fancy {
 }
 
 .isopad img {
+<<<<<<< HEAD
+  max-width: 100%;
+  height: auto;
+=======
     max-width: 100%;
     height: auto;
+>>>>>>> upstream/develop
 }
 
 .pin {
+<<<<<<< HEAD
+  position: absolute;
+  width: 54px;
+  height: 65px;
+  background-image: url(../img/pin.png);
+  background-repeat: no-repeat;
+  z-index: 8;
+  opacity: 0;
+  animation-name: bounceInDown;
+  -moz-animation-name: bounceInDown;
+  animation-duration: 0.8s;
+  -moz-animation-duration: 0.8s;
+  animation-timing-function: linear;
+  -moz-animation-timing-function: linear;
+  animation-direction: alternate;
+  -moz-animation-direction: alternate;
+  animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  transform: translate3d(0,0,0);
+-webkit-transform: translate3d(0,0,0);
+=======
     position: absolute;
     width: 54px;
     height: 65px;
@@ -97,27 +158,104 @@ h2.fancy {
     -moz-animation-fill-mode: forwards;
     transform: translate3d(0, 0, 0);
     -webkit-transform: translate3d(0, 0, 0);
+>>>>>>> upstream/develop
 }
 
 .pin-1 {
+<<<<<<< HEAD
+  top: 40%;
+  left: 35%;
+  animation-delay: 0.2s;
+=======
     top: 40%;
     left: 35%;
     animation-delay: 0.2s;
+>>>>>>> upstream/develop
 }
 
 .pin-2 {
+<<<<<<< HEAD
+  top: 40%;
+  left: 50%;
+  animation-delay: 0.4s;
+=======
     top: 40%;
     left: 50%;
     animation-delay: 0.4s;
+>>>>>>> upstream/develop
 }
 
 .pin-3 {
+<<<<<<< HEAD
+  top: 50%;
+  left: 48%;
+  animation-delay: 0.5s;
+=======
     top: 50%;
     left: 48%;
     animation-delay: 0.5s;
+>>>>>>> upstream/develop
 }
 
 .pin-4 {
+<<<<<<< HEAD
+  top: 25%;
+  left: 65%;
+  animation-delay: 0.55s;
+}
+@media only screen and (max-width:640px) {
+    h2.fancy {
+      font-size: 38px;
+      line-height: 46px;
+  }
+  .pin {
+    width: 30px;
+    height: 38px;
+    background-size: 30px 38px;
+  }
+}
+
+@keyframes bounceInDown {
+  from, 60%, 75%, 90%, to {
+    -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  -moz-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+
+  0% {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -3000px, 0);
+  -moz-transform: translate3d(0, -3000px, 0);
+    transform: translate3d(0, -3000px, 0);
+  }
+
+  60% {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 25px, 0);
+  -moz-transform: translate3d(0, 25px, 0);
+    transform: translate3d(0, 25px, 0);
+  opacity: 1;
+  }
+
+  75% {
+    -webkit-transform: translate3d(0, -10px, 0);
+   -moz-transform: translate3d(0, -10px, 0);
+    transform: translate3d(0, -10px, 0);
+  }
+
+  90% {
+    -webkit-transform: translate3d(0, 5px, 0);
+  -moz-transform: translate3d(0, 5px, 0);
+    transform: translate3d(0, 5px, 0);
+  }
+
+  to {
+    -webkit-transform: none;
+  -moz-transform: none;
+    transform: none;
+  opacity: 1;
+  }
+=======
     top: 25%;
     left: 65%;
     animation-delay: 0.55s;
@@ -176,6 +314,7 @@ h2.fancy {
         transform: none;
         opacity: 1;
     }
+>>>>>>> upstream/develop
 }
 
 .bounceInDown {
@@ -187,23 +326,58 @@ h2.fancy {
 
 -------------------------------------------------- */
 .about {
+<<<<<<< HEAD
+  font-family: "Raleway", sans-serif;
+  padding: 85px 0;
+  font-size: 16px;
+  line-height: 24px;
+=======
     font-family: "Raleway", sans-serif;
     padding: 85px 0;
     font-size: 16px;
     line-height: 24px;
+>>>>>>> upstream/develop
 }
 
 .about h2 {
+<<<<<<< HEAD
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 1em;
+=======
     text-align: center;
     font-weight: bold;
     margin-bottom: 1em;
+>>>>>>> upstream/develop
 }
 
 .about .icon {
+<<<<<<< HEAD
+  text-align: right;
+=======
     text-align: right;
+>>>>>>> upstream/develop
 }
 
 .about .block {
+<<<<<<< HEAD
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+@media only screen and (max-width:991px) {
+  .about {
+    padding: 40px 0;
+  }
+  .about .block, .about .icon {
+  text-align: center;
+  }
+  .about .block {
+  margin-bottom: 40px;
+  }
+  .about .icon {
+  margin-bottom: 20px;
+  }
+=======
     margin-bottom: 20px;
     overflow: hidden;
 }
@@ -224,55 +398,133 @@ h2.fancy {
     .about .icon {
         margin-bottom: 20px;
     }
+>>>>>>> upstream/develop
 }
 
 /* share-data
 
 -------------------------------------------------- */
 #share-data {
+<<<<<<< HEAD
+  font-family: "Raleway", sans-serif;
+  overflow: hidden;
+=======
     font-family: "Raleway", sans-serif;
     overflow: hidden;
+>>>>>>> upstream/develop
 }
 
 #share-data .content {
+<<<<<<< HEAD
+  color: #fff;
+  background: #3c4c57;
+  height: 219px;
+  padding: 0 60px;
+  border-right: 1px solid #fff;
+=======
     color: #fff;
     background: #3c4c57;
     height: 219px;
     padding: 0 60px;
     border-right: 1px solid #fff;
+>>>>>>> upstream/develop
 }
 
 #share-data .center:last-child .content {
+<<<<<<< HEAD
+  border-right: none;
+=======
     border-right: none;
+>>>>>>> upstream/develop
 }
 
 #share-data .icon-holder {
+<<<<<<< HEAD
+  padding-top: 25px;
+  font-size: 36px;
+=======
     padding-top: 25px;
     font-size: 36px;
+>>>>>>> upstream/develop
 }
 
 #share-data h3 {
+<<<<<<< HEAD
+  font-weight: 600;
+  font-size: 18px;
+  margin: 5px 0;
+=======
     font-weight: 600;
     font-size: 18px;
     margin: 5px 0;
+>>>>>>> upstream/develop
 }
 
 #share-data .text {
+<<<<<<< HEAD
+  display: block;
+  color: #a3a8ac;
+=======
     display: block;
     color: #a3a8ac;
+>>>>>>> upstream/develop
 }
 
 #share-data .links {
+<<<<<<< HEAD
+  margin-top: 10px;
+=======
     margin-top: 10px;
+>>>>>>> upstream/develop
 }
 
 #share-data .links a {
+<<<<<<< HEAD
+  color: #fff;
+  text-decoration: underline;
+  margin: 0 5px;
+=======
     color: #fff;
     text-decoration: underline;
     margin: 0 5px;
+>>>>>>> upstream/develop
 }
 
 #share-data .links a:hover {
+<<<<<<< HEAD
+  color: #f44a52;
+}
+@media only screen and (max-width:1525px) {
+  #share-data .content {
+    padding: 0 20px;
+  }
+  #share-data .text {
+    font-size: 14px;
+  }
+}
+@media only screen and (max-width:1190px) {
+  #share-data .content {
+    height: 250px;
+  }
+}
+@media only screen and (max-width:1009px) {
+  #share-data .content {
+    height: 265px;
+  }
+}
+@media only screen and (max-width:993px) {
+  #share-data .content {
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid #fff;
+    padding-bottom: 40px;
+  }
+  #share-data .text {
+    font-size: 16px;
+  }
+  #share-data .icon-holder {
+       font-size: 48px;
+=======
     color: #f44a52;
 }
 
@@ -312,6 +564,7 @@ h2.fancy {
 
     #share-data .icon-holder {
         font-size: 48px;
+>>>>>>> upstream/develop
     }
 }
 
@@ -319,15 +572,60 @@ h2.fancy {
 
 -------------------------------------------------- */
 .map-data {
+<<<<<<< HEAD
+  overflow: hidden;
+=======
     overflow: hidden;
+>>>>>>> upstream/develop
 }
 
 #map-home {
+<<<<<<< HEAD
+  height: 645px;
+  position: relative;
+=======
     height: 645px;
     position: relative;
+>>>>>>> upstream/develop
 }
 
 .select-country {
+<<<<<<< HEAD
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  width: 234px;
+  margin-left: -114px;
+  background: #fff;
+  border: 3px solid #3c4c57;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  padding-left: 7px;
+  transition: 0.8s;
+}
+.search-focus .select-country {
+  position: fixed;
+  bottom: auto;
+  top: 100px;
+  z-index: 1500;
+}
+.search-focus .under-search {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1100;
+}
+.select-country  input, .select-country button {
+  border: none;
+  background: none;
+  padding: 7px;
+  font-weight: 800;
+  font-size: 16px;
+=======
     position: absolute;
     bottom: 20px;
     left: 50%;
@@ -347,9 +645,16 @@ h2.fancy {
     padding: 7px;
     font-weight: 800;
     font-size: 16px;
+>>>>>>> upstream/develop
 }
 
 .select-country button {
+<<<<<<< HEAD
+  float: right;
+}
+.select-country  input:focus {
+  outline: none;
+=======
     float: right;
 }
 
@@ -368,6 +673,7 @@ h2.fancy {
 /* Firefox 19+ */
 .select-country input:-moz-placeholder {
     color: #3c4c57;
+>>>>>>> upstream/develop
 }
 
 /* Firefox 18- */
@@ -376,32 +682,70 @@ h2.fancy {
 }
 
 .map-data {
+<<<<<<< HEAD
+  font-family: "Raleway", sans-serif;
+  color: #3c4c57;
+=======
     font-family: "Raleway", sans-serif;
     color: #3c4c57;
+>>>>>>> upstream/develop
 }
 
 .country-data {
+<<<<<<< HEAD
+  background: #fcfbfb;
+  padding-bottom: 30px;
+=======
     background: #fcfbfb;
     padding-bottom: 30px;
+>>>>>>> upstream/develop
 }
 
 .map-data h2 {
+<<<<<<< HEAD
+  font-size: 30px;
+  font-weight: 400;
+  padding-top: 40px;
+  margin: 0;
+=======
     font-size: 30px;
     font-weight: 400;
     padding-top: 40px;
     margin: 0;
+>>>>>>> upstream/develop
 }
 
 .map-data h3 {
+<<<<<<< HEAD
+  font-size: 16px;
+  font-weight: 500;
+=======
     font-size: 16px;
     font-weight: 500;
+>>>>>>> upstream/develop
 }
 
 .map-data h2 .number {
+<<<<<<< HEAD
+  color: #f44a52;
+=======
     color: #f44a52;
+>>>>>>> upstream/develop
 }
 
 .country-data .graph {
+<<<<<<< HEAD
+  background: #fff;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  /* height: 216px; */
+  padding: 15px;
+  -webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.15);
+  -moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.15);
+  box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.15);
+  font-family: "Ubuntu", sans-serif;
+=======
     background: #fff;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -412,84 +756,172 @@ h2.fancy {
     -moz-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
     box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
     font-family: "Ubuntu", sans-serif;
+>>>>>>> upstream/develop
 }
 
 .country-data .graph.updates {
+<<<<<<< HEAD
+  padding-left: 0;
+  padding-right: 0;
+  font-wize: 14px;
+=======
     padding-left: 0;
     padding-right: 0;
     font-wize: 14px;
+>>>>>>> upstream/develop
 }
 
 .country-data .graph .entry {
+<<<<<<< HEAD
+  padding: 5px 15px;
+  border-bottom: 1px solid #f1f0f0;
+=======
     padding: 5px 15px;
     border-bottom: 1px solid #f1f0f0;
+>>>>>>> upstream/develop
 }
 
 .country-data .graph .entry:first-child {
+<<<<<<< HEAD
+  padding-top:0;
+=======
     padding-top: 0;
+>>>>>>> upstream/develop
 }
 
 .country-data .graph .entry:last-child {
+<<<<<<< HEAD
+  padding-bottom:0;
+  border-bottom: none;
+=======
     padding-bottom: 0;
     border-bottom: none;
+>>>>>>> upstream/develop
 }
 
 .country-data .name a {
+<<<<<<< HEAD
+  color: #f44a52;
+=======
     color: #f44a52;
+>>>>>>> upstream/develop
 }
 
 .country-data .date, .country-data .time {
+<<<<<<< HEAD
+  font-style: italic;
+=======
     font-style: italic;
+>>>>>>> upstream/develop
 }
 
 @media only screen and (max-width: 500px) {
+<<<<<<< HEAD
+  .select-country  input, .select-country button {
+    padding: 5px;
+    font-size: 14px;
+  }
+=======
     .select-country input, .select-country button {
         padding: 5px;
         font-size: 14px;
     }
+>>>>>>> upstream/develop
 }
 
 /* Lifecycle
 
 -------------------------------------------------- */
 .lifecycle {
+<<<<<<< HEAD
+  background: #e0e1e2;
+  padding: 40px 0 100px;
+  text-align: center;
+=======
     background: #e0e1e2;
     padding: 40px 0 100px;
     text-align: center;
+>>>>>>> upstream/develop
 }
 
 .lifecycle h2 {
+<<<<<<< HEAD
+  text-align: center;
+  margin-bottom: 40px;
+  color: #3c4c57;
+  font-weight: 700;
+=======
     text-align: center;
     margin-bottom: 40px;
     color: #3c4c57;
     font-weight: 700;
+>>>>>>> upstream/develop
 }
 
 .rhino-item img {
+<<<<<<< HEAD
+  max-width: 100%;
+=======
     max-width: 100%;
+>>>>>>> upstream/develop
 }
 
 /* Partners
 
 -------------------------------------------------- */
 .partners {
+<<<<<<< HEAD
+  padding: 10px 0;
+=======
     padding: 10px 0;
+>>>>>>> upstream/develop
 }
 
 .partners h3, .partners ul, .partners li {
+<<<<<<< HEAD
+  display: inline-block;
+  margin-bottom: 0;
+=======
     display: inline-block;
     margin-bottom: 0;
+>>>>>>> upstream/develop
 }
 
 .partners h3 {
+<<<<<<< HEAD
+  font-family: "Raleway", sans-serif;
+  font-weight: bold;
+  font-size: 18px;
+  color: #4e4d4d;
+  padding-right: 100px;
+=======
     font-family: "Raleway", sans-serif;
     font-weight: bold;
     font-size: 18px;
     color: #4e4d4d;
     padding-right: 100px;
+>>>>>>> upstream/develop
 }
 
 .partners li {
+<<<<<<< HEAD
+  margin-right: 20px;
+}
+@media only screen and (max-width:860px) {
+   .partners h3, .partners ul, .partners li {
+    display: block;
+    text-align: center;
+  }
+  .partners h3 {
+    font-size: 22px;
+    font-weight: bold;
+    padding-right: 0;
+    margin-bottom: 20px;
+  }
+  .partners-list {
+    margin: 0;
+  }
+=======
     margin-right: 20px;
 }
 
@@ -509,6 +941,7 @@ h2.fancy {
     .partners-list {
         margin: 0;
     }
+>>>>>>> upstream/develop
 }
 
 .marker-icon {
@@ -521,6 +954,11 @@ h2.fancy {
     font-size: 11px;
 }
 
+<<<<<<< HEAD
+.map{
+  padding: 0px;
+}
+=======
 .map {
     padding: 0px;
 }
@@ -529,3 +967,4 @@ h2.fancy {
     text-decoration: none;
     color: #3c4c57;
 }
+>>>>>>> upstream/develop
