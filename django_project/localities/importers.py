@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 LOG = logging.getLogger(__name__)
 
 import uuid
@@ -28,8 +29,9 @@ class CSVImporter:
     """
 
     def __init__(
-            self, domain_name, source_name, csv_filename, attr_json_file,
+            self, data_loader, domain_name, source_name, csv_filename, attr_json_file,
             use_tabs=False, user=None, mode=1):
+        self.data_loader = data_loader
         self.domain_name = domain_name
         self.source_name = source_name
         self.csv_filename = csv_filename
@@ -122,7 +124,7 @@ class CSVImporter:
             lat = float(lat)
 
             # we use EPSG:4326, coordinates are limited by -180/180 -90/90
-            if not(-180.0 < lon < 180.0 and -90.0 < lat < 90.0):
+            if not (-180.0 < lon < 180.0 and -90.0 < lat < 90.0):
                 return None
             else:
                 return lon, lat
@@ -136,7 +138,7 @@ class CSVImporter:
 
         row_uuid = self._read_attr(row_data, self.attr_map['uuid'])
         row_upstream_id = self._read_attr(
-            row_data, self.attr_map['upstream_id']
+                row_data, self.attr_map['upstream_id']
         )
         if not row_upstream_id:
             LOG.error('Row %s has no upstream_id, skipping...', row_num)
@@ -147,15 +149,15 @@ class CSVImporter:
 
         if gen_upstream_id in self.parsed_data:
             LOG.error(
-                'Row %s with upstream_id: %s already exists, skipping...',
-                row_num, gen_upstream_id
+                    'Row %s with upstream_id: %s already exists, skipping...',
+                    row_num, gen_upstream_id
             )
             self.report['skipped'] += 1
             return None
 
         tmp_geom = self.parse_geom(
-            row_data[self.attr_map['geom'][0]],
-            row_data[self.attr_map['geom'][1]]
+                row_data[self.attr_map['geom'][0]],
+                row_data[self.attr_map['geom'][1]]
         )
 
         if not tmp_geom:
@@ -256,6 +258,8 @@ class CSVImporter:
                     loc.set_values(values['values'], social_user=self.user)
 
                 self.report['modified'] += 1
+
+            loc.update_history(self.data_loader.date_time_uploaded, self.data_loader.data_loader_mode, self.user);
 
     def envelope(self, lon, lat):
         """Return polygon envelope for point (lon, lat)

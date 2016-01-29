@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
+import json
 
 LOG = logging.getLogger(__name__)
 
+from braces.views import FormMessagesMixin
+from envelope.views import ContactView
 from django.views.generic import TemplateView
 from django.conf import settings
 from django.shortcuts import render_to_response
@@ -11,6 +14,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 import googlemaps
+from localities.views import search_locality_by_tag, get_country_statistic
 from localities.models import Locality, Value, Country
 
 
@@ -31,8 +35,12 @@ class MainView(TemplateView):
         return context
 
 
-class ContactView(TemplateView):
+class ContactView(FormMessagesMixin, ContactView):
     template_name = 'envelope/contact.html'
+    form_invalid_message = 'There was an error in the contact form.'
+
+    def get_form_valid_message(self):
+        return u"{0} created!".format(self.object.title)
 
 
 class MapView(TemplateView):
@@ -109,9 +117,20 @@ def map(request):
             return HttpResponseRedirect(
                     map_url + "#!/locality/%s" % locality_uuid)
     else:
+        tag = request.GET.get('tag')
+        country = request.GET.get('country')
         result = {}
-        result['locality_count'] = Locality.objects.count()
-        result['countries'] = Country.objects.order_by('name').values('name').distinct()
+        if tag:
+            result = search_locality_by_tag(tag)
+            result['tag'] = tag
+            print result
+        if country:
+            result = get_country_statistic(country)
+            result['country'] = country
+            print result
+        else:
+            result['locality_count'] = Locality.objects.count()
+            result['countries'] = Country.objects.order_by('name').values('name').distinct()
         return render_to_response(
                 'map.html',
                 result,

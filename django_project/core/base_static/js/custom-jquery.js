@@ -135,4 +135,3 @@ $(window).resize(function() {
      $('#map-home').css('height', 400);
   }
 });
-
