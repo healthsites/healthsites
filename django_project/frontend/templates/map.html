@@ -414,10 +414,11 @@
                             <div id="tag-input-text" style="display: none">
                                 <input id="tag-input-text-box" type="text" placeholder="fill new tag"
                                        style="margin-bottom: 10px;"
-                                       onkeyup="if (event.keyCode == 13) { addTag($(this).val()); $(this).val('') }"/>
-                                <i style="margin-left: 10px; color: #f44a52">enter to add tag with minimal 3 letters</i>
+                                       onkeyup="changeTag($(this).val())"/>
+                                <i id="tag-input-error-warning"
+                                   style="margin-left: 10px; color: #f44a52; display: none">tag should be
+                                    more than 2 letter</i>
                             </div>
-                            <ul id="tag-input" style="display: none"></ul>
                         </div>
                     </div>
                     <div id="others" class="line ">
@@ -640,19 +641,31 @@
 
         $("#tag-input-text-box").autocomplete({
             source: function (request, response) {
-                $.ajax({
-                    url: "{% url 'tags' %}",
-                    dataType: 'json',
-                    data: {
-                        q: request.term
-                    },
-                    success: function (data) {
-                        response(data);
-                    }
-                });
+                var latestTag = request.term.split(";");
+                latestTag = latestTag[latestTag.length - 1];
+                if (latestTag.length >= 3) {
+                    $.ajax({
+                        url: "{% url 'tags' %}",
+                        dataType: 'json',
+                        data: {
+                            q: latestTag
+                        },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                }
             },
             minLength: 3,
+            focus: function (event, ui) {
+                var value = ui.item.value;
+                var tags = $("#tag-input-text-box").val().split(";");
+                tags[tags.length - 1] = value;
+                $("#tag-input-text-box").val(tags.join(";"));
+                return false;
+            },
             select: function (event, ui) {
+                return false;
             },
             open: function () {
                 $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
@@ -681,8 +694,8 @@
     function addOthers() {
         $APP.trigger('sidebar.other-add');
     }
-    function addTag(value) {
-        $APP.trigger('sidebar.tag-add', {'value': value});
+    function changeTag(value) {
+        $APP.trigger('sidebar.tag-onchange', {'value': value});
     }
     var chart = c3.generate({
         bindto: '#chart1',

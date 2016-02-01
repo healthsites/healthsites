@@ -90,6 +90,7 @@ window.LocalitySidebar = (function () {
         this.$tag_input = $('#tag-input');
         this.$tag_input_text = $('#tag-input-text');
         this.$tag_input_text_box = $('#tag-input-text-box');
+        this.$tag_input_error_warning = $('#tag-input-error-warning');
         this.$uploader = $('#uploader');
         this.$lastupdate = $('#last_update');
 
@@ -279,12 +280,17 @@ window.LocalitySidebar = (function () {
                     }
 
                     // GET TAG
-                    var tag_inputs = that.$tag_input.find(".tag-text");
-                    var tags = [];
-                    for (var i = 0; i < tag_inputs.length; i++) {
-                        tags.push(tag_inputs[i].innerHTML);
+                    var tags = that.$tag_input_text_box.val();
+                    tags = tags.split(";");
+                    tags = tags.getUnique();
+                    for (var i = 0; i < tags.length; i++) {
+                        console.log(tags[i]);
+                        if (tags[i].length > 0 && tags[i].length < 3) {
+                            isFormValid = false;
+                        }
                     }
                     tags = tags.join(separator);
+                    console.log(tags);
 
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
@@ -980,6 +986,7 @@ window.LocalitySidebar = (function () {
             {
                 var tags = this.locality_data.tags;
                 if (this.isHasValue(tags)) {
+                    this.$tag_input_text_box.val(tags.split("|").join(";"));
                     var tags = tags.split(separator);
                     for (var i = 0; i < tags.length; i++) {
                         if (tags[i] != "") {
@@ -988,7 +995,6 @@ window.LocalitySidebar = (function () {
                                 this.$tag_data.html("");
                             }
                             this.$tag_data.append("<li><i class=\"fa fa-caret-right\"></i> <a href=\"map?tag=" + tags[i] + "\">" + tags[i] + "</a></li>");
-                            this.addTag(tags[i]);
                         }
                     }
                 }
@@ -1062,8 +1068,8 @@ window.LocalitySidebar = (function () {
             $APP.on('sidebar.other-add', function (evt, payload) {
                 self.addOther("", "");
             });
-            $APP.on('sidebar.tag-add', function (evt, payload) {
-                self.addTag(payload.value);
+            $APP.on('sidebar.tag-onchange', function (evt, payload) {
+                self.checkTag(payload.value);
             });
             $APP.on('sidebar.split-event', function (evt, payload) {
                 self.$defining_hours_input_result.html(self.getDefiningHoursFormat()["format2"]);
@@ -1098,24 +1104,24 @@ window.LocalitySidebar = (function () {
                 this.$other_data.append(html);
             }
         },
-        addTag: function (value) {
-            if (value.length >= 3) {
-                value = value.toLowerCase();
-                var inputs = this.$tag_input.find(".tag-text");
-                var isValid = true;
-                for (var i = 0; i < inputs.length; i++) {
-                    if (inputs[i].innerHTML == value) {
+        checkTag: function (value) {
+            var tags = value.split(";");
+            var isValid = true;
+            if (value.length != 0) {
+                for (var i = 0; i < tags.length; i++) {
+                    if (tags[i].length > 0 && tags[i].length < 3) {
                         isValid = false;
-                        break;
                     }
                 }
-                if (isValid) {
-                    this.$tag_input.append("<li><span class=\"tag-text\">" + value + "</span> <span class=\"fa fa-times remove_tag\"></span></li>");
-                }
+            }
+
+            if (isValid) {
+                this.$tag_input_error_warning.hide();
+            } else {
+                this.$tag_input_error_warning.show();
             }
         }
     }
 
-// return module
     return module;
 }());

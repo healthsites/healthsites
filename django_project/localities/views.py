@@ -291,7 +291,10 @@ def locality_edit(request):
                 locality.set_geom(float(json_request['long']), float(json_request['lat']))
                 locality.save()
                 locality.set_values(json_request, request.user)
-                extract_tag_and_save(locality, json_request['tags'], request.user)
+                try:
+                    extract_tag_and_save(locality, json_request['tags'], request.user)
+                except Exception as e:
+                    print e;
                 # create history
                 time = datetime.utcnow()
                 locality.update_history(time, 2, request.user)
