@@ -281,16 +281,14 @@ window.LocalitySidebar = (function () {
 
                     // GET TAG
                     var tags = that.$tag_input_text_box.val();
-                    tags = tags.split(";");
+                    tags = tags.split(",");
                     tags = tags.getUnique();
                     for (var i = 0; i < tags.length; i++) {
-                        console.log(tags[i]);
                         if (tags[i].length > 0 && tags[i].length < 3) {
                             isFormValid = false;
                         }
                     }
                     tags = tags.join(separator);
-                    console.log(tags);
 
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
@@ -986,7 +984,7 @@ window.LocalitySidebar = (function () {
             {
                 var tags = this.locality_data.tags;
                 if (this.isHasValue(tags)) {
-                    this.$tag_input_text_box.val(tags.split("|").join(";"));
+                    this.$tag_input_text_box.val(tags.split("|").join(","));
                     var tags = tags.split(separator);
                     for (var i = 0; i < tags.length; i++) {
                         if (tags[i] != "") {
@@ -1105,7 +1103,7 @@ window.LocalitySidebar = (function () {
             }
         },
         checkTag: function (value) {
-            var tags = value.split(";");
+            var tags = value.split(",");
             var isValid = true;
             if (value.length != 0) {
                 for (var i = 0; i < tags.length; i++) {

@@ -641,7 +641,7 @@
 
         $("#tag-input-text-box").autocomplete({
             source: function (request, response) {
-                var latestTag = request.term.split(";");
+                var latestTag = request.term.split(",");
                 latestTag = latestTag[latestTag.length - 1];
                 if (latestTag.length >= 3) {
                     $.ajax({
@@ -659,9 +659,9 @@
             minLength: 3,
             focus: function (event, ui) {
                 var value = ui.item.value;
-                var tags = $("#tag-input-text-box").val().split(";");
+                var tags = $("#tag-input-text-box").val().split(",");
                 tags[tags.length - 1] = value;
-                $("#tag-input-text-box").val(tags.join(";"));
+                $("#tag-input-text-box").val(tags.join(","));
                 return false;
             },
             select: function (event, ui) {
