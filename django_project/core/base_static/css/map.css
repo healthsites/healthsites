@@ -2,7 +2,6 @@
     background: #eff0f0;
     margin-top: 53px;
 }
-
 .location-info {
     background: #fff;
     font-family: "Raleway", sans-serif;
@@ -10,17 +9,14 @@
     padding-bottom: 64px;
     z-index: 1;
 }
-
 .location-info .profile, .location-info .header {
     padding: 0 20px;
 }
-
 .location-info .profile {
     background: #eff0f0;
     padding-top: 10px;
     padding-bottom: 10px;
 }
-
 .avatar-holder {
     display: inline-block;
     height: 48px;
@@ -28,112 +24,91 @@
     position: relative;
     margin-right: 10px;
 }
-
 .frame {
     position: absolute;
     top: 0;
     left: 0;
 }
-
 .location-info .profile .name, .location-info .profile .name a {
     text-transform: uppercase;
     font-weight: 600;
     color: #3c4c57;
 }
-
 .details .header {
     padding-top: 18px;
     border-bottom: 1px solid #eff0f0;
 }
-
 .details h1 {
     font-size: 24px;
     font-weight: bold;
     margin: 0;
 }
-
 .details .sub {
     color: #737c83;
 }
-
 .location-info {
     position: relative;
 }
-
 .location-info .icon-holder {
     float: left;
     width: 53px;
     text-align: center;
     padding: 10px 0;
 }
-
 .location-info .icon-holder i {
     color: #afb4b7;
     font-size: 21px;
 }
-
 .location-info .data {
     margin-left: 48px;
     background: #f9f9f9;
     padding: 10px 20px 1px;
     font-family: "Ubuntu", sans-serif;
 }
-
 .details .line {
     border-bottom: 1px solid #eff0f0;
     clear: both;
 }
-
 #locality-info .updates p {
     font-style: italic;
     color: #919393;
 }
-
 #locality-info .updates .date, #locality-info .updates a {
     font-weight: 500;
     color: #3c4c57;
 }
-
 #locality-info .updates .full-list {
     display: block;
 }
-
 .find .address {
     font-size: 18px;
     font-weight: 400;
     margin-bottom: 5px;
 }
-
 .find .coordinates {
     font-style: italic;
     color: #919393;
 }
-
 .find .data i {
     font-size: 18px;
     margin-right: 4px;
 }
-
 .find .call {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 0;
 }
-
 .find .call .hours {
     margin-left: 20px;
 }
-
 .find .url {
     font-size: 16px;
     font-style: italic;
     margin-bottom: 0;
 }
-
 .find .url:last-child {
     margin-bottom: 10px;
 }
-
 .services h3 {
     margin-top: 0;
     font-style: italic;
@@ -142,41 +117,33 @@
     font-weight: 400;
     margin-bottom: 5px;
 }
-
 .services ul {
     padding: 0;
     max-width: 310px;
 }
-
 .services li {
     display: inline-block;
     font-size: 16px;
     margin-right: 10px;
 }
-
 .services li i {
     margin-right: 3px;
 }
-
 .beds p, .doctors p {
     font-size: 16px;
 }
-
 .location-info .buttons {
     position: fixed;
     bottom: 0;
     padding: 10px;
     background: #fff;
 }
-
 .buttons .button {
     display: block;
 }
-
 .map-page {
     position: relative;
 }
-
 #map {
     background: #c8e6ff;
     position: fixed;
@@ -185,23 +152,20 @@
     width: 100%;
     height: 100%
 }
-
-@media only screen and (max-width: 991px) {
-    .map-page {
-        background: #c8e6ff;
-        position: absolute;
-        top: 0;
-        right: 0;
-        left: 0;
-        width: 100%;
-    }
-
-    #map {
-        position: relative;
-        top: 0;
-    }
+ @media only screen and (max-width: 991px) {
+.map-page {
+    background: #c8e6ff;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
 }
-
+#map {
+    position: relative;
+    top: 0;
+}
+}
 .marker-icon {
     width: 48px;
     height: 46px;
@@ -211,30 +175,23 @@
     font-weight: bold;
     font-size: 11px;
 }
-
 #twitter_share_map:hover {
     cursor: pointer;
 }
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+ -webkit-appearance: none;
+ margin: 0;
 }
-
 input[type='checkbox'] {
     margin-right: 5px;
 }
-
 .remove_tag {
     cursor: pointer;
 }
-
 .remove_option {
     cursor: pointer;
     color: black;
 }
-
 #locality-statistic, #locality-default {
     background: #fff;
     -moz-border-radius: 5px;
@@ -246,32 +203,25 @@ input[type='checkbox'] {
     box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
     font-family: "Ubuntu", sans-serif;
 }
-
 #locality-statistic .date, #locality-statistic .time {
     font-style: italic;
 }
-
 #locality-statistic .name a {
     color: #f44a52;
 }
-
 #locality-default table, #locality-default td, #locality-default th {
     border: 1px solid #3c4c57;
     padding-left: 5px;
 }
-
 table, td, th {
     padding-right: 5px;
 }
-
 td input[type="text"] {
     width: 50px;
 }
-
 .ui-timepicker-standard {
     font-size: 12px;
 }
-
 table {
     border-collapse: collapse;
 }
