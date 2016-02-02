@@ -176,6 +176,10 @@
                             </tr>
                         </table>
                     </div>
+                    <div style="width: 100%; margin-top: 30px;">
+                        <a id="load-more">Load
+                            More</a>
+                    </div>
                 </div>
             </div>
             <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
@@ -521,6 +525,41 @@
 
 </script>
 <script type="text/javascript">
+    var $country_table;
+    var countries = [];
+    function loadCountry(country) {
+        var country_id = country.split(".").join("-");
+        country_id = country_id.split("&#39;").join("-");
+        country_id = country_id.split(" ").join("-");
+        country_id = country_id.split("(").join("-");
+        country_id = country_id.split(")").join("-");
+        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
+        $country_table.append(html);
+        $.ajax({
+            number: country_id + "-number",
+            completeness: country_id + "-complete",
+            url: "{% url 'countries-simple-data' %}",
+            dataType: 'json',
+            data: {
+                q: country
+            },
+            success: function (data) {
+                {# disabled links and completeness for #429 #}
+                $("#" + this.number).html(data.number);
+                $("#" + this.completeness).html(data.completeness);
+            },
+            fail: function (data) {
+                $("#" + this.number).html("fail");
+                $("#" + this.completeness).html("fail");
+            }
+        });
+    }
+    function loadMore() {
+        var count_row = ($($country_table).children('tbody').children('tr')).length - 1;
+        for (var i = count_row; i < countries.length && i < count_row + 10; i++) {
+            loadCountry(countries[i]);
+        }
+    }
     var APP;
     $(document).ready(function () {
         // Set viewport if exist
@@ -543,38 +582,18 @@
         // checking default view
         var url = window.location.href;
         if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
-            var $country_table = $('#country-table');
+            $country_table = $('#country-table');
             // render country data list
             {% if countries %}
                 {% for country in countries %}
                     var country = "{{ country.name }}";
-                    var country_id = country.split(".").join("-");
-                    country_id = country_id.split("&#39;").join("-");
-                    country_id = country_id.split(" ").join("-");
-                    country_id = country_id.split("(").join("-");
-                    country_id = country_id.split(")").join("-");
-                    {# disabled links and completeness for #429 #}
-                    var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
-                    $country_table.append(html);
-                    $.ajax({
-                        number: country_id + "-number",
-                        completeness: country_id + "-complete",
-                        url: "{% url 'countries-simple-data' %}",
-                        dataType: 'json',
-                        data: {
-                            q: country
-                        },
-                        success: function (data) {
-                            {# disabled links and completeness for #429 #}
-                            $("#" + this.number).html(data.number);
-                            $("#" + this.completeness).html(data.completeness);
-                        },
-                        fail: function (data) {
-                            $("#" + this.number).html("fail");
-                            $("#" + this.completeness).html("fail");
-                        }
-                    });
+                    countries.push(country);
                 {% endfor %}
+                // load by default
+                loadMore();
+                $('#load-more').click(function () {
+                    loadMore();
+                });
             {% endif %}
         }
         $("#locality-statistic").hide();
