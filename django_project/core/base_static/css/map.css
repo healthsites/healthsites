@@ -225,3 +225,13 @@ td input[type="text"] {
 table {
     border-collapse: collapse;
 }
+#load-more {
+    padding: 10px;
+    background-color: darkgray;
+    color: white;
+    cursor: pointer;
+}
+#load-more:hover {
+    text-decoration: none;
+    opacity: 0.8;
+}
