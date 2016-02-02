@@ -75,9 +75,11 @@ label.inline {
     margin-top: -53px;
 }
 .search-toggle {
-	   display: none;
-	   
-   }
+	display: none;	   
+}
+.ui-autocomplete {
+	z-index: 1500;
+}
    
 /* Prevents animation on initial page load. See lib.app.js */
 
