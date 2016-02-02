@@ -2,6 +2,10 @@
     background: #eff0f0;
     margin-top: 53px;
 }
+.sidebar-title {
+    text-align: center;
+    font-size: 18px;
+}
 #icons-nav {
     text-align: center;
     padding: 20px 0;
