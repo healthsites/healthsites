@@ -79,6 +79,7 @@ label.inline {
 .ui-autocomplete {
     z-index: 1200;
 }
+
 /* Prevents animation on initial page load. See lib.app.js */
 
 body:not(.animate) .animate {
