@@ -8,7 +8,7 @@ urlpatterns = patterns(
     url(r'^signin/$', UserSigninPage.as_view(), name='usersignpage'),
     url(r'^profile/$', UserProfilePage.as_view(), name='userprofilepage'),
     url(
-        r'^profile/(?P<username>[A-Za-z]+)/$', ProfilePage.as_view(),
+        r'^profile/(?P<username>.*)/$', ProfilePage.as_view(),
         name='profile'
     ),
     url(r'^logout/$', LogoutUser.as_view(), name='logout_user')
