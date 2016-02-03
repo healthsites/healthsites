@@ -2,6 +2,31 @@
     background: #eff0f0;
     margin-top: 53px;
 }
+.sidebar-title {
+    text-align: center;
+    font-size: 18px;
+}
+#icons-nav {
+    text-align: center;
+    padding: 20px 0;
+}
+#icons-nav a {
+    display: inline-block;
+    text-align: center;
+    width: 130px;
+    height: 44px;
+    color: #aaa;
+    font-size: 14px;
+}
+#icons-nav a:hover {
+    color: #f44a52;
+}
+#icons-nav i {
+    font-size: 30px;
+}
+#icons-nav span {
+    display: inline-block;
+}
 .location-info {
     background: #fff;
     font-family: "Raleway", sans-serif;
@@ -28,6 +53,14 @@
     position: absolute;
     top: 0;
     left: 0;
+}
+#load-more {
+    float: right;
+    border-radius: 10px;
+    background: #3c4c57;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
 }
 .location-info .profile .name, .location-info .profile .name a {
     text-transform: uppercase;
@@ -209,9 +242,26 @@ input[type='checkbox'] {
 #locality-statistic .name a {
     color: #f44a52;
 }
-#locality-default table, #locality-default td, #locality-default th {
-    border: 1px solid #3c4c57;
+#locality-default table {
+    border: none;
+    padding: 10px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    -webkit-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
+}
+#locality-default th {
+    font-weight: 600;
+}
+#locality-default td, #locality-default th {
+    border-bottom: 1px solid #eff0f0;
     padding-left: 5px;
+    line-height: 20px;
+}
+#locality-default td:last-child {
+    border-bottom: none;
 }
 table, td, th {
     padding-right: 5px;
