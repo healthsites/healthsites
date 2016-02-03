@@ -155,24 +155,26 @@
                 <div style="clear: both;"></div>
             </div>
             <div id="icons-nav">
-             <a class="browse" href="#"><i class="fa fa-globe"></i><span>Browse map</span></a>
-             <a class="search" href="#"><i class="fa fa-search"></i><span>Search</span></a>
-             <div class="search-block" style="display: none;">
-               <form action="map" method="POST">
-                    <div class="option-group">
-                      <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite" checked><span></span><label class="option"
-                                                                                                       for="radio-healthsite">healthsite</label>
-                      </div>
-                      <div class="option"><span></span><input type="radio" name="option" id="radio-place"
-                                                        value="place"><span></span><label class="option"
-                                                                                          for="radio-healthsite">place</label>
-                      </div>
-                    </div>
-                  <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
-               </form>
-             </div>
-             <a class="geolocate" href="#"><i class="fa fa-location-arrow"></i><span>Geolocate me</span></a>
+                <a class="browse" href="#"><i class="fa fa-globe"></i><span>Browse map</span></a>
+                <a class="search" href="#"><i class="fa fa-search"></i><span>Search</span></a>
+                <div class="search-block" style="display: none;">
+                    <form action="map" method="POST">
+                        <div class="option-group">
+                            <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
+                                                                    value="healthsite" checked><span></span><label
+                                    class="option"
+                                    for="radio-healthsite">healthsite</label>
+                            </div>
+                            <div class="option"><span></span><input type="radio" name="option" id="radio-place"
+                                                                    value="place"><span></span><label class="option"
+                                                                                                      for="radio-healthsite">place</label>
+                            </div>
+                        </div>
+                        <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit"
+                                                                                                     value="search">
+                    </form>
+                </div>
+                <a class="geolocate" href="#"><i class="fa fa-location-arrow"></i><span>Geolocate me</span></a>
             </div><!-- #icons-nav -->
             <div id="locality-default" style="display: none">
                 <div style="padding: 20px;">
@@ -185,7 +187,7 @@
                         and find out what resources exist at any individual healthcare facility.
                     </p>
                     <h2 class="sidebar-title "><span class="timer" data-speed="2500"
-                                             data-to="{{ locality_count }}">{{ locality_count }}</span>
+                                                     data-to="{{ locality_count }}">{{ locality_count }}</span>
                         healthsites listed</h2>
                     <div>
                         <table id="country-table" style="width:100%">
@@ -635,6 +637,12 @@
         {% elif country %}
             $("#title-name").html("{{ country }}");
             $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
+
+            // creating polygon
+            var polygon_raw = '{{ polygon|safe }}';
+            var polygon_json = JSON.parse(polygon_raw);
+            var polygon = polygon_json['coordinates'];
+            $APP.trigger('map.create-polygon', {'polygon': polygon});
         {% endif %}
         {% if viewport %}
             var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");

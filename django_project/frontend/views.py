@@ -127,7 +127,7 @@ def map(request):
         if country:
             result = get_country_statistic(country)
             result['country'] = country
-            print result
+            result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
         else:
             result['locality_count'] = Locality.objects.count()
             result['countries'] = Country.objects.order_by('name').values('name').distinct()
