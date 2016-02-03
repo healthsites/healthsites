@@ -181,6 +181,10 @@ window.MAP = (function () {
             $APP.on('map.update-bound', function (evt, payload) {
                 self._setFitBound(payload.southwest_lat, payload.southwest_lng, payload.northeast_lat, payload.northeast_lng);
             });
+
+            $APP.on('map.create-polygon', function (evt, payload) {
+                self._createPolygon(payload.polygon);
+            });
         },
 
         _setupNewLocalityLayer: function () {
@@ -239,6 +243,34 @@ window.MAP = (function () {
                 [southwest_lat, southwest_lng],
                 [northeast_lat, northeast_lng]
             ]);
+        },
+
+        _createPolygon: function (polygon) {
+            if (typeof this.geoJson !== "undefined") {
+                this.MAP.removeLayer(this.geoJson);
+            }
+            var mp = {
+                "type": "Feature",
+                "geometry": {
+                    "type": "MultiPolygon",
+                    "coordinates": polygon
+                },
+                "properties": {
+                    "name": "MultiPolygon",
+                    "style": {
+                        color: "blue",
+                        opacity: 0.4,
+                        fillColor: "blue",
+                        fillOpacity: 0.2
+                    }
+                }
+            };
+            this.geoJson = new L.GeoJSON(mp, {
+                style: function (feature) {
+                    return feature.properties.style
+                }
+            }).addTo(this.MAP);
+            this.MAP.fitBounds(this.geoJson.getBounds());
         }
     }
 

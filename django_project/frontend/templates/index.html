@@ -575,6 +575,14 @@
                     }
                     $("#country-title").html(country);
 
+                    // creating polygon
+                    var polygon_raw = data.polygon;
+                    if (polygon_raw) {
+                        var polygon_json = JSON.parse(polygon_raw);
+                        var polygon = polygon_json['coordinates'];
+                        $APP.trigger('map.create-polygon', {'polygon': polygon});
+                    }
+
                     {# country healthsite number #}
                     if (data.localities) {
                         $("#country-locality-number").html(data.localities);

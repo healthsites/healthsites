@@ -584,23 +584,7 @@ def search_locality_by_tag(query):
 def get_country_statistic(query):
     output = ""
     try:
-        northeast_lat = 0.0
-        northeast_lng = 0.0
-        southwest_lat = 0.0
-        southwest_lng = 0.0
         if query != "":
-            # getting viewport
-            try:
-                google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
-                gmaps = googlemaps.Client(key=google_maps_api_key)
-                geocode_result = gmaps.geocode(query)[0]
-                viewport = geocode_result['geometry']['viewport']
-                northeast_lat = viewport['northeast']['lat']
-                northeast_lng = viewport['northeast']['lng']
-                southwest_lat = viewport['southwest']['lat']
-                southwest_lng = viewport['southwest']['lng']
-            except:
-                print "except"
             # getting country's polygon
             country = Country.objects.get(
                     name__iexact=query)
@@ -614,9 +598,6 @@ def get_country_statistic(query):
             # query for each of attribute
             healthsites = Locality.objects.all()
             output = get_statistic(healthsites)
-
-        output["viewport"] = {"northeast_lat": northeast_lat, "northeast_lng": northeast_lng,
-                              "southwest_lat": southwest_lat, "southwest_lng": southwest_lng}
     except Country.DoesNotExist:
         output = ""
     return output
@@ -626,6 +607,10 @@ def search_locality_by_country(request):
     if request.method == 'GET':
         query = request.GET.get('q')
         output = get_country_statistic(query)
+        try:
+            output['polygon'] = Country.objects.get(name__iexact=query).polygon_geometry.geojson
+        except Country.DoesNotExist:
+            print "empty"
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')
