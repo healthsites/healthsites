@@ -36,8 +36,8 @@ $(document).ready(function () {
         }
     });
 	
-	$('.icons-nav a').click(function () {
-		$('.icons-nav a').removeClass("active");
+	$('#icons-nav a').click(function () {
+		$('#icons-nav a').removeClass("active");
 		$(this).addClass("active");
 		if ( $(this).hasClass("search")) {
 			$(".search-block").show();
