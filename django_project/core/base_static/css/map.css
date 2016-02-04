@@ -8,7 +8,7 @@
 }
 #icons-nav {
     text-align: center;
-    padding: 20px 0;
+    padding: 20px 0 0;
 }
 #icons-nav a {
     display: inline-block;
@@ -17,9 +17,10 @@
     height: 44px;
     color: #aaa;
     font-size: 14px;
+    margin-bottom: 20px;
 }
-#icons-nav a:hover, #icons-nav a.active {
-    color: #f44a52;
+#icons-nav a:hover, #icons-nav a.active, #icons-nav a:focus {
+    color: #3C4C57;
     text-decoration: none;
 }
 #icons-nav i {
@@ -31,6 +32,7 @@
 .search-block {
     background: #dadddf;
     padding: 26px 0;
+    margin-bottom: 20px;
 }
 .search-block .option-group {
     display: block;
@@ -112,8 +114,6 @@
 .search-block .option-group {
     width: auto;
 }
-
-
 .location-info {
     background: #fff;
     font-family: "Raleway", sans-serif;
