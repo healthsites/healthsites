@@ -102,13 +102,20 @@
     border-bottom: 1px solid #eff0f0;
     clear: both;
 }
-#locality-info .updates p {
+#locality-info .updates .more div {
     font-style: italic;
     color: #919393;
 }
 #locality-info .updates .date, #locality-info .updates a {
     font-weight: 500;
     color: #3c4c57;
+}
+.more-list {
+    cursor: pointer;
+}
+.more-list:hover {
+    text-decoration: none;
+    opacity: 0.7;
 }
 #locality-info .updates .full-list {
     display: block;

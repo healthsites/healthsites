@@ -67,6 +67,12 @@ urlpatterns = patterns(
     ),
 
     url(
+        r'^locality/updates$',
+        'localities.views.get_locality_update',
+        name='locality-updates'
+    ),
+
+    url(
         r'^upload-form$', DataLoaderView.as_view(), name='upload-form'
     ),
     url(

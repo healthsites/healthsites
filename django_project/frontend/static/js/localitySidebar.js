@@ -730,6 +730,7 @@ window.LocalitySidebar = (function () {
                 var updates = this.locality_data.updates;
                 if (updates[0]) {
                     this.$lastupdate.text(getDateString(updates[0]['last_update']));
+                    this.$lastupdate.data("data", {date: updates[0]['last_update']});
                     this.$uploader.text("@" + updates[0]['uploader']);
                     this.$uploader.attr("href", "profile/" + updates[0]['uploader']);
                 }
@@ -1039,6 +1040,7 @@ window.LocalitySidebar = (function () {
                 } else {
                     var zoomto = false;
                 }
+                $("#see-more-list").data("data", {uuid: self.locality_uuid});
                 $APP.trigger('locality.info', {
                     'locality_uuid': self.locality_uuid,
                     'geom': data.geom,

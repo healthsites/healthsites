@@ -135,7 +135,6 @@ class LocalityInfo(JSONResponseMixin, DetailView):
             updates = []
             last_updates = DataHistory.objects.filter(locality=self.object).order_by('-time_changed')[
                            :10]
-            print last_updates
             for last_update in last_updates:
                 updates.append({"last_update": last_update.time_changed,
                                 "uploader": last_update.author.username});
@@ -649,7 +648,6 @@ def get_simple_statistic_by_country(request):
         try:
             output = {}
             # getting country's polygon
-            print query
             country = Country.objects.get(
                     name__iexact=query)
             polygons = country.polygon_geometry
@@ -673,9 +671,27 @@ def get_simple_statistic_by_country(request):
 
             result = json.dumps(output)
         except Country.DoesNotExist:
-            print "not exist"
             result = []
             result = json.dumps(result)
 
         result = json.dumps(output)
         return HttpResponse(result, content_type='application/json')
+
+
+def get_locality_update(request):
+    if request.method == 'GET':
+        date = request.GET.get('date')
+        uuid = request.GET.get('uuid')
+        if date == "":
+            date = datetime.datetime.now()
+        last_updates = DataHistory.objects.filter(locality__uuid=uuid).order_by('-time_changed').filter(
+                time_changed__lt=date)[
+                       :10]
+        output = []
+        for last_update in last_updates:
+            output.append({"last_update": last_update.time_changed,
+                           "uploader": last_update.author.username});
+        print output
+        result = json.dumps(output, cls=DjangoJSONEncoder)
+
+    return HttpResponse(result, content_type='application/json')
