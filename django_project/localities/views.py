@@ -12,9 +12,11 @@ import signals  # noqa
 from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification, Tag
+from .models import LocalityArchive, ValueArchive
 from .utils import render_fragment, parse_bbox
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 from datetime import datetime
+import time
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse
@@ -130,17 +132,17 @@ class LocalityInfo(JSONResponseMixin, DetailView):
 
         obj_repr.update({'tags': tags_text})
 
-        # getting last update
+        # get latest update
         try:
             updates = []
-            last_updates = DataHistory.objects.filter(locality=self.object).order_by('-time_changed')[
-                           :10]
+            last_updates = locality_updates(self.object.id, datetime.now())
             for last_update in last_updates:
-                updates.append({"last_update": last_update.time_changed,
-                                "uploader": last_update.author.username});
+                updates.append({"last_update": last_update['changeset__created'],
+                                "uploader": last_update['changeset__social_user__username'],
+                                "changeset_id": last_update['changeset']});
             obj_repr.update({'updates': updates})
-        except DataHistory.DoesNotExist:
-            print "DataHistory not exist"
+        except Exception as e:
+            print e
 
         return self.render_json_response(obj_repr)
 
@@ -684,14 +686,59 @@ def get_locality_update(request):
         uuid = request.GET.get('uuid')
         if date == "":
             date = datetime.datetime.now()
-        last_updates = DataHistory.objects.filter(locality__uuid=uuid).order_by('-time_changed').filter(
-                time_changed__lt=date)[
-                       :10]
+        locality = Locality.objects.get(uuid=uuid)
+        last_updates = locality_updates(locality.id, date)
         output = []
         for last_update in last_updates:
-            output.append({"last_update": last_update.time_changed,
-                           "uploader": last_update.author.username});
+            output.append({"last_update": last_update['changeset__created'],
+                           "uploader": last_update['changeset__social_user__username'],
+                           "changeset_id": last_update['changeset']});
         print output
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')
+
+
+def extract_time(json):
+    try:
+        # Also convert to int since update_time will be string.  When comparing
+        # strings, "10" is smaller than "2".
+        return int(time.mktime(json['changeset__created'].timetuple()))
+    except KeyError:
+        return 0
+
+
+def locality_updates(locality_id, date):
+    updates = []
+    try:
+        updates1 = LocalityArchive.objects.filter(object_id=locality_id).filter(changeset__created__lt=date).order_by(
+                '-changeset__created').values(
+                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+                edit_count=Count('changeset'))[:10]
+        for update in updates1:
+            updates.append(update)
+        updates2 = ValueArchive.objects.filter(locality_id=locality_id).filter(changeset__created__lt=date).order_by(
+                '-changeset__created').values(
+                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+                edit_count=Count('changeset'))[:10]
+        for update in updates2:
+            updates.append(update)
+        updates.sort(key=extract_time, reverse=True)
+    except LocalityArchive.DoesNotExist:
+        print "Locality Archive not exist"
+    return updates[:10]
+
+
+def localities_updates(locality_ids, date):
+    updates = []
+    try:
+        updates1 = LocalityArchive.objects.filter(object_id__in=locality_ids).filter(
+                changeset__created__lt=date).order_by(
+                '-changeset__created').values(
+                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+                edit_count=Count('changeset__created'))[:10]
+        for update in updates1:
+            updates.append(update)
+    except LocalityArchive.DoesNotExist:
+        print "Locality Archive not exist"
+    return updates[:10]
