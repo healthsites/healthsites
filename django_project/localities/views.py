@@ -547,6 +547,7 @@ def get_statistic(healthsites):
               "localities": healthsites_number}
     # updates
     last_updates = []
+    localities_updates(healthsites)
     historys = DataHistory.objects.filter(locality__in=healthsites).order_by(
             '-time_changed').values('time_changed', 'author__username',
                                     'mode').annotate(
@@ -729,16 +730,23 @@ def locality_updates(locality_id, date):
     return updates[:10]
 
 
-def localities_updates(locality_ids, date):
+def localities_updates(locality_ids):
     updates = []
     try:
-        updates1 = LocalityArchive.objects.filter(object_id__in=locality_ids).filter(
-                changeset__created__lt=date).order_by(
+        updates1 = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
                 '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
                 edit_count=Count('changeset__created'))[:10]
         for update in updates1:
             updates.append(update)
+        updates2 = ValueArchive.objects.filter(object_id__in=locality_ids).order_by(
+                '-changeset__created').values(
+                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+                edit_count=Count('changeset'))[:10]
+        for update in updates2:
+            updates.append(update)
+        updates.sort(key=extract_time, reverse=True)
+        print updates
     except LocalityArchive.DoesNotExist:
         print "Locality Archive not exist"
     return updates[:10]
