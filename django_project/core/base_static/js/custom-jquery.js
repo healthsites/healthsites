@@ -35,7 +35,17 @@ $(document).ready(function () {
             }
         }
     });
-
+	
+    $('#icons-nav a').click(function () {		
+        $(this).toggleClass("active");
+        $(this).siblings().removeClass("active");		
+        if ( $(this).hasClass("search" ) && $(this).hasClass("active" )) {
+            $(".search-block").show();
+        }
+        else {
+            $(".search-block").hide();
+        }
+    });
 
     $("#locality-name").bind("DOMSubtreeModified", function () {
         $(this).parent().stop().animate({
