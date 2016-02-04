@@ -19,7 +19,11 @@
     font-size: 14px;
     margin-bottom: 20px;
 }
-#icons-nav a:hover, #icons-nav a.active, #icons-nav a:focus {
+#icons-nav a:hover, #icons-nav a:focus {
+    color: #8d8d8d;
+    text-decoration: none;
+}
+#icons-nav a.active {
     color: #3C4C57;
     text-decoration: none;
 }
