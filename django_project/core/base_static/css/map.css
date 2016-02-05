@@ -40,7 +40,7 @@
 }
 .search-block .option-group {
     display: block;
- }
+}
 .search-block .option-group label {
     font-size: 13px;
     font-weight: 400;
@@ -381,4 +381,21 @@ table {
 #load-more:hover {
     text-decoration: none;
     opacity: 0.8;
+}
+@media only screen and (max-width: 640px) {
+#icons-nav span {
+    display: inline-block;
+}
+#icons-nav a {
+    height: 35px;
+    margin-bottom: 10px;
+}
+#icons-nav i {
+   font-size: 24px;
+   margin-right: 10px;
+}
+.search-block {
+  margin-bottom: 10px;
+  padding: 16px 0;
+}
 }
