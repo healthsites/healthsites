@@ -21,11 +21,11 @@ from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, Max
 from django.http import HttpResponse, Http404
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
-from localities.models import Country, DataHistory, DataLoader
+from localities.models import Country, DataLoader
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -290,15 +290,17 @@ def locality_edit(request):
             if json_request['is_valid'] == True:
                 locality = Locality.objects.get(uuid=json_request['uuid'])
                 locality.set_geom(float(json_request['long']), float(json_request['lat']))
+                # there are some changes so create a new changeset
+                tmp_changeset = Changeset.objects.create(
+                        social_user=request.user
+                )
+                locality.changeset = tmp_changeset
                 locality.save()
-                locality.set_values(json_request, request.user)
+                locality.set_values(json_request, request.user, tmp_changeset)
                 try:
                     extract_tag_and_save(locality, json_request['tags'], request.user)
                 except Exception as e:
                     print e;
-                # create history
-                time = datetime.utcnow()
-                locality.update_history(time, 2, request.user)
 
                 return HttpResponse(json.dumps(
                         {"valid": json_request['is_valid'], "uuid": json_request['uuid']}))
@@ -335,12 +337,9 @@ def locality_create(request):
                         float(json_request['long']), float(json_request['lat'])
                 )
                 loc.save()
-                loc.set_values(json_request, request.user)
+                loc.set_values(json_request, request.user, tmp_changeset)
                 extract_tag_and_save(loc, json_request['tags'], request.user)
 
-                # create history
-                time = datetime.utcnow()
-                loc.update_history(time, 1, request.user)
                 return HttpResponse(json.dumps(
                         {"valid": json_request['is_valid'], "uuid": tmp_uuid}))
             else:
@@ -372,7 +371,6 @@ class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
         queryset = queryset.filter(name=self.kwargs.get('domain'))
 
         obj = queryset.get()
-        return obj
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -547,29 +545,36 @@ def get_statistic(healthsites):
               "localities": healthsites_number}
     # updates
     last_updates = []
-    localities_updates(healthsites)
-    historys = DataHistory.objects.filter(locality__in=healthsites).order_by(
-            '-time_changed').values('time_changed', 'author__username',
-                                    'mode').annotate(
-            value_count=Count('time_changed'))[:5]
-    for update in historys:
+    histories = localities_updates(healthsites)
+    for update in histories:
         update['locality_uuid'] = ""
         update['locality'] = ""
-        if update['value_count'] == 1:
-            # get the locality
-            data_history = DataHistory.objects.filter(time_changed=update['time_changed'],
-                                                      author__username=update['author__username'],
-                                                      mode=update['mode'])
-            locality_name = Value.objects.filter(locality=data_history[0].locality).filter(
-                    specification__attribute__key='name')
-            update['locality_uuid'] = data_history[0].locality.uuid
-            update['locality'] = locality_name[0].data
+        if update['edit_count'] == 1:
+            # get the locality to show in web
+            try:
+                locality = Locality.objects.get(pk=update['locality_id'])
+                locality_name = Value.objects.filter(locality=locality).filter(
+                        specification__attribute__key='name')
+                update['locality_uuid'] = locality.uuid
+                update['locality'] = locality_name[0].data
+            except Locality.DoesNotExist:
+                update['locality_uuid'] = "unknown"
+                update['locality'] = "unknown"
 
-        last_updates.append({"author": update['author__username'],
-                             "date_applied": update['time_changed'],
-                             "mode": update['mode'], "locality": update['locality'],
+        if 'version' in update:
+            if update['version'] == 1:
+                update['mode'] = 1
+            else:
+                update['mode'] = 2
+        else:
+            update['mode'] = 1
+
+        last_updates.append({"author": update['changeset__social_user__username'],
+                             "date_applied": update['changeset__created'],
+                             "mode": update['mode'],
+                             "locality": update['locality'],
                              "locality_uuid": update['locality_uuid'],
-                             "data_count": update['value_count']})
+                             "data_count": update['edit_count']})
     output["last_update"] = last_updates;
     return output
 
@@ -715,19 +720,27 @@ def locality_updates(locality_id, date):
         updates1 = LocalityArchive.objects.filter(object_id=locality_id).filter(changeset__created__lt=date).order_by(
                 '-changeset__created').values(
                 'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-                edit_count=Count('changeset'))[:10]
+                edit_count=Count('changeset'))[:15]
         for update in updates1:
             updates.append(update)
-        updates2 = ValueArchive.objects.filter(locality_id=locality_id).filter(changeset__created__lt=date).order_by(
+        updates2 = ValueArchive.objects.filter(locality_id=locality_id).filter(
+                changeset__created__lt=date).order_by(
                 '-changeset__created').values(
                 'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-                edit_count=Count('changeset'))[:10]
+                edit_count=Count('changeset'))[:15]
         for update in updates2:
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
         print "Locality Archive not exist"
-    return updates[:10]
+
+    output = []
+    prev_changeset = 0
+    for update in updates:
+        if prev_changeset != update['changeset']:
+            output.append(update)
+        prev_changeset = update['changeset']
+    return output[:10]
 
 
 def localities_updates(locality_ids):
@@ -736,17 +749,25 @@ def localities_updates(locality_ids):
         updates1 = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
                 '-changeset__created').values(
                 'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-                edit_count=Count('changeset__created'))[:10]
+                edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
         for update in updates1:
             updates.append(update)
-        updates2 = ValueArchive.objects.filter(object_id__in=locality_ids).order_by(
+        print updates1
+        updates2 = ValueArchive.objects.filter(locality_id__in=locality_ids).filter(version__gt=1).order_by(
                 '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-                edit_count=Count('changeset'))[:10]
+                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+                edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
         for update in updates2:
             updates.append(update)
-        updates.sort(key=extract_time, reverse=True)
         print updates
+        updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
         print "Locality Archive not exist"
-    return updates[:10]
+
+    output = []
+    prev_changeset = 0
+    for update in updates:
+        if prev_changeset != update['changeset']:
+            output.append(update)
+        prev_changeset = update['changeset']
+    return output[:10]

@@ -905,6 +905,9 @@
                     html += '<span class="name">';
                     html += ' <a href="profile/' + data[i]['uploader'] + '">@' + data[i]['uploader'] + '</a>';
                     html += '</span>';
+                    html += '<span>';
+                    html += ' - <a href="#">' + data[i]['changeset_id'] + '</a>';
+                    html += '</span>';
                     html += '</div>';
                     $('#full-list').append(html);
                     var lastChilds = $('#full-list').children();

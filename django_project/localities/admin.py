@@ -8,7 +8,6 @@ from .models import (
     DataLoader,
     Country,
     Tag,
-    DataHistory
 )
 from .forms import DomainModelForm
 
@@ -63,11 +62,3 @@ class TagAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Tag, TagAdmin)
-
-
-class HistoryAdmin(admin.ModelAdmin):
-    list_display = (
-        'locality', 'time_changed', 'mode', 'author')
-
-
-admin.site.register(DataHistory, HistoryAdmin)

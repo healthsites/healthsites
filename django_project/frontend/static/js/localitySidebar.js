@@ -610,6 +610,8 @@ window.LocalitySidebar = (function () {
             if (typeof to2 !== 'undefined' && to2 != "") $(list_input[4]).val(to2);
         },
         showDefaultEdit: function (evt) {
+            $('#full-list').html("");
+            $('#see-more-list').show();
             $("#locality-statistic").hide();
             $("#locality-info").show();
             $("#locality-default").hide();

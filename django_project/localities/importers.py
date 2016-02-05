@@ -259,8 +259,6 @@ class CSVImporter:
 
                 self.report['modified'] += 1
 
-            loc.update_history(self.data_loader.date_time_uploaded, self.data_loader.data_loader_mode, self.user);
-
     def envelope(self, lon, lat):
         """Return polygon envelope for point (lon, lat)
         """
