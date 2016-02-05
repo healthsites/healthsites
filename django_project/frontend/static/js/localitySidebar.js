@@ -448,12 +448,16 @@ window.LocalitySidebar = (function () {
             this.$saveButton.hide();
             this.$createButton.hide();
             this.$line_updates.show();
-            if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create" && isLoggedIn))) {
+            if (isEditingMode && !isLoggedIn) {
+                console.log("sigin");
+                window.location.href = "/signin/";
+            } else if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create"))) {
                 if (mode == "edit" && is_enable_edit) {
                     this.$saveButton.show();
                     this.showInfo();
                     $APP.trigger('locality.edit');
-                } else {
+                }
+                else {
                     this.$createButton.show();
                     this.$line_updates.hide();
                     this.showDefaultEdit();
@@ -478,10 +482,7 @@ window.LocalitySidebar = (function () {
         },
 
         setEnable: function (input) {
-            this.$addButton.css({'opacity': 0.7});
-            if (isLoggedIn) {
-                this.$addButton.css({'opacity': 1});
-            }
+            this.$addButton.css({'opacity': 1});
             is_enable_edit = input;
             if (input) {
                 this.$editButton.css({'opacity': 1});
@@ -679,6 +680,7 @@ window.LocalitySidebar = (function () {
 
         },
         showDefaultInfo: function (evt) {
+            $APP.trigger('locality.history-hide');
             this.showDefaultEdit();
             this.$name.text(no_name);
             this.$nature_of_facility.text(need_information);
@@ -714,10 +716,6 @@ window.LocalitySidebar = (function () {
         showInfo: function (evt) {
             // reset first
             this.showDefaultInfo();
-            // set disable
-            if (isLoggedIn) {
-                this.setEnable(true);
-            }
 
             // COORDINATE AND COMPLETNESS
             {
@@ -1034,7 +1032,21 @@ window.LocalitySidebar = (function () {
 
         getInfo: function (evt, payload) {
             var self = this;
-            $.getJSON('/localities/' + this.locality_uuid, function (data) {
+            var url = '/localities/' + this.locality_uuid;
+            if (payload) {
+                if (payload.changeset) {
+                    url += "/" + payload.changeset;
+                }
+            }
+            $.getJSON(url, function (data) {
+                if (data.history) {
+                    self.setEnable(false);
+                    $APP.trigger('locality.history-show', {
+                        'geom': data.geom
+                    });
+                } else {
+                    self.setEnable(true);
+                }
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {
@@ -1042,12 +1054,17 @@ window.LocalitySidebar = (function () {
                 } else {
                     var zoomto = false;
                 }
-                $("#see-more-list").data("data", {uuid: self.locality_uuid});
                 $APP.trigger('locality.info', {
                     'locality_uuid': self.locality_uuid,
                     'geom': data.geom,
                     'zoomto': zoomto
                 });
+                var updates = data.updates;
+                if (updates.length <= 1) {
+                    console.log(updates);
+                    $("#see-more-list").hide();
+                }
+                $("#see-more-list").data("data", {uuid: self.locality_uuid});
             });
         },
 
@@ -1056,7 +1073,7 @@ window.LocalitySidebar = (function () {
 
             $APP.on('locality.map.click', function (evt, payload) {
                 self.locality_uuid = payload.locality_uuid;
-                self.$sidebar.trigger('get-info', {'zoomto': payload.zoomto});
+                self.$sidebar.trigger('get-info', {'zoomto': payload.zoomto, 'changeset': payload.changeset});
             });
             $APP.on('locality.map.move', function (evt, payload) {
                 self.$sidebar.trigger('update-coordinates', payload);

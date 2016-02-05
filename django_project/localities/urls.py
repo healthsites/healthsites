@@ -20,6 +20,10 @@ urlpatterns = patterns(
         name='locality-info'
     ),
     url(
+        r'^localities/(?P<uuid>\w{32})/(?P<changes>[0-9].*)$', LocalityInfo.as_view(),
+        name='locality-info-history'
+    ),
+    url(
         r'^localities/(?P<uuid>\w{32})/form$', LocalityUpdate.as_view(),
         name='locality-update'
     ),
@@ -53,7 +57,7 @@ urlpatterns = patterns(
         'localities.views.search_tags',
         name='tags'
     ),
-    
+
     url(
         r'^countries/simpledata$',
         'localities.views.get_simple_statistic_by_country',

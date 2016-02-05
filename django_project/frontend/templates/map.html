@@ -906,7 +906,7 @@
                     html += ' <a href="profile/' + data[i]['uploader'] + '">@' + data[i]['uploader'] + '</a>';
                     html += '</span>';
                     html += '<span>';
-                    html += ' - <a href="#">' + data[i]['changeset_id'] + '</a>';
+                    html += ' - <a style="cursor:pointer" onclick="gotochangeset(\'' + data[i]['changeset_id'] + '\',\'' + uuid + '\')">' + data[i]['changeset_id'] + '</a>';
                     html += '</span>';
                     html += '</div>';
                     $('#full-list').append(html);
@@ -916,6 +916,9 @@
             },
         });
     })
+    function gotochangeset(changeset, uuid) {
+        window.location.href = "/map#!/locality/" + uuid + "/" + changeset;
+    }
     function split(element) {
         $(element).html('and');
         $(element).parent('tr').find('.time2').css({'opacity': 1});

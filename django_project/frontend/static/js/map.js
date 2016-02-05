@@ -152,6 +152,17 @@ window.MAP = (function () {
                 self.pointLayer.setLatLng([0, 0]);
             });
 
+            $APP.on('locality.history-show', function (evt, payload) {
+                self.historyLayer.setLatLng([payload.geom[1], payload.geom[0]]);
+                self.MAP.addLayer(self.historyLayer);
+                self.MAP.panTo(payload.geom);
+            });
+
+            $APP.on('locality.history-hide', function (evt, payload) {
+                self.MAP.removeLayer(self.historyLayer);
+                self.historyLayer.setLatLng([0, 0]);
+            });
+
 
             $APP.on('locality.info', function (evt, payload) {
                 // remove edit marker if it exists
@@ -217,6 +228,10 @@ window.MAP = (function () {
 
             this.pointLayer.on('dragend', function (evt) {
                 $APP.trigger('locality.map.move', {'latlng': evt.target._latlng});
+            });
+
+            this.historyLayer = L.marker([0, 0], {
+                'icon': this.redIcon
             });
         },
 

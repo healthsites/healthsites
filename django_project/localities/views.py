@@ -120,6 +120,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
                 self.object.domain.template_fragment, obj_repr
         )
         obj_repr.update({'repr': data_repr})
+
         num_data = len(obj_repr['values']) + 1  # geom
         completeness = (num_data + 0.0) / (attribute_count + 0.0) * 100  # percentage
         obj_repr.update({'completeness': '%s%%' % format(completeness, '.2f')})
@@ -143,6 +144,35 @@ class LocalityInfo(JSONResponseMixin, DetailView):
             obj_repr.update({'updates': updates})
         except Exception as e:
             print e
+
+        # FOR HISTORY
+        obj_repr['history'] = False
+        if kwargs.has_key("changes"):
+            changes = kwargs['changes']
+            changeset = Changeset.objects.get(id=changes)
+            obj_repr['updates'][0]['last_update'] = changeset.created
+            obj_repr['updates'][0]['uploader'] = changeset.social_user.username
+            obj_repr['updates'][0]['changeset_id'] = changes
+            try:
+                localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
+                for archive in localityArchives:
+                    obj_repr['geom'] = (archive.geom.x, archive.geom.y)
+                    obj_repr['history'] = True
+            except LocalityArchive.DoesNotExist:
+                print "next"
+
+            try:
+                localityArchives = ValueArchive.objects.filter(changeset=changes).filter(locality_id=self.object.id)
+                for archive in localityArchives:
+                    try:
+                        specification = Specification.objects.get(id=archive.specification_id)
+                        obj_repr['values'][specification.attribute.key] = archive.data
+                        obj_repr['history'] = True
+                    except Specification.DoesNotExist:
+                        print "next"
+            except LocalityArchive.DoesNotExist:
+                print "next"
+        print obj_repr
 
         return self.render_json_response(obj_repr)
 
@@ -752,14 +782,12 @@ def localities_updates(locality_ids):
                 edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
         for update in updates1:
             updates.append(update)
-        print updates1
         updates2 = ValueArchive.objects.filter(locality_id__in=locality_ids).filter(version__gt=1).order_by(
                 '-changeset__created').values(
                 'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
                 edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
         for update in updates2:
             updates.append(update)
-        print updates
         updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
         print "Locality Archive not exist"

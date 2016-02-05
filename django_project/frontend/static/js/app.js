@@ -31,6 +31,10 @@ window.APP = (function () {
             crossroads.addRoute('/locality/{uuid}', function (uuid) {
                 $APP.trigger('locality.map.click', {'locality_uuid': uuid, 'zoomto': true});
             });
+            //setup crossroads
+            crossroads.addRoute('/locality/{uuid}/{changeset}', function (uuid, changeset) {
+                $APP.trigger('locality.map.click', {'locality_uuid': uuid, 'zoomto': true, 'changeset': changeset});
+            });
 
             //setup hasher
             hasher.prependHash = '!';
