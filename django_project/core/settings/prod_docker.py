@@ -40,3 +40,7 @@ EMAIL_HOST_USER = 'noreply@healthsites.io'
 EMAIL_HOST_PASSWORD = 'docker'
 EMAIL_USE_TLS = False
 EMAIL_SUBJECT_PREFIX = '[healthsites]'
+
+# production specific environment settings
+STATIC_ROOT = '/home/web/static'
+MEDIA_ROOT = '/home/web/media'
