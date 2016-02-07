@@ -6,6 +6,8 @@
         options: {
             url: ''
         },
+        tag: '',
+        geoname: '',
 
         initialize: function (options) {
             L.LayerGroup.prototype.initialize.call(this, []);
@@ -159,14 +161,16 @@
             }
             var bb = this._map.getBounds();
 
-            if (this._curReq && this._curReq.abort)
+            if (this._curReq && this._curReq.abort){
                 this._curReq.abort();       //prevent parallel requests
+            }
+
             var url = this.options.url + L.Util.getParamString({
                     'bbox': bb.toBBoxString(),
                     'zoom': this._map.getZoom(),
                     'iconsize': [48, 46],
                     'geoname': this.geoname,
-                    'tag': this.tag,
+                    'tag': this.tag
                 });
 
             // when using cached data we don't need to make any new requests
@@ -228,11 +232,20 @@
         },
 
         updateGeoname: function (geoname) {
-            this.geoname = geoname;
+            if (geoname) {
+                this.geoname = geoname;
+            } else {
+                this.geoname = '';
+            }
         },
 
         updateTag: function (tag) {
-            this.tag = tag;
+            if (tag) {
+                this.tag = tag;
+            } else {
+                this.tag = '';
+            }
+
         }
     });
 
