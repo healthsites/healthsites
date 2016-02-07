@@ -73,3 +73,5 @@ PIPELINE_CSS['project'] = {
 
 # define cluster cache directory (directory must exist)
 CLUSTER_CACHE_DIR = '/tmp'
+
+CLUSTER_CACHE_MAX_ZOOM = 5

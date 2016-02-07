@@ -16,7 +16,7 @@ from localities.map_clustering import cluster
 
 class Command(BaseCommand):
 
-    args = '<max_zoom> <icon_size>'
+    args = '<icon_width> <icon_height>'
     help = 'Generate locality cluster cache'
 
     option_list = BaseCommand.option_list + (
@@ -32,20 +32,15 @@ class Command(BaseCommand):
             raise CommandError('Missing required arguments')
 
         try:
-            max_zoom = int(args[0])
-            icon_size = [int(size) for size in args[1].split(',')]
+            icon_size = [int(size) for size in args[0:2]]
         except Exception as e:
             raise CommandError(str(e))
 
-        if max_zoom < 0 or max_zoom > 7:
-            raise CommandError('Max zoom should be between 0 and 6')
         if any((size < 0 for size in icon_size)):
             # icon sizes should be positive
             raise CommandError('Icon sizes should be positive numbers')
-        if len(icon_size) != 2:
-            raise CommandError('Icon size a comma delimited height,width')
 
-        for zoom in range(max_zoom):
+        for zoom in range(settings.CLUSTER_CACHE_MAX_ZOOM + 1):
             filename = os.path.join(
                 settings.CLUSTER_CACHE_DIR,
                 '{}_{}_{}_localities.json'.format(zoom, *icon_size)

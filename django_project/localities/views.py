@@ -69,7 +69,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         bbox, zoom, iconsize, geoname, tag = self._parse_request_params(request)
 
         # if geoname and tag are not set we can return the cached layer
-        if not(all([geoname, tag])) and zoom < 6:
+        if not(all([geoname, tag])) and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
             # try to read localities from disk
             filename = os.path.join(
                 settings.CLUSTER_CACHE_DIR,
