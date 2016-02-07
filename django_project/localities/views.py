@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
+import os
 import logging
 from django.core.serializers.json import DjangoJSONEncoder
-
-LOG = logging.getLogger(__name__)
 
 import googlemaps
 import json
@@ -24,6 +23,8 @@ from django.http import HttpResponse, Http404
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from localities.models import Country, DataHistory, DataLoader
+
+LOG = logging.getLogger(__name__)
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -47,8 +48,8 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             bbox_poly = parse_bbox(request.GET.get('bbox'))
             zoom = int(request.GET.get('zoom'))
             icon_size = map(int, request.GET.get('iconsize').split(','))
-            geoname = request.GET.get('geoname');
-            tag = request.GET.get('tag');
+            geoname = request.GET.get('geoname')
+            tag = request.GET.get('tag')
 
         except:
             # return 404 if any of parameters are missing or not parsable
@@ -66,30 +67,59 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
     def get(self, request, *args, **kwargs):
         # parse request params
         bbox, zoom, iconsize, geoname, tag = self._parse_request_params(request)
-        # cluster Localites for a view
-        localities = Locality.objects.in_bbox(bbox)
-        exception = False
-        try:
-            if geoname != "":
-                # getting country's polygon
-                country = Country.objects.get(
-                        name__iexact=geoname)
-                polygon = country.polygon_geometry
-                localities = localities.in_polygon(polygon)
-        except Country.DoesNotExist:
-            if geoname != "" and geoname != "undefined":
-                exception = True
-            else:
-                # searching by tag
-                if tag != "" and tag != "undefined":
-                    tags = Tag.objects.filter(tag=tag).values_list('locality')
-                    localities = Locality.objects.filter(pk__in=tags)
 
-        object_list = []
-        if not exception:
-            object_list = cluster(localities, zoom, *iconsize)
+        # if geoname and tag are not set we can return the cached layer
+        if not(all([geoname, tag])) and zoom < 6:
+            # try to read localities from disk
+            filename = os.path.join(
+                settings.CLUSTER_CACHE_DIR,
+                '{}_{}_{}_localities.json'.format(zoom, *iconsize)
+            )
 
-        return self.render_json_response(object_list)
+            try:
+                cached_locs = open(filename, 'rb')
+                cached_data = cached_locs.read()
+
+                return HttpResponse(
+                    cached_data, content_type='application/json', status=200
+                )
+            except IOError as e:
+                localities = Locality.objects.in_bbox(parse_bbox('-180,-90,180,90'))
+                object_list = cluster(localities, zoom, *iconsize)
+
+                # create the missing cache
+                with open(filename, 'wb') as cache_file:
+                    json.dump(object_list, cache_file)
+
+                return self.render_json_response(object_list)
+
+            # cache localities for the zoom level and full bbox
+
+        else:
+            # cluster Localites for a view
+            localities = Locality.objects.in_bbox(bbox)
+            exception = False
+            try:
+                if geoname != "":
+                    # getting country's polygon
+                    country = Country.objects.get(
+                            name__iexact=geoname)
+                    polygon = country.polygon_geometry
+                    localities = localities.in_polygon(polygon)
+            except Country.DoesNotExist:
+                if geoname != "" and geoname != "undefined":
+                    exception = True
+                else:
+                    # searching by tag
+                    if tag != "" and tag != "undefined":
+                        tags = Tag.objects.filter(tag=tag).values_list('locality')
+                        localities = Locality.objects.filter(pk__in=tags)
+
+            object_list = []
+            if not exception:
+                object_list = cluster(localities, zoom, *iconsize)
+
+            return self.render_json_response(object_list)
 
 
 class LocalityInfo(JSONResponseMixin, DetailView):

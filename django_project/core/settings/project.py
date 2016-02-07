@@ -69,3 +69,7 @@ PIPELINE_CSS['project'] = {
         'media': 'screen, projection',
     },
 }
+
+
+# define cluster cache directory (directory must exist)
+CLUSTER_CACHE_DIR = '/tmp'
