@@ -284,11 +284,13 @@ window.LocalitySidebar = (function () {
                     tags = tags.split(",");
                     tags = tags.getUnique();
                     for (var i = 0; i < tags.length; i++) {
+                        tags[i] = $.trim(tags[i]);
                         if (tags[i].length > 0 && tags[i].length < 3) {
                             isFormValid = false;
                         }
                     }
                     tags = tags.join(separator);
+                    tags = "|" + tags + "|";
 
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
@@ -296,7 +298,7 @@ window.LocalitySidebar = (function () {
                     fields += '&url=' + encodeURIComponent(urls_output[0]) + '&data_source=' + encodeURIComponent(urls_output[1]) + '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient) +
-                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + tags;
+                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags);
 
                     // GET DEFINING HOURS
                     fields += "&defining_hours=" + that.getDefiningHoursFormat()["format1"];
@@ -716,7 +718,6 @@ window.LocalitySidebar = (function () {
         showInfo: function (evt) {
             // reset first
             this.showDefaultInfo();
-
             // COORDINATE AND COMPLETNESS
             {
                 this.$completenees.attr('style', 'width:' + this.locality_data.completeness);
@@ -983,10 +984,12 @@ window.LocalitySidebar = (function () {
 
             // TAGS
             {
-                var tags = this.locality_data.tags;
+                var tags = this.locality_data.values['tags'];
+                delete keys[this.getIndex(keys, 'tags')];
                 if (this.isHasValue(tags)) {
-                    this.$tag_input_text_box.val(tags.split("|").join(","));
                     var tags = tags.split(separator);
+                    tags = cleanArray(tags);
+                    this.$tag_input_text_box.val(tags.join(","));
                     for (var i = 0; i < tags.length; i++) {
                         if (tags[i] != "") {
                             // render

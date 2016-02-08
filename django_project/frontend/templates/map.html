@@ -692,42 +692,6 @@
                 $("#updates").append(html);
             {% endfor %}
         {% endif %}
-
-        $("#tag-input-text-box").autocomplete({
-            source: function (request, response) {
-                var latestTag = request.term.split(",");
-                latestTag = latestTag[latestTag.length - 1];
-                if (latestTag.length >= 3) {
-                    $.ajax({
-                        url: "{% url 'tags' %}",
-                        dataType: 'json',
-                        data: {
-                            q: latestTag
-                        },
-                        success: function (data) {
-                            response(data);
-                        }
-                    });
-                }
-            },
-            minLength: 3,
-            focus: function (event, ui) {
-                var value = ui.item.value;
-                var tags = $("#tag-input-text-box").val().split(",");
-                tags[tags.length - 1] = value;
-                $("#tag-input-text-box").val(tags.join(","));
-                return false;
-            },
-            select: function (event, ui) {
-                return false;
-            },
-            open: function () {
-                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-            },
-            close: function () {
-                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-            }
-        });
     });
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});

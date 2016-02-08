@@ -557,15 +557,6 @@ def load_data(sender, instance, **kwargs):
 post_save.connect(load_data, sender=DataLoader)
 
 
-class Tag(UpdateMixin, ChangesetMixin):
-    """
-    Association of tag and locality
-    """
-
-    locality = models.ForeignKey('Locality')
-    tag = models.TextField()
-
-
 # -------------------------------------------------
 # BOUNDARY OF COUNTRY
 # -------------------------------------------------

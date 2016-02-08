@@ -53,12 +53,6 @@ urlpatterns = patterns(
     ),
 
     url(
-        r'^tags$',
-        'localities.views.search_tags',
-        name='tags'
-    ),
-
-    url(
         r'^countries/simpledata$',
         'localities.views.get_simple_statistic_by_country',
         name='countries-simple-data'
