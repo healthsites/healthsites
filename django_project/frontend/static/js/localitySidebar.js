@@ -284,11 +284,13 @@ window.LocalitySidebar = (function () {
                     tags = tags.split(",");
                     tags = tags.getUnique();
                     for (var i = 0; i < tags.length; i++) {
+                        tags[i] = $.trim(tags[i]);
                         if (tags[i].length > 0 && tags[i].length < 3) {
                             isFormValid = false;
                         }
                     }
                     tags = tags.join(separator);
+                    tags = "|" + tags + "|";
 
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
@@ -296,7 +298,7 @@ window.LocalitySidebar = (function () {
                     fields += '&url=' + encodeURIComponent(urls_output[0]) + '&data_source=' + encodeURIComponent(urls_output[1]) + '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient) +
-                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + tags;
+                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags);
 
                     // GET DEFINING HOURS
                     fields += "&defining_hours=" + that.getDefiningHoursFormat()["format1"];
@@ -448,12 +450,16 @@ window.LocalitySidebar = (function () {
             this.$saveButton.hide();
             this.$createButton.hide();
             this.$line_updates.show();
-            if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create" && isLoggedIn))) {
+            if (isEditingMode && !isLoggedIn) {
+                console.log("sigin");
+                window.location.href = "/signin/";
+            } else if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create"))) {
                 if (mode == "edit" && is_enable_edit) {
                     this.$saveButton.show();
                     this.showInfo();
                     $APP.trigger('locality.edit');
-                } else {
+                }
+                else {
                     this.$createButton.show();
                     this.$line_updates.hide();
                     this.showDefaultEdit();
@@ -478,10 +484,7 @@ window.LocalitySidebar = (function () {
         },
 
         setEnable: function (input) {
-            this.$addButton.css({'opacity': 0.7});
-            if (isLoggedIn) {
-                this.$addButton.css({'opacity': 1});
-            }
+            this.$addButton.css({'opacity': 1});
             is_enable_edit = input;
             if (input) {
                 this.$editButton.css({'opacity': 1});
@@ -610,6 +613,8 @@ window.LocalitySidebar = (function () {
             if (typeof to2 !== 'undefined' && to2 != "") $(list_input[4]).val(to2);
         },
         showDefaultEdit: function (evt) {
+            $('#full-list').html("");
+            $('#see-more-list').show();
             $("#locality-statistic").hide();
             $("#locality-info").show();
             $("#locality-default").hide();
@@ -677,6 +682,7 @@ window.LocalitySidebar = (function () {
 
         },
         showDefaultInfo: function (evt) {
+            $APP.trigger('locality.history-hide');
             this.showDefaultEdit();
             this.$name.text(no_name);
             this.$nature_of_facility.text(need_information);
@@ -712,11 +718,6 @@ window.LocalitySidebar = (function () {
         showInfo: function (evt) {
             // reset first
             this.showDefaultInfo();
-            // set disable
-            if (isLoggedIn) {
-                this.setEnable(true);
-            }
-
             // COORDINATE AND COMPLETNESS
             {
                 this.$completenees.attr('style', 'width:' + this.locality_data.completeness);
@@ -730,6 +731,7 @@ window.LocalitySidebar = (function () {
                 var updates = this.locality_data.updates;
                 if (updates[0]) {
                     this.$lastupdate.text(getDateString(updates[0]['last_update']));
+                    this.$lastupdate.data("data", {date: updates[0]['last_update']});
                     this.$uploader.text("@" + updates[0]['uploader']);
                     this.$uploader.attr("href", "profile/" + updates[0]['uploader']);
                 }
@@ -982,10 +984,12 @@ window.LocalitySidebar = (function () {
 
             // TAGS
             {
-                var tags = this.locality_data.tags;
+                var tags = this.locality_data.values['tags'];
+                delete keys[this.getIndex(keys, 'tags')];
                 if (this.isHasValue(tags)) {
-                    this.$tag_input_text_box.val(tags.split("|").join(","));
                     var tags = tags.split(separator);
+                    tags = cleanArray(tags);
+                    this.$tag_input_text_box.val(tags.join(","));
                     for (var i = 0; i < tags.length; i++) {
                         if (tags[i] != "") {
                             // render
@@ -1031,7 +1035,21 @@ window.LocalitySidebar = (function () {
 
         getInfo: function (evt, payload) {
             var self = this;
-            $.getJSON('/localities/' + this.locality_uuid, function (data) {
+            var url = '/localities/' + this.locality_uuid;
+            if (payload) {
+                if (payload.changeset) {
+                    url += "/" + payload.changeset;
+                }
+            }
+            $.getJSON(url, function (data) {
+                if (data.history) {
+                    self.setEnable(false);
+                    $APP.trigger('locality.history-show', {
+                        'geom': data.geom
+                    });
+                } else {
+                    self.setEnable(true);
+                }
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {
@@ -1044,6 +1062,12 @@ window.LocalitySidebar = (function () {
                     'geom': data.geom,
                     'zoomto': zoomto
                 });
+                var updates = data.updates;
+                if (updates.length <= 1) {
+                    console.log(updates);
+                    $("#see-more-list").hide();
+                }
+                $("#see-more-list").data("data", {uuid: self.locality_uuid});
             });
         },
 
@@ -1052,7 +1076,7 @@ window.LocalitySidebar = (function () {
 
             $APP.on('locality.map.click', function (evt, payload) {
                 self.locality_uuid = payload.locality_uuid;
-                self.$sidebar.trigger('get-info', {'zoomto': payload.zoomto});
+                self.$sidebar.trigger('get-info', {'zoomto': payload.zoomto, 'changeset': payload.changeset});
             });
             $APP.on('locality.map.move', function (evt, payload) {
                 self.$sidebar.trigger('update-coordinates', payload);

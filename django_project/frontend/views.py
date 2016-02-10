@@ -132,7 +132,6 @@ def map(request):
         if tag:
             result = search_locality_by_tag(tag)
             result['tag'] = tag
-            print result
         if country:
             result = get_country_statistic(country)
             result['country'] = country

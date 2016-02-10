@@ -273,14 +273,21 @@
                             <i class="fa fa-info-circle"></i>
                         </div>
                         <div class="data">
-                            <p>last update: <span id="last_update" class="date">11 may 2015 17:23:15</span>, by
-                            <span class="name">
-                                <a id="uploader" href="profile/sharehealthdata">@sharehealthdata</a>
-                            </span>
-                            <span class="more">
-                                <a href="#" class="full-list">see full list <i class="fa fa-angle-down"></i></a>
-                            </span>
-                            </p>
+                            <div class="more" style="margin-bottom: 5px">
+                                <div>
+                                    last update: <span id="last_update" class="date">11 may 2015 17:23:15</span>, by
+                                <span class="name">
+                                    <a id="uploader" href="profile/sharehealthdata">@sharehealthdata</a>
+                                </span>
+                                </div>
+                                <div id="full-list">
+
+                                </div>
+                                <div>
+                                    <a id="see-more-list" class="more-list">see more list <i
+                                            class="fa fa-angle-down"></i></a>
+                                </div>
+                            </div>
 
                             <div class="progress">
                                 <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
@@ -728,45 +735,6 @@
                 $("#updates").append(html);
             {% endfor %}
         {% endif %}
-
-        $("#tag-input-text-box").autocomplete({
-            source: function (request, response) {
-                var latestTag = request.term.split(",");
-                latestTag = latestTag[latestTag.length - 1];
-                if (latestTag.length >= 3) {
-                    $.ajax({
-                        url: "{% url 'tags' %}",
-                        dataType: 'json',
-                        data: {
-                            q: latestTag
-                        },
-                        success: function (data) {
-                            response(data);
-                        }
-                    });
-                }
-            },
-            minLength: 3,
-            focus: function (event, ui) {
-                var value = ui.item.value;
-                var tags = $("#tag-input-text-box").val().split(",");
-                tags[tags.length - 1] = value;
-                $("#tag-input-text-box").val(tags.join(","));
-                return false;
-            },
-            select: function (event, ui) {
-                return false;
-            },
-            open: function () {
-                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-            },
-            close: function () {
-                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-            }
-        });
-        $("#geolocate").click(function () {
-            getLocation();
-        })
     });
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});
@@ -916,6 +884,48 @@
         e.preventDefault();
         $(this).parent('li').remove();
     })
+    $("#see-more-list").click(function () {
+        var lastChilds = $('#full-list').children();
+        var date = "";
+        if (lastChilds.length == 0) {
+            if (typeof $("#last_update").data("data") !== "undefined") {
+                date = $("#last_update").data("data").date;
+            }
+        } else {
+            date = $(lastChilds.last()).data("data").date;
+        }
+        var uuid = $(this).data("data").uuid;
+        $.ajax({
+            url: "{% url 'locality-updates' %}",
+            dataType: 'json',
+            data: {
+                date: date,
+                uuid: uuid,
+            },
+            success: function (data) {
+                if (data.length < 10) {
+                    $("#see-more-list").hide();
+                }
+                for (var i = 0; i < data.length; i++) {
+                    var html = '<div>';
+                    html += '<span class="date">' + getDateString(data[i]['last_update']) + '</span>, by';
+                    html += '<span class="name">';
+                    html += ' <a href="profile/' + data[i]['uploader'] + '">@' + data[i]['uploader'] + '</a>';
+                    html += '</span>';
+                    html += '<span>';
+                    html += ' - <a style="cursor:pointer" onclick="gotochangeset(\'' + data[i]['changeset_id'] + '\',\'' + uuid + '\')">' + data[i]['changeset_id'] + '</a>';
+                    html += '</span>';
+                    html += '</div>';
+                    $('#full-list').append(html);
+                    var lastChilds = $('#full-list').children();
+                    $(lastChilds.last()).data("data", {date: data[i]['last_update']});
+                }
+            },
+        });
+    })
+    function gotochangeset(changeset, uuid) {
+        window.location.href = "/map#!/locality/" + uuid + "/" + changeset;
+    }
     function split(element) {
         $(element).html('and');
         $(element).parent('tr').find('.time2').css({'opacity': 1});

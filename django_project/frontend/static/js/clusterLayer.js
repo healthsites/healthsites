@@ -175,6 +175,7 @@
                 self._render_map(self.ajax_response);
             } else {
                 this._curReq = this.getAjax(url, function (response) {
+                    console.log(response);
                     self._render_map(response);
                     // cache response
                     self.ajax_response = response;
