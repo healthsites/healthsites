@@ -9,14 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    
+
     <html itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="healthsites.io">
     <meta itemprop="description" content="A free, curated, global, canonical source of healthcare location data">
     <meta itemprop="image" content="http://staging.healthsites.io/static/img/healthsites-gp.png">
-    <meta property="og:title" content="healthsites.io" />
-    <meta property="og:image" content="http://staging.healthsites.io/static/img/healthsites-fb.png" />
-    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data" />
+    <meta property="og:title" content="healthsites.io"/>
+    <meta property="og:image" content="http://staging.healthsites.io/static/img/healthsites-fb.png"/>
+    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data"/>
 
     <title>Healthsites.io</title>
 
@@ -56,13 +56,13 @@
 
     <![endif]-->
 
-</head>
-<script>
-    var isLoggedIn = false;
-    {% if user.is_authenticated %}
-        isLoggedIn = true;
-    {% endif %}
-</script>
+    </head>
+    <script>
+        var isLoggedIn = false;
+        {% if user.is_authenticated %}
+            isLoggedIn = true;
+        {% endif %}
+    </script>
 <body class="map-page">
 <nav class="navbar navbar-fixed-top masthead no-tag">
     <div class="container-fluid">
@@ -182,17 +182,19 @@
                                                                                                      value="search">
                     </form>
                 </div>
-                
+
             </div><!-- #icons-nav -->
             <div id="locality-default" style="display: none">
                 <div style="padding: 20px;">
                     <p>
-                        We aim to provide a single point of reference for healthcare workers, aid agencies,
-                        contingency planners, government agencies and citizens who need access to highly curated
-                        global dataset of healthcare facilities.
-                        By simply clicking on the map, users can discover what healthcare facilities exist at any global
-                        location
-                        and find out what resources exist at any individual healthcare facility.
+                        <span class="inner-navbar-brand">healthsites.io</span> invites you to help establish accurate health
+                        care location data. Browse the map,
+                        search or use the Geolocate me option to view healthsites close to your location.
+                    </p>
+                    <p>
+                        We aim to provide a single point of reference for healthcare workers, aid agencies, government
+                        agencies and citizens who need access to highly curated global dataset of healthcare
+                        facilities.
                     </p>
                     <h2 class="sidebar-title "><span class="timer" data-speed="2500"
                                                      data-to="{{ locality_count }}">{{ locality_count }}</span>

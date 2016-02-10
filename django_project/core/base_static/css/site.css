@@ -120,6 +120,11 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
     vertical-align: middle;
     padding: 0;
 }
+.inner-navbar-brand {
+    /* text-transform: uppercase; */
+    color: #f44a52;
+    font-weight: 700;
+}
 .hs-logo {
     background: url(../img/logo@2x.png) no-repeat;
     background-size: 35px 43px;
