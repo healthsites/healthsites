@@ -1,6 +1,5 @@
 #map-full {
     background: #eff0f0;
-    margin-top: 53px;
 }
 
 .sidebar-title {
@@ -10,35 +9,23 @@
 
 #icons-nav {
     text-align: center;
-    padding: 20px 0 0;
+    padding: 20px;
+    background: #F9F9F9;
+    border-bottom: 1px solid #eff0f0;
 }
-
 #icons-nav a {
-    display: inline-block;
-    text-align: center;
-    width: 130px;
-    height: 44px;
-    color: #aaa;
-    font-size: 14px;
-    margin-bottom: 20px;
+    color: #f44a52;
 }
-
 #icons-nav a:hover, #icons-nav a:focus {
-    color: #8d8d8d;
-    text-decoration: none;
+    color: #f44a52;
+    text-decoration: underline;
 }
-
 #icons-nav a.active {
-    color: #3C4C57;
-    text-decoration: none;
+    color: #f44a52;
+    text-decoration: underline;
 }
-
 #icons-nav i {
     font-size: 30px;
-}
-
-#icons-nav span {
-    display: block;
 }
 
 .search-block {

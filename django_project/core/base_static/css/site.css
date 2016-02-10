@@ -201,7 +201,7 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
 }
 .masthead {
     background: #fff;
-    z-index: 10;
+    z-index: 1200;
     height: 73px;
     font-family: "Raleway", sans-serif;
     -webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.3);
