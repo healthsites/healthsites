@@ -164,7 +164,8 @@
             </div>
             <div id="icons-nav">
                 <a class="search" href="#"><i class="fa fa-search"></i><span>Search</span></a>
-                <a class="geolocate" href="#"><i class="fa fa-location-arrow"></i><span>Geolocate me</span></a>
+                <a id="geolocate" class="geolocate" href="#"><i
+                        class="fa fa-location-arrow"></i><span>Geolocate me</span></a>
                 <div class="search-block" style="display: none;">
                     <form action="map" method="POST">
                         <div class="option-group">
@@ -541,7 +542,6 @@
 {% javascript 'map_app' %}
 
 <script type="text/javascript" src="static/js/utilities.js"></script>
-
 <script>
     (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r;
@@ -558,6 +558,18 @@
     ga('create', 'UA-56378524-1', 'auto');
     ga('send', 'pageview');
 
+</script>
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(returnPosition);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+    function returnPosition(position) {
+        $APP.trigger('map.pan', {'location': [position.coords.latitude, position.coords.longitude]});
+    }
 </script>
 <script type="text/javascript">
     var $country_table;
@@ -752,6 +764,9 @@
                 $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
             }
         });
+        $("#geolocate").click(function () {
+            getLocation();
+        })
     });
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});
