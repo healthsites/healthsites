@@ -71,29 +71,38 @@ def map(request):
         search_query = request.POST.get('q')
         option = request.POST.get('option')
         if option == 'place':
-            # geonames
-            google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
-            gmaps = googlemaps.Client(key=google_maps_api_key)
+            # getting country's polygon
             try:
-                geocode_result = gmaps.geocode(search_query)[0]
-                viewport = geocode_result['geometry']['viewport']
-                northeast_lat = viewport['northeast']['lat']
-                northeast_lng = viewport['northeast']['lng']
-                southwest_lat = viewport['southwest']['lat']
-                southwest_lng = viewport['southwest']['lng']
-                request.session['tempe_bongkrek'] = 'alfonso'
-                return render_to_response(
-                        'map.html',
-                        {
-                            'northeast_lat': "%f" % northeast_lat,
-                            'northeast_lng': "%f" % northeast_lng,
-                            'southwest_lat': "%f" % southwest_lat,
-                            'southwest_lng': "%f" % southwest_lng
-                        },
-                        context_instance=RequestContext(request)
-                )
-            except:
-                return HttpResponseRedirect(reverse('map'))
+                search_query = search_query.title()
+                country = Country.objects.get(
+                        name=search_query)
+                map_url = reverse('map')
+                return HttpResponseRedirect(
+                        map_url + "?country=%s" % search_query)
+            except Country.DoesNotExist:
+                # geonames
+                google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+                gmaps = googlemaps.Client(key=google_maps_api_key)
+                try:
+                    geocode_result = gmaps.geocode(search_query)[0]
+                    viewport = geocode_result['geometry']['viewport']
+                    northeast_lat = viewport['northeast']['lat']
+                    northeast_lng = viewport['northeast']['lng']
+                    southwest_lat = viewport['southwest']['lat']
+                    southwest_lng = viewport['southwest']['lng']
+                    request.session['tempe_bongkrek'] = 'alfonso'
+                    return render_to_response(
+                            'map.html',
+                            {
+                                'northeast_lat': "%f" % northeast_lat,
+                                'northeast_lng': "%f" % northeast_lng,
+                                'southwest_lat': "%f" % southwest_lat,
+                                'southwest_lng': "%f" % southwest_lng
+                            },
+                            context_instance=RequestContext(request)
+                    )
+                except:
+                    return HttpResponseRedirect(reverse('map'))
 
         elif option == 'healthsite':
             locality_values = Value.objects.filter(

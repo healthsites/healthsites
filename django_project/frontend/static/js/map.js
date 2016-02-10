@@ -196,6 +196,10 @@ window.MAP = (function () {
             $APP.on('map.create-polygon', function (evt, payload) {
                 self._createPolygon(payload.polygon);
             });
+
+            $APP.on('map.pan', function (evt, payload) {
+                self._moveTo(payload.location);
+            });
         },
 
         _setupNewLocalityLayer: function () {
@@ -286,7 +290,11 @@ window.MAP = (function () {
                 }
             }).addTo(this.MAP);
             this.MAP.fitBounds(this.geoJson.getBounds());
-        }
+        },
+
+        _moveTo: function (location) {
+            this.MAP.setView(new L.LatLng(location[0], location[1]), this.MAP.getMaxZoom() - 2);
+        },
     }
 
     // return module

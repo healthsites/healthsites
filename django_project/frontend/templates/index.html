@@ -8,6 +8,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {# The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags #}
+    <html itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="healthsites.io">
+    <meta itemprop="description" content="A free, curated, global, canonical source of healthcare location data">
+    <meta itemprop="image" content="http://staging.healthsites.io/static/img/healthsites-gp.png">
+    <meta property="og:title" content="healthsites.io" />
+    <meta property="og:image" content="http://staging.healthsites.io/static/img/healthsites-fb.png" />
+    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data" />
 
     <title>Healthsites.io</title>
 
@@ -313,9 +320,9 @@
     <div class="container">
         <h3>Partners</h3>
         <ul class="partners-list">
-            <li><img src="{% static "img/hcid-logo.png" %}"/></li>
-            <li><img src="{% static "img/icrc-logo.png" %}"/></li>
-            <li><img src="{% static "img/ihf-logo.png" %}"/></li>
+            <li><a href="http://healthcareindanger.org/hcid-project/" target="_blank"><img src="{% static "img/hcid-logo.png" %}"/></a></li>
+            <li><a href="https://www.icrc.org/" target="_blank"><img src="{% static "img/icrc-logo.png" %}"/></a></li>
+            <li><a href="https://www.ihf-fih.org/" target="_blank"><img src="{% static "img/ihf-logo.png" %}"/></a></li>
             <li><a href="https://hotosm.org/" target="_blank"><img src="{% static "img/hot-logo.png" %}"/></a></li>
         </ul>
     </div>
@@ -340,7 +347,7 @@
             <ul class="footer-nav-2">
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data</a></li>
                 <li><a href="https://github.com/healthsites/healthsites" target="_blank">Source code</a></li>
-                <li><a href="/map-edit">Map edit</a></li>
+{#                <li><a href="/map-edit">Map edit</a></li>#}
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">Data
                     lifecycle</a></li>
             </ul>
