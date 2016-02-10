@@ -9,14 +9,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    
+
     <html itemscope itemtype="http://schema.org/Organization">
     <meta itemprop="name" content="healthsites.io">
     <meta itemprop="description" content="A free, curated, global, canonical source of healthcare location data">
     <meta itemprop="image" content="http://staging.healthsites.io/static/img/healthsites-gp.png">
-    <meta property="og:title" content="healthsites.io" />
-    <meta property="og:image" content="http://staging.healthsites.io/static/img/healthsites-fb.png" />
-    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data" />
+    <meta property="og:title" content="healthsites.io"/>
+    <meta property="og:image" content="http://staging.healthsites.io/static/img/healthsites-fb.png"/>
+    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data"/>
 
     <title>Healthsites.io</title>
 
@@ -56,13 +56,13 @@
 
     <![endif]-->
 
-</head>
-<script>
-    var isLoggedIn = false;
-    {% if user.is_authenticated %}
-        isLoggedIn = true;
-    {% endif %}
-</script>
+    </head>
+    <script>
+        var isLoggedIn = false;
+        {% if user.is_authenticated %}
+            isLoggedIn = true;
+        {% endif %}
+    </script>
 <body class="map-page">
 <nav class="navbar navbar-fixed-top masthead no-tag">
     <div class="container-fluid">
@@ -164,7 +164,8 @@
             </div>
             <div id="icons-nav">
                 <a class="search" href="#"><i class="fa fa-search"></i><span>Search</span></a>
-                <a class="geolocate" href="#"><i class="fa fa-location-arrow"></i><span>Geolocate me</span></a>
+                <a id="geolocate" class="geolocate" href="#"><i
+                        class="fa fa-location-arrow"></i><span>Geolocate me</span></a>
                 <div class="search-block" style="display: none;">
                     <form action="map" method="POST">
                         <div class="option-group">
@@ -182,17 +183,20 @@
                                                                                                      value="search">
                     </form>
                 </div>
-                
+
             </div><!-- #icons-nav -->
             <div id="locality-default" style="display: none">
                 <div style="padding: 20px;">
                     <p>
-                        We aim to provide a single point of reference for healthcare workers, aid agencies,
-                        contingency planners, government agencies and citizens who need access to highly curated
-                        global dataset of healthcare facilities.
-                        By simply clicking on the map, users can discover what healthcare facilities exist at any global
-                        location
-                        and find out what resources exist at any individual healthcare facility.
+                        <span class="inner-navbar-brand">healthsites.io</span> invites you to help establish accurate
+                        health
+                        care location data. Browse the map,
+                        search or use the Geolocate me option to view healthsites close to your location.
+                    </p>
+                    <p>
+                        We aim to provide a single point of reference for healthcare workers, aid agencies, government
+                        agencies and citizens who need access to highly curated global dataset of healthcare
+                        facilities.
                     </p>
                     <h2 class="sidebar-title "><span class="timer" data-speed="2500"
                                                      data-to="{{ locality_count }}">{{ locality_count }}</span>
@@ -206,9 +210,11 @@
                             </tr>
                         </table>
                     </div>
-                    <div style="width: 100%; margin-top: 30px;">
+                    <div style="width: 100%; margin-top: 20px;margin-bottom: 10px;">
                         <a id="load-more">Load
                             More</a>
+                        <a id="load-all">Load
+                            All</a>
                     </div>
                 </div>
             </div>
@@ -536,7 +542,6 @@
 {% javascript 'map_app' %}
 
 <script type="text/javascript" src="static/js/utilities.js"></script>
-
 <script>
     (function (i, s, o, g, r, a, m) {
         i['GoogleAnalyticsObject'] = r;
@@ -553,6 +558,18 @@
     ga('create', 'UA-56378524-1', 'auto');
     ga('send', 'pageview');
 
+</script>
+<script>
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(returnPosition);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+    function returnPosition(position) {
+        $APP.trigger('map.pan', {'location': [position.coords.latitude, position.coords.longitude]});
+    }
 </script>
 <script type="text/javascript">
     var $country_table;
@@ -585,9 +602,24 @@
         });
     }
     function loadMore() {
+        var limit = 20;
         var count_row = ($($country_table).children('tbody').children('tr')).length - 1;
-        for (var i = count_row; i < countries.length && i < count_row + 10; i++) {
+        for (var i = count_row; i < countries.length && i < count_row + limit; i++) {
             loadCountry(countries[i]);
+        }
+        if (i >= countries.length) {
+            $('#load-more').hide();
+            $('#load-all').hide();
+        }
+    }
+    function loadAll() {
+        var count_row = ($($country_table).children('tbody').children('tr')).length - 1;
+        for (var i = count_row; i < countries.length; i++) {
+            loadCountry(countries[i]);
+        }
+        if (i >= countries.length) {
+            $('#load-more').hide();
+            $('#load-all').hide();
         }
     }
     var APP;
@@ -623,6 +655,9 @@
                 loadMore();
                 $('#load-more').click(function () {
                     loadMore();
+                });
+                $('#load-all').click(function () {
+                    loadAll();
                 });
             {% endif %}
         }
@@ -729,6 +764,9 @@
                 $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
             }
         });
+        $("#geolocate").click(function () {
+            getLocation();
+        })
     });
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});
