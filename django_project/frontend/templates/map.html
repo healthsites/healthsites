@@ -187,7 +187,8 @@
             <div id="locality-default" style="display: none">
                 <div style="padding: 20px;">
                     <p>
-                        <span class="inner-navbar-brand">healthsites.io</span> invites you to help establish accurate health
+                        <span class="inner-navbar-brand">healthsites.io</span> invites you to help establish accurate
+                        health
                         care location data. Browse the map,
                         search or use the Geolocate me option to view healthsites close to your location.
                     </p>
@@ -208,9 +209,11 @@
                             </tr>
                         </table>
                     </div>
-                    <div style="width: 100%; margin-top: 30px;">
+                    <div style="width: 100%; margin-top: 20px;margin-bottom: 10px;">
                         <a id="load-more">Load
                             More</a>
+                        <a id="load-all">Load
+                            All</a>
                     </div>
                 </div>
             </div>
@@ -587,9 +590,24 @@
         });
     }
     function loadMore() {
+        var limit = 20;
         var count_row = ($($country_table).children('tbody').children('tr')).length - 1;
-        for (var i = count_row; i < countries.length && i < count_row + 10; i++) {
+        for (var i = count_row; i < countries.length && i < count_row + limit; i++) {
             loadCountry(countries[i]);
+        }
+        if (i >= countries.length) {
+            $('#load-more').hide();
+            $('#load-all').hide();
+        }
+    }
+    function loadAll() {
+        var count_row = ($($country_table).children('tbody').children('tr')).length - 1;
+        for (var i = count_row; i < countries.length; i++) {
+            loadCountry(countries[i]);
+        }
+        if (i >= countries.length) {
+            $('#load-more').hide();
+            $('#load-all').hide();
         }
     }
     var APP;
@@ -625,6 +643,9 @@
                 loadMore();
                 $('#load-more').click(function () {
                     loadMore();
+                });
+                $('#load-all').click(function () {
+                    loadAll();
                 });
             {% endif %}
         }

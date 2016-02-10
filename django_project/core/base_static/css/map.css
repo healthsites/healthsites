@@ -2,14 +2,17 @@
     background: #eff0f0;
     margin-top: 53px;
 }
+
 .sidebar-title {
     text-align: center;
     font-size: 18px;
 }
+
 #icons-nav {
     text-align: center;
     padding: 20px 0 0;
 }
+
 #icons-nav a {
     display: inline-block;
     text-align: center;
@@ -19,39 +22,48 @@
     font-size: 14px;
     margin-bottom: 20px;
 }
+
 #icons-nav a:hover, #icons-nav a:focus {
     color: #8d8d8d;
     text-decoration: none;
 }
+
 #icons-nav a.active {
     color: #3C4C57;
     text-decoration: none;
 }
+
 #icons-nav i {
     font-size: 30px;
 }
+
 #icons-nav span {
     display: block;
 }
+
 .search-block {
     background: #dadddf;
     padding: 26px 0;
     margin-bottom: 20px;
 }
+
 .search-block .option-group {
     display: block;
 }
+
 .search-block .option-group label {
     font-size: 13px;
     font-weight: 400;
     margin-bottom: 0;
 }
+
 .search-block .option {
     overflow: hidden;
     position: relative;
     text-align: left;
     height: 22px;
 }
+
 .search-block .option input {
     cursor: pointer;
     height: 16px;
@@ -62,10 +74,12 @@
     width: 16px;
     z-index: 10;
 }
+
 .search-block .option input[type="radio"]:checked + span {
     background: url("../img/checked.png") no-repeat center;
     visibility: visible;
 }
+
 .search-block .option span {
     background: #fff;
     width: 16px;
@@ -80,9 +94,11 @@
     pointer-events: none;
     z-index: 5;
 }
+
 .search-block .option label {
     margin-left: 26px;
 }
+
 .search-block input[type="search"] {
     border: none;
     background: #fff;
@@ -97,6 +113,7 @@
     margin-right: 10px;
     width: 250px;
 }
+
 .search-block input[type="submit"] {
     border: none;
     background: #3c4c57;
@@ -111,13 +128,16 @@
     margin-top: 4px;
     font-weight: bold;
 }
+
 .search-block .option {
     display: inline-block;
     margin: 0 10px;
 }
+
 .search-block .option-group {
     width: auto;
 }
+
 .location-info {
     background: #fff;
     font-family: "Raleway", sans-serif;
@@ -125,14 +145,17 @@
     padding-bottom: 64px;
     z-index: 1;
 }
+
 .location-info .profile, .location-info .header {
     padding: 0 20px;
 }
+
 .location-info .profile {
     background: #eff0f0;
     padding-top: 10px;
     padding-bottom: 10px;
 }
+
 .avatar-holder {
     display: inline-block;
     height: 48px;
@@ -140,99 +163,112 @@
     position: relative;
     margin-right: 10px;
 }
+
 .frame {
     position: absolute;
     top: 0;
     left: 0;
 }
-#load-more {
-    float: right;
-    border-radius: 10px;
-    background: #3c4c57;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 600;
-}
+
 .location-info .profile .name, .location-info .profile .name a {
     text-transform: uppercase;
     font-weight: 600;
     color: #3c4c57;
 }
+
 .details .header {
     padding-top: 18px;
     border-bottom: 1px solid #eff0f0;
 }
+
 .details h1 {
     font-size: 24px;
     font-weight: bold;
     margin: 0;
 }
+
 .details .sub {
     color: #737c83;
 }
+
 .location-info {
     position: relative;
 }
+
 .location-info .icon-holder {
     float: left;
     width: 53px;
     text-align: center;
     padding: 10px 0;
 }
+
 .location-info .icon-holder i {
     color: #afb4b7;
     font-size: 21px;
 }
+
 .location-info .data {
     margin-left: 48px;
     background: #f9f9f9;
     padding: 10px 20px 1px;
     font-family: "Ubuntu", sans-serif;
 }
+
 .details .line {
     border-bottom: 1px solid #eff0f0;
     clear: both;
 }
+
 #locality-info .updates p {
     font-style: italic;
     color: #919393;
 }
+
 #locality-info .updates .date, #locality-info .updates a {
     font-weight: 500;
     color: #3c4c57;
 }
+
 #locality-info .updates .full-list {
     display: block;
 }
+
 .find .address {
     font-size: 18px;
     font-weight: 400;
     margin-bottom: 5px;
 }
+
 .find .coordinates {
     font-style: italic;
     color: #919393;
 }
+
 .find .data i {
     font-size: 18px;
     margin-right: 4px;
 }
+
 .find .call {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 0;
 }
+
 .find .call .hours {
     margin-left: 20px;
 }
+
 .find .url {
     font-size: 16px;
     font-style: italic;
     margin-bottom: 0;
 }
+
 .find .url:last-child {
     margin-bottom: 10px;
 }
+
 .services h3 {
     margin-top: 0;
     font-style: italic;
@@ -241,33 +277,41 @@
     font-weight: 400;
     margin-bottom: 5px;
 }
+
 .services ul {
     padding: 0;
     max-width: 310px;
 }
+
 .services li {
     display: inline-block;
     font-size: 16px;
     margin-right: 10px;
 }
+
 .services li i {
     margin-right: 3px;
 }
+
 .beds p, .doctors p {
     font-size: 16px;
 }
+
 .location-info .buttons {
     position: fixed;
     bottom: 0;
     padding: 10px;
     background: #fff;
 }
+
 .buttons .button {
     display: block;
 }
+
 .map-page {
     position: relative;
 }
+
 #map {
     background: #c8e6ff;
     position: fixed;
@@ -276,20 +320,23 @@
     width: 100%;
     height: 100%
 }
- @media only screen and (max-width: 991px) {
-.map-page {
-    background: #c8e6ff;
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
+
+@media only screen and (max-width: 991px) {
+    .map-page {
+        background: #c8e6ff;
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    #map {
+        position: relative;
+        top: 0;
+    }
 }
-#map {
-    position: relative;
-    top: 0;
-}
-}
+
 .marker-icon {
     width: 48px;
     height: 46px;
@@ -299,30 +346,38 @@
     font-weight: bold;
     font-size: 11px;
 }
+
 #twitter_share_map:hover {
     cursor: pointer;
 }
- input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
- -webkit-appearance: none;
- margin: 0;
+
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
+
 input[type='checkbox'] {
     margin-right: 5px;
 }
+
 .remove_tag {
     cursor: pointer;
 }
+
 .remove_option {
     cursor: pointer;
     color: black;
 }
+
 #locality-default {
     overflow: hidden;
 }
+
 #locality-statistic, #locality-default {
     background: #fff;
     font-family: "Ubuntu", sans-serif;
 }
+
 #locality-statistic {
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -331,12 +386,15 @@ input[type='checkbox'] {
     -moz-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
     box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
 }
+
 #locality-statistic .date, #locality-statistic .time {
     font-style: italic;
 }
+
 #locality-statistic .name a {
     color: #f44a52;
 }
+
 #locality-default table {
     border: none;
     padding: 10px;
@@ -347,55 +405,86 @@ input[type='checkbox'] {
     -moz-box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
     box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.15);
 }
+
 #locality-default th {
     font-weight: 600;
 }
+
 #locality-default td, #locality-default th {
     padding-left: 5px;
     line-height: 20px;
 }
+
 #locality-default tr, #locality-default tr {
     border-bottom: 1px solid #eff0f0;
 }
+
 #locality-default tr:last-child {
     border-bottom: none;
 }
+
 table, td, th {
     padding-right: 5px;
 }
+
 td input[type="text"] {
     width: 50px;
 }
+
 .ui-timepicker-standard {
     font-size: 12px;
 }
+
 table {
     border-collapse: collapse;
 }
-#load-more {
-    padding: 10px;
+
+#load-all {
+    float: right;
+    background: #3c4c57;
     background-color: darkgray;
+}
+
+#load-more {
+    float: left;
+    background-color: #f44a52;
+}
+
+#load-more, #load-all {
+    border-radius: 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#load-more, #load-all {
+    padding: 10px;
     color: white;
     cursor: pointer;
 }
-#load-more:hover {
+
+#load-more:hover, #load-all:hover {
     text-decoration: none;
     opacity: 0.8;
 }
+
 @media only screen and (max-width: 640px) {
-#icons-nav span {
-    display: inline-block;
-}
-#icons-nav a {
-    height: 35px;
-    margin-bottom: 10px;
-}
-#icons-nav i {
-   font-size: 24px;
-   margin-right: 10px;
-}
-.search-block {
-  margin-bottom: 10px;
-  padding: 16px 0;
-}
+    #icons-nav span {
+        display: inline-block;
+    }
+
+    #icons-nav a {
+        height: 35px;
+        margin-bottom: 10px;
+    }
+
+    #icons-nav i {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+
+    .search-block {
+        margin-bottom: 10px;
+        padding: 16px 0;
+    }
 }
