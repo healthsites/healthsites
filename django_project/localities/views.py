@@ -422,12 +422,12 @@ class DataLoaderView(LoginRequiredMixin, FormView):
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_superuser:
-            raise Http404("Can not access this page")
+            print "admin"
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_superuser:
-            raise Http404("Can not access this page")
+            raise Http404("Cannot access this page")
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
 

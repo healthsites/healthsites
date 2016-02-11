@@ -129,11 +129,11 @@ def map(request):
         if tag:
             result = search_locality_by_tag(tag)
             result['tag'] = tag
-        if country:
+        elif country:
             result = get_country_statistic(country)
             result['country'] = country
             result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
-        if place:
+        elif place:
             result = search_place(request, place)
         else:
             result['locality_count'] = Locality.objects.count()
