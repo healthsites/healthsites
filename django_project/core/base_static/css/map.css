@@ -493,3 +493,15 @@ table {
     cursor: pointer;
     text-decoration: none;
 }
+
+.row-title {
+    cursor: pointer;
+    background: lightblue;
+    font-weight: 700;
+    padding: 3px;
+}
+
+.title-table th {
+    padding: 10px;
+    font-size: 14px;
+}
