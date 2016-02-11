@@ -3,45 +3,41 @@ var search_geoname_url = "http://gd.geobytes.com/AutoCompleteCity";
 $(document).ready(function () {
     // set share url
     var baseURL = location.protocol + "//" + location.hostname + "/";
-    if($(".twitter-href").length !== 0) {
+    if ($(".twitter-href").length !== 0) {
         $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop healthsite data on " + baseURL);
     }
-    if($(".facebook-href").length !== 0) {
+    if ($(".facebook-href").length !== 0) {
         $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
     }
-    if($(".googleplus-href").length !== 0) {
+    if ($(".googleplus-href").length !== 0) {
         $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
     }
 
     function set_search_url(url, data_type) {
-        $(function () {
-            if($("#search-box").length !== 0) {
-                $("#search-box").autocomplete({
-                    source: function (request, response) {
-                        $.ajax({
-                            url: url,
-                            dataType: data_type,
-                            data: {
-                                q: request.term
-                            },
-                            success: function (data) {
-                                console.log(data);
-                                response(data);
-                            }
-                        });
+        $("#search-box").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: url,
+                    dataType: data_type,
+                    data: {
+                        q: request.term
                     },
-                    minLength: 3,
-                    select: function (event, ui) {
-                        console.log(event);
-                        console.log(ui);
-                    },
-                    open: function () {
-                        $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-                    },
-                    close: function () {
-                        $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+                    success: function (data) {
+                        console.log(data);
+                        response(data);
                     }
                 });
+            },
+            minLength: 3,
+            select: function (event, ui) {
+                console.log(event);
+                console.log(ui);
+            },
+            open: function () {
+                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+            },
+            close: function () {
+                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
             }
         });
     }
@@ -54,14 +50,13 @@ $(document).ready(function () {
         // set data for autocomplete
         if (this.value == 'place') {
             set_search_url(search_geoname_url, 'jsonp');
-
         } else if (this.value == 'healthsite') {
             set_search_url(search_localities_name_url, 'json');
         } else {
             set_search_url(search_localities_name_url, 'json');
         }
     });
-    if($("#slider").length !== 0) {
+    if ($("#slider").length !== 0) {
         console.log($('#slider'));
         $('#slider').slick({
             dots: true,

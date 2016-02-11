@@ -2,6 +2,11 @@
 
 {% block title %}Healthsites{% endblock %}
 {% block content %}
+    {% if user.is_authenticated %}
+        <script>
+            window.location.href = "{% url "map" %}";
+        </script>
+    {% endif %}
     <section class="slideshow js-fullheight fluid-container" style="padding: 40px; padding-top: 100px; ">
         <div class="container">
             <div class="row">

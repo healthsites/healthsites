@@ -163,7 +163,9 @@
                 <div style="clear: both;"></div>
             </div>
             <div id="icons-nav">
-                Browse the map, <a class="search" href="#">search</a> or use <a id="geolocate" class="geolocate" href="#">geolocate me</a> to view healthsites close to your location.
+                Browse the map, <a class="search" href="#">search</a> or use <a id="geolocate" class="a-button">geolocate
+                me</a> to view
+                healthsites close to your location.
             </div><!-- #icons-nav -->
             <div id="locality-default" style="display: none">
                 <div style="padding: 20px;">
@@ -183,7 +185,7 @@
                         healthsites listed</h2>
                     <div>
                         <table id="country-table" style="width:100%">
-                            <tr>
+                            <tr class="title-table" style="padding: 5px">
                                 <th width="60%">Country</th>
                                 <th width="20%"># of sites</th>
                                 <th width="20%">% complete</th>
@@ -561,6 +563,8 @@
 <script type="text/javascript">
     var $country_table;
     var countries = [];
+    var titleRow = ["A - E", "F - J", "K - O", "P - T", "U - Z"];
+    var titleRowRegex = [/[a-e]/, /[f-j]/, /[k-o]/, /[p-t]/, /[u-z]/];
     function loadCountry(country) {
         var country_id = country.split(".").join("-");
         country_id = country_id.split("&#39;").join("-");
@@ -568,7 +572,6 @@
         country_id = country_id.split("(").join("-");
         country_id = country_id.split(")").join("-");
         var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
-        $country_table.append(html);
         $.ajax({
             number: country_id + "-number",
             completeness: country_id + "-complete",
@@ -587,12 +590,13 @@
                 $("#" + this.completeness).html("fail");
             }
         });
+        return html;
     }
     function loadMore() {
         var limit = 20;
         var count_row = ($($country_table).children('tbody').children('tr')).length - 1;
         for (var i = count_row; i < countries.length && i < count_row + limit; i++) {
-            loadCountry(countries[i]);
+            $country_table.append(loadCountry(countries[i]));
         }
         if (i >= countries.length) {
             $('#load-more').hide();
@@ -602,11 +606,31 @@
     function loadAll() {
         var count_row = ($($country_table).children('tbody').children('tr')).length - 1;
         for (var i = count_row; i < countries.length; i++) {
-            loadCountry(countries[i]);
+            $country_table.append(loadCountry(countries[i]));
         }
         if (i >= countries.length) {
             $('#load-more').hide();
             $('#load-all').hide();
+        }
+    }
+    function loadByAlphabet(element, index) {
+        if (!$(element).hasClass("loaded")) {
+            $(element).addClass("loaded");
+            var found = false;
+            var bottomTittle = $("#title-row-" + (index + 1));
+            for (var i = 0; i < countries.length; i++) {
+                if (countries[i].toLowerCase()[0].match(titleRowRegex[index]) != null) {
+                    found = true;
+                    if (bottomTittle.length == 0) {
+                        $country_table.append(loadCountry(countries[i]));
+                    } else {
+                        $(bottomTittle).before(loadCountry(countries[i]));
+                    }
+                } else {
+                    if (found) break;
+                }
+            }
+
         }
     }
     var APP;
@@ -630,24 +654,24 @@
 
         // checking default view
         var url = window.location.href;
-        if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
-            $country_table = $('#country-table');
-            // render country data list
-            {% if countries %}
-                {% for country in countries %}
-                    var country = "{{ country.name }}";
-                    countries.push(country);
-                {% endfor %}
-                // load by default
-                loadMore();
-                $('#load-more').click(function () {
-                    loadMore();
-                });
-                $('#load-all').click(function () {
-                    loadAll();
-                });
-            {% endif %}
+        $country_table = $('#country-table');
+        for (var i = 0; i < titleRow.length; i++) {
+            $country_table.append('<tr id="title-row-' + i + '" onClick="loadByAlphabet(this,' + i + ')"><td class="row-title" colspan="3" ><center>' + titleRow[i] + '</center></td></tr>');
         }
+        // render country data list
+        {% if countries %}
+            {% for country in countries %}
+                var country = "{{ country.name }}";
+                countries.push(country);
+            {% endfor %}
+            // load by default
+            $('#load-more').click(function () {
+                loadMore();
+            });
+            $('#load-all').click(function () {
+                loadAll();
+            });
+        {% endif %}
         $("#locality-statistic").hide();
         $("#locality-info").hide();
         $("#locality-default").hide();
@@ -715,6 +739,8 @@
                 $("#updates").append(html);
             {% endfor %}
         {% endif %}
+        // default
+        $("#title-row-0").click();
     });
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});
@@ -902,6 +928,9 @@
                 }
             },
         });
+    })
+    $("#geolocate").click(function () {
+        getLocation();
     })
     function gotochangeset(changeset, uuid) {
         window.location.href = "/map#!/locality/" + uuid + "/" + changeset;

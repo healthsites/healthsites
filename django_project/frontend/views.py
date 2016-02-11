@@ -64,6 +64,32 @@ class HelpView(TemplateView):
     template_name = 'help.html'
 
 
+def search_place(request, place):
+    # getting country's polygon
+    result = {}
+    result['locality_count'] = Locality.objects.count()
+    result['countries'] = Country.objects.order_by('name').values('name').distinct()
+    # geonames
+    google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+    gmaps = googlemaps.Client(key=google_maps_api_key)
+    try:
+        geocode_result = gmaps.geocode(place)[0]
+        viewport = geocode_result['geometry']['viewport']
+        northeast_lat = viewport['northeast']['lat']
+        northeast_lng = viewport['northeast']['lng']
+        southwest_lat = viewport['southwest']['lat']
+        southwest_lng = viewport['southwest']['lng']
+        request.session['tempe_bongkrek'] = 'alfonso'
+        result['northeast_lat'] = "%f" % northeast_lat
+        result['northeast_lng'] = "%f" % northeast_lng
+        result['southwest_lat'] = "%f" % southwest_lat
+        result['southwest_lng'] = "%f" % southwest_lng
+
+    except:
+        print "getting place error"
+    return result
+
+
 @csrf_exempt
 def map(request):
     """View for request."""
@@ -71,39 +97,9 @@ def map(request):
         search_query = request.POST.get('q')
         option = request.POST.get('option')
         if option == 'place':
-            # getting country's polygon
-            try:
-                search_query = search_query.title()
-                country = Country.objects.get(
-                        name=search_query)
-                map_url = reverse('map')
-                return HttpResponseRedirect(
-                        map_url + "?country=%s" % search_query)
-            except Country.DoesNotExist:
-                # geonames
-                google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
-                gmaps = googlemaps.Client(key=google_maps_api_key)
-                try:
-                    geocode_result = gmaps.geocode(search_query)[0]
-                    viewport = geocode_result['geometry']['viewport']
-                    northeast_lat = viewport['northeast']['lat']
-                    northeast_lng = viewport['northeast']['lng']
-                    southwest_lat = viewport['southwest']['lat']
-                    southwest_lng = viewport['southwest']['lng']
-                    request.session['tempe_bongkrek'] = 'alfonso'
-                    return render_to_response(
-                            'map.html',
-                            {
-                                'northeast_lat': "%f" % northeast_lat,
-                                'northeast_lng': "%f" % northeast_lng,
-                                'southwest_lat': "%f" % southwest_lat,
-                                'southwest_lng': "%f" % southwest_lng
-                            },
-                            context_instance=RequestContext(request)
-                    )
-                except:
-                    return HttpResponseRedirect(reverse('map'))
-
+            map_url = reverse('map')
+            return HttpResponseRedirect(
+                    map_url + "?place=%s" % search_query)
         elif option == 'healthsite':
             locality_values = Value.objects.filter(
                     specification__attribute__key='name').filter(
@@ -128,6 +124,7 @@ def map(request):
     else:
         tag = request.GET.get('tag')
         country = request.GET.get('country')
+        place = request.GET.get('place')
         result = {}
         if tag:
             result = search_locality_by_tag(tag)
@@ -136,6 +133,8 @@ def map(request):
             result = get_country_statistic(country)
             result['country'] = country
             result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
+        if place:
+            result = search_place(request, place)
         else:
             result['locality_count'] = Locality.objects.count()
             result['countries'] = Country.objects.order_by('name').values('name').distinct()
