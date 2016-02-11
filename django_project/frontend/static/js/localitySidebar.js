@@ -784,7 +784,7 @@ window.LocalitySidebar = (function () {
                     for (i = 0; i < scopes.length; ++i) {
                         if (scopes[i].length > 0) {
                             html += '<li><i class="fa fa-caret-right"></i>';
-                            html += scopes[i];
+                            html += '<a href="/map?scope_of_service=' + scopes[i] + '"  >' + scopes[i] + '</a>';
                             html += '</li>';
                             this.checkingOptions("scope", scopes[i]);
                         }
@@ -808,7 +808,7 @@ window.LocalitySidebar = (function () {
                     for (i = 0; i < ancillary.length; ++i) {
                         if (ancillary[i].length > 0) {
                             html += '<li><i class="fa fa-caret-right"></i>';
-                            html += ancillary[i];
+                            html += '<a href="/map?ancillary_services=' + ancillary[i] + '" >' + ancillary[i] + '</a>';
                             html += '</li>';
                             this.checkingOptions("ancillary", ancillary[i]);
                         }
@@ -832,7 +832,7 @@ window.LocalitySidebar = (function () {
                     for (i = 0; i < activities.length; ++i) {
                         if (activities[i].length > 0) {
                             html += '<li><i class="fa fa-caret-right"></i>';
-                            html += activities[i];
+                            html += '<a href="/map?activities=' + activities[i] + '" >' + activities[i] + '</a>';
                             html += '</li>';
                             this.checkingOptions("activities", activities[i]);
                         }
