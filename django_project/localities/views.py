@@ -414,15 +414,20 @@ class DataLoaderView(LoginRequiredMixin, FormView):
     template_name = 'dataloaderform.html'
 
     def get_form(self, form_class):
+
         return form_class()
 
     def form_valid(self, form):
         pass
 
     def get(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            raise Http404("Can not access this page")
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            raise Http404("Can not access this page")
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
 
