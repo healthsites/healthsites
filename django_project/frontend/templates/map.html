@@ -740,7 +740,9 @@
             {% endfor %}
         {% endif %}
         // default
-        $("#title-row-0").click();
+        {% if countries %}
+            $("#title-row-0").click();
+        {% endif %}
     });
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});
