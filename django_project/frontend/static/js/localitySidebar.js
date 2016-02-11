@@ -1042,14 +1042,6 @@ window.LocalitySidebar = (function () {
                 }
             }
             $.getJSON(url, function (data) {
-                if (data.history) {
-                    self.setEnable(false);
-                    $APP.trigger('locality.history-show', {
-                        'geom': data.geom
-                    });
-                } else {
-                    self.setEnable(true);
-                }
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {
@@ -1068,6 +1060,17 @@ window.LocalitySidebar = (function () {
                     $("#see-more-list").hide();
                 }
                 $("#see-more-list").data("data", {uuid: self.locality_uuid});
+                if (data.history) {
+                    self.setEnable(false);
+                    $APP.trigger('locality.history-show', {
+                        'geom': data.geom
+                    });
+                } else {
+                    self.setEnable(true);
+                    $APP.trigger('locality.history-hide', {
+                        'geom': data.geom
+                    });
+                }
             });
         },
 

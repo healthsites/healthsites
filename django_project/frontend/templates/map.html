@@ -163,7 +163,9 @@
                 <div style="clear: both;"></div>
             </div>
             <div id="icons-nav">
-                Browse the map, <a class="search" href="#">search</a> or use <a id="geolocate" class="geolocate" href="#">geolocate me</a> to view healthsites close to your location.
+                Browse the map, <a class="search" href="#">search</a> or use <a id="geolocate" class="a-button">geolocate
+                me</a> to view
+                healthsites close to your location.
             </div><!-- #icons-nav -->
             <div id="locality-default" style="display: none">
                 <div style="padding: 20px;">
@@ -630,24 +632,22 @@
 
         // checking default view
         var url = window.location.href;
-        if (url.indexOf('?') === -1 && url.indexOf('!') === -1) {
-            $country_table = $('#country-table');
-            // render country data list
-            {% if countries %}
-                {% for country in countries %}
-                    var country = "{{ country.name }}";
-                    countries.push(country);
-                {% endfor %}
-                // load by default
+        $country_table = $('#country-table');
+        // render country data list
+        {% if countries %}
+            {% for country in countries %}
+                var country = "{{ country.name }}";
+                countries.push(country);
+            {% endfor %}
+            // load by default
+            loadMore();
+            $('#load-more').click(function () {
                 loadMore();
-                $('#load-more').click(function () {
-                    loadMore();
-                });
-                $('#load-all').click(function () {
-                    loadAll();
-                });
-            {% endif %}
-        }
+            });
+            $('#load-all').click(function () {
+                loadAll();
+            });
+        {% endif %}
         $("#locality-statistic").hide();
         $("#locality-info").hide();
         $("#locality-default").hide();
@@ -902,6 +902,9 @@
                 }
             },
         });
+    })
+    $("#geolocate").click(function () {
+        getLocation();
     })
     function gotochangeset(changeset, uuid) {
         window.location.href = "/map#!/locality/" + uuid + "/" + changeset;

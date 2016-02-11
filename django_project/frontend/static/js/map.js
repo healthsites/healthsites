@@ -27,6 +27,13 @@ window.MAP = (function () {
             iconAnchor: [17, 43]
         });
 
+        this.addIcon = L.icon({
+            iconUrl: '/static/img/add-marker.png',
+            iconRetinaUrl: '/static/img/add-marker.png',
+            iconSize: [120, 120],
+            iconAnchor: [60, 83]
+        });
+
         this.MAP.attributionControl.setPrefix(''); // Don't show the 'Powered by Leaflet' text.
 
         // add markers layer
@@ -153,9 +160,8 @@ window.MAP = (function () {
             });
 
             $APP.on('locality.history-show', function (evt, payload) {
-                self.historyLayer.setLatLng([payload.geom[1], payload.geom[0]]);
                 self.MAP.addLayer(self.historyLayer);
-                self.MAP.panTo(payload.geom);
+                self.historyLayer.setLatLng([payload.geom[1], payload.geom[0]]);
             });
 
             $APP.on('locality.history-hide', function (evt, payload) {
@@ -227,7 +233,7 @@ window.MAP = (function () {
             this.pointLayer = L.marker([0, 0], {
                 'clickable': true,
                 'draggable': true,
-                'icon': this.redIcon
+                'icon': this.addIcon
             });
 
             this.pointLayer.on('dragend', function (evt) {

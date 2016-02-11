@@ -13,17 +13,21 @@
     background: #F9F9F9;
     border-bottom: 1px solid #eff0f0;
 }
+
 #icons-nav a {
     color: #f44a52;
 }
+
 #icons-nav a:hover, #icons-nav a:focus {
     color: #f44a52;
     text-decoration: underline;
 }
+
 #icons-nav a.active {
     color: #f44a52;
     text-decoration: underline;
 }
+
 #icons-nav i {
     font-size: 30px;
 }
@@ -483,4 +487,9 @@ table {
         margin-bottom: 10px;
         padding: 16px 0;
     }
+}
+
+.a-button {
+    cursor: pointer;
+    text-decoration: none;
 }
