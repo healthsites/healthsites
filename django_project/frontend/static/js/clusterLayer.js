@@ -161,12 +161,20 @@
 
             if (this._curReq && this._curReq.abort)
                 this._curReq.abort();       //prevent parallel requests
+            var spec = ""
+            var data = ""
+            if (this.spec) {
+                spec = this.spec['spec'];
+                data = this.spec['data'];
+            }
             var url = this.options.url + L.Util.getParamString({
                     'bbox': bb.toBBoxString(),
                     'zoom': this._map.getZoom(),
                     'iconsize': [48, 46],
                     'geoname': this.geoname,
                     'tag': this.tag,
+                    'spec': spec,
+                    'data': data,
                 });
 
             // when using cached data we don't need to make any new requests
@@ -233,6 +241,10 @@
 
         updateTag: function (tag) {
             this.tag = tag;
+        },
+
+        updateSpec: function (spec) {
+            this.spec = spec;
         }
     });
 

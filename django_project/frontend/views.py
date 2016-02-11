@@ -14,7 +14,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 import googlemaps
-from localities.views import search_locality_by_tag, get_country_statistic
+from localities.views import search_locality_by_tag, get_country_statistic, search_locality_by_spec_data
 from localities.models import Locality, Value, Country
 
 
@@ -135,9 +135,14 @@ def map(request):
             result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
         elif place:
             result = search_place(request, place)
+        elif len(request.GET) == 0:
+            result = search_place(request, place)
         else:
-            result['locality_count'] = Locality.objects.count()
-            result['countries'] = Country.objects.order_by('name').values('name').distinct()
+            for item in request.GET:
+                spec = item
+                data = request.GET.get(item)
+                result = search_locality_by_spec_data(spec, data)
+                result['spec'] = {'spec': spec, 'data': data}
         return render_to_response(
                 'map.html',
                 result,

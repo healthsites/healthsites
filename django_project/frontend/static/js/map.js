@@ -195,6 +195,10 @@ window.MAP = (function () {
                 self._updateGeoname(payload.geoname);
             });
 
+            $APP.on('map.map.update-spec', function (evt, payload) {
+                self._updateSpec(payload.spec);
+            });
+
             $APP.on('map.update-bound', function (evt, payload) {
                 self._setFitBound(payload.southwest_lat, payload.southwest_lng, payload.northeast_lat, payload.northeast_lng);
             });
@@ -260,6 +264,11 @@ window.MAP = (function () {
 
         _updateTag: function (tag) {
             this.clusterLayer.updateTag(tag);
+            this.clusterLayer.update();
+        },
+
+        _updateSpec: function (spec) {
+            this.clusterLayer.updateSpec(spec);
             this.clusterLayer.update();
         },
 
