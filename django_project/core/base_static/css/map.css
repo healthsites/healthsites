@@ -129,6 +129,76 @@
     width: auto;
 }
 
+#countries-table {
+    padding: 20px;
+    border-bottom: 1px solid #eff0f0;
+}
+.block-header {
+    background: #fff;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	padding: 5px;
+	border: 1px solid #eff0f0;
+	font-family: "Ubuntu", sans-serif;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+#countries-table h3.ui-state-active {
+    margin-bottom: 0;
+    background: #f9f9f9;
+    border: 1px solid #eff0f0;
+    border-bottom: none;
+   -webkit-border-radius: 5px;
+-webkit-border-bottom-right-radius: 0;
+-webkit-border-bottom-left-radius: 0;
+-moz-border-radius: 5px;
+-moz-border-radius-bottomright: 0;
+-moz-border-radius-bottomleft: 0;
+border-radius: 5px;
+border-bottom-right-radius: 0;
+border-bottom-left-radius: 0;
+}
+#countries-table .table {
+    background: #fff;
+	-webkit-border-bottom-right-radius: 5px;
+-webkit-border-bottom-left-radius: 5px;
+-moz-border-radius-bottomright: 5px;
+-moz-border-radius-bottomleft: 5px;
+border-bottom-right-radius: 5px;
+border-bottom-left-radius: 5px;
+	padding: 5px 0;
+	font-family: "Ubuntu", sans-serif;
+    overflow: hidden;
+    margin-bottom: 4px;
+    border: 1px solid #eff0f0;
+}
+#countries-table .col-xs-3 {
+    text-align: right;
+}
+#countries-table .block-data {
+	padding: 0 5px;
+    border-bottom: 1px solid #eff0f0;
+    overflow: hidden;
+    line-height: 20px;
+}
+#countries-table .block-data:last-child {
+    border-bottom: none;
+}
+#countries-table h3 {
+    text-align: center;
+    color: #fff;
+    line-height: 1.5em;
+    -moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+    color: #3c4c57;
+    background: #eff0f0;
+    margin: 2px 0;
+    font-size: 16px;
+    cursor: pointer;
+}
+
 .location-info {
     background: #fff;
     font-family: "Raleway", sans-serif;

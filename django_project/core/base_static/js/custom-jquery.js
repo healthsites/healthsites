@@ -43,6 +43,11 @@ function mapcount() {
 
 $(document).ready(function () {
 
+    $(".accordion").accordion({
+       collapsible: true,
+	   header: "h3"
+    });
+
     //activate searchbar
     $('.navbar-search, #icons-nav .search').click(function () {
         $("body").toggleClass("searchbar-active");
