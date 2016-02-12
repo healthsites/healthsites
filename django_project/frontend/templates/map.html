@@ -183,21 +183,13 @@
                     <h2 class="sidebar-title "><span class="timer" data-speed="2500"
                                                      data-to="{{ locality_count }}">{{ locality_count }}</span>
                         healthsites listed</h2>
-                    <div>
-                        <table id="country-table" style="width:100%">
-                            <tr class="title-table" style="padding: 5px">
-                                <th width="60%">Country</th>
-                                <th width="20%"># of sites</th>
-                                <th width="20%">% complete</th>
-                            </tr>
-                        </table>
+                </div>
+                <div id="countries-table">
+                    <div class="block-header"><span class="col-xs-6">Country</span> <span
+                            class="col-xs-3"># of sites</span>
+                        <span class="col-xs-3">% complete</span></div>
+                    <div id="accordion-country" class="accordion">
                     </div>
-                    {#                    <div style="width: 100%; margin-top: 20px;margin-bottom: 10px;">#}
-                    {#                        <a id="load-more">Load#}
-                    {#                            More</a>#}
-                    {#                        <a id="load-all">Load#}
-                    {#                            All</a>#}
-                    {#                    </div>#}
                 </div>
             </div>
             <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
@@ -571,7 +563,7 @@
         country_id = country_id.split(" ").join("-");
         country_id = country_id.split("(").join("-");
         country_id = country_id.split(")").join("-");
-        var html = "<tr><td><a style=\"cursor:pointer;\" href=\"map?country=" + country + "\">" + country + "</td><td id=\"" + country_id + "-number\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td><td id=\"" + country_id + "-complete\" align=\"right\"><i style=\"opacity:0.5\">loading</i></td></tr>";
+        var html = '<div class="block-data"><span class="col-xs-6"><a href="map?country=' + country + '">' + country + '</a></span> <span id="' + country_id + '-number" class="col-xs-3">loading</span> <span id="' + country_id + '-complete" class="col-xs-3">loading</span></div>';
         $.ajax({
             number: country_id + "-number",
             completeness: country_id + "-complete",
@@ -592,45 +584,19 @@
         });
         return html;
     }
-    function loadMore() {
-        var limit = 20;
-        var count_row = ($($country_table).children('tbody').children('tr')).length - 1;
-        for (var i = count_row; i < countries.length && i < count_row + limit; i++) {
-            $country_table.append(loadCountry(countries[i]));
-        }
-        if (i >= countries.length) {
-            $('#load-more').hide();
-            $('#load-all').hide();
-        }
-    }
-    function loadAll() {
-        var count_row = ($($country_table).children('tbody').children('tr')).length - 1;
-        for (var i = count_row; i < countries.length; i++) {
-            $country_table.append(loadCountry(countries[i]));
-        }
-        if (i >= countries.length) {
-            $('#load-more').hide();
-            $('#load-all').hide();
-        }
-    }
-    function loadByAlphabet(element, index) {
-        if (!$(element).hasClass("loaded")) {
-            $(element).addClass("loaded");
+    function loadByAlphabet(index) {
+        var wrapper = $("#title-row-" + index);
+        if (wrapper.html() == "") {
             var found = false;
-            var bottomTittle = $("#title-row-" + (index + 1));
             for (var i = 0; i < countries.length; i++) {
                 if (countries[i].toLowerCase()[0].match(titleRowRegex[index]) != null) {
                     found = true;
-                    if (bottomTittle.length == 0) {
-                        $country_table.append(loadCountry(countries[i]));
-                    } else {
-                        $(bottomTittle).before(loadCountry(countries[i]));
-                    }
+                    wrapper.append(loadCountry(countries[i]));
                 } else {
                     if (found) break;
                 }
             }
-
+            wrapper.css("height", "auto");
         }
     }
     var APP;
@@ -654,23 +620,25 @@
 
         // checking default view
         var url = window.location.href;
-        $country_table = $('#country-table');
+        $country_table = $('#accordion-country');
         for (var i = 0; i < titleRow.length; i++) {
-            $country_table.append('<tr id="title-row-' + i + '" onClick="loadByAlphabet(this,' + i + ')"><td class="row-title" colspan="3" ><center>' + titleRow[i] + '</center></td></tr>');
+            var html = '<h3 onClick="loadByAlphabet(' + i + ')">' + titleRow[i] + '</h3>';
+            html += '<div id="title-row-' + i + '" class="table">';
+            html += '</div>';
+            $country_table.append(html);
         }
+
+        $(".accordion").accordion({
+            collapsible: true,
+            header: "h3"
+        });
         // render country data list
         {% if countries %}
             {% for country in countries %}
                 var country = "{{ country.name }}";
                 countries.push(country);
             {% endfor %}
-            // load by default
-            $('#load-more').click(function () {
-                loadMore();
-            });
-            $('#load-all').click(function () {
-                loadAll();
-            });
+            loadByAlphabet(0);
         {% endif %}
         $("#locality-statistic").hide();
         $("#locality-info").hide();
@@ -748,10 +716,11 @@
                 $("#updates").append(html);
             {% endfor %}
         {% endif %}
-        // default
-        {% if countries %}
-            $("#title-row-0").click();
-        {% endif %}
+
+        $(".accordion").accordion({
+            collapsible: true,
+            header: "h3"
+        });
     });
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});
