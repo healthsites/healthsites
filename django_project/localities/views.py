@@ -42,15 +42,17 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         """
 
         if not (all(param in request.GET for param in [
-            'bbox', 'zoom', 'iconsize', 'geoname', 'tag'])):
+            'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data'])):
             raise Http404
 
         try:
             bbox_poly = parse_bbox(request.GET.get('bbox'))
             zoom = int(request.GET.get('zoom'))
             icon_size = map(int, request.GET.get('iconsize').split(','))
-            geoname = request.GET.get('geoname');
-            tag = request.GET.get('tag');
+            geoname = request.GET.get('geoname')
+            tag = request.GET.get('tag')
+            spec = request.GET.get('spec')
+            data = request.GET.get('data')
 
         except:
             # return 404 if any of parameters are missing or not parsable
@@ -63,11 +65,11 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             # icon sizes should be positive
             raise Http404
 
-        return (bbox_poly, zoom, icon_size, geoname, tag)
+        return (bbox_poly, zoom, icon_size, geoname, tag, spec, data)
 
     def get(self, request, *args, **kwargs):
         # parse request params
-        bbox, zoom, iconsize, geoname, tag = self._parse_request_params(request)
+        bbox, zoom, iconsize, geoname, tag, spec, data = self._parse_request_params(request)
         # cluster Localites for a view
         localities = Locality.objects.in_bbox(bbox)
         exception = False
@@ -88,6 +90,14 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                             specification__attribute__key='tags').filter(data__icontains="|" + tag + "|").values(
                             'locality')
                     localities = Locality.objects.filter(id__in=localities)
+                else:
+                    # serching by value
+                    if spec != "" and spec != "undefined" and data != "" and data != "undefined":
+                        localities = Value.objects.filter(
+                                specification__attribute__key=spec).filter(
+                                data__icontains=data).values('locality')
+                        print localities
+                        localities = Locality.objects.filter(id__in=localities)
         object_list = []
         if not exception:
             object_list = cluster(localities, zoom, *iconsize)
@@ -584,7 +594,17 @@ def search_locality_by_tag(query):
         localities = Value.objects.filter(
                 specification__attribute__key='tags').filter(data__icontains="|" + query + "|").values('locality')
         return get_statistic(localities)
-    except Country.DoesNotExist:
+    except Value.DoesNotExist:
+        return []
+
+
+def search_locality_by_spec_data(spec, data):
+    try:
+        localities = Value.objects.filter(
+                specification__attribute__key=spec).filter(
+                data__icontains=data).values('locality')
+        return get_statistic(localities)
+    except Value.DoesNotExist:
         return []
 
 

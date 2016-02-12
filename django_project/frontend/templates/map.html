@@ -209,12 +209,12 @@
                             </tr>
                         </table>
                     </div>
-{#                    <div style="width: 100%; margin-top: 20px;margin-bottom: 10px;">#}
-{#                        <a id="load-more">Load#}
-{#                            More</a>#}
-{#                        <a id="load-all">Load#}
-{#                            All</a>#}
-{#                    </div>#}
+                    {#                    <div style="width: 100%; margin-top: 20px;margin-bottom: 10px;">#}
+                    {#                        <a id="load-more">Load#}
+                    {#                            More</a>#}
+                    {#                        <a id="load-all">Load#}
+                    {#                            All</a>#}
+                    {#                    </div>#}
                 </div>
             </div>
             <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
@@ -692,7 +692,7 @@
         $("#locality-statistic").hide();
         $("#locality-info").hide();
         $("#locality-default").hide();
-        {% if tag or country %}
+        {% if tag or country or spec %}
             $("#locality-statistic").show();
             $("#number-locality").html("{{ localities }}");
             updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
@@ -714,6 +714,15 @@
             var polygon_json = JSON.parse(polygon_raw);
             var polygon = polygon_json['coordinates'];
             $APP.trigger('map.create-polygon', {'polygon': polygon});
+        {% elif spec %}
+            var spec = "{{ spec.spec }}";
+            var data = "{{ spec.data }}";
+            $APP.trigger('map.update-spec', {'spec': {'spec': spec, 'data': data}});
+            spec = spec.replaceAll("_", " ");
+            spec.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            $("#title-name").html(spec + " : " + data);
         {% endif %}
         {% if viewport %}
             var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");
@@ -757,7 +766,9 @@
             {% endfor %}
         {% endif %}
         // default
-        $("#title-row-0").click();
+        {% if countries %}
+            $("#title-row-0").click();
+        {% endif %}
     });
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});
