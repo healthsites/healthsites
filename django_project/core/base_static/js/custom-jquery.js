@@ -10,18 +10,18 @@ function mapcount() {
  }
  var s_width = $('.location-info').width();
  var r_height = v_height - h_height;
- 
-  
+
+
   if (v_width<=991) {
-	  
-      
-     
+
+
+
 	  var pad = r_height/2;
 	  $('.location-info').css('margin-top',h_height + pad);
 	  $('#map').css('top', h_height);
 	  $('#map, #map-home').css('height',pad);
 	  $('#map, #map-home').css('width',v_width);
-	   
+
         //mobile country search
 		$('.select-country input').focusin(function() {
 			$('body').addClass('search-focus');
@@ -29,7 +29,7 @@ function mapcount() {
 		$('.select-country input').focusout(function() {
 			$('body').removeClass('search-focus');
 		});
- 
+
   }
 	else {
 		 $('.location-info').css('margin-top',h_height);
@@ -42,11 +42,6 @@ function mapcount() {
 
 
 $(document).ready(function () {
-
-    $(".accordion").accordion({
-       collapsible: true,
-	   header: "h3"
-    });
 
     //activate searchbar
     $('.navbar-search, #icons-nav .search').click(function () {
@@ -84,10 +79,10 @@ $(document).ready(function () {
             }
         }
     });
-	
-    $('#icons-nav a').click(function () {		
+
+    $('#icons-nav a').click(function () {
         $(this).toggleClass("active");
-        $(this).siblings().removeClass("active");		
+        $(this).siblings().removeClass("active");
         if ( $(this).hasClass("search" ) && $(this).hasClass("active" )) {
             $(".search-block").show();
         }
