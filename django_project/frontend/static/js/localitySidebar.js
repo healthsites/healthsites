@@ -784,7 +784,7 @@ window.LocalitySidebar = (function () {
                     for (i = 0; i < scopes.length; ++i) {
                         if (scopes[i].length > 0) {
                             html += '<li><i class="fa fa-caret-right"></i>';
-                            html += '<a href="/map?scope_of_service=' + scopes[i] + '"  >' + scopes[i] + '</a>';
+                            html += '<a href="/map?attribute=' + scopes[i] + '&uuid=' + this.locality_uuid + '"  >' + scopes[i] + '</a>';
                             html += '</li>';
                             this.checkingOptions("scope", scopes[i]);
                         }
@@ -808,7 +808,7 @@ window.LocalitySidebar = (function () {
                     for (i = 0; i < ancillary.length; ++i) {
                         if (ancillary[i].length > 0) {
                             html += '<li><i class="fa fa-caret-right"></i>';
-                            html += '<a href="/map?ancillary_services=' + ancillary[i] + '" >' + ancillary[i] + '</a>';
+                            html += '<a href="/map?attribute=' + ancillary[i] + '&uuid=' + this.locality_uuid + '" >' + ancillary[i] + '</a>';
                             html += '</li>';
                             this.checkingOptions("ancillary", ancillary[i]);
                         }
@@ -832,7 +832,7 @@ window.LocalitySidebar = (function () {
                     for (i = 0; i < activities.length; ++i) {
                         if (activities[i].length > 0) {
                             html += '<li><i class="fa fa-caret-right"></i>';
-                            html += '<a href="/map?activities=' + activities[i] + '" >' + activities[i] + '</a>';
+                            html += '<a href="/map?attribute=' + activities[i] + '&uuid=' + this.locality_uuid + '" >' + activities[i] + '</a>';
                             html += '</li>';
                             this.checkingOptions("activities", activities[i]);
                         }

@@ -161,11 +161,15 @@
 
             if (this._curReq && this._curReq.abort)
                 this._curReq.abort();       //prevent parallel requests
-            var spec = ""
-            var data = ""
+            var spec = "";
+            var data = "";
+            var uuid = "";
             if (this.spec) {
                 spec = this.spec['spec'];
                 data = this.spec['data'];
+                if (this.spec['uuid'] && this.spec['uuid'] != "None") {
+                    uuid = this.spec['uuid'];
+                }
             }
             var url = this.options.url + L.Util.getParamString({
                     'bbox': bb.toBBoxString(),
@@ -175,6 +179,7 @@
                     'tag': this.tag,
                     'spec': spec,
                     'data': data,
+                    'uuid': uuid,
                 });
 
             // when using cached data we don't need to make any new requests

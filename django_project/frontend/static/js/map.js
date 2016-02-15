@@ -208,6 +208,7 @@ window.MAP = (function () {
             });
 
             $APP.on('map.pan', function (evt, payload) {
+                console.log(payload.location);
                 self._moveTo(payload.location);
             });
         },

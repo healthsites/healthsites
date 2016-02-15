@@ -125,6 +125,7 @@ def map(request):
         tag = request.GET.get('tag')
         country = request.GET.get('country')
         place = request.GET.get('place')
+        attribute = request.GET.get('attribute')
         result = {}
         if tag:
             result = search_locality_by_tag(tag)
@@ -135,14 +136,21 @@ def map(request):
             result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
         elif place:
             result = search_place(request, place)
+        elif attribute:
+            uuid = request.GET.get('uuid')
+            result = search_locality_by_spec_data("attribute", attribute, uuid)
+            result['attribute'] = {'attribute': attribute, 'uuid': uuid, 'name': result['locality_name']}
         elif len(request.GET) == 0:
             result = search_place(request, place)
         else:
+            uuid = request.GET.get('uuid')
+            print uuid
             for item in request.GET:
-                spec = item
-                data = request.GET.get(item)
-                result = search_locality_by_spec_data(spec, data)
-                result['spec'] = {'spec': spec, 'data': data}
+                if item != "uuid":
+                    spec = item
+                    data = request.GET.get(item)
+                    result = search_locality_by_spec_data(spec, data, uuid)
+                    result['spec'] = {'spec': spec, 'data': data, 'uuid': uuid, 'name': result['locality_name']}
         return render_to_response(
                 'map.html',
                 result,

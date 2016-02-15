@@ -193,9 +193,9 @@
                 </div>
             </div>
             <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
-                <div class="header" style="font-size: 24px; padding-bottom: 10px;">
-                    <strong id="title-name">No Title</strong> - <span id="number-locality"
-                                                                      style="margin-left: 5px; margin-right: 5px"> 0 </span>
+                <div id="title-statistic" class="header" style="font-size: 24px; padding-bottom: 10px;">
+                    <strong id="title-name">No Title</strong> -
+                    <span id="number-locality" style="margin-left: 5px; margin-right: 5px"> 0 </span>
                     healthsites
                 </div>
 
@@ -643,7 +643,7 @@
         $("#locality-statistic").hide();
         $("#locality-info").hide();
         $("#locality-default").hide();
-        {% if tag or country or spec %}
+        {% if tag or country or spec or attribute %}
             $("#locality-statistic").show();
             $("#number-locality").html("{{ localities }}");
             updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
@@ -668,12 +668,39 @@
         {% elif spec %}
             var spec = "{{ spec.spec }}";
             var data = "{{ spec.data }}";
-            $APP.trigger('map.update-spec', {'spec': {'spec': spec, 'data': data}});
+            var uuid = "{{ spec.uuid }}";
+            var name = "{{ spec.name }}";
+            $APP.trigger('map.update-spec', {'spec': {'spec': spec, 'data': data, 'uuid': uuid}});
             spec = spec.replaceAll("_", " ");
             spec.replace(/\w\S*/g, function (txt) {
                 return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
             });
-            $("#title-name").html(spec + " : " + data);
+            if (name == "") {
+                $("#title-name").html('Showing healthsites that has ' + spec + ' <span class="inner-navbar-brand">' + data + '</span>');
+            } else {
+                $("#title-statistic").html('Showing the closest five healthsites with ' + spec + ' <span class="inner-navbar-brand">' + data + '</span> to <span class="inner-navbar-brand">' + name + '</span><br>');
+            }
+        {% elif attribute %}
+            var attribute = "{{ attribute.attribute }}";
+            var uuid = "{{ attribute.uuid }}";
+            var name = "{{ attribute.name }}";
+            $APP.trigger('map.update-spec', {'spec': {'spec': 'attribute', 'data': attribute, 'uuid': uuid}});
+            attribute = attribute.replaceAll("_", " ");
+            attribute.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            if (name == "") {
+                $("#title-name").html('Showing healthsites that has attribute <span class="inner-navbar-brand">' + attribute + '</span>');
+            } else {
+                $("#title-statistic").html('Showing the closest five healthsites with <span class="inner-navbar-brand">' + attribute + '</span> to <span class="inner-navbar-brand">' + name + '</span><br>');
+            }
+        {% endif %}
+        {% if location %}
+            var latitude = "{{ location.y }}";
+            latitude = parseFloat(latitude);
+            var longitude = "{{ location.x }}";
+            longitude = parseFloat(longitude);
+            $APP.trigger('map.pan', {'location': [latitude, longitude]});
         {% endif %}
         {% if viewport %}
             var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");
