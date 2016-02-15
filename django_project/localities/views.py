@@ -26,6 +26,7 @@ from django.http import HttpResponse, Http404
 from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from localities.models import Country, DataLoader
+from django.contrib.gis.measure import D
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -42,7 +43,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         """
 
         if not (all(param in request.GET for param in [
-            'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data'])):
+            'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid'])):
             raise Http404
 
         try:
@@ -53,6 +54,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             tag = request.GET.get('tag')
             spec = request.GET.get('spec')
             data = request.GET.get('data')
+            uuid = request.GET.get('uuid')
 
         except:
             # return 404 if any of parameters are missing or not parsable
@@ -65,11 +67,11 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             # icon sizes should be positive
             raise Http404
 
-        return (bbox_poly, zoom, icon_size, geoname, tag, spec, data)
+        return (bbox_poly, zoom, icon_size, geoname, tag, spec, data, uuid)
 
     def get(self, request, *args, **kwargs):
         # parse request params
-        bbox, zoom, iconsize, geoname, tag, spec, data = self._parse_request_params(request)
+        bbox, zoom, iconsize, geoname, tag, spec, data, uuid = self._parse_request_params(request)
         # cluster Localites for a view
         localities = Locality.objects.in_bbox(bbox)
         exception = False
@@ -92,11 +94,10 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     localities = Locality.objects.filter(id__in=localities)
                 else:
                     # serching by value
+                    print spec + " : " + data + " : " + uuid
                     if spec != "" and spec != "undefined" and data != "" and data != "undefined":
-                        localities = Value.objects.filter(
-                                specification__attribute__key=spec).filter(
-                                data__icontains=data).values('locality')
-                        print localities
+                        print spec +" "+ data+" "+ uuid
+                        localities = get_locality_by_spec_data(spec, data, uuid)
                         localities = Locality.objects.filter(id__in=localities)
         object_list = []
         if not exception:
@@ -598,14 +599,55 @@ def search_locality_by_tag(query):
         return []
 
 
-def search_locality_by_spec_data(spec, data):
+def get_locality_by_spec_data(spec, data, uuid):
     try:
-        localities = Value.objects.filter(
-                specification__attribute__key=spec).filter(
-                data__icontains=data).values('locality')
-        return get_statistic(localities)
+        if spec == "attribute":
+            if uuid:
+                locality = Locality.objects.get(uuid=uuid)
+                localities = Locality.objects.filter(
+                        geom__distance_lte=(locality.geom, D(mi=100))
+                ).distance(locality.geom).order_by('distance')
+                localities = Value.objects.filter(
+                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+            else:
+                localities = Value.objects.filter(
+                        data__icontains=data).values('locality')
+        else:
+            if uuid:
+                locality = Locality.objects.get(uuid=uuid)
+                localities = Locality.objects.filter(
+                        geom__distance_lte=(locality.geom, D(mi=100))
+                ).distance(locality.geom).order_by('distance')
+                localities = Value.objects.filter(
+                        specification__attribute__key=spec).filter(
+                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+            else:
+                localities = Value.objects.filter(
+                        specification__attribute__key=spec).filter(
+                        data__icontains=data).values('locality')
+        return localities
     except Value.DoesNotExist:
         return []
+
+
+def search_locality_by_spec_data(spec, data, uuid):
+    localities = get_locality_by_spec_data(spec, data, uuid)
+    print localities
+    if localities == []:
+        return []
+    else:
+        output = get_statistic(localities)
+        output['locality_name'] = ""
+        if uuid:
+            try:
+                locality = Locality.objects.get(uuid=uuid)
+                locality_name = Value.objects.filter(locality=locality).filter(
+                        specification__attribute__key='name')[0].data
+                output['locality_name'] = locality_name
+                output['location'] = {'x': "%f" % locality.geom.x, 'y': "%f" % locality.geom.y}
+            except Locality.DoesNotExist:
+                print "locality not found"
+        return output
 
 
 def get_country_statistic(query):
