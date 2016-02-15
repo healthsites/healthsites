@@ -5,13 +5,13 @@
 
 {% block content %}
 
-    <section class="slideshow js-fullheight fluid-container" style="padding: 40px; padding-top: 100px; ">
-
+    <section class="container">
+    <div class="col-md-8 col-md-offset-2">
     <div class="panel panel-info">
-        <div class="panel-heading"><h3 class="panel-title">Share your ideas</h3></div>
+        <div class="panel-heading"><h3 class="panel-title">Share healthsite data</h3></div>
         <div class="panel-body">
-            We would love to hear your ideas and feedback on how to make
-            healthsites.io better! Please use the form below to share your ideas.
+            <p>Please use the form below to get in contact with us.</p>
+            <p>We'd love to hear your ideas and feedback on how to make healthsites.io better!</p> 
         </div>
     </div>
         {% render_contact_form %}
@@ -28,6 +28,7 @@
         </div>
     </ul>
     {% endif %}
+    </div>
     </section>
 
 {% endblock %}
