@@ -608,7 +608,7 @@ def get_locality_by_spec_data(spec, data, uuid):
                         geom__distance_lte=(locality.geom, D(mi=100))
                 ).distance(locality.geom).order_by('distance')
                 localities = Value.objects.filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                        data__icontains=data).filter(locality__in=localities).values('locality')[:6]
             else:
                 localities = Value.objects.filter(
                         data__icontains=data).values('locality')
@@ -620,7 +620,7 @@ def get_locality_by_spec_data(spec, data, uuid):
                 ).distance(locality.geom).order_by('distance')
                 localities = Value.objects.filter(
                         specification__attribute__key=spec).filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                        data__icontains=data).filter(locality__in=localities).values('locality')[:6]
             else:
                 localities = Value.objects.filter(
                         specification__attribute__key=spec).filter(
