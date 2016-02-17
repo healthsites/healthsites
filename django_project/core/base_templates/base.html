@@ -36,6 +36,9 @@
 
     {% stylesheet 'project' %}
     {% stylesheet 'home' %}
+    {% block stylesheet %}
+
+    {% endblock stylesheet %}
 
     {# HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries  #}
     {# WARNING: Respond.js doesn't work if you view the page via file://  #}
@@ -159,7 +162,7 @@
 
         </div>
     </div>
-    <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
+    <div id="ribbon"><img class="share" src="/static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
 </footer>
 <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
