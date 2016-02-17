@@ -3,7 +3,7 @@ window.LocalitySidebar = (function () {
     var separator = "|";
     var special_attribute = ["uuid", "geom", "long", "lat", "nature_of_facility", "inpatient_service", "staff", "ownership", "nature_of_facility",
         "scope_of_service", "notes", "ancillary_services", "operation", "activities", "data_source",
-        "name", "url", "email", "mobile", "phone", "physical_address", "services", "tags", "defining_hours"];
+        "name", "email", "mobile", "phone", "physical_address", "services", "tags", "defining_hours"];
 
     var nature_options = ["", "clinic without beds", "clinic with beds", "first referral hospital", "second referral hospital or General hospital", "tertiary level including University hospital"];
     var scope_options = ["specialized care", "general acute care", "rehabilitation care", "old age/hospice care"];
@@ -17,7 +17,6 @@ window.LocalitySidebar = (function () {
     var no_physical_address = "No Physical Address";
     var no_phone_found = "No phone found";
     var no_operation_hours_found = "No operation hours found";
-    var no_url_found = "No url found";
     var no_tag_found = "No tag found";
     var no_others_found = "No other informations";
     var no_name = "No Name";
@@ -38,7 +37,6 @@ window.LocalitySidebar = (function () {
         this.$coordinates = $('#locality-coordinates');
         this.$physical_address = $('#locality-physical-address');
         this.$phone = $('#locality-phone');
-        this.$url = $('#locality-url');
         this.$scope_of_service = $('#locality-scope-of-service');
         this.$ancillary_service = $('#locality-ancillary-service');
         this.$activities = $('#locality-activities');
@@ -80,7 +78,6 @@ window.LocalitySidebar = (function () {
         this.$coordinates_input = $('#locality-coordinates-input');
         this.$coordinates_lat_input = $('#locality-coordinates-lat-input');
         this.$coordinates_long_input = $('#locality-coordinates-long-input');
-        this.$url_input = $('#locality-url-input');
         this.$note_input = $('#locality-note-input');
 
         this.$other_add = $('#others-add');
@@ -120,7 +117,6 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$inpatient_service);
         info_fields.push(this.$staff);
         info_fields.push(this.$coordinates);
-        info_fields.push(this.$url);
         info_fields.push(this.$note);
         info_fields.push(this.$other_data);
         info_fields.push(this.$tag_data);
@@ -142,7 +138,6 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$inpatient_service_input);
         edit_fields.push(this.$staff_input);
         edit_fields.push(this.$coordinates_input);
-        edit_fields.push(this.$url_input);
         edit_fields.push(this.$note_input);
         edit_fields.push(this.$other_add);
         edit_fields.push(this.$other_data_input);
@@ -203,14 +198,6 @@ window.LocalitySidebar = (function () {
                         long = 180;
                     } else if (long < -180) {
                         long = -180;
-                    }
-
-                    // GET URL
-                    var urls = that.$url_input.find('p');
-                    var urls_output = [];
-                    for (var i = 0; i < urls.length; i++) {
-                        var val = $(urls[i]).find("input").val();
-                        urls_output.push(val);
                     }
 
                     // GET SCOPE CHILD
@@ -295,7 +282,7 @@ window.LocalitySidebar = (function () {
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
                     }
-                    fields += '&url=' + encodeURIComponent(urls_output[0]) + '&data_source=' + encodeURIComponent(urls_output[1]) + '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
+                    fields += '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient) +
                         "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags);
@@ -520,10 +507,6 @@ window.LocalitySidebar = (function () {
             this.$coordinates_lat_input.val(payload.latlng.lat);
         },
 
-        addUrl: function (url, name) {
-            this.$url.append("<p class=\"url\"><i class=\"fa fa-link\"></i><a href=\"" + url + "\">" + name + "</a></p>");
-        },
-
         getDefiningHoursFormat: function () {
             var format1 = ""; // for send to database
             var format2 = ""; // for show in UI
@@ -638,10 +621,6 @@ window.LocalitySidebar = (function () {
             this.$staff_nurse_input.val("");
             this.$tag_input.html("");
             this.$tag_input_text_box.val("");
-            this.$url.html("");
-            this.$url_input.html("");
-            this.addOptionUrl("");
-            this.addOptionUrl("");
             this.$other_data_input.html("");
 
             // defining hours setup
@@ -691,7 +670,6 @@ window.LocalitySidebar = (function () {
             this.$coordinates.text('lat: ' + 'n/a' + ', long: ' + 'n/a');
             this.$physical_address.text(no_physical_address);
             this.$phone.text(no_phone_found);
-            this.$url.removeAttr('href');
             this.$scope_of_service.html('');
             this.$scope_of_service.text(need_information);
             this.$ancillary_service.html('');
@@ -701,8 +679,6 @@ window.LocalitySidebar = (function () {
             this.$staff.text(need_information);
             this.$ownership.text(need_information);
             this.$inpatient_service.text(need_information);
-            this.$url.html("");
-            this.addUrl("", no_url_found);
             this.$note_text.text(need_information);
 
             this.$other_data.html(no_others_found);
@@ -921,38 +897,6 @@ window.LocalitySidebar = (function () {
                     }
                 }
             }
-
-            // URL
-            this.$url_input.html("");
-            var isUrlRendered = false;
-            {
-                var url = this.locality_data.values['url'];
-                delete keys[this.getIndex(keys, 'url')];
-                if (this.isHasValue(url)) {
-                    this.$url.html("");
-                    isUrlRendered = true;
-                    this.addUrl(url, url);
-                    this.addOptionUrl(url);
-                } else {
-                    this.addOptionUrl("");
-                }
-            }
-
-            // DATA-SOURCE
-            {
-                var url = this.locality_data.values['data_source'];
-                delete keys[this.getIndex(keys, 'data_source')];
-                if (this.isHasValue(url)) {
-                    if (!isUrlRendered) {
-                        this.$url.html("");
-                    }
-                    this.addUrl(url, url);
-                    this.addOptionUrl(url);
-                } else {
-                    this.addOptionUrl("");
-                }
-            }
-
             // PHONE
             {
                 var phone = this.locality_data.values['phone'];
@@ -1107,13 +1051,10 @@ window.LocalitySidebar = (function () {
                 $APP.trigger('locality.coordinate-changed', {'geom': [this.$coordinates_long_input.val(), this.$coordinates_lat_input.val()]});
             }
         },
-        addOptionUrl: function (value) {
-            this.$url_input.append("<p class=\"url\"><i class=\"fa fa-link\"></i><input type=\"text\" value=\"" + value + "\" />");
-        },
         addOption: function (element, value) {
-            if (element.id == this.$url_input_add.attr('id')) {
-                this.addOptionUrl(value);
-            }
+            //if (element.id == this.$url_input_add.attr('id')) {
+            //    this.addOptionUrl(value);
+            //}
         },
         addOther: function (attribute, value) {
             var html = "<div class=\"input\">";
