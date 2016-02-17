@@ -33,9 +33,9 @@ function mapcount() {
   }
 	else {
 		 $('.location-info').css('margin-top',h_height);
-         $('#map').css('height', v_height - h_height);
-         $('#map').css('width', v_width - s_width);
-		 $('#map').css('top', h_height);
+         $('.map-page #map').css('height', v_height - h_height);
+         $('.map-page #map').css('width', v_width - s_width);
+		 $('.map-page #map').css('top', h_height);
 		 $('body').removeClass('search-focus');
 	}
 }
