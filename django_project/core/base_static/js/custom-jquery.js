@@ -42,7 +42,7 @@ function mapcount() {
 		 $('.map-page #map').css('top', h_height);
 		 $('body').removeClass('search-focus');
 		 $('#map-home').css('height', s_height);
-	     $('#map-home').css('width', s_height);
+	     $('#map-home').css('width', '100%');
 	}
 }
 
