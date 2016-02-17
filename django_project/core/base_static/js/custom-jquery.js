@@ -37,6 +37,8 @@ function mapcount() {
          $('.map-page #map').css('width', v_width - s_width);
 		 $('.map-page #map').css('top', h_height);
 		 $('body').removeClass('search-focus');
+		 $('#map-home').css('height','100%');
+	     $('#map-home').css('width','100%');
 	}
 }
 
