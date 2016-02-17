@@ -34,14 +34,14 @@ function mapcount() {
   }
 	else {
 		 if ($('.select-country').length>0) {
-            var s_height = $('.country-data').height();
+            var c_height = $('.country-data').height();
          }
 		 $('.location-info').css('margin-top',h_height);
          $('.map-page #map').css('height', v_height - h_height);
          $('.map-page #map').css('width', v_width - s_width);
 		 $('.map-page #map').css('top', h_height);
 		 $('body').removeClass('search-focus');
-		 $('#map-home').css('height', s_height);
+		 $('#map-home').css('height', c_height);
 	     $('#map-home').css('width', '100%');
 	}
 }
