@@ -12,6 +12,7 @@ function mapcount() {
  var r_height = v_height - h_height;
 
 
+
   if (v_width<=991) {
 
 
@@ -32,13 +33,16 @@ function mapcount() {
 
   }
 	else {
+		 if ($('.select-country').length>0) {
+            var s_height = $('.select-country').height();
+         }
 		 $('.location-info').css('margin-top',h_height);
          $('.map-page #map').css('height', v_height - h_height);
          $('.map-page #map').css('width', v_width - s_width);
 		 $('.map-page #map').css('top', h_height);
 		 $('body').removeClass('search-focus');
-		 $('#map-home').css('height','100%');
-	     $('#map-home').css('width','100%');
+		 $('#map-home').css('height', s_height);
+	     $('#map-home').css('width', s_height);
 	}
 }
 
