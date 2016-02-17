@@ -34,7 +34,7 @@ function mapcount() {
   }
 	else {
 		 if ($('.select-country').length>0) {
-            var s_height = $('.select-country').height();
+            var s_height = $('.country-data').height();
          }
 		 $('.location-info').css('margin-top',h_height);
          $('.map-page #map').css('height', v_height - h_height);
