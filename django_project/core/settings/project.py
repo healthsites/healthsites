@@ -46,6 +46,8 @@ LOCALE_PATHS = (absolute_path('locale'),)
 # Maybe we can split these between project-home and project-map
 PIPELINE_JS['project'] = {
     'source_filenames': (
+        'js/custom-jquery.js',
+        'js/custom-functions.js',
         'js/utilities.js',
         'js/clusterLayer.js',
         'js/csrf-ajax.js',
