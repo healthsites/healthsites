@@ -437,7 +437,7 @@ class LocalityIndex(models.Model):
 
 # register signals
 import signals  # noqa
-from .tasks import load_data_task, test_task
+from .tasks import load_data_task
 
 
 class DataLoader(models.Model):

@@ -50,40 +50,36 @@ def send_email(data_loader, csv_importer):
     )
 
 
-@app.task
-def load_data_task(data_loader_pk):
+@app.task(bind=True)
+def load_data_task(self, data_loader_pk):
     # Put here to avoid circular import
     from .models import DataLoader
+    try:
+        data_loader = DataLoader.objects.get(pk=data_loader_pk)
+        logger.info('Start loading data')
+        # Process data
+        csv_importer = CSVImporter(
+            data_loader,
+            'Health',
+            data_loader.organisation_name,
+            data_loader.csv_data.path,
+            data_loader.json_concept_mapping.path,
+            use_tabs=False,
+            user=data_loader.author,
+            mode=data_loader.data_loader_mode
+        )
+        logger.info('Finish loading data')
 
-    data_loader = DataLoader.objects.get(pk=data_loader_pk)
-    logger.info('Start loading data')
-    # Process data
-    csv_importer = CSVImporter(
-        data_loader,
-        'Health',
-        data_loader.organisation_name,
-        data_loader.csv_data.path,
-        data_loader.json_concept_mapping.path,
-        use_tabs=False,
-        user=data_loader.author,
-        mode=data_loader.data_loader_mode
-    )
-    logger.info('Finish loading data')
+        # update data_loader
+        data_loader.applied = True
+        data_loader.date_time_applied = datetime.utcnow()
+        data_loader.notes = csv_importer.generate_report()
+        logger.info('date_time_applied: %s' % data_loader.date_time_applied)
+        data_loader.save()
 
-    # update data_loader
-    data_loader.applied = True
-    data_loader.date_time_applied = datetime.utcnow()
-    data_loader.notes = csv_importer.generate_report()
-    logger.info('date_time_applied: %s' % data_loader.date_time_applied)
-    data_loader.save()
+        # send email
+        logger.info(csv_importer.generate_report())
 
-    # send email
-    logger.info(csv_importer.generate_report())
-
-    send_email(data_loader, csv_importer)
-
-
-@app.task
-def test_task(x, y):
-    logger.info('Load data')
-    print x + y
+        send_email(data_loader, csv_importer)
+    except DataLoader.DoesNotExist as exc:
+        raise self.retry(exc=exc, countdown=30, max_retries=5)
