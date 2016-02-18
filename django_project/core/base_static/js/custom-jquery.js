@@ -13,17 +13,17 @@ $(document).ready(function () {
 
     //activate social login/share
     $('.navbar-share').click(function () {
-		var v_width = $(window).width();
-		if (v_width <= 767) {
+		var v_width = $(window).width();		
         $("#site-social").toggleClass("hidden");
         $(".navbar-share").toggleClass("closed");
-        return false;
-		}
+        return false;		
     });
-
+	
     $('.nav a').not('.navbar-search').on('click', function () {
+		if (v_width <= 767) {
         $('.btn-navbar').click(); //bootstrap 2.x
         $('.navbar-toggle').click() //bootstrap 3.x by Richard
+		}
     });
 
     $('.js-fullheight').css('height', $(window).height());
