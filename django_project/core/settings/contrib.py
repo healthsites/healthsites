@@ -107,15 +107,8 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/map_app.js',
     },
-    'map_page': {
-        'source_filenames': (
-            'js/custom-jquery.js',
-        ),
-        'output_filename': 'js/map_page.js',
-    },
     'home': {
         'source_filenames': (
-            'js/custom-jquery.js',
             'js/mousewheel.js',
             'js/easing.js',
             'js/jquery.countto.js',
