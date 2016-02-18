@@ -82,4 +82,4 @@ def load_data_task(self, data_loader_pk):
 
         send_email(data_loader, csv_importer)
     except DataLoader.DoesNotExist as exc:
-        raise self.retry(exc=exc, countdown=30)
+        raise self.retry(exc=exc, countdown=30, max_retries=5)
