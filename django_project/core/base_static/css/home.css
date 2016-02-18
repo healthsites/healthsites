@@ -398,21 +398,24 @@ to {
 .partners {
     padding: 10px 0;
 }
-.partners h3, .partners ul, .partners li {
+.partners ul, .partners li {
     display: inline-block;
     margin-bottom: 0;
+}
+.partners ul {
+    padding: 0;
+    text-align: center;
 }
 .partners h3 {
     font-family: "Raleway", sans-serif;
     font-weight: bold;
     font-size: 18px;
     color: #4e4d4d;
-    padding-right: 100px;
 }
 .partners li {
-    margin-right: 20px;
+    margin: 0 10px;
 }
- @media only screen and (max-width: 860px) {
+@media only screen and (max-width: 860px) {
 .partners h3, .partners ul, .partners li {
     display: block;
     text-align: center;

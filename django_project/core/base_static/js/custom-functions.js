@@ -16,7 +16,7 @@ function mapcount() {
     if (v_width <= 991) {
         var pad = r_height / 2;
         $('.location-info').css('margin-top', h_height + pad);
-        $('#map').css('top', h_height);
+        $('.map-page#map').css('top', h_height);
         $('#map, #map-home').css('height', pad);
         $('#map, #map-home').css('width', v_width);
 

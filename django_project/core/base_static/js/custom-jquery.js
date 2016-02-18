@@ -13,9 +13,12 @@ $(document).ready(function () {
 
     //activate social login/share
     $('.navbar-share').click(function () {
+		var v_width = $(window).width();
+		if (v_width <= 767) {
         $("#site-social").toggleClass("hidden");
         $(".navbar-share").toggleClass("closed");
         return false;
+		}
     });
 
     $('.nav a').not('.navbar-search').on('click', function () {
