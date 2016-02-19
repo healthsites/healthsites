@@ -52,8 +52,9 @@
 
             $APP.on('locality.info', function (evt, payload) {
                 self.editMode = false;
-
                 self.clickedPoint_uuid = payload.locality_uuid;
+                self.geom = payload.geom;
+                self.update(true);
             });
 
             $APP.on('locality.edit', function (evt) {
@@ -85,68 +86,92 @@
             L.LayerGroup.prototype.clearLayers.call(this);
 
             this._curReq = null;
-
+            var centerIcon;
             if (typeof response != 'undefined') {
                 for (var i = response.length - 1; i >= 0; i--) {
                     var data = response[i];
 
                     // check if marker was clicked and remove it
-                    if (this.clickedPoint_uuid && this.editMode) {
-                        if (data['uuid'] === this.clickedPoint_uuid) {
+                    var latlng = L.latLng(data['geom'][1], data['geom'][0]);
+                    if (this.clickedPoint_uuid && data['uuid'] === this.clickedPoint_uuid) {
+                        if (this.editMode) {
                             // skip processing of this point, don't render or add events
                             continue;
                         }
-                    }
-
-                    var latlng = L.latLng(data['geom'][1], data['geom'][0]);
-
-                    // check if a marker is a cluster marker
-                    if (data['count'] > 1) {
-                        var myIcon = L.divIcon({
-                            className: 'marker-icon',
-                            html: data['count'],
-                            iconAnchor: [24, 59],
-                            iconSize: [48, 59]
-                        });
                     } else {
-                        var myIcon = L.icon({
-                            iconUrl: '/static/img/healthsite-marker.png',
-                            iconRetinaUrl: '/static/img/healthsite-marker-2x.png',
-                            iconSize: [35, 43],
-                            iconAnchor: [17, 43]
-                        });
-                    }
-
-
-                    var mrk = new L.Marker(latlng, {icon: myIcon});
-                    mrk.data = {
-                        'uuid': data['uuid'],
-                        'bbox': data['minbbox'],
-                        'count': data['count'],
-                    }
-
-                    var that = this;
-                    mrk.on('click', function (evt) {
-                        if (evt.target.data['count'] === 1) {
-                            $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
-                            $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
-                            if (typeof that.geoname != undefined) {
-                                window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
+                        // check if a marker is a cluster marker
+                        if (data['count'] > 1) {
+                            var myIcon = L.divIcon({
+                                className: 'marker-icon',
+                                html: data['count'],
+                                iconAnchor: [24, 59],
+                                iconSize: [48, 59]
+                            });
+                        } else {
+                            if (data['uuid'] === this.clickedPoint_uuid) {
+                                centerIcon = L.icon({
+                                    iconUrl: '/static/img/pin-red.svg',
+                                    iconRetinaUrl: '/static/img/pin-red.svg',
+                                    iconSize: [35, 43],
+                                    iconAnchor: [17, 43]
+                                });
+                            } else {
+                                var myIcon = L.icon({
+                                    iconUrl: '/static/img/healthsite-marker.png',
+                                    iconRetinaUrl: '/static/img/healthsite-marker-2x.png',
+                                    iconSize: [35, 43],
+                                    iconAnchor: [17, 43]
+                                });
                             }
                         }
-                        else {
-                            var bounds = L.latLngBounds(
-                                L.latLng(evt.target.data['bbox'][1], evt.target.data['bbox'][2]),
-                                L.latLng(evt.target.data['bbox'][3], evt.target.data['bbox'][0])
-                            );
-                            // zoom to cluster bounds
-                            self._map.fitBounds(bounds);
-                        }
-                    });
-                    // add marker to the layer
-                    L.LayerGroup.prototype.addLayer.call(self, mrk);
+                        this.render_marker(latlng, myIcon, data);
+                    }
                 }
             }
+            if (this.clickedPoint_uuid && !this.editMode) {
+                console.log(centerIcon);
+                if (!centerIcon) {
+                    var latlng = L.latLng(self.geom[1], self.geom[0]);
+                    centerIcon = L.icon({
+                        iconUrl: '/static/img/pin-red.svg',
+                        iconRetinaUrl: '/static/img/pin-red.svg',
+                        iconSize: [35, 43],
+                        iconAnchor: [17, 43]
+                    });
+                }
+                this.render_marker(latlng, centerIcon, [{uuid: self.clickedPoint_uuid}]);
+            }
+        },
+
+        render_marker: function (latlng, myIcon, data) {
+            var mrk = new L.Marker(latlng, {icon: myIcon});
+            mrk.data = {
+                'uuid': data['uuid'],
+                'bbox': data['minbbox'],
+                'count': data['count'],
+            }
+
+            var that = this;
+            mrk.on('click', function (evt) {
+                if (evt.target.data['count'] === 1) {
+                    $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
+                    $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
+                    if (typeof that.geoname != undefined) {
+                        window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
+                    }
+                }
+                else {
+                    var bounds = L.latLngBounds(
+                        L.latLng(evt.target.data['bbox'][1], evt.target.data['bbox'][2]),
+                        L.latLng(evt.target.data['bbox'][3], evt.target.data['bbox'][0])
+                    );
+                    // zoom to cluster bounds
+                    this._map.fitBounds(bounds);
+                }
+            });
+            // add marker to the layer
+            L.LayerGroup.prototype.addLayer.call(this, mrk);
+
         },
 
         update: function (use_cache) {
