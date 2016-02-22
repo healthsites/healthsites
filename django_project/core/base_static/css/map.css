@@ -343,6 +343,11 @@
     font-size: 16px;
     font-style: italic;
     margin-bottom: 0;
+    display: block;
+    white-space: nowrap;
+    width: 80%; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .find .url:last-child {
