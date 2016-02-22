@@ -324,14 +324,14 @@
                                 <br>
                             </div>
 
-{#                            <p id="locality-url-input-add" style="cursor: pointer; display: none"#}
-{#                               onclick="addOption(this)"> add#}
-{#                                link</p>#}
-{##}
-{#                            <div id="locality-url">#}
-{#                            </div>#}
-{#                            <div id="locality-url-input" style="display: none">#}
-{#                            </div>#}
+                            {#                            <p id="locality-url-input-add" style="cursor: pointer; display: none"#}
+                            {#                               onclick="addOption(this)"> add#}
+                            {#                                link</p>#}
+                            {##}
+                            {#                            <div id="locality-url">#}
+                            {#                            </div>#}
+                            {#                            <div id="locality-url-input" style="display: none">#}
+                            {#                            </div>#}
                         </div>
                     </div>
                     <div class="line services">
@@ -630,7 +630,8 @@
 
         $(".accordion").accordion({
             collapsible: true,
-            header: "h3"
+            header: "h3",
+            active: false,
         });
         // render country data list
         {% if countries %}
@@ -638,7 +639,6 @@
                 var country = "{{ country.name }}";
                 countries.push(country);
             {% endfor %}
-            loadByAlphabet(0);
         {% endif %}
         $("#locality-statistic").hide();
         $("#locality-info").hide();
