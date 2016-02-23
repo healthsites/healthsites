@@ -2,6 +2,11 @@
 
 
 $(document).ready(function () {
+	//activate cookiebar
+	$.cookieBar({
+		declineButton: true,
+		fixed: true
+	});
 
     //activate searchbar
     $('.navbar-search, #icons-nav .search').click(function () {
