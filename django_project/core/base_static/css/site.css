@@ -628,3 +628,14 @@ section.container{
     margin-top:100px;
     margin-bottom:50px;
 }
+
+/*OVERIDE SOME JQUERY STYLE*/
+.ui-state-focus, .ui-state-hover {
+    background-color: #f9dbdc !important;
+    border-color: #f44a52 !important;
+    color: #f44a52 !important;
+}
+
+.ui-icon{
+    background-image: url("http://download.jqueryui.com/themeroller/images/ui-icons_f44a52_256x240.png") !important;
+}
