@@ -59,6 +59,13 @@ PIPELINE_JS['project'] = {
     'output_filename': 'js/project.js',
 }
 
+PIPELINE_JS['leaflet'] = {
+    'source_filenames': (
+        'leaflet/leaflet.js',
+    ),
+    'output_filename': 'js/leaflet.js',
+}
+
 # Project specific css files to be pipelined
 # For third party libs like bootstrap should go in contrib.py
 PIPELINE_CSS['project'] = {
@@ -70,4 +77,11 @@ PIPELINE_CSS['project'] = {
     'extra_context': {
         'media': 'screen, projection',
     },
+}
+
+PIPELINE_CSS['leaflet'] = {
+    'source_filenames': (
+        'leaflet/leaflet.css',
+    ),
+    'output_filename': 'css/leaflet.css',
 }
