@@ -129,7 +129,6 @@
                 }
             }
             if (this.clickedPoint_uuid && !this.editMode) {
-                console.log(centerIcon);
                 if (!centerIcon) {
                     var latlng = L.latLng(self.geom[1], self.geom[0]);
                     centerIcon = L.icon({

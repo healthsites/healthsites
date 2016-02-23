@@ -23,15 +23,13 @@ $(document).ready(function () {
                         q: request.term
                     },
                     success: function (data) {
-                        console.log(data);
                         response(data);
                     }
                 });
             },
             minLength: 3,
             select: function (event, ui) {
-                console.log(event);
-                console.log(ui);
+
             },
             open: function () {
                 $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
@@ -57,7 +55,6 @@ $(document).ready(function () {
         }
     });
     if ($("#slider").length !== 0) {
-        console.log($('#slider'));
         $('#slider').slick({
             dots: true,
             infinite: false,
