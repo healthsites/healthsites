@@ -445,7 +445,6 @@ window.LocalitySidebar = (function () {
             this.$createButton.hide();
             this.$line_updates.show();
             if (isEditingMode && !isLoggedIn) {
-                console.log("sigin");
                 window.location.href = "/signin/";
             } else if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create"))) {
                 if (mode == "edit" && is_enable_edit) {
@@ -1007,7 +1006,6 @@ window.LocalitySidebar = (function () {
                 });
                 var updates = data.updates;
                 if (updates.length <= 1) {
-                    console.log(updates);
                     $("#see-more-list").hide();
                 }
                 $("#see-more-list").data("data", {uuid: self.locality_uuid});
