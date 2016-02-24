@@ -149,7 +149,7 @@
                         </div>
 
                     <span class="name">
-                        <a href="{% url 'userprofilepage' %}{{ user.username }}">{{ user.username }}</a>
+                        <a href="{% url 'userprofilepage' %}{{ user }}">{{ user.screen_name }}</a>
                     </span>
                     </div>
                     <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i

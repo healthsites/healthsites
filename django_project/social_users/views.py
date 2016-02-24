@@ -26,15 +26,17 @@ def getProfile(user):
     shared_links = []
     # check if the user has profile_picture
     # if not, just send empty string
+    username = user.username
     try:
         user_detail = Profile.objects.get(user=user)
         profile_picture = user_detail.profile_picture
-        username = user_detail.screen_name
+        if user_detail.screen_name != "":
+            username = user_detail.screen_name
     except Profile.DoesNotExist:
         profile_picture = ""
 
     user.profile_picture = profile_picture
-    user.username = username
+    user.screen_name = username
     user.shared_links = shared_links
     return user
 
@@ -75,7 +77,7 @@ def save_profile(backend, user, response, *args, **kwargs):
             username = name
             try:
                 name = response['last_name']
-                username += name
+                username += " "+name
             except Exception as exept:
                 print exept
         except Exception as exept:
