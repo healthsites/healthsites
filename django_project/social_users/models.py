@@ -8,14 +8,12 @@ from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 
 
-class UserDetail(models.Model):
+class Profile(models.Model):
     """
     Extention of User
     """
 
     user = models.OneToOneField(
-        User, default=1)
-    profile_picture = models.FileField(
-        verbose_name='Profile Picture',
-        help_text='Profile Picture',
-        upload_to='profile_picture', default=None, blank=True, null=True)
+            User, default=1)
+    profile_picture = models.CharField(default="", max_length=150, blank=True)
+    screen_name = models.CharField(default="", max_length=50, blank=True)

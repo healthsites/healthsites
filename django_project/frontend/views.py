@@ -16,6 +16,9 @@ from django.http import HttpResponseRedirect
 import googlemaps
 from localities.views import search_locality_by_tag, get_country_statistic, search_locality_by_spec_data
 from localities.models import Locality, Value, Country
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import User
+from social_users.views import getProfile
 
 
 class MainView(TemplateView):
@@ -93,6 +96,10 @@ def search_place(request, place):
 @csrf_exempt
 def map(request):
     """View for request."""
+    if request.user.is_authenticated():
+        user = get_object_or_404(User, username=request.user)
+        request.user = getProfile(user)
+
     if request.method == 'POST':
         search_query = request.POST.get('q')
         option = request.POST.get('option')
