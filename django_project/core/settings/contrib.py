@@ -46,6 +46,19 @@ SOCIAL_AUTH_LINKEDIN_OAUTH2_SCOPE = [
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_URL = '/'
 
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.get_username',
+    'social.pipeline.user.create_user',
+    'social_users.views.save_profile',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details'
+)
+
 TEMPLATE_CONTEXT_PROCESSORS += (
     'social.apps.django_app.context_processors.backends',
     'social.apps.django_app.context_processors.login_redirect')
@@ -150,7 +163,6 @@ BROKER_URL = 'amqp://guest:guest@%s:5672//' % os.environ['RABBITMQ_HOST']
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-
 
 # Django envelop for contact forms
 DEFAULT_FROM_EMAIL = 'enquiry@healthsites.io'

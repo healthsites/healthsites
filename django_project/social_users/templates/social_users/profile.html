@@ -11,7 +11,7 @@
                 {% if user.profile_picture == "" %}
                     <img class="profile-image profile-image-size" src="{% static "img/no-profile-img.gif" %}"/>
                 {% else %}
-                    <img class="profile-image profile-image-size" src="/media/{{ user.profile_picture }}"/>
+                    <img class="profile-image profile-image-size" src="{{ user.profile_picture }}"/>
                 {% endif %}
             </div>
             <div class="center profile-header">
