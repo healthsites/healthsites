@@ -642,6 +642,7 @@ section.container{
 /* map credits fix */
 .leaflet-bottom.leaflet-right {
     display: none;
+    pointer-event: auto !important;
 }
 .credits {
     position: absolute;
