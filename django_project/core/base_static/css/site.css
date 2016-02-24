@@ -639,3 +639,22 @@ section.container{
 .ui-icon{
     background-image: url("http://download.jqueryui.com/themeroller/images/ui-icons_f44a52_256x240.png") !important;
 }
+/* map credits fix */
+.leaflet-bottom.leaflet-right {
+    display: none;
+}
+.credits {
+    position: absolute;
+    cursor: pointer;
+    bottom: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 0 5px;
+}
+.leaflet-control-container .close {
+    cursor: pointer;
+    float: right;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 0 5px;
+    font-size: 16px;
+}
