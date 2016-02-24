@@ -30,7 +30,8 @@ def getProfile(user):
     try:
         user_detail = Profile.objects.get(user=user)
         profile_picture = user_detail.profile_picture
-        username = user_detail.screen_name
+        if user_detail.screen_name != "":
+            username = user_detail.screen_name
     except Profile.DoesNotExist:
         profile_picture = ""
 
