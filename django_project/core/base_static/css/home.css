@@ -409,8 +409,10 @@ to {
 .partners h3 {
     font-family: "Raleway", sans-serif;
     font-weight: bold;
-    font-size: 18px;
+    font-size: 22px;
     color: #4e4d4d;
+    text-align: center;
+    margin-bottom: 20px;
 }
 .partners li {
     margin: 0 10px;
