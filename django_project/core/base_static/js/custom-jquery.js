@@ -73,7 +73,7 @@ $(document).ready(function () {
     mapcount();
 	
 	/* map credits */
-	$("#map-home").append("<a class='credits' href='#'>&copy;</a>");
+	$("#map").append("<a class='credits' href='#'>&copy;</a>");
 	$(".credits").click(function() {
 		$(this).hide();
 		$(".leaflet-bottom.leaflet-right").show();
