@@ -10,6 +10,9 @@ from braces.views import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from social_users.models import Profile
+from localities.models import LocalityArchive, ValueArchive
+from localities.views import extract_time
+from django.db.models import Count, Max
 
 
 class UserProfilePage(LoginRequiredMixin, TemplateView):
@@ -50,9 +53,11 @@ class ProfilePage(TemplateView):
         """
 
         user = get_object_or_404(User, username=kwargs["username"])
+        updates = user_updates(user)
         user = getProfile(user)
         context = super(ProfilePage, self).get_context_data(*args, **kwargs)
         context['user'] = user
+        context['updates'] = updates
         return context
 
 
@@ -99,3 +104,30 @@ def save_profile(backend, user, response, *args, **kwargs):
     if url:
         profile.profile_picture = url
     profile.save()
+
+def user_updates(user):
+    updates = []
+    try:
+        updates1 = LocalityArchive.objects.filter(changeset__social_user=user).order_by(
+                '-changeset__created').values(
+                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+                edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
+        for update in updates1:
+            updates.append(update)
+        updates2 = ValueArchive.objects.filter(changeset__social_user=user).filter(version__gt=1).order_by(
+                '-changeset__created').values(
+                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+                edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
+        for update in updates2:
+            updates.append(update)
+        updates.sort(key=extract_time, reverse=True)
+    except LocalityArchive.DoesNotExist:
+        print "Locality Archive not exist"
+
+    output = []
+    prev_changeset = 0
+    for update in updates:
+        if prev_changeset != update['changeset']:
+            output.append(update)
+        prev_changeset = update['changeset']
+    return output[:10]
