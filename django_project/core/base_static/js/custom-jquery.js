@@ -1,4 +1,5 @@
 $(document).ready(function () {
+    var v_width = $(window).width();
     //activate cookiebar
     $.cookieBar({
         declineButton: true,
@@ -15,7 +16,6 @@ $(document).ready(function () {
 
     //activate social login/share
     $('.navbar-share').click(function () {
-        var v_width = $(window).width();
         $("#site-social").toggleClass("hidden");
         $(".navbar-share").toggleClass("closed");
         return false;
