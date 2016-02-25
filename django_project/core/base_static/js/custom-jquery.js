@@ -71,7 +71,24 @@ $(document).ready(function () {
     });
 
     mapcount();
+	
+	/* map credits */
+	$("#map").append("<a class='credits' href='#'>&copy;</a>");
+	$(".credits").click(function() {
+		$(this).hide();
+		$(".leaflet-bottom.leaflet-right").show();
+		$(".leaflet-bottom.leaflet-right").prepend("<a class='close' href='#'>x</a>");
+        return false;
+    });
+	$(".leaflet-bottom").delegate('.close', 'click', function() {
+		$(this).hide();
+		$(".leaflet-bottom.leaflet-right").hide();
+		$(".credits").show();
+        return false;
+    });	
 
+
+    /* timer */
     var v_count = '0';
 
 

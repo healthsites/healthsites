@@ -448,3 +448,19 @@ to {
     text-decoration: none;
     color: #3c4c57;
 }
+.nav-updates {
+    margin-top: 15px;
+}
+.nav-updates a {
+    color: #fff;
+    border-radius: 5px;
+    border-radius: 5px;
+    border-radius: 5px;
+    background: #3C4C57;
+    padding: 5px 10px;
+    opacity: 0.7;
+}
+.nav-updates a:hover {
+    text-decoration: none;
+    opacity: 1;
+}
