@@ -1,34 +1,31 @@
-
-
-
 $(document).ready(function () {
-	//activate cookiebar
-	$.cookieBar({
-		declineButton: true,
-		fixed: true
-	});
+    //activate cookiebar
+    $.cookieBar({
+        declineButton: true,
+        fixed: true
+    });
 
     //activate searchbar
     $('.navbar-search, #icons-nav .search').click(function () {
         $("body").toggleClass("searchbar-active");
         $(".navbar-search i").toggleClass("fa-search fa-times");
-		mapcount();
+        mapcount();
         return false;
     });
 
     //activate social login/share
     $('.navbar-share').click(function () {
-		var v_width = $(window).width();		
+        var v_width = $(window).width();
         $("#site-social").toggleClass("hidden");
         $(".navbar-share").toggleClass("closed");
-        return false;		
+        return false;
     });
-	
+
     $('.nav a').not('.navbar-search').on('click', function () {
-		if (v_width <= 767) {
-        $('.btn-navbar').click(); //bootstrap 2.x
-        $('.navbar-toggle').click() //bootstrap 3.x by Richard
-		}
+        if (v_width <= 767) {
+            $('.btn-navbar').click(); //bootstrap 2.x
+            $('.navbar-toggle').click() //bootstrap 3.x by Richard
+        }
     });
 
     $('.js-fullheight').css('height', $(window).height());
@@ -51,7 +48,7 @@ $(document).ready(function () {
     $('#icons-nav a').click(function () {
         $(this).toggleClass("active");
         $(this).siblings().removeClass("active");
-        if ( $(this).hasClass("search" ) && $(this).hasClass("active" )) {
+        if ($(this).hasClass("search") && $(this).hasClass("active")) {
             $(".search-block").show();
         }
         else {
@@ -71,22 +68,6 @@ $(document).ready(function () {
     });
 
     mapcount();
-	
-	/* map credits */
-	$("#map").append("<a class='credits' href='#'>&copy;</a>");
-	$(".credits").click(function() {
-		$(this).hide();
-		$(".leaflet-bottom.leaflet-right").show();
-		$(".leaflet-bottom.leaflet-right").prepend("<a class='close' href='#'>x</a>");
-        return false;
-    });
-	$(".leaflet-bottom").delegate('.close', 'click', function() {
-		$(this).hide();
-		$(".leaflet-bottom.leaflet-right").hide();
-		$(".credits").show();
-        return false;
-    });	
-
 
     /* timer */
     var v_count = '0';

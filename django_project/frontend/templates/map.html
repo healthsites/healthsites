@@ -142,7 +142,8 @@
                         <div class="avatar-holder">
                             <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
                             {% if user.profile_picture == "" %}
-                                <img src="https://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png" width="48" height="48"/>
+                                <img src="https://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"
+                                     width="48" height="48"/>
                             {% else %}
                                 <img src="{{ user.profile_picture }}" width="48" height="48"/>
                             {% endif %}
@@ -615,6 +616,7 @@
 
         // initialize the app
         APP = new APP();
+        renderCredit();
 
         // set share url
         var baseURL = location.protocol + "//" + location.hostname + "/";
@@ -644,6 +646,7 @@
                 countries.push(country);
             {% endfor %}
         {% endif %}
+        {# default#}
         $("#locality-statistic").hide();
         $("#locality-info").hide();
         $("#locality-default").hide();
@@ -657,6 +660,7 @@
         {% else %}
             $("#locality-info").show();
         {% endif %}
+
         {% if tag %}
             $("#title-name").html("{{ tag }}");
             $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
@@ -699,6 +703,7 @@
                 $("#title-statistic").html('Showing the closest five healthsites with <span class="inner-navbar-brand">' + attribute + '</span> to <span class="inner-navbar-brand">' + name + '</span><br>');
             }
         {% endif %}
+
         {% if location %}
             var latitude = "{{ location.y }}";
             latitude = parseFloat(latitude);
@@ -706,6 +711,7 @@
             longitude = parseFloat(longitude);
             $APP.trigger('map.pan', {'location': [latitude, longitude]});
         {% endif %}
+
         {% if viewport %}
             var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");
             var northeast_lng = parseFloat("{{ viewport.northeast_lng }}");
@@ -729,7 +735,7 @@
                 html += "<div class=\"entry\">";
                 html += "<span class=\"date\">" + getDateString("{{ updates.date_applied.isoformat }}") + "</span> - ";
                 html += "<span class=\"name\">";
-                html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author }}" + "</a></span> - ";
+                html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author_nickname }}" + "</a></span> - ";
                 var mode = "";
                 if ("{{ updates.mode }}" == 1) {
                     mode = "added";

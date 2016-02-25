@@ -11,7 +11,7 @@ import uuid
 import signals  # noqa
 from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .map_clustering import cluster
-from .models import Locality, Domain, Changeset, Value, Attribute, Specification
+from .models import Locality, Domain, Changeset, Value, Attribute, Specification, User
 from .models import LocalityArchive, ValueArchive
 from .utils import render_fragment, parse_bbox
 from braces.views import JSONResponseMixin, LoginRequiredMixin
@@ -27,6 +27,7 @@ from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from localities.models import Country, DataLoader
 from django.contrib.gis.measure import D
+from social_users.views import getProfile
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -580,7 +581,9 @@ def get_statistic(healthsites):
         else:
             update['mode'] = 1
 
+        profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
         last_updates.append({"author": update['changeset__social_user__username'],
+                             "author_nickname": profile.screen_name,
                              "date_applied": update['changeset__created'],
                              "mode": update['mode'],
                              "locality": update['locality'],
