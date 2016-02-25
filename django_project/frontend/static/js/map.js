@@ -210,6 +210,10 @@ window.MAP = (function () {
             $APP.on('map.pan', function (evt, payload) {
                 self._moveTo(payload.location);
             });
+
+            $APP.on('map.rerender', function (evt, payload) {
+                self.MAP.invalidateSize();
+            });
         },
 
         _setupNewLocalityLayer: function () {

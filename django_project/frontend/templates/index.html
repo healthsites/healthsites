@@ -12,9 +12,9 @@
     <meta itemprop="name" content="healthsites.io">
     <meta itemprop="description" content="A free, curated, global, canonical source of healthcare location data">
     <meta itemprop="image" content="https://staging.healthsites.io/static/img/healthsites-gp.png">
-    <meta property="og:title" content="healthsites.io" />
-    <meta property="og:image" content="https://staging.healthsites.io/static/img/healthsites-fb.png" />
-    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data" />
+    <meta property="og:title" content="healthsites.io"/>
+    <meta property="og:image" content="https://staging.healthsites.io/static/img/healthsites-fb.png"/>
+    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data"/>
 
     <title>Healthsites.io</title>
 
@@ -48,7 +48,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
-</head>
+    </head>
 
 <body class="body home">
 <nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
@@ -285,10 +285,15 @@
             <div class="col-md-12">
                 <h3>Latest updates</h3>
 
-                <div id="updates" class="graph updates">
-                    <div class="entry">-</div>
+                <div id="updates-wrapper">
+                    <div id="updates-1" class="graph updates">
+                        <div class="entry">-</div>
+                    </div>
                 </div>
-                <div class="nav-updates"><a class="prev" href="#">< view previous updates</a>  <a class="next" href="#">view next updates ></a></div>
+                <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< view previous
+                    updates</a>
+                    <a class="next opacity-7" onclick="changePage(this)">view
+                        next updates ></a></div>
             </div>
         </div>
     </div>
@@ -321,7 +326,8 @@
     <div class="container">
         <h3>Partners</h3>
         <ul class="partners-list">
-            <li><a href="http://healthcareindanger.org/hcid-project/" target="_blank"><img src="{% static "img/hcid-logo.png" %}"/></a></li>
+            <li><a href="http://healthcareindanger.org/hcid-project/" target="_blank"><img
+                    src="{% static "img/hcid-logo.png" %}"/></a></li>
             <li><a href="https://www.icrc.org/" target="_blank"><img src="{% static "img/icrc-logo.png" %}"/></a></li>
             <li><a href="https://www.ihf-fih.org/" target="_blank"><img src="{% static "img/ihf-logo.png" %}"/></a></li>
             <li><a href="https://hotosm.org/" target="_blank"><img src="{% static "img/hot-logo.png" %}"/></a></li>
@@ -349,7 +355,7 @@
             <ul class="footer-nav-2">
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data</a></li>
                 <li><a href="https://github.com/healthsites/healthsites" target="_blank">Source code</a></li>
-{#                <li><a href="/map-edit">Map edit</a></li>#}
+                {#                <li><a href="/map-edit">Map edit</a></li>#}
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">Data
                     lifecycle</a></li>
             </ul>
@@ -361,7 +367,8 @@
                 <li><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat space</a></li>
                 <li><a href="https://github.com/healthsites/healthsites/wiki/API" target="_blank">API</a></li>
                 <li><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Memorandum-of-Understanding-and-Governance" target="_blank">MoU's and Governance</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Memorandum-of-Understanding-and-Governance"
+                       target="_blank">MoU's and Governance</a></li>
             </ul>
         </div>
         <div class="col-md-3 right pad0x">
@@ -502,6 +509,7 @@
 <script>
     $(document).ready(function () {
         var map = new MAP();
+        renderCredit();
         $("#country-search-box").autocomplete({
             source: function (request, response) {
                 $.ajax({
@@ -573,7 +581,7 @@
                     $APP.trigger('map.update-geoname', {'geoname': country});
                     {# default #}
                     $("#country-locality-number").html(0);
-                    $("#updates").html("<div class=\"entry\">no updates</div>");
+                    $("#updates-wrapper").html('<div id="updates-1" class="graph updates"><div class="entry">-</div></div>');
                     updateChart(0, 0, 0);
 
                     {# show the real data #}
@@ -605,14 +613,25 @@
                         updatePieChart(data.completeness.basic, data.completeness.partial, data.completeness.complete);
                     }
                     if (data.last_update.length > 0) {
-                        $("#updates").html("");
+                        $("#updates-wrapper").html("");
                         for (var i = 0; i < data.last_update.length; i++) {
+                            var page = parseInt(i / 5);
+                            var wrapper = $("#updates-" + page);
+                            if (wrapper.length > 0) {
+
+                            } else {
+                                $("#updates-wrapper").append('<div id="updates-' + page + '" class="graph updates"></div>');
+                                wrapper = $("#updates-" + page);
+                                if (page != 0) {
+                                    wrapper.hide();
+                                }
+                            }
                             var update = data.last_update[i];
                             var html = "<div class=\"entry\">";
                             html += "<div class=\"entry\">";
                             html += "<span class=\"date\">" + getDateString(update.date_applied) + "</span> - ";
                             html += "<span class=\"name\">";
-                            html += "<a href=\"profile/" + update.author + "\">@" + update.author + "</a></span> - ";
+                            html += "<a href=\"profile/" + update.author + "\">@" + update.author_nickname + "</a></span> - ";
                             var mode = "";
                             if (update.mode == 1) {
                                 mode = "added";
@@ -627,8 +646,9 @@
                                 html += "<span class=\"location-name\">" + data.last_update[i].data_count + " HS/" + mode + "</span>";
                             }
                             html += "</div>";
-                            $("#updates").append(html);
+                            wrapper.append(html);
                         }
+                        updateButton();
                     }
 
                     {# set view port #}
@@ -647,8 +667,8 @@
                             });
                         }
                     }
-					
-					mapcount();
+                    mapcount();
+                    $APP.trigger('map.rerender');
                 }
             });
         }

@@ -10,6 +10,13 @@ from braces.views import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from social_users.models import Profile
+from localities.models import LocalityArchive, ValueArchive
+from core.utilities import extract_time, extract_updates
+from django.db.models import Count, Max
+from datetime import datetime
+import json
+from django.http import HttpResponse
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 class UserProfilePage(LoginRequiredMixin, TemplateView):
@@ -21,6 +28,7 @@ class UserProfilePage(LoginRequiredMixin, TemplateView):
             auth.provider for auth in self.request.user.social_auth.all()
             ]
         return context
+
 
 def getProfile(user):
     shared_links = []
@@ -77,7 +85,7 @@ def save_profile(backend, user, response, *args, **kwargs):
             username = name
             try:
                 name = response['last_name']
-                username += " "+name
+                username += " " + name
             except Exception as exept:
                 print exept
         except Exception as exept:
@@ -99,3 +107,51 @@ def save_profile(backend, user, response, *args, **kwargs):
     if url:
         profile.profile_picture = url
     profile.save()
+
+
+def user_updates(user, date):
+    updates = []
+    try:
+        updates1 = LocalityArchive.objects.filter(changeset__social_user=user).filter(
+                changeset__created__lt=date).order_by(
+                '-changeset__created').values(
+                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+                edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
+        for update in updates1:
+            updates.append(update)
+        updates2 = ValueArchive.objects.filter(changeset__social_user=user).filter(
+                changeset__created__lt=date).order_by(
+                '-changeset__created').values(
+                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+                edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
+        for update in updates2:
+            updates.append(update)
+        updates.sort(key=extract_time, reverse=True)
+    except LocalityArchive.DoesNotExist:
+        print "Locality Archive not exist"
+
+    output = []
+    prev_changeset = 0
+    for update in updates:
+        if prev_changeset != update['changeset']:
+            output.append(update)
+            profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
+            update['nickname'] = profile.screen_name
+        prev_changeset = update['changeset']
+    return output[:20]
+
+
+def get_user_updates(request):
+    if request.method == 'GET':
+        date = request.GET.get('date')
+        user = request.GET.get('user')
+        if not date:
+            date = datetime.now()
+        user = get_object_or_404(User, username=user)
+        last_updates = user_updates(user, date)
+        updates = extract_updates(last_updates)
+        result = {}
+        result['last_update'] = updates
+        result = json.dumps(result, cls=DjangoJSONEncoder)
+
+    return HttpResponse(result, content_type='application/json')

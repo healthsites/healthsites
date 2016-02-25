@@ -11,12 +11,11 @@ import uuid
 import signals  # noqa
 from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
 from .map_clustering import cluster
-from .models import Locality, Domain, Changeset, Value, Attribute, Specification
+from .models import Locality, Domain, Changeset, Value, Attribute, Specification, User
 from .models import LocalityArchive, ValueArchive
 from .utils import render_fragment, parse_bbox
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 from datetime import datetime
-import time
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.core.urlresolvers import reverse
@@ -27,6 +26,8 @@ from django.views.generic import DetailView, ListView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from localities.models import Country, DataLoader
 from django.contrib.gis.measure import D
+from social_users.views import getProfile
+from core.utilities import extract_time, extract_updates
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -96,7 +97,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     # serching by value
                     print spec + " : " + data + " : " + uuid
                     if spec != "" and spec != "undefined" and data != "" and data != "undefined":
-                        print spec +" "+ data+" "+ uuid
+                        print spec + " " + data + " " + uuid
                         localities = get_locality_by_spec_data(spec, data, uuid)
                         localities = Locality.objects.filter(id__in=localities)
         object_list = []
@@ -555,38 +556,8 @@ def get_statistic(healthsites):
               "completeness": {"complete": complete, "partial": partial, "basic": basic},
               "localities": healthsites_number}
     # updates
-    last_updates = []
     histories = localities_updates(healthsites)
-    for update in histories:
-        update['locality_uuid'] = ""
-        update['locality'] = ""
-        if update['edit_count'] == 1:
-            # get the locality to show in web
-            try:
-                locality = Locality.objects.get(pk=update['locality_id'])
-                locality_name = Value.objects.filter(locality=locality).filter(
-                        specification__attribute__key='name')
-                update['locality_uuid'] = locality.uuid
-                update['locality'] = locality_name[0].data
-            except Locality.DoesNotExist:
-                update['locality_uuid'] = "unknown"
-                update['locality'] = "unknown"
-
-        if 'version' in update:
-            if update['version'] == 1:
-                update['mode'] = 1
-            else:
-                update['mode'] = 2
-        else:
-            update['mode'] = 1
-
-        last_updates.append({"author": update['changeset__social_user__username'],
-                             "date_applied": update['changeset__created'],
-                             "mode": update['mode'],
-                             "locality": update['locality'],
-                             "locality_uuid": update['locality_uuid'],
-                             "data_count": update['edit_count']})
-    output["last_update"] = last_updates;
+    output["last_update"] = extract_updates(histories)
     return output
 
 
@@ -740,7 +711,7 @@ def get_locality_update(request):
         date = request.GET.get('date')
         uuid = request.GET.get('uuid')
         if date == "":
-            date = datetime.datetime.now()
+            date = datetime.now()
         locality = Locality.objects.get(uuid=uuid)
         last_updates = locality_updates(locality.id, date)
         output = []
@@ -751,15 +722,6 @@ def get_locality_update(request):
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')
-
-
-def extract_time(json):
-    try:
-        # Also convert to int since update_time will be string.  When comparing
-        # strings, "10" is smaller than "2".
-        return int(time.mktime(json['changeset__created'].timetuple()))
-    except KeyError:
-        return 0
 
 
 def locality_updates(locality_id, date):
@@ -815,5 +777,7 @@ def localities_updates(locality_ids):
     for update in updates:
         if prev_changeset != update['changeset']:
             output.append(update)
+            profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
+            update['nickname'] = profile.screen_name
         prev_changeset = update['changeset']
     return output[:10]

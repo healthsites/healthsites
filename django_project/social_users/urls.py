@@ -11,5 +11,10 @@ urlpatterns = patterns(
         r'^profile/(?P<username>.*)/$', ProfilePage.as_view(),
         name='profile'
     ),
-    url(r'^logout/$', LogoutUser.as_view(), name='logout_user')
+    url(r'^logout/$', LogoutUser.as_view(), name='logout_user'),
+    url(
+        r'^user/updates/$',
+        'social_users.views.get_user_updates',
+        name='user-updates'
+    ),
 )
