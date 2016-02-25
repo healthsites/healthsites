@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from social_users.models import Profile
 from localities.models import LocalityArchive, ValueArchive
+from localities.views import extract_time
 from django.db.models import Count, Max
 
 
