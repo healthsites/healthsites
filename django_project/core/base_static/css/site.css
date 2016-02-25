@@ -659,3 +659,7 @@ section.container{
     padding: 0 5px;
     font-size: 16px;
 }
+/* sign in */
+.social .btn {
+    margin-bottom: 5px;
+}
