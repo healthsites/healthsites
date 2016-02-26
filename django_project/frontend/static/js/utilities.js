@@ -8,7 +8,6 @@ var monthNames = [
     "November", "December"
 ];
 function getDateString(date_input) {
-    console.log(date_input);
     var date = new Date(date_input);
     var day = date.getDate();
     var monthIndex = date.getMonth();

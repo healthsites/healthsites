@@ -139,11 +139,8 @@ def map(request):
             result['tag'] = tag
         elif country:
             result = get_country_statistic(country)
-            try:
-                result['country'] = country
-                result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
-            except Exception as e:
-                print e
+            result['country'] = country
+            result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
         elif place:
             result = search_place(request, place)
         elif attribute:
