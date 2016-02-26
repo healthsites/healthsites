@@ -74,23 +74,11 @@ class LogoutUser(View):
         return HttpResponseRedirect('/')
 
 
-def save_profile(backend, user, response, *args, **kwargs):
-    username = ""
-    try:
-        name = response['screen_name']
-        username = name
-    except Exception as exept:
-        try:
-            name = response['first_name']
-            username = name
-            try:
-                name = response['last_name']
-                username += " " + name
-            except Exception as exept:
-                print exept
-        except Exception as exept:
-            print exept
+def get_username(strategy, details, user=None, *args, **kwargs):
+    return {'name': details['username']}
 
+
+def save_profile(backend, user, response, *args, **kwargs):
     url = None
     if backend.name == 'facebook':
         url = "http://graph.facebook.com/%s/picture?type=large" % response['id']
@@ -102,6 +90,10 @@ def save_profile(backend, user, response, *args, **kwargs):
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
         profile = Profile(user=user)
+
+    # if there is an username
+    if kwargs['name']:
+        username = kwargs['name']
 
     profile.screen_name = username
     if url:
