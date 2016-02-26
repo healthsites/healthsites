@@ -664,7 +664,7 @@ section.container{
     margin-bottom: 5px;
 }
 /* profile */
-.profile {
+.user-profile {
     background: #f8f8f8;
     text-align: center;
     margin-top: -100px;
@@ -690,7 +690,7 @@ section.container{
 .profile-header h1 {
     font-size: 18px;
 }
-.profile .name {
+.user-profile .name {
     font-size: 14px;
     font-weight: 300;
 }
@@ -738,7 +738,7 @@ section.container{
     font-weight: 300;
 }
 @media only screen and (max-width:768px) {
-.profile {
+.user-profile {
     padding-top: 60px;
     margin-bottom: 10px;
     padding-bottom: 20px;
@@ -759,7 +759,7 @@ section.container{
 }
 }
 @media only screen and (max-width:640px) {
-.profile {
+.user-profile {
     padding-top: 50px;
 }
 }
