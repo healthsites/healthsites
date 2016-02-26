@@ -132,8 +132,8 @@ def regenerate_cache(self, changeset_pk, locality_pk):
             file.close()  # you can omit in most cases as the destructor will call it
 
     except Changeset.DoesNotExist as exc:
-        raise self.retry(exc=exc, countdown=30, max_retries=5)
+        raise self.retry(exc=exc, countdown=5, max_retries=10)
     except Locality.DoesNotExist as exc:
-        raise self.retry(exc=exc, countdown=30, max_retries=5)
+        raise self.retry(exc=exc, countdown=5, max_retries=10)
     except Exception as e:
         print e
