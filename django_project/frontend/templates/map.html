@@ -380,9 +380,9 @@
                             <p id="locality-beds"></p>
 
                             <p id="locality-beds-input" style="display: none"><input type="number"
-                                                                                                  id="locality-beds-full-input"
-                                                                                                  min="0"
-                                                                                                  style="width: 50px"/>
+                                                                                     id="locality-beds-full-input"
+                                                                                     min="0"
+                                                                                     style="width: 50px"/>
                                 full
                                 time beds, <input type="number" id="locality-beds-part-input" min="0"
                                                   style="width: 50px"/>
@@ -572,15 +572,20 @@
         $.ajax({
             number: country_id + "-number",
             completeness: country_id + "-complete",
-            url: "{% url 'countries-simple-data' %}",
+            url: "{% url 'locality-country-search' %}",
             dataType: 'json',
             data: {
                 q: country
             },
             success: function (data) {
-                {# disabled links and completeness for #429 #}
-                $("#" + this.number).html(data.number);
-                $("#" + this.completeness).html(data.completeness);
+                var number = 0;
+                var completness = 0;
+                if (data.localities > 0) {
+                    completness = data.completeness.complete / data.localities * 100;
+                    number = data.localities;
+                }
+                $("#" + this.number).html(number);
+                $("#" + this.completeness).html(completness);
             },
             fail: function (data) {
                 $("#" + this.number).html("fail");
@@ -733,7 +738,7 @@
             {% for updates in last_update %}
                 var html = "<div class=\"entry\">";
                 html += "<div class=\"entry\">";
-                html += "<span class=\"date\">" + getDateString("{{ updates.date_applied.isoformat }}") + "</span> - ";
+                html += "<span class=\"date\">" + getDateString("{{ updates.date_applied }}") + "</span> - ";
                 html += "<span class=\"name\">";
                 html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author_nickname }}" + "</a></span> - ";
                 var mode = "";

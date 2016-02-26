@@ -42,11 +42,11 @@ def send_email(data_loader, csv_importer):
     email_message += "You receive this email because you are the admin of Healthsites.io"
 
     send_mail(
-        subject='Healthsites Data Loader Report',
-        message=email_message,
-        from_email='dataloader@healthsites.io',
-        recipient_list=recipient_list,
-        fail_silently=False,
+            subject='Healthsites Data Loader Report',
+            message=email_message,
+            from_email='dataloader@healthsites.io',
+            recipient_list=recipient_list,
+            fail_silently=False,
     )
 
 
@@ -59,14 +59,14 @@ def load_data_task(self, data_loader_pk):
         logger.info('Start loading data')
         # Process data
         csv_importer = CSVImporter(
-            data_loader,
-            'Health',
-            data_loader.organisation_name,
-            data_loader.csv_data.path,
-            data_loader.json_concept_mapping.path,
-            use_tabs=False,
-            user=data_loader.author,
-            mode=data_loader.data_loader_mode
+                data_loader,
+                'Health',
+                data_loader.organisation_name,
+                data_loader.csv_data.path,
+                data_loader.json_concept_mapping.path,
+                use_tabs=False,
+                user=data_loader.author,
+                mode=data_loader.data_loader_mode
         )
         logger.info('Finish loading data')
 
@@ -83,3 +83,57 @@ def load_data_task(self, data_loader_pk):
         send_email(data_loader, csv_importer)
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)
+
+
+@app.task(bind=True)
+def regenerate_cache(self, changeset_pk, locality_pk):
+    # Put here to avoid circular import
+    from .models import Changeset
+    from .models import Locality
+    from localities.models import Country
+    import os
+    import json
+    from django.conf import settings
+    from localities.views import get_statistic
+    from django.core.serializers.json import DjangoJSONEncoder
+
+    try:
+        changeset = Changeset.objects.get(pk=changeset_pk)
+        locality = Locality.objects.get(pk=locality_pk)
+        country = Country.objects.filter(polygon_geometry__contains=locality.geom)
+        # getting country's polygon
+        if len(country):
+            country = country[0]
+            polygons = country.polygon_geometry
+
+            # write country cache
+            filename = os.path.join(
+                    settings.CLUSTER_CACHE_DIR,
+                    country.name + '_statistic'
+            )
+            healthsites = Locality.objects.in_polygon(
+                    polygons)
+            output = get_statistic(healthsites)
+            result = json.dumps(output, cls=DjangoJSONEncoder)
+            file = open(filename, 'w')
+            file.write(result)  # python will convert \n to os.linesep
+            file.close()  # you can omit in most cases as the destructor will call it
+
+            # write world cache
+            filename = os.path.join(
+                    settings.CLUSTER_CACHE_DIR,
+                    'world_statistic')
+            healthsites = Locality.objects.all()
+            output = get_statistic(healthsites)
+            print output
+            result = json.dumps(output, cls=DjangoJSONEncoder)
+            file = open(filename, 'w')
+            file.write(result)  # python will convert \n to os.linesep
+            file.close()  # you can omit in most cases as the destructor will call it
+
+    except Changeset.DoesNotExist as exc:
+        raise self.retry(exc=exc, countdown=30, max_retries=5)
+    except Locality.DoesNotExist as exc:
+        raise self.retry(exc=exc, countdown=30, max_retries=5)
+    except Exception as e:
+        print e

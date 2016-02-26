@@ -72,3 +72,6 @@ PIPELINE_CSS['project'] = {
         'media': 'screen, projection',
     },
 }
+
+# Cache folder
+CLUSTER_CACHE_DIR = 'cache'
