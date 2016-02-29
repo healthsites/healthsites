@@ -779,8 +779,9 @@ def localities_updates(locality_ids):
     prev_changeset = 0
     for update in updates:
         if prev_changeset != update['changeset']:
-            output.append(update)
             profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
             update['nickname'] = profile.screen_name
+            update['changeset__created'] = str(update['changeset__created'])
+            output.append(update)
         prev_changeset = update['changeset']
     return output[:10]
