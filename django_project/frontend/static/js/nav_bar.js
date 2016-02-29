@@ -1,4 +1,4 @@
-var search_localities_name_url = "search/localities/name";
+var search_localities_name_url = "/search/localities/name";
 var search_geoname_url = "http://gd.geobytes.com/AutoCompleteCity";
 $(document).ready(function () {
     // set share url
