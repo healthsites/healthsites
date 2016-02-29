@@ -937,7 +937,7 @@
                     var html = '<div>';
                     html += '<span class="date">' + getDateString(data[i]['last_update']) + '</span>, by';
                     html += '<span class="name">';
-                    html += ' <a href="profile/' + data[i]['uploader'] + '">@' + data[i]['uploader'] + '</a>';
+                    html += ' <a href="profile/' + data[i]['uploader'] + '">@' + data[i]['nickname'] + '</a>';
                     html += '</span>';
                     html += '<span>';
                     html += ' - <a style="cursor:pointer" onclick="gotochangeset(\'' + data[i]['changeset_id'] + '\',\'' + uuid + '\')">' + data[i]['changeset_id'] + '</a>';

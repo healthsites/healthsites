@@ -146,6 +146,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
             for last_update in last_updates:
                 updates.append({"last_update": last_update['changeset__created'],
                                 "uploader": last_update['changeset__social_user__username'],
+                                "nickname": last_update['nickname'],
                                 "changeset_id": last_update['changeset']});
             obj_repr.update({'updates': updates})
         except Exception as e:
@@ -721,6 +722,7 @@ def get_locality_update(request):
         for last_update in last_updates:
             output.append({"last_update": last_update['changeset__created'],
                            "uploader": last_update['changeset__social_user__username'],
+                           "nickname": last_update['nickname'],
                            "changeset_id": last_update['changeset']});
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
@@ -751,6 +753,9 @@ def locality_updates(locality_id, date):
     prev_changeset = 0
     for update in updates:
         if prev_changeset != update['changeset']:
+            profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
+            update['nickname'] = profile.screen_name
+            update['changeset__created'] = str(update['changeset__created'])
             output.append(update)
         prev_changeset = update['changeset']
     return output[:10]

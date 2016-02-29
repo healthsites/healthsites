@@ -714,7 +714,7 @@ window.LocalitySidebar = (function () {
                 if (updates[0]) {
                     this.$lastupdate.text(getDateString(updates[0]['last_update']));
                     this.$lastupdate.data("data", {date: updates[0]['last_update']});
-                    this.$uploader.text("@" + updates[0]['uploader']);
+                    this.$uploader.text("@" + updates[0]['nickname']);
                     this.$uploader.attr("href", "profile/" + updates[0]['uploader']);
                 }
             }
