@@ -241,7 +241,8 @@ window.MAP = (function () {
             this.pointLayer = L.marker([0, 0], {
                 'clickable': true,
                 'draggable': true,
-                'icon': this.addIcon
+                'icon': this.addIcon,
+                zIndexOffset: 99999999
             });
 
             this.pointLayer.on('dragend', function (evt) {

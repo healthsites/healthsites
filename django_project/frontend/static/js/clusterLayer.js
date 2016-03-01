@@ -135,15 +135,18 @@
                         iconUrl: '/static/img/pin-red.svg',
                         iconRetinaUrl: '/static/img/pin-red.svg',
                         iconSize: [35, 43],
-                        iconAnchor: [17, 43]
+                        iconAnchor: [17, 43],
                     });
                 }
-                this.render_marker(latlng, centerIcon, [{uuid: self.clickedPoint_uuid}]);
+                this.render_marker(latlng, centerIcon, [{uuid: self.clickedPoint_uuid}], true);
             }
         },
 
-        render_marker: function (latlng, myIcon, data) {
+        render_marker: function (latlng, myIcon, data, isTop) {
             var mrk = new L.Marker(latlng, {icon: myIcon});
+            if (isTop) {
+                mrk = new L.Marker(latlng, {icon: myIcon, zIndexOffset: 9999999});
+            }
             mrk.data = {
                 'uuid': data['uuid'],
                 'bbox': data['minbbox'],
