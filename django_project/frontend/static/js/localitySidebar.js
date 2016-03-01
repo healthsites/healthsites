@@ -584,6 +584,11 @@ window.LocalitySidebar = (function () {
                     }
                 }
             }
+            //check for 24 hours
+            format2 = format2.replaceAll("<b>00:00</b>-<b>23:59</b>", "<b>24H</b>");
+            format2 = format2.replaceAll("<b>00:00</b>-<b>00:00</b>", "<b>24H</b>");
+            //check for 24/7 hours
+            format2 = format2.replaceAll("Monday to Sunday : <b>24H</b><br>", "<b>24/7</b>");
             return {"format1": format1, "format2": format2};
         },
         setDefiningHour: function (days_index, from1, to1, from2, to2) {
@@ -633,15 +638,12 @@ window.LocalitySidebar = (function () {
             this.$defining_hours_input_table.html("");
             for (var i = 0; i < days.length; i++) {
                 var checked = "";
-                if (i < 5) {
-                    checked = "checked";
-                }
                 var html = '<tr id="' + days[i] + '"><td>';
                 html += '<input class="daycheckbox" type="checkbox" ' + checked + '>' + days[i] + '</td>';
                 html += '<td class="time1" style="cursor: default"> from <input class="timepicker" type="text" value="' + time_default[0] + '"/> to <input class="timepicker" type="text" value="' + time_default[1] + '"/>';
                 html += '<td class="split" onclick="split(this)" style="cursor: pointer"><a>split</a>';
                 html += '</td>';
-                html += '<td class="time2" style="opacity: 0.0; cursor: default"> from <input class="timepicker" type="text" value="' + time_default[0] + '" disabled /> to <input class="timepicker" type="text" value="' + time_default[1] + '" disabled/>';
+                html += '<td class="time2" style="opacity: 0.0; cursor: default"> from <input class="timepicker" type="text" value="00:00" disabled /> to <input class="timepicker" type="text" value="00:00" disabled/>';
                 html += '<td class="unsplit" onclick="unsplit(this)" style="opacity: 0.0; cursor: default"><a>unsplit</a>';
                 html += '</td></tr>';
                 this.$defining_hours_input_table.append(html);
@@ -656,11 +658,6 @@ window.LocalitySidebar = (function () {
                 timeFormat: 'HH:mm',
                 interval: 15, // 15 minutes});
                 change: function (time) {
-                    // the input field
-                    var element = $(this), text;
-                    // get access to this TimePicker instance
-                    var timepicker = element.timepicker();
-                    text = 'Selected time is: ' + timepicker.format(time);
                     that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
                 },
             })

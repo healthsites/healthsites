@@ -148,7 +148,9 @@
                     uuid: self.clickedPoint_uuid
                 }, true);
             } else if (this.clickedPoint_uuid && this.editMode) {
-                this._map.removeLayer(this.focused_marker);
+                if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
+                    this._map.removeLayer(this.focused_marker);
+                }
                 this.focused_marker = null;
             }
 
