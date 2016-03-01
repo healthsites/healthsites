@@ -187,16 +187,18 @@ window.MAP = (function () {
                 }
             });
 
-            $APP.on('map.update-tag', function (evt, payload) {
-                self._updateTag(payload.tag);
-            });
-
             $APP.on('map.update-geoname', function (evt, payload) {
                 self._updateGeoname(payload.geoname);
             });
 
+            $APP.on('map.update-tag', function (evt, payload) {
+                self._updateTag(payload.tag);
+                self.clusterLayer.isInit = true;
+            });
+
             $APP.on('map.map.update-spec', function (evt, payload) {
                 self._updateSpec(payload.spec);
+                self.clusterLayer.isInit = true;
             });
 
             $APP.on('map.update-bound', function (evt, payload) {
@@ -268,11 +270,13 @@ window.MAP = (function () {
         },
 
         _updateTag: function (tag) {
+            this.MAP.setZoom(this.MAP.getMaxZoom());
             this.clusterLayer.updateTag(tag);
             this.clusterLayer.update();
         },
 
         _updateSpec: function (spec) {
+            this.MAP.setZoom(this.MAP.getMaxZoom());
             this.clusterLayer.updateSpec(spec);
             this.clusterLayer.update();
         },

@@ -1,6 +1,6 @@
 (function () {
 
-    L.ClusterLayer = L.LayerGroup.extend({
+    L.ClusterLayer = L.FeatureGroup.extend({
 
         includes: L.Mixin.Events,
         options: {
@@ -8,7 +8,7 @@
         },
 
         initialize: function (options) {
-            L.LayerGroup.prototype.initialize.call(this, []);
+            L.FeatureGroup.prototype.initialize.call(this, []);
 
             L.Util.setOptions(this, options);
 
@@ -24,7 +24,7 @@
 
         onAdd: function (map) {
 
-            L.LayerGroup.prototype.onAdd.call(this, map);
+            L.FeatureGroup.prototype.onAdd.call(this, map);
 
             this._center = map.getCenter();
             this._maxBounds = map.getBounds();
@@ -38,7 +38,7 @@
 
             map.off('moveend', this._onMove, this);
 
-            L.LayerGroup.prototype.onRemove.call(this, map);
+            L.FeatureGroup.prototype.onRemove.call(this, map);
 
             for (var i in this._layers) {
                 if (this._layers.hasOwnProperty(i)) {
@@ -53,6 +53,7 @@
             $APP.on('locality.info', function (evt, payload) {
                 self.editMode = false;
                 self.clickedPoint_uuid = payload.locality_uuid;
+                self.clickedPoint_name = payload.locality_name;
                 self.geom = payload.geom;
                 self.update(true);
             });
@@ -83,7 +84,7 @@
         _render_map: function (response) {
             var self = this;
             // clear previous layers
-            L.LayerGroup.prototype.clearLayers.call(this);
+            L.FeatureGroup.prototype.clearLayers.call(this);
 
             this._curReq = null;
             var centerIcon;
@@ -113,14 +114,16 @@
                                     iconUrl: '/static/img/pin-red.svg',
                                     iconRetinaUrl: '/static/img/pin-red.svg',
                                     iconSize: [35, 43],
-                                    iconAnchor: [17, 43]
+                                    iconAnchor: [17, 43],
+                                    popupAnchor: [0, -43]
                                 });
                             } else {
                                 var myIcon = L.icon({
                                     iconUrl: '/static/img/healthsite-marker.png',
                                     iconRetinaUrl: '/static/img/healthsite-marker-2x.png',
                                     iconSize: [35, 43],
-                                    iconAnchor: [17, 43]
+                                    iconAnchor: [17, 43],
+                                    popupAnchor: [0, -43]
                                 });
                             }
                         }
@@ -136,23 +139,58 @@
                         iconRetinaUrl: '/static/img/pin-red.svg',
                         iconSize: [35, 43],
                         iconAnchor: [17, 43],
+                        popupAnchor: [0, -43]
                     });
                 }
-                this.render_marker(latlng, centerIcon, [{uuid: self.clickedPoint_uuid}], true);
+                this.render_marker(latlng, centerIcon, {
+                    count: 1,
+                    name: self.clickedPoint_name,
+                    uuid: self.clickedPoint_uuid
+                }, true);
+            } else if (this.clickedPoint_uuid && this.editMode) {
+                this._map.removeLayer(this.focused_marker);
+                this.focused_marker = null;
+            }
+
+            if (typeof this.isInit != "undefined" && this.isInit) {
+                this.isInit = false;
+                this._map.fitBounds(this.getBounds());
             }
         },
 
-        render_marker: function (latlng, myIcon, data, isTop) {
+        render_marker: function (latlng, myIcon, data, isFocused) {
             var mrk = new L.Marker(latlng, {icon: myIcon});
-            if (isTop) {
+            if (isFocused) {
                 mrk = new L.Marker(latlng, {icon: myIcon, zIndexOffset: 9999999});
+            }
+            if (data['count'] == 1) {
+                if (typeof data['name'] != "undefined" && data['name'] != "") {
+                    var popup = L.popup()
+                        .setContent("<center><b>" + data['name'] + "</b></center>");
+                    var options =
+                    {
+                        'closeButton': false,
+                        'closeOnClick': false,
+                        'keepInView': false
+                    }
+                    mrk.bindPopup(popup, options);
+                    mrk.on('mouseover', function (e) {
+                        mrk.openPopup();
+                    });
+                    if (!isFocused) {
+                        // don't make hover if it is focused marker'
+                        mrk.on('mouseout', function (e) {
+                            mrk.closePopup();
+                        });
+                    }
+                }
             }
             mrk.data = {
                 'uuid': data['uuid'],
                 'bbox': data['minbbox'],
                 'count': data['count'],
+                'name': data['name'],
             }
-
             var that = this;
             mrk.on('click', function (evt) {
                 if (evt.target.data['count'] === 1) {
@@ -172,8 +210,31 @@
                 }
             });
             // add marker to the layer
-            L.LayerGroup.prototype.addLayer.call(this, mrk);
+            if (!isFocused) {
+                L.FeatureGroup.prototype.addLayer.call(this, mrk);
+            } else {
+                if (typeof this.focused_marker == "undefined" || this.focused_marker == null || this.focused_marker.data['uuid'] != mrk.data['uuid']) {
+                    if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
+                        this._map.removeLayer(this.focused_marker);
+                    }
+                    this.focused_marker = mrk;
+                    this._map.addLayer(this.focused_marker);
+                }
+            }
 
+            //show popup is it is focused locality and in viewport
+            if (isFocused) {
+                var minx = this._map.getBounds()._southWest.lng;
+                var miny = this._map.getBounds()._southWest.lat;
+                var maxx = this._map.getBounds()._northEast.lng;
+                var maxy = this._map.getBounds()._northEast.lat;
+
+                var lng = mrk.getLatLng().lng;
+                var lat = mrk.getLatLng().lat;
+                if (maxx >= lng && minx <= lng && maxy >= lat && miny <= lat) {
+                    mrk.openPopup();
+                }
+            }
         },
 
         update: function (use_cache) {
@@ -220,7 +281,6 @@
                     self.ajax_response = response;
                 });
             }
-
         },
 
         _onMove: function (e) {

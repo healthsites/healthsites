@@ -1005,6 +1005,7 @@ window.LocalitySidebar = (function () {
                 }
                 $APP.trigger('locality.info', {
                     'locality_uuid': self.locality_uuid,
+                    'locality_name': data.values.name,
                     'geom': data.geom,
                     'zoomto': zoomto
                 });
