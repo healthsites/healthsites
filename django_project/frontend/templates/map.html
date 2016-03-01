@@ -317,6 +317,13 @@
                             <div id="locality-operating-hours-input"
                                  style="display: none;">
                                 <div style="border: 1px solid black; padding: 10px;">
+                                    <div>
+                                        <strong>OPERATING HOURS : </strong><span onclick="shortcutDefiningHour('24/7')"
+                                                                                 style="cursor: pointer; margin-left: 10px;margin-right: 10px"><a>24/7</a></span><span
+                                            onclick="shortcutDefiningHour('24/5')"
+                                            style="cursor: pointer; margin-right: 10px"><a>24/5</a></span>
+                                    </div>
+                                    <hr>
                                     <table id="locality-operating-hours-input-table" style="width:100%">
 
                                     </table>
@@ -965,6 +972,39 @@
         $(element).parent('tr').find('.time2').find('input').prop('disabled', false);
         $APP.trigger('sidebar.split-event');
 
+    }
+    function shortcutDefiningHour(shortcut) {
+        var days = 0;
+        if (shortcut == "24/7") {
+            days = 7;
+        } else {
+            days = 5;
+        }
+        var daysCheckbox = $("#locality-operating-hours-input-table").find('.daycheckbox');
+        for (var i = 0; i < daysCheckbox.length; i++) {
+            if (i < days) {
+                $(daysCheckbox[i]).prop("checked", true);
+            } else {
+                $(daysCheckbox[i]).prop("checked", false);
+            }
+        }
+        var unsplits = $("#locality-operating-hours-input-table").find('.unsplit');
+        for (var i = 0; i < unsplits.length; i++) {
+            if ($(unsplits[i]).css('opacity') == 1.0) {
+                unsplit(unsplits[i]);
+            }
+            var input1 = $(unsplits[i]).parent('tr').find('.time1').find('input');
+            var input2 = $(unsplits[i]).parent('tr').find('.time2').find('input');
+            if (input1.length == 2) {
+                $(input1[0]).val('00:00');
+                $(input1[1]).val('23:59');
+            }
+            if (input2.length == 2) {
+                $(input2[0]).val('00:00');
+                $(input2[1]).val('23:59');
+            }
+        }
+        $APP.trigger('sidebar.split-event');
     }
     function unsplit(element) {
         $(element).css({'opacity': 0.0});

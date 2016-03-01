@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
+
 LOG = logging.getLogger(__name__)
 
 import math
+from localities.models import Value
 
 
 def within_bbox(bbox, geomx, geomy):
@@ -86,13 +88,20 @@ def cluster(query_set, zoom, pix_x, pix_y):
         else:
             # point is not in the catchment area of any cluster
             x_range, y_range = overlapping_area(zoom, pix_x, pix_y, geomy)
+            locality_name = ""
+            try:
+                locality_name = Value.objects.filter(locality__uuid=locality['uuid']).filter(
+                        specification__attribute__key='name')[0].data
+            except Exception as e:
+                print e
 
             bbox = (
-                geomx - x_range*1.5, geomy - y_range*1.5,
-                geomx + x_range*1.5, geomy + y_range*1.5
+                geomx - x_range * 1.5, geomy - y_range * 1.5,
+                geomx + x_range * 1.5, geomy + y_range * 1.5
             )
             cluster_points.append({
                 'uuid': locality['uuid'],
+                'name': locality_name,
                 'count': 1,
                 'geom': (geomx, geomy),
                 'bbox': bbox,
