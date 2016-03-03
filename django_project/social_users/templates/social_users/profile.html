@@ -73,7 +73,7 @@
                             html += "<div class=\"entry\">";
                             html += "<span class=\"date\">" + getDateString(update.date_applied) + "</span> - ";
                             html += "<span class=\"name\">";
-                            html += "<a href=\"profile/" + update.author + "\">@" + update.author_nickname + "</a></span> - ";
+                            html += "<a href=\"/profile/" + update.author + "\">@" + update.author_nickname + "</a></span> - ";
                             var mode = "";
                             if (update.mode == 1) {
                                 mode = "added";
@@ -82,7 +82,7 @@
                             }
                             {# update the html #}
                             if (update.data_count == 1) {
-                                html += "<a href=\"map#!/locality/" + update.locality_uuid + "\" class=\"location-name\">" + data.last_update[i].locality + "</a>";
+                                html += "<a href=\"/map#!/locality/" + update.locality_uuid + "\" class=\"location-name\">" + data.last_update[i].locality + "</a>";
                                 html += "<span class=\"location-name\"> " + mode + " </span>";
                             } else {
                                 html += "<span class=\"location-name\">" + data.last_update[i].data_count + " HS/" + mode + "</span>";

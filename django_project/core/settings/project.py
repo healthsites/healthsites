@@ -46,21 +46,24 @@ LOCALE_PATHS = (absolute_path('locale'),)
 # Maybe we can split these between project-home and project-map
 PIPELINE_JS['project'] = {
     'source_filenames': (
-        'js/custom-functions.js',
         'js/custom-jquery.js',
-        'js/utilities.js',
-        'js/clusterLayer.js',
         'js/csrf-ajax.js',
         'js/nav_bar.js',
+    ),
+    'output_filename': 'js/project.js',
+}
+PIPELINE_JS['map'] = {
+    'source_filenames': (
+        'js/clusterLayer.js',
         'js/localitySidebar.js',
         'js/map.js',
         'js/app.js',
     ),
-    'output_filename': 'js/project.js',
+    'output_filename': 'js/map.js',
 }
 
-# Project specific css files to be pipelined
-# For third party libs like bootstrap should go in contrib.py
+# Contributed / third party css for pipeline compression
+# For hand rolled css for this app, use project.py
 PIPELINE_CSS['project'] = {
     'source_filenames': (
         'css/site.css',
@@ -72,3 +75,24 @@ PIPELINE_CSS['project'] = {
         'media': 'screen, projection',
     },
 }
+PIPELINE_CSS['map'] = {
+    'source_filenames': (
+        'css/map.css',
+    ),
+    'output_filename': 'css/map.css',
+    'extra_context': {
+        'media': 'screen, projection',
+    },
+}
+PIPELINE_CSS['home'] = {
+    'source_filenames': (
+        'css/home.css',
+    ),
+    'output_filename': 'css/home.css',
+    'extra_context': {
+        'media': 'screen, projection',
+    },
+}
+
+# Cache folder
+CLUSTER_CACHE_DIR = 'cache'

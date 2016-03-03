@@ -3,7 +3,7 @@ import logging
 from django.core.serializers.json import DjangoJSONEncoder
 
 LOG = logging.getLogger(__name__)
-
+import os
 import googlemaps
 import json
 import uuid
@@ -28,6 +28,7 @@ from localities.models import Country, DataLoader
 from django.contrib.gis.measure import D
 from social_users.views import getProfile
 from core.utilities import extract_time, extract_updates
+from .tasks import regenerate_cache
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -145,6 +146,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
             for last_update in last_updates:
                 updates.append({"last_update": last_update['changeset__created'],
                                 "uploader": last_update['changeset__social_user__username'],
+                                "nickname": last_update['nickname'],
                                 "changeset_id": last_update['changeset']});
             obj_repr.update({'updates': updates})
         except Exception as e:
@@ -310,6 +312,8 @@ def locality_edit(request):
                 locality.save()
                 locality.set_values(json_request, request.user, tmp_changeset)
 
+                regenerate_cache.delay(tmp_changeset.pk, locality.pk)
+
                 return HttpResponse(json.dumps(
                         {"valid": json_request['is_valid'], "uuid": json_request['uuid']}))
             else:
@@ -346,6 +350,8 @@ def locality_create(request):
                 )
                 loc.save()
                 loc.set_values(json_request, request.user, tmp_changeset)
+
+                regenerate_cache.delay(tmp_changeset.pk, loc.pk)
 
                 return HttpResponse(json.dumps(
                         {"valid": json_request['is_valid'], "uuid": tmp_uuid}))
@@ -630,14 +636,49 @@ def get_country_statistic(query):
                     name__iexact=query)
             polygons = country.polygon_geometry
 
-            # query for each of attribute
-            healthsites = Locality.objects.in_polygon(
-                    polygons)
-            output = get_statistic(healthsites)
+            # get cache
+            filename = os.path.join(
+                    settings.CLUSTER_CACHE_DIR,
+                    country.name + '_statistic'
+            )
+            try:
+                file = open(filename, 'r')
+                data = file.read()
+                output = json.loads(data)
+            except IOError as e:
+                try:
+                    # query for each of attribute
+                    healthsites = Locality.objects.in_polygon(
+                            polygons)
+                    output = get_statistic(healthsites)
+                    result = json.dumps(output, cls=DjangoJSONEncoder)
+                    file = open(filename, 'w')
+                    file.write(result)  # python will convert \n to os.linesep
+                    file.close()  # you can omit in most cases as the destructor will call it
+                except Exception as e:
+                    print e
         else:
-            # query for each of attribute
-            healthsites = Locality.objects.all()
-            output = get_statistic(healthsites)
+            # get cache
+            filename = os.path.join(
+                    settings.CLUSTER_CACHE_DIR,
+                    'world_statistic'
+            )
+            try:
+                file = open(filename, 'r')
+                data = file.read()
+                output = json.loads(data)
+            except IOError as e:
+                try:
+                    # query for each of attribute
+                    healthsites = Locality.objects.all()
+                    output = get_statistic(healthsites)
+                    result = json.dumps(output, cls=DjangoJSONEncoder)
+                    file = open(filename, 'w')
+                    file.write(result)  # python will convert \n to os.linesep
+                    file.close()  # you can omit in most cases as the destructor will call it
+                except Exception as e:
+                    print e
+
     except Country.DoesNotExist:
         output = ""
     return output
@@ -669,43 +710,6 @@ def search_countries(request):
         return HttpResponse(result, content_type='application/json')
 
 
-def get_simple_statistic_by_country(request):
-    if request.method == 'GET':
-        query = request.GET.get('q')
-        result = []
-        try:
-            output = {}
-            # getting country's polygon
-            country = Country.objects.get(
-                    name__iexact=query)
-            polygons = country.polygon_geometry
-
-            # query for each of attribute
-            healthsites = Locality.objects.in_polygon(
-                    polygons)
-            output['number'] = healthsites.count()
-
-            # check completnees
-            values = Value.objects.filter(locality__in=healthsites).values('locality').annotate(
-                    value_count=Count('locality'))
-            # 16 = 4 mandatory + 12 core
-            # this make long waiting, need to more good query
-            complete = values.filter(value_count__gte=15).count()
-            if values.count() > 0:
-                complete = complete * 100.0 / values.count()
-            else:
-                complete = 0.0
-            output['completeness'] = "%.2f" % complete
-
-            result = json.dumps(output)
-        except Country.DoesNotExist:
-            result = []
-            result = json.dumps(result)
-
-        result = json.dumps(output)
-        return HttpResponse(result, content_type='application/json')
-
-
 def get_locality_update(request):
     if request.method == 'GET':
         date = request.GET.get('date')
@@ -718,6 +722,7 @@ def get_locality_update(request):
         for last_update in last_updates:
             output.append({"last_update": last_update['changeset__created'],
                            "uploader": last_update['changeset__social_user__username'],
+                           "nickname": last_update['nickname'],
                            "changeset_id": last_update['changeset']});
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
@@ -748,6 +753,9 @@ def locality_updates(locality_id, date):
     prev_changeset = 0
     for update in updates:
         if prev_changeset != update['changeset']:
+            profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
+            update['nickname'] = profile.screen_name
+            update['changeset__created'] = str(update['changeset__created'])
             output.append(update)
         prev_changeset = update['changeset']
     return output[:10]
@@ -776,8 +784,9 @@ def localities_updates(locality_ids):
     prev_changeset = 0
     for update in updates:
         if prev_changeset != update['changeset']:
-            output.append(update)
             profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
             update['nickname'] = profile.screen_name
+            update['changeset__created'] = str(update['changeset__created'])
+            output.append(update)
         prev_changeset = update['changeset']
     return output[:10]
