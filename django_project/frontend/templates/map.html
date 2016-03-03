@@ -674,6 +674,15 @@
 
         {% if tag %}
             $("#title-name").html("{{ tag }}");
+            var uuid = "{{ spec.uuid }}";
+            var name = "{{ spec.name }}";
+            var geom = [0, 0];
+            {% if spec.location %}
+                var latitude = "{{ spec.location.y }}";
+                geom[1] = parseFloat(latitude);
+                var longitude = "{{ spec.location.x }}";
+                geom[0] = parseFloat(longitude);
+            {% endif %}
             $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
         {% elif country %}
             $("#title-name").html("{{ country }}");
@@ -689,7 +698,22 @@
             var data = "{{ spec.data }}";
             var uuid = "{{ spec.uuid }}";
             var name = "{{ spec.name }}";
-            $APP.trigger('map.update-spec', {'spec': {'spec': spec, 'data': data, 'uuid': uuid}});
+            var geom = [0, 0];
+            {% if spec.location %}
+                var latitude = "{{ spec.location.y }}";
+                geom[1] = parseFloat(latitude);
+                var longitude = "{{ spec.location.x }}";
+                geom[0] = parseFloat(longitude);
+            {% endif %}
+            $APP.trigger('map.update-spec', {
+                'spec': {
+                    'spec': spec,
+                    'data': data,
+                    'uuid': uuid,
+                    'name': name,
+                    'geom': geom
+                }
+            });
             spec = spec.replaceAll("_", " ");
             spec.replace(/\w\S*/g, function (txt) {
                 return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
@@ -703,7 +727,22 @@
             var attribute = "{{ attribute.attribute }}";
             var uuid = "{{ attribute.uuid }}";
             var name = "{{ attribute.name }}";
-            $APP.trigger('map.update-spec', {'spec': {'spec': 'attribute', 'data': attribute, 'uuid': uuid}});
+            var geom = [0, 0];
+            {% if attribute.location %}
+                var latitude = "{{ attribute.location.y }}";
+                geom[1] = parseFloat(latitude);
+                var longitude = "{{ attribute.location.x }}";
+                geom[0] = parseFloat(longitude);
+            {% endif %}
+            $APP.trigger('map.update-spec', {
+                'spec': {
+                    'spec': 'attribute',
+                    'data': attribute,
+                    'uuid': uuid,
+                    'name': name,
+                    'geom': geom
+                }
+            });
             attribute = attribute.replaceAll("_", " ");
             attribute.replace(/\w\S*/g, function (txt) {
                 return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();

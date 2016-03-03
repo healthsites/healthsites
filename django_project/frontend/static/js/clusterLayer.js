@@ -156,7 +156,21 @@
 
             if (typeof this.isInit != "undefined" && this.isInit) {
                 this.isInit = false;
-                this._map.fitBounds(this.getBounds());
+                if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
+                    //create dummy
+                    var myIcon = L.icon({
+                        iconUrl: '/static/img/healthsite-marker.png',
+                        iconRetinaUrl: '/static/img/healthsite-marker-2x.png',
+                        iconSize: [35, 43],
+                        iconAnchor: [17, 43],
+                        popupAnchor: [0, -43]
+                    });
+                    var dummy_marker = this.render_marker(this.focused_marker.data['latlng'], myIcon, {});
+                    this._map.fitBounds(this.getBounds());
+                    L.FeatureGroup.prototype.removeLayer.call(this, dummy_marker);
+                } else {
+                    this._map.fitBounds(this.getBounds());
+                }
             }
         },
 
@@ -216,7 +230,7 @@
             if (!isFocused) {
                 L.FeatureGroup.prototype.addLayer.call(this, mrk);
             } else {
-                if (typeof this.focused_marker == "undefined" || this.focused_marker == null || this.focused_marker.data['uuid'] != mrk.data['uuid'] || this.focused_marker.data['latlng'] != mrk.data['latlng']) {
+                if (typeof this.focused_marker == "undefined" || this.focused_marker == null || this.focused_marker.data['uuid'] != mrk.data['uuid'] || this.focused_marker.data['latlng'].lat != mrk.data['latlng'].lat || this.focused_marker.data['latlng'].lng != mrk.data['latlng'].lng) {
                     if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
                         this._map.removeLayer(this.focused_marker);
                     }
@@ -238,6 +252,7 @@
                     mrk.openPopup();
                 }
             }
+            return mrk;
         },
 
         update: function (use_cache) {
@@ -255,6 +270,9 @@
             var spec = "";
             var data = "";
             var uuid = "";
+            if (this.clickedPoint_uuid) {
+                this.uuid = this.clickedPoint_uuid;
+            }
             if (this.spec) {
                 spec = this.spec['spec'];
                 data = this.spec['data'];
@@ -340,7 +358,13 @@
 
         updateSpec: function (spec) {
             this.spec = spec;
-        }
+            if (spec.geom[0] != 0.0 && spec.geom[1] != 0.0) {
+                this.clickedPoint_uuid = spec.uuid;
+                this.clickedPoint_name = spec.name;
+                this.geom = spec.geom;
+            }
+        },
+
     });
 
     L.clusterLayer = function (options) {

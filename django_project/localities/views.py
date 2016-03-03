@@ -102,6 +102,8 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                         localities = get_locality_by_spec_data(spec, data, uuid)
                         localities = Locality.objects.filter(id__in=localities)
         object_list = []
+        if uuid:
+            localities = localities.exclude(uuid=uuid)
         if not exception:
             object_list = cluster(localities, zoom, *iconsize)
         print object_list
@@ -615,6 +617,7 @@ def search_locality_by_spec_data(spec, data, uuid):
     else:
         output = get_statistic(localities)
         output['locality_name'] = ""
+        output['location'] = 0.0
         if uuid:
             try:
                 locality = Locality.objects.get(uuid=uuid)
