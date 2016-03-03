@@ -188,6 +188,7 @@
                 }
             }
             mrk.data = {
+                'latlng': latlng,
                 'uuid': data['uuid'],
                 'bbox': data['minbbox'],
                 'count': data['count'],
@@ -215,7 +216,7 @@
             if (!isFocused) {
                 L.FeatureGroup.prototype.addLayer.call(this, mrk);
             } else {
-                if (typeof this.focused_marker == "undefined" || this.focused_marker == null || this.focused_marker.data['uuid'] != mrk.data['uuid']) {
+                if (typeof this.focused_marker == "undefined" || this.focused_marker == null || this.focused_marker.data['uuid'] != mrk.data['uuid'] || this.focused_marker.data['latlng'] != mrk.data['latlng']) {
                     if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
                         this._map.removeLayer(this.focused_marker);
                     }
