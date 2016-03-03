@@ -18,6 +18,8 @@
             this.editMode = false;
             this.localitySaved = false;
             this.clickedPoint_id = false;
+            this.usingLines = false;
+            this.lines = [];
 
             this._bindExternalEvents();
         },
@@ -55,7 +57,11 @@
                 self.clickedPoint_uuid = payload.locality_uuid;
                 self.clickedPoint_name = payload.locality_name;
                 self.geom = payload.geom;
-                self.update(true);
+                if (this.usingLines) {
+                    self.update(false);
+                } else {
+                    self.update(true);
+                }
             });
 
             $APP.on('locality.edit', function (evt) {
@@ -83,11 +89,19 @@
 
         _render_map: function (response) {
             var self = this;
+            var otherMarker = [];
             // clear previous layers
             L.FeatureGroup.prototype.clearLayers.call(this);
 
+            // emptying line array
+            for (var i = 0; i < this.lines.length; i++) {
+                this._map.removeLayer(this.lines[i]);
+            }
+            this.lines = [];
+
             this._curReq = null;
             var centerIcon;
+            console.log(response);
             if (typeof response != 'undefined') {
                 for (var i = response.length - 1; i >= 0; i--) {
                     var data = response[i];
@@ -127,6 +141,7 @@
                                 });
                             }
                         }
+                        otherMarker.push(latlng);
                         this.render_marker(latlng, myIcon, data);
                     }
                 }
@@ -153,10 +168,41 @@
                 }
                 this.focused_marker = null;
             }
+            if (this.usingLines) {
+                if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
+                    for (var i = 0; i < otherMarker.length; i++) {
+                        var pointA = new L.latLng(self.geom[1], self.geom[0]);
+                        var pointB = otherMarker[i]
+                        var pointList = [pointA, pointB];
+                        var line = new L.Polyline(pointList, {
+                            color: 'red',
+                            weight: 2,
+                            opacity: 0.5,
+                            smoothFactor: 1
+                        });
+                        this._map.addLayer(line);
+                        this.lines.push(line);
+                    }
+                }
+            }
 
             if (typeof this.isInit != "undefined" && this.isInit) {
                 this.isInit = false;
-                this._map.fitBounds(this.getBounds());
+                if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
+                    //create dummy
+                    var myIcon = L.icon({
+                        iconUrl: '/static/img/healthsite-marker.png',
+                        iconRetinaUrl: '/static/img/healthsite-marker-2x.png',
+                        iconSize: [35, 43],
+                        iconAnchor: [17, 43],
+                        popupAnchor: [0, -43]
+                    });
+                    var dummy_marker = this.render_marker(this.focused_marker.data['latlng'], myIcon, {});
+                    this._map.fitBounds(this.getBounds());
+                    L.FeatureGroup.prototype.removeLayer.call(this, dummy_marker);
+                } else {
+                    this._map.fitBounds(this.getBounds());
+                }
             }
         },
 
@@ -167,8 +213,16 @@
             }
             if (data['count'] == 1) {
                 if (typeof data['name'] != "undefined" && data['name'] != "") {
+                    //    window.location.href = "/map#!/locality/" + evt.target.data['uuid'];"
+                    var html = "";
+                    if (isFocused) {
+                        console.log(data['uuid']);
+                        html = '<center><a href="/map#!/locality/' + data['uuid'] + '">' + data['name'] + '</a></center>';
+                    } else {
+                        html = "<center><b>" + data['name'] + "</b></center>";
+                    }
                     var popup = L.popup()
-                        .setContent("<center><b>" + data['name'] + "</b></center>");
+                        .setContent(html);
                     var options =
                     {
                         'closeButton': false,
@@ -199,9 +253,6 @@
                 if (evt.target.data['count'] === 1) {
                     $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
                     $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
-                    if (typeof that.geoname != undefined) {
-                        window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
-                    }
                 }
                 else {
                     var bounds = L.latLngBounds(
@@ -216,7 +267,7 @@
             if (!isFocused) {
                 L.FeatureGroup.prototype.addLayer.call(this, mrk);
             } else {
-                if (typeof this.focused_marker == "undefined" || this.focused_marker == null || this.focused_marker.data['uuid'] != mrk.data['uuid'] || this.focused_marker.data['latlng'] != mrk.data['latlng']) {
+                if (typeof this.focused_marker == "undefined" || this.focused_marker == null || this.focused_marker.data['uuid'] != mrk.data['uuid'] || this.focused_marker.data['latlng'].lat != mrk.data['latlng'].lat || this.focused_marker.data['latlng'].lng != mrk.data['latlng'].lng) {
                     if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
                         this._map.removeLayer(this.focused_marker);
                     }
@@ -238,6 +289,7 @@
                     mrk.openPopup();
                 }
             }
+            return mrk;
         },
 
         update: function (use_cache) {
@@ -262,6 +314,9 @@
                     uuid = this.spec['uuid'];
                 }
             }
+            if (this.clickedPoint_uuid) {
+                uuid = this.clickedPoint_uuid;
+            }
             var url = this.options.url + L.Util.getParamString({
                     'bbox': bb.toBBoxString(),
                     'zoom': this._map.getZoom(),
@@ -272,7 +327,6 @@
                     'data': data,
                     'uuid': uuid,
                 });
-
             // when using cached data we don't need to make any new requests
             // for example, this is useful when changing app contexts without changing map view
             if (use_cache) {
@@ -340,7 +394,13 @@
 
         updateSpec: function (spec) {
             this.spec = spec;
-        }
+            if (spec.geom[0] != 0.0 && spec.geom[1] != 0.0) {
+                this.clickedPoint_uuid = spec.uuid;
+                this.clickedPoint_name = spec.name;
+                this.geom = spec.geom;
+            }
+        },
+
     });
 
     L.clusterLayer = function (options) {
