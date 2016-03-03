@@ -100,11 +100,15 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                         localities = get_locality_by_spec_data(spec, data, uuid)
                         localities = Locality.objects.filter(id__in=localities)
         object_list = []
+        focused = []
         if uuid:
             localities = localities.exclude(uuid=uuid)
+            focused = Locality.objects.filter(uuid=uuid)
+            focused = cluster(focused, zoom, *iconsize)
         if not exception:
             object_list = cluster(localities, zoom, *iconsize)
-        print object_list
+            if focused:
+                object_list = object_list + focused
         return self.render_json_response(object_list)
 
 

@@ -101,6 +101,7 @@
 
             this._curReq = null;
             var centerIcon;
+            console.log(response);
             if (typeof response != 'undefined') {
                 for (var i = response.length - 1; i >= 0; i--) {
                     var data = response[i];
