@@ -450,10 +450,10 @@ window.LocalitySidebar = (function () {
                 if (mode == "edit" && is_enable_edit) {
                     this.$saveButton.show();
                     this.showInfo();
-                    this.$line_updates.hide();
                     $APP.trigger('locality.edit');
                 }
                 else {
+                    console.log("sow")
                     this.$createButton.show();
                     this.$line_updates.hide();
                     this.showDefaultEdit();

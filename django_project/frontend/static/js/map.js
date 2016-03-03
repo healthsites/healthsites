@@ -194,11 +194,13 @@ window.MAP = (function () {
             $APP.on('map.update-tag', function (evt, payload) {
                 self._updateTag(payload.tag);
                 self.clusterLayer.isInit = true;
+                self.clusterLayer.usingLines = true;
             });
 
             $APP.on('map.map.update-spec', function (evt, payload) {
                 self._updateSpec(payload.spec);
                 self.clusterLayer.isInit = true;
+                self.clusterLayer.usingLines = true;
             });
 
             $APP.on('map.update-bound', function (evt, payload) {

@@ -96,9 +96,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     localities = Locality.objects.filter(id__in=localities)
                 else:
                     # serching by value
-                    print spec + " : " + data + " : " + uuid
                     if spec != "" and spec != "undefined" and data != "" and data != "undefined":
-                        print spec + " " + data + " " + uuid
                         localities = get_locality_by_spec_data(spec, data, uuid)
                         localities = Locality.objects.filter(id__in=localities)
         object_list = []
@@ -585,9 +583,9 @@ def get_locality_by_spec_data(spec, data, uuid):
                 locality = Locality.objects.get(uuid=uuid)
                 localities = Locality.objects.filter(
                         geom__distance_lte=(locality.geom, D(mi=100))
-                ).distance(locality.geom).order_by('distance')
+                ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
                 localities = Value.objects.filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:6]
+                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
             else:
                 localities = Value.objects.filter(
                         data__icontains=data).values('locality')
@@ -596,10 +594,10 @@ def get_locality_by_spec_data(spec, data, uuid):
                 locality = Locality.objects.get(uuid=uuid)
                 localities = Locality.objects.filter(
                         geom__distance_lte=(locality.geom, D(mi=100))
-                ).distance(locality.geom).order_by('distance')
+                ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
                 localities = Value.objects.filter(
                         specification__attribute__key=spec).filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:6]
+                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
             else:
                 localities = Value.objects.filter(
                         specification__attribute__key=spec).filter(
