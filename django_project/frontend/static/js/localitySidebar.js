@@ -865,6 +865,8 @@ window.LocalitySidebar = (function () {
                         this.$inpatient_service_part_input.val(parseInt(inpatient_service[1], 10));
                     }
                 }
+                console.log(this.locality_data.values);
+                console.log($inpatient_service.html);
             }
 
             // STAFFS
