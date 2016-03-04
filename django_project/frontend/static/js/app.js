@@ -45,6 +45,9 @@ window.APP = (function () {
 
         _parseHash: function (newHash, oldHash) {
             crossroads.parse(newHash);
+            if (newHash == "") {
+                changeToDefault();
+            }
         },
 
         setHashSilently: function (hash) {

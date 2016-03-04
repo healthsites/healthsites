@@ -388,9 +388,9 @@
                             <p id="locality-inpatient-service"></p>
 
                             <p id="locality-inpatient-service-input" style="display: none"><input type="number"
-                                                                                     id="locality-inpatient-service-full-input"
-                                                                                     min="0"
-                                                                                     style="width: 50px"/>
+                                                                                                  id="locality-inpatient-service-full-input"
+                                                                                                  min="0"
+                                                                                                  style="width: 50px"/>
                                 full
                                 time beds, <input type="number" id="locality-inpatient-service-part-input" min="0"
                                                   style="width: 50px"/>
@@ -657,6 +657,66 @@
                 countries.push(country);
             {% endfor %}
         {% endif %}
+
+        changeToDefault();
+
+        {% if location %}
+            var latitude = "{{ location.y }}";
+            latitude = parseFloat(latitude);
+            var longitude = "{{ location.x }}";
+            longitude = parseFloat(longitude);
+            $APP.trigger('map.pan', {'location': [latitude, longitude]});
+        {% endif %}
+
+        {% if viewport %}
+            var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");
+            var northeast_lng = parseFloat("{{ viewport.northeast_lng }}");
+            var southwest_lat = parseFloat("{{ viewport.southwest_lat }}");
+            var southwest_lng = parseFloat("{{ viewport.southwest_lng }}");
+            if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
+                $APP.trigger('map.update-bound', {
+                    'southwest_lat': southwest_lat,
+                    'southwest_lng': southwest_lng,
+                    'northeast_lat': northeast_lat,
+                    'northeast_lng': northeast_lng
+                });
+            }
+        {% endif %}
+
+        $("#updates").html("<div class=\"entry\">no updates</div>");
+        {% if last_update %}
+            $("#updates").html("");
+            {% for updates in last_update %}
+                var html = "<div class=\"entry\">";
+                html += "<div class=\"entry\">";
+                html += "<span class=\"date\">" + getDateString("{{ updates.date_applied }}") + "</span> - ";
+                html += "<span class=\"name\">";
+                html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author_nickname }}" + "</a></span> - ";
+                var mode = "";
+                if ("{{ updates.mode }}" == 1) {
+                    mode = "added";
+                } else {
+                    mode = "amended";
+                }
+                {# update the html #}
+                if ("{{ updates.data_count }}" == 1) {
+                    html += "<a href=\"map#!/locality/" + "{{ updates.locality_uuid }}" + "\" class=\"location-name\">" + "{{ updates.locality }}" + "</a>";
+                    html += "<span class=\"location-name\"> " + mode + " </span>";
+                } else {
+                    html += "<span class=\"location-name\">" + "{{ updates.data_count }}" + " HS/" + mode + "</span>";
+                }
+                html += "</div>";
+                $("#updates").append(html);
+            {% endfor %}
+        {% endif %}
+
+        $(".accordion").accordion({
+            collapsible: true,
+            header: "h3"
+        });
+    });
+
+    function changeToDefault() {
         {# default#}
         $("#locality-statistic").hide();
         $("#locality-info").hide();
@@ -671,7 +731,6 @@
         {% else %}
             $("#locality-info").show();
         {% endif %}
-
         {% if tag %}
             $("#title-name").html("{{ tag }}");
             var uuid = "{{ spec.uuid }}";
@@ -687,7 +746,6 @@
         {% elif country %}
             $("#title-name").html("{{ country }}");
             $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
-
             // creating polygon
             var polygon_raw = '{{ polygon|safe }}';
             var polygon_json = JSON.parse(polygon_raw);
@@ -753,62 +811,7 @@
                 $("#title-statistic").html('Showing the closest five healthsites with <span class="inner-navbar-brand">' + attribute + '</span> to <span class="inner-navbar-brand">' + name + '</span><br>');
             }
         {% endif %}
-
-        {% if location %}
-            var latitude = "{{ location.y }}";
-            latitude = parseFloat(latitude);
-            var longitude = "{{ location.x }}";
-            longitude = parseFloat(longitude);
-            $APP.trigger('map.pan', {'location': [latitude, longitude]});
-        {% endif %}
-
-        {% if viewport %}
-            var northeast_lat = parseFloat("{{ viewport.northeast_lat }}");
-            var northeast_lng = parseFloat("{{ viewport.northeast_lng }}");
-            var southwest_lat = parseFloat("{{ viewport.southwest_lat }}");
-            var southwest_lng = parseFloat("{{ viewport.southwest_lng }}");
-            if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
-                $APP.trigger('map.update-bound', {
-                    'southwest_lat': southwest_lat,
-                    'southwest_lng': southwest_lng,
-                    'northeast_lat': northeast_lat,
-                    'northeast_lng': northeast_lng
-                });
-            }
-        {% endif %}
-
-        $("#updates").html("<div class=\"entry\">no updates</div>");
-        {% if last_update %}
-            $("#updates").html("");
-            {% for updates in last_update %}
-                var html = "<div class=\"entry\">";
-                html += "<div class=\"entry\">";
-                html += "<span class=\"date\">" + getDateString("{{ updates.date_applied }}") + "</span> - ";
-                html += "<span class=\"name\">";
-                html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author_nickname }}" + "</a></span> - ";
-                var mode = "";
-                if ("{{ updates.mode }}" == 1) {
-                    mode = "added";
-                } else {
-                    mode = "amended";
-                }
-                {# update the html #}
-                if ("{{ updates.data_count }}" == 1) {
-                    html += "<a href=\"map#!/locality/" + "{{ updates.locality_uuid }}" + "\" class=\"location-name\">" + "{{ updates.locality }}" + "</a>";
-                    html += "<span class=\"location-name\"> " + mode + " </span>";
-                } else {
-                    html += "<span class=\"location-name\">" + "{{ updates.data_count }}" + " HS/" + mode + "</span>";
-                }
-                html += "</div>";
-                $("#updates").append(html);
-            {% endfor %}
-        {% endif %}
-
-        $(".accordion").accordion({
-            collapsible: true,
-            header: "h3"
-        });
-    });
+    }
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});
     }
