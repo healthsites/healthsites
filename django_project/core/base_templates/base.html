@@ -51,72 +51,75 @@
 
 <body class="body">
 <div class="page-wrapper">
-<nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
-    <div class="container-fluid">
-        <div class="navbar-header">
+    <nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
+        <div class="container-fluid">
+            <div class="navbar-header">
 
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar"><span class="sr-only">Toggle navigation</span> <span
-                    class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
-            <button type="button" class="search-toggle collapsed"><span class="sr-only">Search</span><a
-                    class="navbar-search" href="/"><i class="fa fa-search"></i></a></button>
-            <a class="navbar-brand" href="/"><span class="hs-logo"></span>healthsites.io</a>
-            <a class="navbar-share closed" href="/"><img class="share" src="/static/img/share.svg" width="20"/><img
-                    class="close" src="/static/img/close.svg" width="16"/></a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar"><span
+                        class="sr-only">Toggle navigation</span> <span
+                        class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
+                <button type="button" class="search-toggle collapsed"><span class="sr-only">Search</span><a
+                        class="navbar-search" href="/"><i class="fa fa-search"></i></a></button>
+                <a class="navbar-brand" href="/"><span class="hs-logo"></span>healthsites.io</a>
+                <a class="navbar-share closed" href="/"><img class="share" src="/static/img/share.svg" width="20"/><img
+                        class="close" src="/static/img/close.svg" width="16"/></a>
 
-            <div class="hidden" id="site-social">
-                <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
-                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   class="withripple twitter-href" target="_blank">
-                    <i class="fa fa-twitter"></i></a>
-                <a class="facebook-hs-share withripple facebook-href" target="_blank">
-                    <i class="fa fa-facebook"></i></a>
-                <a class="googleplus-href"
-                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   target="_blank">
-                    <i class="fa fa-google-plus"></i>
+                <div class="hidden" id="site-social">
+                    <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
+                    <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+                       class="withripple twitter-href" target="_blank">
+                        <i class="fa fa-twitter"></i></a>
+                    <a class="facebook-hs-share withripple facebook-href" target="_blank">
+                        <i class="fa fa-facebook"></i></a>
+                    <a class="googleplus-href"
+                       onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+                       target="_blank">
+                        <i class="fa fa-google-plus"></i>
 
-                </a>
-            </div>
-            <span class="tagline">A free, curated, global, canonical source of healthcare location data</span>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse pull-right">
-            <ul class="nav navbar-nav">
-                <li><a href="/#about">About</a></li>
-                <li><a target="_blank" href="/map">Map</a></li>
-                <li><a href="/#country-data">Country data</a></li>
-                <li><a href="/#lifecycle">How it works</a></li>
-                <li><a href="/#share-data">Share data</a></li>
-                <li><a href="/#partners">Partners</a></li>
-                <li class="nav-search-wrap"><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
-                <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i
-                        class="fa fa-comments"></i></a></li>
-            </ul>
-
-        </div>
-        <!--/.nav-collapse -->
-
-    </div>
-    <div class="nav-searchbar container-fluid">
-        <form action="/map" method="POST">
-            {% csrf_token %}
-            <div class="option-group">
-                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite" checked><span></span><label class="option"
-                                                                                                       for="radio-healthsite">healthsite</label>
+                    </a>
                 </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
-                                                        value="place"><span></span><label class="option"
-                                                                                          for="radio-healthsite">place</label>
-                </div>
+                <span class="tagline">A free, curated, global, canonical source of healthcare location data</span>
             </div>
-            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
-        </form>
-    </div>
-</nav>
-{% block content %}
+            <div id="navbar" class="collapse navbar-collapse pull-right">
+                <ul class="nav navbar-nav">
+                    <li><a href="/#about">About</a></li>
+                    <li><a target="_blank" href="/map">Map</a></li>
+                    <li><a href="/#country-data">Country data</a></li>
+                    <li><a href="/#lifecycle">How it works</a></li>
+                    <li><a href="/#share-data">Share data</a></li>
+                    <li><a href="/#partners">Partners</a></li>
+                    <li class="nav-search-wrap"><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
+                    <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i
+                            class="fa fa-comments"></i></a></li>
+                </ul>
 
-{% endblock content %}
+            </div>
+            <!--/.nav-collapse -->
+
+        </div>
+        <div class="nav-searchbar container-fluid">
+            <form action="/map" method="POST">
+                {% csrf_token %}
+                <div class="option-group">
+                    <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
+                                                            value="healthsite" checked><span></span><label
+                            class="option"
+                            for="radio-healthsite">healthsite</label>
+                    </div>
+                    <div class="option"><span></span><input type="radio" name="option" id="radio-place"
+                                                            value="place"><span></span><label class="option"
+                                                                                              for="radio-healthsite">place</label>
+                    </div>
+                </div>
+                <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit"
+                                                                                             value="search">
+            </form>
+        </div>
+    </nav>
+    {% block content %}
+
+    {% endblock content %}
 </div><!-- .page-wraper -->
 <footer id="colophon">
     <div class="container">
@@ -127,7 +130,6 @@
                        target="_blank">Participate</a></li>
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road
                     map</a></li>
-                <li><a href="/contact">Contact</a></li>
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use">Terms of
                     use</a></li>
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites.io---ip-policy">IP policy</a>
@@ -141,6 +143,7 @@
                 {#                <li><a href="/map-edit">Map edit</a></li>#}
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">Data
                     lifecycle</a></li>
+                <li><a href="/contact">Contact</a></li>
             </ul>
         </div>
         <div class="col-md-3 pad0x">
@@ -173,7 +176,7 @@
 
         </div>
     </div>
-    <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
+    <div id="ribbon"><img class="share" src="/static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
 </footer>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet-src.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
