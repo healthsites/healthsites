@@ -785,3 +785,6 @@ section.container{
     padding-top: 50px;
 }
 }
+.gitter-chat-embed {
+    top: 53px !important;
+}
