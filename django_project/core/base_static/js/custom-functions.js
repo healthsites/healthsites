@@ -72,7 +72,7 @@ function mapcount() {
             acceptAnyClick: false, //Set to true to accept cookies when visitor clicks anywhere on the page
             expireDays: 365, //Number of days for cookieBar cookie to be stored for
             renewOnVisit: false, //Renew the cookie upon revisit to website
-            forceShow: false, //Force cookieBar to show regardless of user cookie preference
+            forceShow: true, //Force cookieBar to show regardless of user cookie preference
             effect: 'slide', //Options: slide, fade, hide
             element: 'body', //Element to append/prepend cookieBar to. Remember "." for class or "#" for id.
             append: false, //Set to true for cookieBar HTML to be placed at base of website. Actual position may change according to CSS
@@ -190,6 +190,7 @@ function mapcount() {
                     });
                 }
                 $(document).unbind('click', anyClick);
+				policyshow();
             };
             var cookieAccept = function () {
                 document.cookie = cookieEntry.replace('{value}', 'accepted');
@@ -241,6 +242,16 @@ function mapcount() {
         }
     };
 })(jQuery);
+
+function policyshow() {
+	$('body').prepend('<div id="policy" class="fixed"><p><a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use" target="_blank">Terms of use</a> <a href="#" class="accept">Accept</a></p></div>');
+	$('body').addClass('policy-enabled');
+	$('.accept').click(function() {
+		$('#policy').slideUp(300);
+		$('body').removeClass('policy-enabled');
+	});
+	return false;
+}
 
 function renderCredit() {
     /* map credits */
