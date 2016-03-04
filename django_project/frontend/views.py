@@ -146,7 +146,7 @@ def map(request):
         elif attribute:
             uuid = request.GET.get('uuid')
             result = search_locality_by_spec_data("attribute", attribute, uuid)
-            result['attribute'] = {'attribute': attribute, 'uuid': uuid, 'name': result['locality_name']}
+            result['attribute'] = {'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],'location': result['location']}
         elif len(request.GET) == 0:
             result = search_place(request, place)
         else:
@@ -157,7 +157,7 @@ def map(request):
                     spec = item
                     data = request.GET.get(item)
                     result = search_locality_by_spec_data(spec, data, uuid)
-                    result['spec'] = {'spec': spec, 'data': data, 'uuid': uuid, 'name': result['locality_name']}
+                    result['spec'] = {'spec': spec, 'data': data, 'uuid': uuid, 'name': result['locality_name'], 'location': result['location']}
         return render_to_response(
                 'map.html',
                 result,

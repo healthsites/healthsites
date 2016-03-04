@@ -1,3 +1,26 @@
+/* stick footer to the bottom
+
+-------------------------------------------------- */
+* {
+  margin: 0;
+}
+html, body {
+  height: 100%;
+}
+.page-wrapper {
+  min-height: 100%;
+  /* equal to footer height */
+  margin-bottom: -181px; 
+}
+.page-wrapper:after {
+  content: "";
+  display: block;
+}
+#colophon, .page-wrapper:after {
+  height: 181px; 
+}
+
+
 /* Base candidates
 
 -------------------------------------------------- */
@@ -625,7 +648,7 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
 }
 
 section.container{
-    margin-top:100px;
+    padding-top:100px;
     margin-bottom:50px;
 }
 
@@ -658,4 +681,104 @@ section.container{
     background: rgba(255, 255, 255, 0.7);
     padding: 0 5px;
     font-size: 16px;
+}
+/* sign in */
+.social .btn {
+    margin-bottom: 5px;
+}
+/* profile */
+.user-profile {
+    text-align: center;
+    margin-top: -100px;
+    padding-top: 100px;
+    margin-bottom: -50px;
+    padding-bottom: 50px;
+    font-family: "Raleway", sans-serif;
+}
+.profile-image-size {
+    width: 180px !important;
+    height: 180px !important;
+    overflow: hidden;
+    display: inline-block;
+    border: 2px solid #fff; 
+}
+.profile-image {
+    width: 180px;
+    height: auto;
+}
+.profile-header h1 {
+    font-size: 18px;
+}
+.user-profile .name {
+    font-size: 14px;
+    font-weight: 300;
+}
+#updates-wrapper .graph {
+	background: #fff;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	/* height: 216px; */
+	padding: 15px;
+	-webkit-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.15);
+	-moz-box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.15);
+	box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.15);
+	font-family: "Ubuntu", sans-serif;
+}
+#updates-wrapper .graph.updates {
+	padding-left: 0;
+	padding-right: 0;
+	font-wize: 14px;
+}
+#updates-wrapper .graph .entry {
+	padding: 5px 15px;
+	border-bottom: 1px solid #f1f0f0;
+}
+#updates-wrapper .graph .entry:first-child {
+	padding-top:0;
+}
+#updates-wrapper .graph .entry:last-child {
+	padding-bottom:0;
+	border-bottom: none;
+}
+#updates-wrapper .name a {
+	color: #f44a52;
+}
+#updates-wrapper .date, .country-data .time {
+	font-style: italic;
+}
+.nav-updates {
+    margin-top: 15px;
+}
+.profile-graphs h3 {
+    color: #3c4c57;
+    font-family: "Raleway", sans-serif;
+    font-size: 20px;
+    font-weight: 300;
+}
+@media only screen and (max-width:768px) {
+.user-profile {
+    padding-top: 60px;
+    margin-bottom: 10px;
+    padding-bottom: 20px;
+    font-family: "Raleway", sans-serif;
+}
+.profile-image-size {
+    width: 120px;
+    height: 120px;
+}
+.profile-image {
+    width: 120px;
+}
+.profile-graphs {
+    text-align: center;
+}
+#updates-wrapper {
+    text-align: left;
+}
+}
+@media only screen and (max-width:640px) {
+.user-profile {
+    padding-top: 50px;
+}
 }

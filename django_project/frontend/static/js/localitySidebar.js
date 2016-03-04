@@ -10,7 +10,7 @@ window.LocalitySidebar = (function () {
     var ancillary_options = ["Operating theater", "laboratory", "imaging equipment", "intensive care unit", "Emergency department"];
     var activities_options = ["medicine and medical specialties", "surgery and surgical specialties", "Maternal and women health", "pediatric care", "mental health", "geriatric care", "social care"];
     var ownership_options = ["", "public", "private not for profit", "private commercial"];
-    var inpatient_options = ["Outpatient consultation", "In-patient hospitalization"];
+    var notes_options = ["Outpatient consultation", "In-patient hospitalization"];
     var days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     var time_default = ["09:00", "17:00"];
     var need_information = "needs information";
@@ -20,8 +20,8 @@ window.LocalitySidebar = (function () {
     var no_scope_found = "..please define scope of service";
     var no_anchillary_found = "..please define ancillary services";
     var no_activities_found = "..please define ancillary activities";
-    var no_beds_found = "..please define number of full time/part time beds";
-    var no_impatient_found = "..please define inpatient hospitalisation and outpatient consultation";
+    var no_inpatient_found = "..please define number of full time/part time beds";
+    var no_notes_found = "..please define notes hospitalisation and outpatient consultation";
     var no_staff_found = "..please define full time doctors and full time nurses";
     var no_ownership_found = "..please define ownership status";
     var no_tag_found = "please add comma separated tags";
@@ -48,10 +48,10 @@ window.LocalitySidebar = (function () {
         this.$ancillary_service = $('#locality-ancillary-service');
         this.$activities = $('#locality-activities');
         this.$ownership = $('#locality-ownership');
-        this.$beds = $('#locality-beds');
+        this.$inpatient_service = $('#locality-inpatient-service');
         this.$staff = $('#locality-staff');
-        this.$inpatient = $('#locality-inpatient-service');
-        this.$inpatient_text = $('#locality-inpatient-service-text');
+        this.$notes = $('#locality-notes');
+        this.$notes_text = $('#locality-notes-text');
         this.$tag_data = $('#tag-data');
         this.$defining_hours_section = $('#locality-operating-hours-section');
         this.$defining_hours = $('#locality-operating-hours');
@@ -76,16 +76,16 @@ window.LocalitySidebar = (function () {
         this.$ancillary_service_add = $('#locality-ancillary-service-add');
         this.$activities_input = $('#locality-activities-input');
         this.$activities_add = $('#locality-activities-add');
-        this.$beds_input = $('#locality-beds-input');
-        this.$beds_full_input = $('#locality-beds-full-input');
-        this.$beds_part_input = $('#locality-beds-part-input');
+        this.$inpatient_service_input = $('#locality-inpatient-service-input');
+        this.$inpatient_service_full_input = $('#locality-inpatient-service-full-input');
+        this.$inpatient_service_part_input = $('#locality-inpatient-service-part-input');
         this.$staff_input = $('#locality-staff-input');
         this.$staff_doctor_input = $('#locality-staff-doctor-input');
         this.$staff_nurse_input = $('#locality-staff-nurse-input');
         this.$coordinates_input = $('#locality-coordinates-input');
         this.$coordinates_lat_input = $('#locality-coordinates-lat-input');
         this.$coordinates_long_input = $('#locality-coordinates-long-input');
-        this.$inpatient_input = $('#locality-inpatient-service-input');
+        this.$notes_input = $('#locality-notes-input');
 
         this.$other_add = $('#others-add');
         this.$other_data = $('#others-data');
@@ -121,10 +121,10 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$ownership);
         info_fields.push(this.$ancillary_service);
         info_fields.push(this.$activities);
-        info_fields.push(this.$beds);
+        info_fields.push(this.$inpatient_service);
         info_fields.push(this.$staff);
         info_fields.push(this.$coordinates);
-        info_fields.push(this.$inpatient);
+        info_fields.push(this.$notes);
         info_fields.push(this.$other_data);
         info_fields.push(this.$tag_data);
         info_fields.push(this.$defining_hours_section);
@@ -142,10 +142,10 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$ancillary_service_add);
         edit_fields.push(this.$activities_input);
         edit_fields.push(this.$activities_add);
-        edit_fields.push(this.$beds_input);
+        edit_fields.push(this.$inpatient_service_input);
         edit_fields.push(this.$staff_input);
         edit_fields.push(this.$coordinates_input);
-        edit_fields.push(this.$inpatient_input);
+        edit_fields.push(this.$notes_input);
         edit_fields.push(this.$other_add);
         edit_fields.push(this.$other_data_input);
         edit_fields.push(this.$tag_input);
@@ -243,22 +243,22 @@ window.LocalitySidebar = (function () {
                         activities = "";
                     }
 
-                    // GET INPATIENT CHILD
-                    var inpatient_input = that.$inpatient_input.find('input');
-                    var inpatient = "";
-                    for (var i = 0; i < inpatient_input.length; i++) {
-                        if ($(inpatient_input[i]).prop('checked')) {
-                            inpatient += inpatient_options[i] + separator;
+                    // GET NOTES CHILD
+                    var notes_input = that.$notes_input.find('input');
+                    var notes = "";
+                    for (var i = 0; i < notes_input.length; i++) {
+                        if ($(notes_input[i]).prop('checked')) {
+                            notes += notes_options[i] + separator;
                         }
                     }
-                    if (inpatient == separator) {
-                        inpatient = "";
+                    if (notes == separator) {
+                        notes = "";
                     }
 
-                    // GET BEDS CHILD
-                    var beds = that.$beds_full_input.val() + separator + that.$beds_part_input.val();
-                    if (beds == separator) {
-                        beds = "";
+                    // GET INPATIENT_SERVICE CHILD
+                    var inpatient_service = that.$inpatient_service_full_input.val() + separator + that.$inpatient_service_part_input.val();
+                    if (inpatient_service == separator) {
+                        inpatient_service = "";
                     }
 
                     // GET STAFFS CHILD
@@ -291,8 +291,8 @@ window.LocalitySidebar = (function () {
                     }
                     fields += '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
-                        "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&beds=" + encodeURIComponent(beds) +
-                        "&staff=" + encodeURIComponent(staffs) + "&inpatient=" + encodeURIComponent(inpatient) + "&tags=" + encodeURIComponent(tags);
+                        "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient_service) +
+                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags);
 
                     // GET DEFINING HOURS
                     fields += "&defining_hours=" + that.getDefiningHoursFormat()["format1"];
@@ -384,15 +384,15 @@ window.LocalitySidebar = (function () {
                 html += "";
                 this.$activities_input.html(html);
             }
-            // inpatient OPTIONS
-            else if (wrapper == "inpatient") {
+            // notes OPTIONS
+            else if (wrapper == "notes") {
                 var html = "";
                 // create nature options
-                for (var i = 0; i < inpatient_options.length; i++) {
-                    html += "<input type=\"checkbox\">" + inpatient_options[i] + "<br>";
+                for (var i = 0; i < notes_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + notes_options[i] + "<br>";
                 }
                 html += "";
-                this.$inpatient_input.html(html);
+                this.$notes_input.html(html);
             }
 
         },
@@ -427,13 +427,13 @@ window.LocalitySidebar = (function () {
                     }
                 }
             }
-            // inpatient UPDATES
-            else if (wrapper == "inpatient") {
-                var inpatient_input = this.$inpatient_input.find('input');
+            // notes UPDATES
+            else if (wrapper == "notes") {
+                var notes_input = this.$notes_input.find('input');
                 // create nature options
-                for (var i = 0; i < inpatient_options.length; i++) {
-                    if (selected == inpatient_input[i]) {
-                        $(inpatient_input[i]).prop('checked', true);
+                for (var i = 0; i < notes_options.length; i++) {
+                    if (selected == notes_input[i]) {
+                        $(notes_input[i]).prop('checked', true);
                     }
                 }
             }
@@ -584,6 +584,11 @@ window.LocalitySidebar = (function () {
                     }
                 }
             }
+            //check for 24 hours
+            format2 = format2.replaceAll("<b>00:00</b>-<b>23:59</b>", "<b>24H</b>");
+            format2 = format2.replaceAll("<b>00:00</b>-<b>00:00</b>", "<b>24H</b>");
+            //check for 24/7 hours
+            format2 = format2.replaceAll("Monday to Sunday : <b>24H</b><br>", "<b>24/7</b>");
             return {"format1": format1, "format2": format2};
         },
         setDefiningHour: function (days_index, from1, to1, from2, to2) {
@@ -610,7 +615,7 @@ window.LocalitySidebar = (function () {
             this.addedNewOptons("scope"); // this.$scope_of_service_input
             this.addedNewOptons("ancillary"); // this.$ancillary_service_input
             this.addedNewOptons("activities"); // this.$ancillary_service_input
-            this.addedNewOptons("inpatient"); // this.$inpatient_input
+            this.addedNewOptons("notes"); // this.$notes_input
             $(this.$nature_of_facility_input.find('option')[0]).prop('selected', true);
             this.$phone_input_int.val("");
             this.$phone_input_number.val("");
@@ -621,8 +626,8 @@ window.LocalitySidebar = (function () {
             }
             this.$name_input.val("");
             this.$physical_address_input.val("");
-            this.$beds_full_input.val("");
-            this.$beds_part_input.val("");
+            this.$inpatient_service_full_input.val("");
+            this.$inpatient_service_part_input.val("");
             this.$staff_doctor_input.val("");
             this.$staff_nurse_input.val("");
             this.$tag_input.html("");
@@ -633,15 +638,12 @@ window.LocalitySidebar = (function () {
             this.$defining_hours_input_table.html("");
             for (var i = 0; i < days.length; i++) {
                 var checked = "";
-                if (i < 5) {
-                    checked = "checked";
-                }
                 var html = '<tr id="' + days[i] + '"><td>';
                 html += '<input class="daycheckbox" type="checkbox" ' + checked + '>' + days[i] + '</td>';
                 html += '<td class="time1" style="cursor: default"> from <input class="timepicker" type="text" value="' + time_default[0] + '"/> to <input class="timepicker" type="text" value="' + time_default[1] + '"/>';
                 html += '<td class="split" onclick="split(this)" style="cursor: pointer"><a>split</a>';
                 html += '</td>';
-                html += '<td class="time2" style="opacity: 0.0; cursor: default"> from <input class="timepicker" type="text" value="' + time_default[0] + '" disabled /> to <input class="timepicker" type="text" value="' + time_default[1] + '" disabled/>';
+                html += '<td class="time2" style="opacity: 0.0; cursor: default"> from <input class="timepicker" type="text" value="00:00" disabled /> to <input class="timepicker" type="text" value="00:00" disabled/>';
                 html += '<td class="unsplit" onclick="unsplit(this)" style="opacity: 0.0; cursor: default"><a>unsplit</a>';
                 html += '</td></tr>';
                 this.$defining_hours_input_table.append(html);
@@ -656,11 +658,6 @@ window.LocalitySidebar = (function () {
                 timeFormat: 'HH:mm',
                 interval: 15, // 15 minutes});
                 change: function (time) {
-                    // the input field
-                    var element = $(this), text;
-                    // get access to this TimePicker instance
-                    var timepicker = element.timepicker();
-                    text = 'Selected time is: ' + timepicker.format(time);
                     that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
                 },
             })
@@ -684,8 +681,8 @@ window.LocalitySidebar = (function () {
             this.$activities.text(no_activities_found);
             this.$staff.text(no_staff_found);
             this.$ownership.text(no_ownership_found);
-            this.$beds.text(no_beds_found);
-            this.$inpatient_text.text(no_impatient_found);
+            this.$inpatient_service.text(no_inpatient_found);
+            this.$notes_text.text(no_notes_found);
 
             this.$other_data.html(no_others_found);
             this.$other_data_input.html("");
@@ -714,7 +711,7 @@ window.LocalitySidebar = (function () {
                 if (updates[0]) {
                     this.$lastupdate.text(getDateString(updates[0]['last_update']));
                     this.$lastupdate.data("data", {date: updates[0]['last_update']});
-                    this.$uploader.text("@" + updates[0]['uploader']);
+                    this.$uploader.text("@" + updates[0]['nickname']);
                     this.$uploader.attr("href", "profile/" + updates[0]['uploader']);
                 }
             }
@@ -828,43 +825,43 @@ window.LocalitySidebar = (function () {
                 }
             }
 
-            // INPATIENT
+            // NOTES
             {
-                var inpatient = this.locality_data.values['inpatient'];
-                delete keys[this.getIndex(keys, 'inpatient')];
-                if (this.isHasValue(inpatient)) {
-                    var inpatient_input = this.$inpatient_input.find('input');
-                    for (var i = 0; i < inpatient_options.length; i++) {
-                        if (inpatient.indexOf(inpatient_options[i]) !== -1) {
-                            $(inpatient_input[i]).prop('checked', true);
+                var notes = this.locality_data.values['notes'];
+                delete keys[this.getIndex(keys, 'notes')];
+                if (this.isHasValue(notes)) {
+                    var notes_input = this.$notes_input.find('input');
+                    for (var i = 0; i < notes_options.length; i++) {
+                        if (notes.indexOf(notes_options[i]) !== -1) {
+                            $(notes_input[i]).prop('checked', true);
                         }
                     }
-                    var inpatient = inpatient.split(separator);
-                    inpatient.pop();
-                    this.$inpatient_text.html(inpatient.join(" and "));
+                    var notes = notes.split(separator);
+                    notes.pop();
+                    this.$notes_text.html(notes.join(" and "));
                 }
             }
 
-            // BEDS
+            // INPATIENT_SERVICE
             {
-                var beds = this.locality_data.values['beds'];
-                delete keys[this.getIndex(keys, 'beds')];
-                if (this.isHasValue(beds)) {
-                    var beds = beds.split(separator);
-                    if (beds.length >= 1 && (beds[0] != "" | beds[1] != "")) {
+                var inpatient_service = this.locality_data.values['inpatient_service'];
+                delete keys[this.getIndex(keys, 'inpatient_service')];
+                if (this.isHasValue(inpatient_service)) {
+                    var inpatient_service = inpatient_service.split(separator);
+                    if (inpatient_service.length >= 1 && (inpatient_service[0] != "" | inpatient_service[1] != "")) {
                         // reinit view
-                        this.$beds.html("<span id=\"locality-beds-full\">-</span> full time beds, <span id=\"locality-beds-part\">-</span> part time beds");
-                        this.$beds_full = $('#locality-beds-full');
-                        this.$beds_part = $('#locality-beds-part');
+                        this.$inpatient_service.html("<span id=\"locality-inpatient-service-full\">-</span> full time beds, <span id=\"locality-inpatient-service-part\">-</span> part time beds");
+                        this.$inpatient_service_full = $('#locality-inpatient-service-full');
+                        this.$inpatient_service_part = $('#locality-inpatient-service-part');
                     }
-                    if (beds.length >= 1 && beds[0] != "") {
+                    if (inpatient_service.length >= 1 && inpatient_service[0] != "") {
                         // fill value
-                        this.$beds_full.text(parseInt(beds[0], 10));
-                        this.$beds_full_input.val(parseInt(beds[0], 10));
+                        this.$inpatient_service_full.text(parseInt(inpatient_service[0], 10));
+                        this.$inpatient_service_full_input.val(parseInt(inpatient_service[0], 10));
                     }
-                    if (beds.length >= 2 && beds[1] != "") {
-                        this.$beds_part.text(parseInt(beds[1], 10));
-                        this.$beds_part_input.val(parseInt(beds[1], 10));
+                    if (inpatient_service.length >= 2 && inpatient_service[1] != "") {
+                        this.$inpatient_service_part.text(parseInt(inpatient_service[1], 10));
+                        this.$inpatient_service_part_input.val(parseInt(inpatient_service[1], 10));
                     }
                 }
             }
@@ -1005,6 +1002,7 @@ window.LocalitySidebar = (function () {
                 }
                 $APP.trigger('locality.info', {
                     'locality_uuid': self.locality_uuid,
+                    'locality_name': data.values.name,
                     'geom': data.geom,
                     'zoomto': zoomto
                 });

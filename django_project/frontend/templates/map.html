@@ -36,8 +36,9 @@
     <link href="https://wvega.github.io/timepicker/resources/jquery-timepicker/jquery.timepicker.min.css"
           rel="stylesheet" type="text/css"
           media="screen, projection"/>
+
     {% stylesheet 'project' %}
-    {% stylesheet 'map_page' %}
+    {% stylesheet 'map' %}
 
 
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
@@ -96,7 +97,7 @@
                     <i class="fa fa-google-plus"></i>
                 </a>
             </div>
-            <span class="tagline">A free, curated, global, canonical source of healthcare location data</span>
+            <span class="tagline">Building a free, curated, canonical source of healthcare location data</span>
         </div>
         <div id="navbar" class="collapse navbar-collapse pull-right">
             <ul class="nav navbar-nav">
@@ -316,6 +317,13 @@
                             <div id="locality-operating-hours-input"
                                  style="display: none;">
                                 <div style="border: 1px solid black; padding: 10px;">
+                                    <div>
+                                        <strong>OPERATING HOURS : </strong><span onclick="shortcutDefiningHour('24/7')"
+                                                                                 style="cursor: pointer; margin-left: 10px;margin-right: 10px"><a>24/7</a></span><span
+                                            onclick="shortcutDefiningHour('24/5')"
+                                            style="cursor: pointer; margin-right: 10px"><a>24/5</a></span>
+                                    </div>
+                                    <hr>
                                     <table id="locality-operating-hours-input-table" style="width:100%">
 
                                     </table>
@@ -377,14 +385,14 @@
                             <i class="fa fa-bed"></i>
                         </div>
                         <div class="data">
-                            <p id="locality-beds"></p>
+                            <p id="locality-inpatient-service"></p>
 
-                            <p id="locality-beds-input" style="display: none"><input type="number"
-                                                                                                  id="locality-beds-full-input"
+                            <p id="locality-inpatient-service-input" style="display: none"><input type="number"
+                                                                                                  id="locality-inpatient-service-full-input"
                                                                                                   min="0"
                                                                                                   style="width: 50px"/>
                                 full
-                                time beds, <input type="number" id="locality-beds-part-input" min="0"
+                                time beds, <input type="number" id="locality-inpatient-service-part-input" min="0"
                                                   style="width: 50px"/>
                                 part time beds</p>
                         </div>
@@ -393,11 +401,11 @@
                         <div class="icon-holder">
                             <i class="fa fa-sticky-note"></i>
                         </div>
-                        <div class="data" id="locality-inpatient-service">
-                            <p><strong>Note: </strong><span id="locality-inpatient-service-text"> Outpatient consultation and in-patient hospitalization</span>
+                        <div class="data" id="locality-notes">
+                            <p><strong>Note: </strong><span id="locality-notes-text"> Outpatient consultation and in-patient hospitalization</span>
                             </p>
                         </div>
-                        <div class="data" id="locality-inpatient-service-input"
+                        <div class="data" id="locality-notes-input"
                              style="display: none; margin-bottom: 10px;">
                         </div>
                     </div>
@@ -506,8 +514,7 @@
     </form>
 </section>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet-src.js"></script>
-{#<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>#}
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
@@ -523,8 +530,7 @@
         src="https://wvega.github.io/timepicker/resources/jquery-timepicker/jquery.timepicker.min.js"></script>
 
 {% javascript 'project' %}
-{% javascript 'map_page' %}
-{% javascript 'map_app' %}
+{% javascript 'map' %}
 
 <script type="text/javascript" src="/static/js/utilities.js"></script>
 <script type="text/javascript" src="/static/js/custom-functions.js"></script>
@@ -572,15 +578,20 @@
         $.ajax({
             number: country_id + "-number",
             completeness: country_id + "-complete",
-            url: "{% url 'countries-simple-data' %}",
+            url: "{% url 'locality-country-search' %}",
             dataType: 'json',
             data: {
                 q: country
             },
             success: function (data) {
-                {# disabled links and completeness for #429 #}
-                $("#" + this.number).html(data.number);
-                $("#" + this.completeness).html(data.completeness);
+                var number = 0;
+                var completness = 0;
+                if (data.localities > 0) {
+                    completness = data.completeness.complete / data.localities * 100;
+                    number = data.localities;
+                }
+                $("#" + this.number).html(number);
+                $("#" + this.completeness).html(completness);
             },
             fail: function (data) {
                 $("#" + this.number).html("fail");
@@ -646,63 +657,8 @@
                 countries.push(country);
             {% endfor %}
         {% endif %}
-        {# default#}
-        $("#locality-statistic").hide();
-        $("#locality-info").hide();
-        $("#locality-default").hide();
-        {% if tag or country or spec or attribute %}
-            $("#locality-statistic").show();
-            $("#number-locality").html("{{ localities }}");
-            updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
-            updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
-        {% elif countries %}
-            $("#locality-default").show();
-        {% else %}
-            $("#locality-info").show();
-        {% endif %}
 
-        {% if tag %}
-            $("#title-name").html("{{ tag }}");
-            $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
-        {% elif country %}
-            $("#title-name").html("{{ country }}");
-            $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
-
-            // creating polygon
-            var polygon_raw = '{{ polygon|safe }}';
-            var polygon_json = JSON.parse(polygon_raw);
-            var polygon = polygon_json['coordinates'];
-            $APP.trigger('map.create-polygon', {'polygon': polygon});
-        {% elif spec %}
-            var spec = "{{ spec.spec }}";
-            var data = "{{ spec.data }}";
-            var uuid = "{{ spec.uuid }}";
-            var name = "{{ spec.name }}";
-            $APP.trigger('map.update-spec', {'spec': {'spec': spec, 'data': data, 'uuid': uuid}});
-            spec = spec.replaceAll("_", " ");
-            spec.replace(/\w\S*/g, function (txt) {
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            });
-            if (name == "") {
-                $("#title-name").html('Showing healthsites that has ' + spec + ' <span class="inner-navbar-brand">' + data + '</span>');
-            } else {
-                $("#title-statistic").html('Showing the closest five healthsites with ' + spec + ' <span class="inner-navbar-brand">' + data + '</span> to <span class="inner-navbar-brand">' + name + '</span><br>');
-            }
-        {% elif attribute %}
-            var attribute = "{{ attribute.attribute }}";
-            var uuid = "{{ attribute.uuid }}";
-            var name = "{{ attribute.name }}";
-            $APP.trigger('map.update-spec', {'spec': {'spec': 'attribute', 'data': attribute, 'uuid': uuid}});
-            attribute = attribute.replaceAll("_", " ");
-            attribute.replace(/\w\S*/g, function (txt) {
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            });
-            if (name == "") {
-                $("#title-name").html('Showing healthsites that has attribute <span class="inner-navbar-brand">' + attribute + '</span>');
-            } else {
-                $("#title-statistic").html('Showing the closest five healthsites with <span class="inner-navbar-brand">' + attribute + '</span> to <span class="inner-navbar-brand">' + name + '</span><br>');
-            }
-        {% endif %}
+        changeToDefault();
 
         {% if location %}
             var latitude = "{{ location.y }}";
@@ -733,7 +689,7 @@
             {% for updates in last_update %}
                 var html = "<div class=\"entry\">";
                 html += "<div class=\"entry\">";
-                html += "<span class=\"date\">" + getDateString("{{ updates.date_applied.isoformat }}") + "</span> - ";
+                html += "<span class=\"date\">" + getDateString("{{ updates.date_applied }}") + "</span> - ";
                 html += "<span class=\"name\">";
                 html += "<a href=\"profile/" + "{{ updates.author }}" + "\">@" + "{{ updates.author_nickname }}" + "</a></span> - ";
                 var mode = "";
@@ -759,6 +715,103 @@
             header: "h3"
         });
     });
+
+    function changeToDefault() {
+        {# default#}
+        $("#locality-statistic").hide();
+        $("#locality-info").hide();
+        $("#locality-default").hide();
+        {% if tag or country or spec or attribute %}
+            $("#locality-statistic").show();
+            $("#number-locality").html("{{ localities }}");
+            updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
+            updatePieChart({{ completeness.basic }}, {{ completeness.partial }}, {{ completeness.complete }});
+        {% elif countries %}
+            $("#locality-default").show();
+        {% else %}
+            $("#locality-info").show();
+        {% endif %}
+        {% if tag %}
+            $("#title-name").html("{{ tag }}");
+            var uuid = "{{ spec.uuid }}";
+            var name = "{{ spec.name }}";
+            var geom = [0, 0];
+            {% if spec.location %}
+                var latitude = "{{ spec.location.y }}";
+                geom[1] = parseFloat(latitude);
+                var longitude = "{{ spec.location.x }}";
+                geom[0] = parseFloat(longitude);
+            {% endif %}
+            $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
+        {% elif country %}
+            $("#title-name").html("{{ country }}");
+            $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
+            // creating polygon
+            var polygon_raw = '{{ polygon|safe }}';
+            var polygon_json = JSON.parse(polygon_raw);
+            var polygon = polygon_json['coordinates'];
+            $APP.trigger('map.create-polygon', {'polygon': polygon});
+        {% elif spec %}
+            var spec = "{{ spec.spec }}";
+            var data = "{{ spec.data }}";
+            var uuid = "{{ spec.uuid }}";
+            var name = "{{ spec.name }}";
+            var geom = [0, 0];
+            {% if spec.location %}
+                var latitude = "{{ spec.location.y }}";
+                geom[1] = parseFloat(latitude);
+                var longitude = "{{ spec.location.x }}";
+                geom[0] = parseFloat(longitude);
+            {% endif %}
+            $APP.trigger('map.update-spec', {
+                'spec': {
+                    'spec': spec,
+                    'data': data,
+                    'uuid': uuid,
+                    'name': name,
+                    'geom': geom
+                }
+            });
+            spec = spec.replaceAll("_", " ");
+            spec.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            if (name == "") {
+                $("#title-name").html('Showing healthsites that has ' + spec + ' <span class="inner-navbar-brand">' + data + '</span>');
+            } else {
+                $("#title-statistic").html('Showing the closest five healthsites with ' + spec + ' <span class="inner-navbar-brand">' + data + '</span> to <span class="inner-navbar-brand">' + name + '</span><br>');
+            }
+        {% elif attribute %}
+            var attribute = "{{ attribute.attribute }}";
+            var uuid = "{{ attribute.uuid }}";
+            var name = "{{ attribute.name }}";
+            var geom = [0, 0];
+            {% if attribute.location %}
+                var latitude = "{{ attribute.location.y }}";
+                geom[1] = parseFloat(latitude);
+                var longitude = "{{ attribute.location.x }}";
+                geom[0] = parseFloat(longitude);
+            {% endif %}
+            $APP.trigger('map.update-spec', {
+                'spec': {
+                    'spec': 'attribute',
+                    'data': attribute,
+                    'uuid': uuid,
+                    'name': name,
+                    'geom': geom
+                }
+            });
+            attribute = attribute.replaceAll("_", " ");
+            attribute.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            if (name == "") {
+                $("#title-name").html('Showing healthsites that has attribute <span class="inner-navbar-brand">' + attribute + '</span>');
+            } else {
+                $("#title-statistic").html('Showing the closest five healthsites with <span class="inner-navbar-brand">' + attribute + '</span> to <span class="inner-navbar-brand">' + name + '</span><br>');
+            }
+        {% endif %}
+    }
     function onChange(element) {
         $APP.trigger('sidebar.option-onchange', {'element': element});
     }
@@ -933,7 +986,7 @@
                     var html = '<div>';
                     html += '<span class="date">' + getDateString(data[i]['last_update']) + '</span>, by';
                     html += '<span class="name">';
-                    html += ' <a href="profile/' + data[i]['uploader'] + '">@' + data[i]['uploader'] + '</a>';
+                    html += ' <a href="profile/' + data[i]['uploader'] + '">@' + data[i]['nickname'] + '</a>';
                     html += '</span>';
                     html += '<span>';
                     html += ' - <a style="cursor:pointer" onclick="gotochangeset(\'' + data[i]['changeset_id'] + '\',\'' + uuid + '\')">' + data[i]['changeset_id'] + '</a>';
@@ -961,6 +1014,39 @@
         $(element).parent('tr').find('.time2').find('input').prop('disabled', false);
         $APP.trigger('sidebar.split-event');
 
+    }
+    function shortcutDefiningHour(shortcut) {
+        var days = 0;
+        if (shortcut == "24/7") {
+            days = 7;
+        } else {
+            days = 5;
+        }
+        var daysCheckbox = $("#locality-operating-hours-input-table").find('.daycheckbox');
+        for (var i = 0; i < daysCheckbox.length; i++) {
+            if (i < days) {
+                $(daysCheckbox[i]).prop("checked", true);
+            } else {
+                $(daysCheckbox[i]).prop("checked", false);
+            }
+        }
+        var unsplits = $("#locality-operating-hours-input-table").find('.unsplit');
+        for (var i = 0; i < unsplits.length; i++) {
+            if ($(unsplits[i]).css('opacity') == 1.0) {
+                unsplit(unsplits[i]);
+            }
+            var input1 = $(unsplits[i]).parent('tr').find('.time1').find('input');
+            var input2 = $(unsplits[i]).parent('tr').find('.time2').find('input');
+            if (input1.length == 2) {
+                $(input1[0]).val('00:00');
+                $(input1[1]).val('23:59');
+            }
+            if (input2.length == 2) {
+                $(input2[0]).val('00:00');
+                $(input2[1]).val('23:59');
+            }
+        }
+        $APP.trigger('sidebar.split-event');
     }
     function unsplit(element) {
         $(element).css({'opacity': 0.0});

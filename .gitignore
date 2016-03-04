@@ -1,5 +1,6 @@
 # project specifc
 django_project/core/settings/secret.py
+django_project/cache
 xmlrunner
 
 # Byte-compiled / optimized / DLL files

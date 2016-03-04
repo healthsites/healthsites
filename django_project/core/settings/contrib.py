@@ -51,6 +51,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_uid',
     'social.pipeline.social_auth.auth_allowed',
     'social.pipeline.social_auth.social_user',
+    'social_users.views.get_username',
     'social.pipeline.user.get_username',
     'social.pipeline.user.create_user',
     'social_users.views.save_profile',
@@ -114,12 +115,6 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 # For hand rolled js for this app, use project.py
 # Only put css and libs in here that are not available on CDN
 PIPELINE_JS = {
-    'map_app': {
-        'source_filenames': (
-            'js/rhinoslider-1.05.min.js',
-        ),
-        'output_filename': 'js/map_app.js',
-    },
     'home': {
         'source_filenames': (
             'js/mousewheel.js',
@@ -130,28 +125,7 @@ PIPELINE_JS = {
     },
 }
 
-# Contributed / third party css for pipeline compression
-# For hand rolled css for this app, use project.py
-PIPELINE_CSS = {
-    'map_page': {
-        'source_filenames': (
-            'css/map.css',
-        ),
-        'output_filename': 'css/map_page.css',
-        'extra_context': {
-            'media': 'screen, projection',
-        },
-    },
-    'home': {
-        'source_filenames': (
-            'css/home.css',
-        ),
-        'output_filename': 'css/home.css',
-        'extra_context': {
-            'media': 'screen, projection',
-        },
-    }
-}
+PIPELINE_CSS = {}
 
 # These get enabled in prod.py
 PIPELINE_ENABLED = False

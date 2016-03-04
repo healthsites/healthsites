@@ -187,16 +187,20 @@ window.MAP = (function () {
                 }
             });
 
-            $APP.on('map.update-tag', function (evt, payload) {
-                self._updateTag(payload.tag);
-            });
-
             $APP.on('map.update-geoname', function (evt, payload) {
                 self._updateGeoname(payload.geoname);
             });
 
+            $APP.on('map.update-tag', function (evt, payload) {
+                self._updateTag(payload.tag);
+                self.clusterLayer.isInit = true;
+                self.clusterLayer.usingLines = true;
+            });
+
             $APP.on('map.map.update-spec', function (evt, payload) {
                 self._updateSpec(payload.spec);
+                self.clusterLayer.isInit = true;
+                self.clusterLayer.usingLines = true;
             });
 
             $APP.on('map.update-bound', function (evt, payload) {
@@ -241,7 +245,8 @@ window.MAP = (function () {
             this.pointLayer = L.marker([0, 0], {
                 'clickable': true,
                 'draggable': true,
-                'icon': this.addIcon
+                'icon': this.addIcon,
+                zIndexOffset: 99999999
             });
 
             this.pointLayer.on('dragend', function (evt) {
@@ -262,16 +267,24 @@ window.MAP = (function () {
         },
 
         _updateGeoname: function (geoname) {
+            this.clusterLayer.clickedPoint_uuid = null;
+            this.clusterLayer.clickedPoint_name = null;
             this.clusterLayer.updateGeoname(geoname);
             this.clusterLayer.update();
         },
 
         _updateTag: function (tag) {
+            this.clusterLayer.clickedPoint_uuid = null;
+            this.clusterLayer.clickedPoint_name = null;
+            this.MAP.setZoom(this.MAP.getMaxZoom());
             this.clusterLayer.updateTag(tag);
             this.clusterLayer.update();
         },
 
         _updateSpec: function (spec) {
+            this.clusterLayer.clickedPoint_uuid = null;
+            this.clusterLayer.clickedPoint_name = null;
+            this.MAP.setZoom(this.MAP.getMaxZoom());
             this.clusterLayer.updateSpec(spec);
             this.clusterLayer.update();
         },
@@ -296,10 +309,11 @@ window.MAP = (function () {
                 "properties": {
                     "name": "MultiPolygon",
                     "style": {
-                        color: "blue",
-                        opacity: 0.4,
-                        fillColor: "blue",
-                        fillOpacity: 0.2
+                        color: "#f44a52",
+                        opacity: 0.6,
+                        weight: 2,
+                        fillColor: "#f44a52",
+                        fillOpacity: 0.4
                     }
                 }
             };
