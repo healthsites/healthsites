@@ -88,6 +88,7 @@
 
 
         _render_map: function (response) {
+            console.log(this.clickedPoint_uuid);
             var self = this;
             var otherMarker = [];
             // clear previous layers
@@ -162,6 +163,11 @@
                     uuid: self.clickedPoint_uuid
                 }, true);
             } else if (this.clickedPoint_uuid && this.editMode) {
+                if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
+                    this._map.removeLayer(this.focused_marker);
+                }
+                this.focused_marker = null;
+            } else if (!this.clickedPoint_uuid || this.clickedPoint_uuid == "") {
                 if (typeof this.focused_marker != "undefined" && this.focused_marker != null) {
                     this._map.removeLayer(this.focused_marker);
                 }

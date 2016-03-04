@@ -267,17 +267,23 @@ window.MAP = (function () {
         },
 
         _updateGeoname: function (geoname) {
+            this.clusterLayer.clickedPoint_uuid = null;
+            this.clusterLayer.clickedPoint_name = null;
             this.clusterLayer.updateGeoname(geoname);
             this.clusterLayer.update();
         },
 
         _updateTag: function (tag) {
+            this.clusterLayer.clickedPoint_uuid = null;
+            this.clusterLayer.clickedPoint_name = null;
             this.MAP.setZoom(this.MAP.getMaxZoom());
             this.clusterLayer.updateTag(tag);
             this.clusterLayer.update();
         },
 
         _updateSpec: function (spec) {
+            this.clusterLayer.clickedPoint_uuid = null;
+            this.clusterLayer.clickedPoint_name = null;
             this.MAP.setZoom(this.MAP.getMaxZoom());
             this.clusterLayer.updateSpec(spec);
             this.clusterLayer.update();
