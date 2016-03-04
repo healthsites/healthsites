@@ -303,10 +303,11 @@ window.MAP = (function () {
                 "properties": {
                     "name": "MultiPolygon",
                     "style": {
-                        color: "blue",
-                        opacity: 0.4,
-                        fillColor: "blue",
-                        fillOpacity: 0.2
+                        color: "#f44a52",
+                        opacity: 0.6,
+                        weight: 2,
+                        fillColor: "#f44a52",
+                        fillOpacity: 0.4
                     }
                 }
             };
