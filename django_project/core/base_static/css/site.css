@@ -368,6 +368,9 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
     width: 100%;
     text-align: right;
 }
+.cookiebar-enabled .nav-searchbar, .policy-enabled .nav-searchbar {
+    top: 83px;
+}
 .searchbar-active .nav-searchbar {
     display: block;
 }
@@ -781,4 +784,7 @@ section.container{
 .user-profile {
     padding-top: 50px;
 }
+}
+.gitter-chat-embed {
+    top: 53px !important;
 }
