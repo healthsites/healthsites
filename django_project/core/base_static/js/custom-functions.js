@@ -171,6 +171,7 @@ function mapcount() {
                 } else {
                     $(options.element).prepend('<div id="cookie-bar"' + fixed + zindex + '><p>' + message + acceptButton + declineButton + policyButton + '</p></div>');
                 }
+				$(options.element).addClass('cookiebar-enabled');
             }
 
             var removeBar = function (func) {
@@ -190,6 +191,7 @@ function mapcount() {
                     });
                 }
                 $(document).unbind('click', anyClick);
+				$(options.element).removeClass('cookiebar-enabled');
 				policyshow();
             };
             var cookieAccept = function () {

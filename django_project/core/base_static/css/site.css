@@ -200,6 +200,7 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
 .navbar-share:hover {
     color: #f44a52;
 }
+#cookie-bar.fixed, #policy {position:fixed; bottom:auto !important; top: 0 !important; left:0; width:100%; z-index: 300;}
 #site-social {
     cursor: pointer;
     display: inline-block;
