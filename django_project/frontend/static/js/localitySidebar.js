@@ -445,6 +445,9 @@ window.LocalitySidebar = (function () {
             this.$createButton.hide();
             this.$line_updates.show();
             if (isEditingMode && !isLoggedIn) {
+                setCookie("type", "add", 30);
+                setCookie("center", APP.getCenterOfMap().lat + "," + APP.getCenterOfMap().lng, 30);
+                setCookie("zoom", APP.getZoomOfMap(), 30);
                 window.location.href = "/signin/";
             } else if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create"))) {
                 if (mode == "edit" && is_enable_edit) {
