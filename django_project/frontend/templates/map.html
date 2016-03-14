@@ -720,7 +720,7 @@
         if (isLoggedIn) {
             var type = getCookie("type");
             if (type) {
-                if (type == 'add') {
+                if (type == 'create') {
                     var center = getCookie("center");
                     center = center.split(",");
                     var zoom = getCookie("zoom");
@@ -728,9 +728,11 @@
                         $APP.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});
                     }
                     $('#add-button').click();
-                    setCookie("type", "", 30);
-                    setCookie("center", "", 30);
-                    setCookie("zoom", "", 30);
+                    resetCookies();
+                } else if (type == 'edit') {
+                    var uuid = getCookie("uuid");
+                    $APP.trigger('locality.map.click', {'locality_uuid': uuid});
+                    $APP.trigger('set.hash.silent', {'locality': uuid});
                 }
             }
         }

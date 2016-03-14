@@ -111,6 +111,10 @@ window.APP = (function () {
             } else {
                 return 0
             }
+        },
+
+        getNowHasher: function () {
+            return hasher.getHash();
         }
     }
 

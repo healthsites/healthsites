@@ -64,3 +64,10 @@ function getCookie(cname) {
     }
     return "";
 }
+
+function resetCookies() {
+    setCookie("type", "", 30);
+    setCookie("center", "", 30);
+    setCookie("zoom", "", 30);
+    setCookie("uuid", "", 30);
+}

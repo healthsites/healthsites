@@ -445,9 +445,10 @@ window.LocalitySidebar = (function () {
             this.$createButton.hide();
             this.$line_updates.show();
             if (isEditingMode && !isLoggedIn) {
-                setCookie("type", "add", 30);
+                setCookie("type", mode, 30);
                 setCookie("center", APP.getCenterOfMap().lat + "," + APP.getCenterOfMap().lng, 30);
                 setCookie("zoom", APP.getZoomOfMap(), 30);
+                setCookie("uuid", this.locality_uuid, 30);
                 window.location.href = "/signin/";
             } else if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create"))) {
                 if (mode == "edit" && is_enable_edit) {
@@ -469,6 +470,9 @@ window.LocalitySidebar = (function () {
                     edit_fields[i].show();
                 }
             } else {
+                if (APP.getNowHasher() == "") {
+                    changeToDefault();
+                }
                 $APP.trigger('locality.cancel');
                 for (var i = 0; i < info_fields.length; i++) {
                     info_fields[i].show();
@@ -1024,6 +1028,14 @@ window.LocalitySidebar = (function () {
                     $APP.trigger('locality.history-hide', {
                         'geom': data.geom
                     });
+                }
+                // check cookies
+                var type = getCookie("type");
+                if (type) {
+                    if (type == 'edit') {
+                        self.$editButton.click();
+                        resetCookies();
+                    }
                 }
             });
         },
