@@ -112,6 +112,63 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         return self.render_json_response(object_list)
 
 
+def getLocalityDetail(locality, changes):
+    # get attributes
+    attribute_count = 18
+    # count completeness based attributes
+    obj_repr = locality.repr_dict()
+    data_repr = render_fragment(
+            locality.domain.template_fragment, obj_repr
+    )
+    obj_repr.update({'repr': data_repr})
+
+    num_data = len(obj_repr['values']) + 1  # geom
+    completeness = (num_data + 0.0) / (attribute_count + 0.0) * 100  # percentage
+    obj_repr.update({'completeness': '%s%%' % format(completeness, '.2f')})
+
+    # get latest update
+    try:
+        updates = []
+        last_updates = locality_updates(locality.id, datetime.now())
+        for last_update in last_updates:
+            updates.append({"last_update": last_update['changeset__created'],
+                            "uploader": last_update['changeset__social_user__username'],
+                            "nickname": last_update['nickname'],
+                            "changeset_id": last_update['changeset']});
+        obj_repr.update({'updates': updates})
+    except Exception as e:
+        print e
+
+    # FOR HISTORY
+    obj_repr['history'] = False
+    if changes:
+        changes = changes
+        changeset = Changeset.objects.get(id=changes)
+        obj_repr['updates'][0]['last_update'] = changeset.created
+        obj_repr['updates'][0]['uploader'] = changeset.social_user.username
+        obj_repr['updates'][0]['changeset_id'] = changes
+        try:
+            localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
+            for archive in localityArchives:
+                obj_repr['geom'] = (archive.geom.x, archive.geom.y)
+                obj_repr['history'] = True
+        except LocalityArchive.DoesNotExist:
+            print "next"
+
+        try:
+            localityArchives = ValueArchive.objects.filter(changeset=changes).filter(locality_id=self.object.id)
+            for archive in localityArchives:
+                try:
+                    specification = Specification.objects.get(id=archive.specification_id)
+                    obj_repr['values'][specification.attribute.key] = archive.data
+                    obj_repr['history'] = True
+                except Specification.DoesNotExist:
+                    print "next"
+        except LocalityArchive.DoesNotExist:
+            print "next"
+    return obj_repr
+
+
 class LocalityInfo(JSONResponseMixin, DetailView):
     """
     Returns JSON representation of an Locality object (repr_dict) and a
@@ -130,61 +187,7 @@ class LocalityInfo(JSONResponseMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # get attributes
-        attribute_count = 18
-        # count completeness based attributes
-        obj_repr = self.object.repr_dict()
-        data_repr = render_fragment(
-                self.object.domain.template_fragment, obj_repr
-        )
-        obj_repr.update({'repr': data_repr})
-
-        num_data = len(obj_repr['values']) + 1  # geom
-        completeness = (num_data + 0.0) / (attribute_count + 0.0) * 100  # percentage
-        obj_repr.update({'completeness': '%s%%' % format(completeness, '.2f')})
-
-        # get latest update
-        try:
-            updates = []
-            last_updates = locality_updates(self.object.id, datetime.now())
-            for last_update in last_updates:
-                updates.append({"last_update": last_update['changeset__created'],
-                                "uploader": last_update['changeset__social_user__username'],
-                                "nickname": last_update['nickname'],
-                                "changeset_id": last_update['changeset']});
-            obj_repr.update({'updates': updates})
-        except Exception as e:
-            print e
-
-        # FOR HISTORY
-        obj_repr['history'] = False
-        if kwargs.has_key("changes"):
-            changes = kwargs['changes']
-            changeset = Changeset.objects.get(id=changes)
-            obj_repr['updates'][0]['last_update'] = changeset.created
-            obj_repr['updates'][0]['uploader'] = changeset.social_user.username
-            obj_repr['updates'][0]['changeset_id'] = changes
-            try:
-                localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
-                for archive in localityArchives:
-                    obj_repr['geom'] = (archive.geom.x, archive.geom.y)
-                    obj_repr['history'] = True
-            except LocalityArchive.DoesNotExist:
-                print "next"
-
-            try:
-                localityArchives = ValueArchive.objects.filter(changeset=changes).filter(locality_id=self.object.id)
-                for archive in localityArchives:
-                    try:
-                        specification = Specification.objects.get(id=archive.specification_id)
-                        obj_repr['values'][specification.attribute.key] = archive.data
-                        obj_repr['history'] = True
-                    except Specification.DoesNotExist:
-                        print "next"
-            except LocalityArchive.DoesNotExist:
-                print "next"
-        print obj_repr
-
+        obj_repr = getLocalityDetail(self.object, kwargs.has_key("changes"));
         return self.render_json_response(obj_repr)
 
 
