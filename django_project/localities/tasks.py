@@ -54,6 +54,7 @@ def send_email(data_loader, csv_importer):
 def load_data_task(self, data_loader_pk):
     # Put here to avoid circular import
     from .models import DataLoader
+    from django.core.management import call_command
     try:
         data_loader = DataLoader.objects.get(pk=data_loader_pk)
         logger.info('Start loading data')
@@ -81,6 +82,7 @@ def load_data_task(self, data_loader_pk):
         logger.info(csv_importer.generate_report())
 
         send_email(data_loader, csv_importer)
+        call_command('generate_countries_cache')
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)
 
@@ -125,7 +127,6 @@ def regenerate_cache(self, changeset_pk, locality_pk):
                 'world_statistic')
             healthsites = Locality.objects.all()
             output = get_statistic(healthsites)
-            print output
             result = json.dumps(output, cls=DjangoJSONEncoder)
             file = open(filename, 'w')
             file.write(result)  # python will convert \n to os.linesep
