@@ -12,6 +12,11 @@ html, body {
   /* equal to footer height */
   margin-bottom: -181px; 
 }
+@media only screen and (max-width:992px) {
+    .page-wrapper {
+      margin-bottom: 0; 
+    }
+}
 .page-wrapper:after {
   content: "";
   display: block;
@@ -19,7 +24,11 @@ html, body {
 #colophon, .page-wrapper:after {
   height: 181px; 
 }
-
+@media only screen and (max-width:992px) {
+    #colophon, .page-wrapper:after {
+      height: auto; 
+    }
+}
 
 /* Base candidates
 
@@ -704,7 +713,7 @@ section.container{
     height: 180px !important;
     overflow: hidden;
     display: inline-block;
-    border: 2px solid #fff; 
+    border: 1px solid #778289 !important; 
 }
 .profile-image {
     width: 180px;
@@ -766,6 +775,7 @@ section.container{
     margin-bottom: 10px;
     padding-bottom: 20px;
     font-family: "Raleway", sans-serif;
+    margin-top: -50px;
 }
 .profile-image-size {
     width: 120px;
