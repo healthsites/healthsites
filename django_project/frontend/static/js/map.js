@@ -212,7 +212,7 @@ window.MAP = (function () {
             });
 
             $APP.on('map.pan', function (evt, payload) {
-                self._moveTo(payload.location);
+                self._moveTo(payload.location, payload.zoom);
             });
 
             $APP.on('map.rerender', function (evt, payload) {
@@ -325,8 +325,12 @@ window.MAP = (function () {
             this.MAP.fitBounds(this.geoJson.getBounds());
         },
 
-        _moveTo: function (location) {
-            this.MAP.setView(new L.LatLng(location[0], location[1]), this.MAP.getMaxZoom() - 2);
+        _moveTo: function (location, zoom) {
+            if (!zoom) {
+                this.MAP.setView(new L.LatLng(location[0], location[1]), this.MAP.getMaxZoom() - 2);
+            } else {
+                this.MAP.setView(new L.LatLng(location[0], location[1]), zoom);
+            }
         },
     }
 

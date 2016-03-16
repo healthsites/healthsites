@@ -177,13 +177,16 @@ class Locality(UpdateMixin, ChangesetMixin):
         Once all of values are set, 'SIG_locality_values_updated' signal will
         be triggered to update FullTextSearch index for this Locality
         """
-
+        special_key = ['scope_of_service', "ancillary_services", "activities", "inpatient_service", "staff"]
         attrs = self._get_attr_map()
 
         tmp_changeset = changeset
 
         changed_values = []
         for key, data in changed_data.iteritems():
+            if key in special_key:
+                data = data.replace(",", "|")
+                data = data.replace("| ", "|")
             # try to match key from changed items with a key from attr_map
             attr_list = [
                 attr for attr in attrs if attr['attribute__key'] == key

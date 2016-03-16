@@ -88,7 +88,6 @@
 
 
         _render_map: function (response) {
-            console.log(this.clickedPoint_uuid);
             var self = this;
             var otherMarker = [];
             // clear previous layers

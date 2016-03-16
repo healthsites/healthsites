@@ -714,6 +714,28 @@
             collapsible: true,
             header: "h3"
         });
+
+
+        // check cookie
+        if (isLoggedIn) {
+            var type = getCookie("type");
+            if (type) {
+                if (type == 'create') {
+                    var center = getCookie("center");
+                    center = center.split(",");
+                    var zoom = getCookie("zoom");
+                    if (center.length > 0) {
+                        $APP.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});
+                    }
+                    $('#add-button').click();
+                    resetCookies();
+                } else if (type == 'edit') {
+                    var uuid = getCookie("uuid");
+                    $APP.trigger('locality.map.click', {'locality_uuid': uuid});
+                    $APP.trigger('set.hash.silent', {'locality': uuid});
+                }
+            }
+        }
     });
 
     function changeToDefault() {
