@@ -1,5 +1,6 @@
 Django>=1.8,<1.9
 celery
+dicttoxml
 django-braces
 django-envelope
 django-forms-bootstrap
