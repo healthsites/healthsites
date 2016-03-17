@@ -140,12 +140,17 @@ def getLocalityDetail(locality, changes):
 
     # FOR HISTORY
     obj_repr['history'] = False
+    print obj_repr['updates'][0]
     if changes:
-        changes = changes
         changeset = Changeset.objects.get(id=changes)
         obj_repr['updates'][0]['last_update'] = changeset.created
         obj_repr['updates'][0]['uploader'] = changeset.social_user.username
+
+        # get profile name
+        profile = getProfile(User.objects.get(username=changeset.social_user.username))
+        obj_repr['updates'][0]['nickname'] = profile.screen_name
         obj_repr['updates'][0]['changeset_id'] = changes
+        print obj_repr['updates'][0]
         try:
             localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
             for archive in localityArchives:
@@ -155,7 +160,7 @@ def getLocalityDetail(locality, changes):
             print "next"
 
         try:
-            localityArchives = ValueArchive.objects.filter(changeset=changes).filter(locality_id=self.object.id)
+            localityArchives = ValueArchive.objects.filter(changeset=changes).filter(locality_id=locality.id)
             for archive in localityArchives:
                 try:
                     specification = Specification.objects.get(id=archive.specification_id)
@@ -186,7 +191,10 @@ class LocalityInfo(JSONResponseMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        obj_repr = getLocalityDetail(self.object, kwargs.has_key("changes"));
+        if kwargs.has_key('changes'):
+            obj_repr = getLocalityDetail(self.object, kwargs['changes']);
+        else:
+            obj_repr = getLocalityDetail(self.object, None);
         return self.render_json_response(obj_repr)
 
 
