@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
 
-from .views import LocalityAPI, LocalitiesAPI
+from .views import LocalityAPI, LocalitiesAPI, LocalitySearchAPI
 
 urlpatterns = patterns(
     '',
@@ -14,5 +14,10 @@ urlpatterns = patterns(
 		r'^v1/healthsites/facilities',
 		LocalitiesAPI.as_view(),
 		name='api_localities'
+	),
+	url(
+		r'^v1/healthsites/search',
+		LocalitySearchAPI.as_view(),
+		name='api_search_localities'
 	)
 )
