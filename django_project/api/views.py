@@ -19,49 +19,6 @@ from localities.views import getLocalityDetail
 from django.core.serializers.json import DjangoJSONEncoder
 
 
-class LocalitiesAPI(JSONResponseMixin, View):
-    def _parse_request_params(self, request):
-        if not (all(param in request.GET for param in ['bbox'])):
-            raise Http404
-
-        try:
-            bbox_poly = parse_bbox(request.GET.get('bbox'))
-        except:
-            # return 404 if any of parameters are missing or not parsable
-            raise Http404
-
-        return bbox_poly
-
-    def get(self, request, *args, **kwargs):
-        bbox = self._parse_request_params(request)
-        # iterate thorugh queryset and remap keys
-        transform = {
-            'changeset__social_user_id': 'user_id'
-        }
-        object_list = [
-            remap_dict(loc, transform)
-            for loc in Locality.objects.in_bbox(bbox)
-                .select_related('changeset')
-                .get_lnglat()
-                .values(
-                    'uuid', 'lnglat', 'version', 'changeset__social_user_id',
-                    # 'changeset__created'
-            )
-            ]
-
-        return self.render_json_response(object_list)
-
-
-class LocalityAPI(JSONResponseMixin, SingleObjectMixin, View):
-    model = Locality
-    slug_field = 'uuid'
-    slug_url_kwarg = 'uuid'
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return self.render_json_response(self.object.repr_dict())
-
-
 def formattedReturn(request, value):
     try:
         format = request.GET['format']
@@ -73,17 +30,48 @@ def formattedReturn(request, value):
         output = dicttoxml.dicttoxml(value)
     else:
         output = json.dumps(value, cls=DjangoJSONEncoder)
-    print output
     return output
 
 
-def LocalityDetail(request):
-    if request.method == 'GET':
-        try:
-            locality = Locality.objects.get(uuid=request.GET['guid'])
-            value = getLocalityDetail(locality, None)
-            return HttpResponse(formattedReturn(request, value), content_type='application/json')
-        except Locality.DoesNotExist:
+class LocalityAPI(JSONResponseMixin, View):
+    def _parse_request_params(self, request):
+        if not (all(param in request.GET for param in ['guid'])):
             raise Http404
+        return request.GET['guid']
+
+    def get(self, request, *args, **kwargs):
+        guid = self._parse_request_params(request)
+        locality = Locality.objects.get(uuid=guid)
+        value = getLocalityDetail(locality, None)
+        return HttpResponse(formattedReturn(request, value), content_type='application/json')
+
+
+class LocalitiesAPI(JSONResponseMixin, View):
+    def _parse_request_params(self, request):
+        if not (all(param in request.GET for param in ['extent'])):
+            raise Http404
+
+        try:
+            bbox_poly = parse_bbox(request.GET.get('extent'))
         except Exception as e:
-            return HttpResponse(status=500)
+            raise Http404
+        return bbox_poly
+
+    def get(self, request, *args, **kwargs):
+        bbox_poly = self._parse_request_params(request)
+        healthsites = Locality.objects.in_polygon(
+                bbox_poly)
+        output = []
+        index = 1;
+
+        facility_type = ""
+        if 'facility_type' in request.GET:
+            facility_type = request.GET['facility_type']
+
+        for healthsite in healthsites:
+            if healthsite.is_type(facility_type):
+                output.append(healthsite.repr_dict())
+                index += 1
+            if index == 100:
+                break
+        return HttpResponse(formattedReturn(request, output), content_type='application/json')

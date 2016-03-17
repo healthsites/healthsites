@@ -251,6 +251,15 @@ class Locality(UpdateMixin, ChangesetMixin):
             u'changeset': self.changeset_id
         }
 
+    def is_type(self, value):
+        if value != "":
+            try:
+                self.value_set.filter(specification__attribute__key='type').get(data=value)
+                return True
+            except Exception as e:
+                return False
+        return True
+
     def prepare_for_fts(self):
         """
         Retrieve and group *Value* objects, for this Locality, based on their
