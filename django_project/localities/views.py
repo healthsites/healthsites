@@ -120,7 +120,6 @@ def getLocalityDetail(locality, changes):
     data_repr = render_fragment(
             locality.domain.template_fragment, obj_repr
     )
-    obj_repr.update({'repr': data_repr})
 
     num_data = len(obj_repr['values']) + 1  # geom
     completeness = (num_data + 0.0) / (attribute_count + 0.0) * 100  # percentage

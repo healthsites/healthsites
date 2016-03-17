@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
+import json
+import dicttoxml
 
 LOG = logging.getLogger(__name__)
 
@@ -14,9 +16,7 @@ from localities.utils import parse_bbox
 
 from .utils import remap_dict
 from localities.views import getLocalityDetail
-import json
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core import serializers
 
 
 class LocalitiesAPI(JSONResponseMixin, View):
@@ -62,29 +62,28 @@ class LocalityAPI(JSONResponseMixin, SingleObjectMixin, View):
         return self.render_json_response(self.object.repr_dict())
 
 
+def formattedReturn(request, value):
+    try:
+        format = request.GET['format']
+    except Exception as e:
+        format = 'json'
+
+    if format == 'xml':
+        print value
+        output = dicttoxml.dicttoxml(value)
+    else:
+        output = json.dumps(value, cls=DjangoJSONEncoder)
+    print output
+    return output
+
+
 def LocalityDetail(request):
     if request.method == 'GET':
         try:
             locality = Locality.objects.get(uuid=request.GET['guid'])
-            output = getLocalityDetail(locality, None)
-            output = json.dumps(output, cls=DjangoJSONEncoder)
-
-            try:
-                format = request.GET['format']
-            except Exception as e:
-                format = 'json'
-
-            if format == 'json':
-                return HttpResponse(output, content_type='application/json')
-
-            elif format == 'xml':
-                print output
-                output = serializers.serialize('xml', output, fields=('name', 'size'))
-                return HttpResponse(output, content_type='application/json')
-
-            return HttpResponse(output)
+            value = getLocalityDetail(locality, None)
+            return HttpResponse(formattedReturn(request, value), content_type='application/json')
         except Locality.DoesNotExist:
             raise Http404
         except Exception as e:
-            print e
             return HttpResponse(status=500)
