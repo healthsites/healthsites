@@ -797,5 +797,14 @@ section.container{
 }
 }
 .gitter-chat-embed {
-    top: 53px !important;
+    top: 72px;
+}
+.h-short .gitter-chat-embed {
+    top: 53px;
+}
+.cookiebar-enabled .gitter-chat-embed, .policy-enabled .gitter-chat-embed {
+    top: 102px;
+}
+.h-short.cookiebar-enabled .gitter-chat-embed, .h-short.policy-enabled .gitter-chat-embed {
+    top: 83px;
 }
