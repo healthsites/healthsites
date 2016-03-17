@@ -14,6 +14,7 @@ from frontend.views import search_place
 from django.core.serializers.json import DjangoJSONEncoder
 from localities.models import Locality, Value, Country
 
+limit = 100
 
 def formattedReturn(request, value):
     try:
@@ -56,7 +57,7 @@ def get_heathsite_by_polygon(request, polygon):
         if healthsite.is_type(facility_type):
             output.append(healthsite.repr_dict())
             index += 1
-        if index == 100:
+        if index == limit:
             break
     return output
 
@@ -112,18 +113,15 @@ class LocalitySearchAPI(JSONResponseMixin, View):
         if search_type == "facility":
             locality_values = Value.objects.filter(
                     specification__attribute__key='name').filter(
-                    data=place_name)
-            if locality_values:
-                locality_value = locality_values[0]
-            else:
-                locality_values = Value.objects.filter(
-                        specification__attribute__key='name').filter(
-                        data__istartswith=place_name)
-                if locality_values:
-                    locality_value = locality_values[0]
-                else:
-                    raise Http404
-            guid = locality_value.locality.uuid
-            locality = Locality.objects.get(uuid=guid)
-            value = getLocalityDetail(locality, None)
-            return HttpResponse(formattedReturn(request, value), content_type='application/json')
+                    data__icontains=place_name)
+            print locality_values
+            output = []
+            index = 1;
+            for locality in locality_values:
+                guid = locality.locality.uuid
+                locality = Locality.objects.get(uuid=guid)
+                output.append(getLocalityDetail(locality, None))
+                index += 1
+                if index == limit:
+                    break
+            return HttpResponse(formattedReturn(request, output), content_type='application/json')
