@@ -11,7 +11,8 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from social_users.models import Profile
 from localities.models import LocalityArchive, ValueArchive
-from core.utilities import extract_time, extract_updates
+from core.utilities import extract_time
+# from localities.api import extract_updates
 from django.db.models import Count, Max
 from datetime import datetime
 import json
@@ -141,9 +142,9 @@ def get_user_updates(request):
             date = datetime.now()
         user = get_object_or_404(User, username=user)
         last_updates = user_updates(user, date)
-        updates = extract_updates(last_updates)
+        # updates = extract_updates(last_updates)
         result = {}
-        result['last_update'] = updates
+        # result['last_update'] = updates
         result = json.dumps(result, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')

@@ -5,16 +5,16 @@ import dicttoxml
 
 LOG = logging.getLogger(__name__)
 
+from braces.views import JSONResponseMixin
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
 from django.views.generic import View
-from braces.views import JSONResponseMixin
+from frontend.views import search_place
+from localities.models import Country, Locality, Value
 from localities.utils import parse_bbox
 from localities.views import getLocalityDetail
-from frontend.views import search_place
-from django.core.serializers.json import DjangoJSONEncoder
-from localities.models import Locality, Value, Country
+from localities.api import get_heathsite_by_polygon, limit
 
-limit = 100
 
 def formattedReturn(request, value):
     try:
@@ -41,25 +41,6 @@ class LocalityAPI(JSONResponseMixin, View):
         locality = Locality.objects.get(uuid=guid)
         value = getLocalityDetail(locality, None)
         return HttpResponse(formattedReturn(request, value), content_type='application/json')
-
-
-def get_heathsite_by_polygon(request, polygon):
-    healthsites = Locality.objects.in_polygon(
-            polygon)
-
-    facility_type = ""
-    if 'facility_type' in request.GET:
-        facility_type = request.GET['facility_type']
-
-    output = []
-    index = 1;
-    for healthsite in healthsites:
-        if healthsite.is_type(facility_type):
-            output.append(healthsite.repr_dict())
-            index += 1
-        if index == limit:
-            break
-    return output
 
 
 class LocalitiesAPI(JSONResponseMixin, View):

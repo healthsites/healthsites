@@ -14,7 +14,7 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 import googlemaps
-from localities.views import search_locality_by_tag, get_country_statistic, search_locality_by_spec_data
+from localities.api import search_locality_by_tag, get_country_statistic, search_locality_by_spec_data
 from localities.models import Locality, Value, Country
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User

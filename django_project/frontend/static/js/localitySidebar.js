@@ -348,7 +348,7 @@ window.LocalitySidebar = (function () {
                                 $APP.trigger('set.hash.silent', {'locality': that.locality_uuid});
                                 that.getInfo();
                             } else {
-                                alert(data["key"] + " can't be empty");
+                                alert(data["reason"]);
                             }
                         });
                     }
