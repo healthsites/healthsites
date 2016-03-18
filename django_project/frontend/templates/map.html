@@ -162,7 +162,7 @@
                         You are not signed in
                     </span>
                     </div>
-                    <a href="{% url 'usersignpage' %}" class="button col-xs-4 pad0x blue stroke"><i
+                    <a id="signin-button" class="button col-xs-4 pad0x blue stroke" style="cursor: pointer"><i
                             class="fa fa-sign-in"></i> sign in</a>
                 {% endif %}
 
@@ -716,23 +716,31 @@
         });
 
 
-        // check cookie
+        // check cookie for create mode
         if (isLoggedIn) {
             var type = getCookie("type");
             if (type) {
                 if (type == 'create') {
                     var center = getCookie("center");
-                    center = center.split(",");
-                    var zoom = getCookie("zoom");
-                    if (center.length > 0) {
-                        $APP.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});
+                    if (center != "") {
+                        center = center.split(",");
+                        if (center.length > 0) {
+                            var zoom = getCookie("zoom");
+                            if (zoom != "") {
+                                $APP.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});
+                                $('#add-button').click();
+                            }
+                        }
+                        {# reset cookie because it is done #}
+                        resetCookies();
                     }
-                    $('#add-button').click();
-                    resetCookies();
-                } else if (type == 'edit') {
+                } else {
                     var uuid = getCookie("uuid");
-                    $APP.trigger('locality.map.click', {'locality_uuid': uuid});
-                    $APP.trigger('set.hash.silent', {'locality': uuid});
+                    if (uuid != "") {
+                        $APP.trigger('locality.map.click', {'locality_uuid': uuid});
+                        $APP.trigger('set.hash.silent', {'locality': uuid});
+                        {# cookie will be reseted if already loaded the uuid #}
+                    }
                 }
             }
         }

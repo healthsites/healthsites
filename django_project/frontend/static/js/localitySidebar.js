@@ -35,6 +35,7 @@ window.LocalitySidebar = (function () {
 
     // constructor
     var module = function () {
+        this.$signin = $('#signin-button');
         this.$sidebar = $('#locality-info');
         // new style
         this.$line_updates = $('#line-updates');
@@ -177,6 +178,7 @@ window.LocalitySidebar = (function () {
             this.$addButton.on('click', this.showEdit.bind(this, "create"));
             this.$createButton.on('click', this.sendCreate.bind(this));
             this.$cancelButton.on('click', this.showEdit.bind(this));
+            this.$signin.on('click', this.goToSignin.bind(this));
 
             // -------------------------------------------------------------------
             // FORM IF SUBMIT
@@ -352,6 +354,12 @@ window.LocalitySidebar = (function () {
                     }
                 }
             });
+        },
+        goToSignin: function () {
+            setCookie("type", "show", 30);
+            setCookie("uuid", this.locality_uuid, 30);
+            window.location.href = "/signin/";
+
         },
         addedNewOptons: function (wrapper) {
             // SCOPE OPTIONS
@@ -1030,12 +1038,13 @@ window.LocalitySidebar = (function () {
                     });
                 }
                 // check cookies
+                // reset cookie because it is done
                 var type = getCookie("type");
                 if (type) {
                     if (type == 'edit') {
                         self.$editButton.click();
-                        resetCookies();
                     }
+                    resetCookies();
                 }
             });
         },
