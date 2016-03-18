@@ -719,29 +719,33 @@
         // check cookie for create mode
         if (isLoggedIn) {
             var type = getCookie("type");
-            if (type) {
-                if (type == 'create') {
-                    var center = getCookie("center");
-                    if (center != "") {
-                        center = center.split(",");
-                        if (center.length > 0) {
-                            var zoom = getCookie("zoom");
-                            if (zoom != "") {
-                                $APP.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});
-                                $('#add-button').click();
-                            }
+            if (type == 'create') {
+                var center = getCookie("center");
+                if (center != "") {
+                    center = center.split(",");
+                    if (center.length > 0) {
+                        var zoom = getCookie("zoom");
+                        if (zoom != "") {
+                            $APP.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});
+                            $('#add-button').click();
                         }
-                        {# reset cookie because it is done #}
-                        resetCookies();
                     }
-                } else {
-                    var uuid = getCookie("uuid");
-                    if (uuid != "") {
-                        $APP.trigger('locality.map.click', {'locality_uuid': uuid});
-                        $APP.trigger('set.hash.silent', {'locality': uuid});
-                        {# cookie will be reseted if already loaded the uuid #}
-                    }
+                    {# reset cookie because it is done #}
+                    resetCookies();
                 }
+            } else if (type == 'edit') {
+                var uuid = getCookie("uuid");
+                if (uuid != "") {
+                    $APP.trigger('locality.map.click', {'locality_uuid': uuid});
+                    $APP.trigger('set.hash.silent', {'locality': uuid});
+                    {# cookie will be reseted if already loaded the uuid #}
+                }
+            } else {
+                var oldURL = getCookie("oldurl");
+                if (oldURL != "") {
+                    window.location.href = oldURL;
+                }
+                resetCookies();
             }
         }
     });
