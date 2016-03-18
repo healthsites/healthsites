@@ -356,8 +356,8 @@ window.LocalitySidebar = (function () {
             });
         },
         goToSignin: function () {
-            setCookie("type", "show", 30);
-            setCookie("uuid", this.locality_uuid, 30);
+            resetCookies();
+            setCookie("oldurl", window.location.href, 30);
             window.location.href = "/signin/";
 
         },
