@@ -742,10 +742,10 @@
                 }
             } else {
                 var oldURL = getCookie("oldurl");
+                resetCookies();
                 if (oldURL != "") {
                     window.location.href = oldURL;
                 }
-                resetCookies();
             }
         }
     });
