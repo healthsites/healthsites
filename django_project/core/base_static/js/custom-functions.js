@@ -171,6 +171,7 @@ function mapcount() {
                 } else {
                     $(options.element).prepend('<div id="cookie-bar"' + fixed + zindex + '><p>' + message + acceptButton + declineButton + policyButton + '</p></div>');
                 }
+				$(options.element).addClass('cookiebar-enabled');
             }
 
             var removeBar = function (func) {
@@ -190,6 +191,7 @@ function mapcount() {
                     });
                 }
                 $(document).unbind('click', anyClick);
+				$(options.element).removeClass('cookiebar-enabled');
 				policyshow();
             };
             var cookieAccept = function () {
@@ -244,7 +246,7 @@ function mapcount() {
 })(jQuery);
 
 function policyshow() {
-	$('body').prepend('<div id="policy" class="fixed"><p><a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use" target="_blank">Terms of use</a> <a href="#" class="accept">Accept</a></p></div>');
+	$('body').prepend('<div id="policy" class="fixed"><p>healthsites.io cannot guarantee the validity of the information found here <a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use" target="_blank">Terms of use</a> <a href="#" class="accept">Accept</a></p></div>');
 	$('body').addClass('policy-enabled');
 	$('.accept').click(function() {
 		$('#policy').slideUp(300);
