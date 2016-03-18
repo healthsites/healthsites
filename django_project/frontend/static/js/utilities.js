@@ -70,4 +70,5 @@ function resetCookies() {
     setCookie("center", "", 30);
     setCookie("zoom", "", 30);
     setCookie("uuid", "", 30);
+    setCookie("oldurl", "", 30);
 }
