@@ -281,7 +281,7 @@ def locality_create(request):
                 loc.save()
                 loc.set_values(json_request, request.user, tmp_changeset)
 
-                regenerate_cache.delay(tmp_changeset.pk, loc.pk)
+                regenerate_cache(tmp_changeset.pk, loc.pk)
 
                 return {"success": json_request['is_valid'], "uuid": tmp_uuid, "reason": ""}
             else:
@@ -309,7 +309,7 @@ def locality_edit(request):
                 locality.save()
                 locality.set_values(json_request, request.user, tmp_changeset)
 
-                regenerate_cache.delay(tmp_changeset.pk, locality.pk)
+                regenerate_cache(tmp_changeset.pk, locality.pk)
 
                 return {"success": json_request['is_valid'], "uuid": json_request['uuid'], "reason": ""}
             else:
