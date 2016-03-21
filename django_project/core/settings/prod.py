@@ -11,11 +11,6 @@ from .project import *  # noqa
 
 ALLOWED_HOSTS = ['localhost:9000', 'changelog.linfiniti.com']
 
-# Pipeline - for production we want to compress resources
-PIPELINE_ENABLED = True
-PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yuglify.YuglifyCompressor'
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yuglify.YuglifyCompressor'
-
 # Comment if you are not running behind proxy
 USE_X_FORWARDED_HOST = True
 
