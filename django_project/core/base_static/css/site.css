@@ -777,13 +777,6 @@ section.container{
     font-family: "Raleway", sans-serif;
     margin-top: -50px;
 }
-.profile-image-size {
-    width: 120px;
-    height: 120px;
-}
-.profile-image {
-    width: 120px;
-}
 .profile-graphs {
     text-align: center;
 }
@@ -807,4 +800,12 @@ section.container{
 }
 .h-short.cookiebar-enabled .gitter-chat-embed, .h-short.policy-enabled .gitter-chat-embed {
     top: 83px;
+}
+@media only screen and (max-width:632px) {
+.cookiebar-enabled .gitter-chat-embed, .policy-enabled .gitter-chat-embed {
+    top: 132px;
+}
+.h-short.cookiebar-enabled .gitter-chat-embed, .h-short.policy-enabled .gitter-chat-embed {
+    top: 113px;
+}
 }

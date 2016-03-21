@@ -1,6 +1,9 @@
 body.cookiebar-enabled, body.policy-enabled { padding-top: 30px; }
 
 body.cookiebar-enabled .navbar-fixed-top, body.policy-enabled .navbar-fixed-top { top: 30px; }
+@media only screen and (max-width: 632px) {
+body.cookiebar-enabled .navbar-fixed-top, body.policy-enabled .navbar-fixed-top { top: 60px; }
+}
 
 #cookie-bar, #policy {background:#3c4c57; height:auto; line-height:24px; color:#eeeeee; text-align:center; padding:3px 0;}
 
