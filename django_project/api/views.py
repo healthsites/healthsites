@@ -12,18 +12,20 @@ from django.views.generic import View
 from frontend.views import search_place
 from localities.models import Country, Locality, Value
 from localities.utils import parse_bbox
-from localities.views import getLocalityDetail
-from localities.api import get_heathsite_by_polygon, limit
+from localities.views import get_locality_detail
+from localities.api import get_heathsite_by_polygon, limit, locality_create
 
 
 def formattedReturn(request, value):
     try:
         format = request.GET['format']
     except Exception as e:
-        format = 'json'
+        try:
+            format = request.POST['format']
+        except Exception as e:
+            format = 'json'
 
     if format == 'xml':
-        print value
         output = dicttoxml.dicttoxml(value)
     else:
         output = json.dumps(value, cls=DjangoJSONEncoder)
@@ -39,7 +41,7 @@ class LocalityAPI(JSONResponseMixin, View):
     def get(self, request, *args, **kwargs):
         guid = self._parse_request_params(request)
         locality = Locality.objects.get(uuid=guid)
-        value = getLocalityDetail(locality, None)
+        value = get_locality_detail(locality, None)
         return HttpResponse(formattedReturn(request, value), content_type='application/json')
 
 
@@ -101,8 +103,19 @@ class LocalitySearchAPI(JSONResponseMixin, View):
             for locality in locality_values:
                 guid = locality.locality.uuid
                 locality = Locality.objects.get(uuid=guid)
-                output.append(getLocalityDetail(locality, None))
+                output.append(get_locality_detail(locality, None))
                 index += 1
                 if index == limit:
                     break
             return HttpResponse(formattedReturn(request, output), content_type='application/json')
+
+
+class LocalityCreateAPI(JSONResponseMixin, View):
+    def _parse_request_params(self, request):
+        if not (all(param in request.GET for param in ['name'])):
+            raise Http404
+
+        return request
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse(formattedReturn(request, locality_create(request)), content_type='application/json')

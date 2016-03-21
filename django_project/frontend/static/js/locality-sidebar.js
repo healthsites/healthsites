@@ -343,7 +343,7 @@ window.LocalitySidebar = (function () {
                         // Put the results in a div
                         posting.done(function (data) {
                             var data = JSON.parse(data);
-                            if (data["valid"]) {
+                            if (data["success"]) {
                                 that.locality_uuid = data["uuid"];
                                 $APP.trigger('set.hash.silent', {'locality': that.locality_uuid});
                                 that.getInfo();

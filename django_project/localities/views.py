@@ -5,7 +5,8 @@ import uuid
 
 LOG = logging.getLogger(__name__)
 # register signals
-from .api import get_country_statistic, get_locality_detail, locality_updates, get_locality_by_spec_data
+from .api import get_country_statistic, get_locality_detail, locality_create, locality_edit, locality_updates, \
+    get_locality_by_spec_data
 from .forms import DataLoaderForm
 from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification
@@ -186,72 +187,12 @@ def get_json_from_request(request):
     return json
 
 
-def locality_edit(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated():
-            json_request = get_json_from_request(request)
-            # checking mandatory
-            if json_request['is_valid'] == True:
-                locality = Locality.objects.get(uuid=json_request['uuid'])
-                locality.set_geom(float(json_request['long']), float(json_request['lat']))
-                # there are some changes so create a new changeset
-                tmp_changeset = Changeset.objects.create(
-                        social_user=request.user
-                )
-                locality.changeset = tmp_changeset
-                locality.save()
-                locality.set_values(json_request, request.user, tmp_changeset)
-
-                regenerate_cache.delay(tmp_changeset.pk, locality.pk)
-
-                return HttpResponse(json.dumps(
-                        {"valid": json_request['is_valid'], "uuid": json_request['uuid']}))
-            else:
-                return HttpResponse(
-                        json.dumps({"valid": json_request['is_valid'], "key": json_request['invalid_key']}))
-
-    else:
-        print "not logged in"
-    return HttpResponse('ERROR updating Locality and values')
+def locality_edit_view(request):
+    return HttpResponse(json.dumps(locality_edit(request)))
 
 
-def locality_create(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated():
-            json_request = get_json_from_request(request)
-            # checking mandatory
-            if json_request['is_valid'] == True:
-                tmp_changeset = Changeset.objects.create(
-                        social_user=request.user
-                )
-                # generate new uuid
-                tmp_uuid = uuid.uuid4().hex
-
-                loc = Locality()
-                loc.changeset = tmp_changeset
-                loc.domain = Domain.objects.get(name="Health")
-                loc.uuid = tmp_uuid
-
-                # generate unique upstream_id
-                loc.upstream_id = u'web¶{}'.format(tmp_uuid)
-
-                loc.geom = Point(
-                        float(json_request['long']), float(json_request['lat'])
-                )
-                loc.save()
-                loc.set_values(json_request, request.user, tmp_changeset)
-
-                regenerate_cache.delay(tmp_changeset.pk, loc.pk)
-
-                return HttpResponse(json.dumps(
-                        {"valid": json_request['is_valid'], "uuid": tmp_uuid}))
-            else:
-                return HttpResponse(
-                        json.dumps({"valid": json_request['is_valid'], "key": json_request['invalid_key']}))
-
-    else:
-        print "not logged in"
-    return HttpResponse('ERROR updating Locality and values')
+def locality_create_view(request):
+    return HttpResponse(json.dumps(locality_create(request)))
 
 
 class DataLoaderView(LoginRequiredMixin, FormView):

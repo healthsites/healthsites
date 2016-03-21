@@ -284,13 +284,13 @@ def locality_create(request):
 
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
 
-                return {"valid": json_request['is_valid'], "uuid": tmp_uuid, "reason": ""}
+                return {"success": json_request['is_valid'], "uuid": tmp_uuid, "reason": ""}
             else:
-                return {"valid": json_request['is_valid'], "reason": json_request['invalid_key'] + "can not be empty"}
+                return {"success": json_request['is_valid'], "reason": json_request['invalid_key'] + " can not be empty"}
         else:
-            return {"valid": False, "reason": "Not Login Yet"}
+            return {"success": False, "reason": "Not Login Yet"}
 
-    return {"valid": False, "reason": "There is error occured"}
+    return {"success": False, "reason": "There is error occured"}
 
 
 def locality_edit(request):
@@ -311,12 +311,12 @@ def locality_edit(request):
 
                 regenerate_cache.delay(tmp_changeset.pk, locality.pk)
 
-                return {"valid": json_request['is_valid'], "uuid": json_request['uuid'], "reason": ""}
+                return {"success": json_request['is_valid'], "uuid": json_request['uuid'], "reason": ""}
             else:
-                return {"valid": json_request['is_valid'], "reason": json_request['invalid_key'] + "can not be empty"}
+                return {"success": json_request['is_valid'], "reason": json_request['invalid_key'] + " can not be empty"}
         else:
-            return {"valid": False, "reason": "Not Login Yet"}
-    return {"valid": False, "reason": "There is error occured"}
+            return {"success": False, "reason": "Not Login Yet"}
+    return {"success": False, "reason": "There is error occured"}
 
 
 def get_statistic(healthsites):
