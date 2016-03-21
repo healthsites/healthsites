@@ -115,13 +115,13 @@ STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 # For hand rolled js for this app, use project.py
 # Only put css and libs in here that are not available on CDN
 PIPELINE_JS = {
-    'home': {
+    'outsource': {
         'source_filenames': (
             'js/mousewheel.js',
             'js/easing.js',
             'js/jquery.countto.js',
         ),
-        'output_filename': 'js/home.js',
+        'output_filename': 'js/outsource.js',
     },
 }
 
