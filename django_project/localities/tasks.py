@@ -103,6 +103,18 @@ def regenerate_cache(self, changeset_pk, locality_pk):
         changeset = Changeset.objects.get(pk=changeset_pk)
         locality = Locality.objects.get(pk=locality_pk)
         country = Country.objects.filter(polygon_geometry__contains=locality.geom)
+
+        # write world cache
+        filename = os.path.join(
+            settings.CLUSTER_CACHE_DIR,
+            'world_statistic')
+        healthsites = Locality.objects.all()
+        output = get_statistic(healthsites)
+        result = json.dumps(output, cls=DjangoJSONEncoder)
+        file = open(filename, 'w')
+        file.write(result)  # python will convert \n to os.linesep
+        file.close()  # you can omit in most cases as the destructor will call it
+
         # getting country's polygon
         if len(country):
             country = country[0]
@@ -115,17 +127,6 @@ def regenerate_cache(self, changeset_pk, locality_pk):
             )
             healthsites = Locality.objects.in_polygon(
                     polygons)
-            output = get_statistic(healthsites)
-            result = json.dumps(output, cls=DjangoJSONEncoder)
-            file = open(filename, 'w')
-            file.write(result)  # python will convert \n to os.linesep
-            file.close()  # you can omit in most cases as the destructor will call it
-
-            # write world cache
-            filename = os.path.join(
-                settings.CLUSTER_CACHE_DIR,
-                'world_statistic')
-            healthsites = Locality.objects.all()
             output = get_statistic(healthsites)
             result = json.dumps(output, cls=DjangoJSONEncoder)
             file = open(filename, 'w')
