@@ -96,7 +96,7 @@ def regenerate_cache(self, changeset_pk, locality_pk):
     import os
     import json
     from django.conf import settings
-    from localities.views import get_statistic
+    from localities.utils import get_statistic
     from django.core.serializers.json import DjangoJSONEncoder
 
     try:
