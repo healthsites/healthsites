@@ -5,13 +5,12 @@ import uuid
 
 LOG = logging.getLogger(__name__)
 # register signals
-from .api import get_country_statistic, get_locality_detail, locality_create, locality_edit, locality_updates, \
-    get_locality_by_spec_data
 from .forms import DataLoaderForm
 from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification
 from .tasks import regenerate_cache
-from .utils import parse_bbox
+from .utils import parse_bbox, get_country_statistic, get_locality_detail, locality_create, locality_edit, \
+    locality_updates, get_locality_by_spec_data
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 from datetime import datetime

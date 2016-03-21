@@ -1,23 +1,23 @@
 # -*- coding: utf-8 -*-
 import logging
+import json
 
 LOG = logging.getLogger(__name__)
 
-from django.http import HttpResponseRedirect
-from django.views.generic import TemplateView, View
-from django.contrib.auth import logout as auth_logout
-from braces.views import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import User
-from social_users.models import Profile
-from localities.models import LocalityArchive, ValueArchive
 from core.utilities import extract_time
-# from localities.api import extract_updates
-from django.db.models import Count, Max
 from datetime import datetime
-import json
-from django.http import HttpResponse
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db.models import Count, Max
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from braces.views import LoginRequiredMixin
+from django.views.generic import TemplateView, View
+from localities.models import LocalityArchive, ValueArchive
+from localities.utils import extract_updates
+from social_users.models import Profile
+from social_users.utils import get_profile
 
 
 class UserProfilePage(LoginRequiredMixin, TemplateView):
@@ -31,25 +31,6 @@ class UserProfilePage(LoginRequiredMixin, TemplateView):
         return context
 
 
-def getProfile(user):
-    shared_links = []
-    # check if the user has profile_picture
-    # if not, just send empty string
-    username = user.username
-    try:
-        user_detail = Profile.objects.get(user=user)
-        profile_picture = user_detail.profile_picture
-        if user_detail.screen_name != "":
-            username = user_detail.screen_name
-    except Profile.DoesNotExist:
-        profile_picture = ""
-
-    user.profile_picture = profile_picture
-    user.screen_name = username
-    user.shared_links = shared_links
-    return user
-
-
 class ProfilePage(TemplateView):
     template_name = 'social_users/profile.html'
 
@@ -59,7 +40,7 @@ class ProfilePage(TemplateView):
         """
 
         user = get_object_or_404(User, username=kwargs["username"])
-        user = getProfile(user)
+        user = get_profile(user)
         context = super(ProfilePage, self).get_context_data(*args, **kwargs)
         context['user'] = user
         return context
@@ -128,7 +109,7 @@ def user_updates(user, date):
     for update in updates:
         if prev_changeset != update['changeset']:
             output.append(update)
-            profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
+            profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
             update['nickname'] = profile.screen_name
         prev_changeset = update['changeset']
     return output[:20]
@@ -142,9 +123,9 @@ def get_user_updates(request):
             date = datetime.now()
         user = get_object_or_404(User, username=user)
         last_updates = user_updates(user, date)
-        # updates = extract_updates(last_updates)
+        updates = extract_updates(last_updates)
         result = {}
-        # result['last_update'] = updates
+        result['last_update'] = updates
         result = json.dumps(result, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')

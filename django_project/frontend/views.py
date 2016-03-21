@@ -14,11 +14,11 @@ from django.template import RequestContext
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 import googlemaps
-from localities.api import search_locality_by_tag, get_country_statistic, search_locality_by_spec_data
 from localities.models import Locality, Value, Country
+from localities.utils import search_locality_by_tag, get_country_statistic, search_locality_by_spec_data
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
-from social_users.views import getProfile
+from social_users.utils import get_profile
 
 
 class MainView(TemplateView):
@@ -98,7 +98,7 @@ def map(request):
     """View for request."""
     if request.user.is_authenticated():
         user = get_object_or_404(User, username=request.user)
-        request.user = getProfile(user)
+        request.user = get_profile(user)
 
     if request.method == 'POST':
         search_query = request.POST.get('q')

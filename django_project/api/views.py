@@ -11,9 +11,8 @@ from django.http import Http404, HttpResponse
 from django.views.generic import View
 from frontend.views import search_place
 from localities.models import Country, Locality, Value
-from localities.utils import parse_bbox
+from localities.utils import parse_bbox, get_heathsite_by_polygon, limit, locality_create
 from localities.views import get_locality_detail
-from localities.api import get_heathsite_by_polygon, limit, locality_create
 
 
 def formattedReturn(request, value):
