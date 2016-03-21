@@ -7,7 +7,7 @@ from localities.models import Country, Locality
 import os
 import json
 from django.conf import settings
-from localities.views import get_statistic
+from localities.api import get_statistic
 from django.core.serializers.json import DjangoJSONEncoder
 
 

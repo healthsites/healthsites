@@ -5,25 +5,26 @@ import dicttoxml
 
 LOG = logging.getLogger(__name__)
 
+from braces.views import JSONResponseMixin
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
 from django.views.generic import View
-from braces.views import JSONResponseMixin
-from localities.utils import parse_bbox
-from localities.views import getLocalityDetail
 from frontend.views import search_place
-from django.core.serializers.json import DjangoJSONEncoder
-from localities.models import Locality, Value, Country
+from localities.models import Country, Locality, Value
+from localities.utils import parse_bbox, get_heathsite_by_polygon, limit, locality_create
+from localities.views import get_locality_detail
 
-limit = 100
 
 def formattedReturn(request, value):
     try:
         format = request.GET['format']
     except Exception as e:
-        format = 'json'
+        try:
+            format = request.POST['format']
+        except Exception as e:
+            format = 'json'
 
     if format == 'xml':
-        print value
         output = dicttoxml.dicttoxml(value)
     else:
         output = json.dumps(value, cls=DjangoJSONEncoder)
@@ -39,27 +40,8 @@ class LocalityAPI(JSONResponseMixin, View):
     def get(self, request, *args, **kwargs):
         guid = self._parse_request_params(request)
         locality = Locality.objects.get(uuid=guid)
-        value = getLocalityDetail(locality, None)
+        value = get_locality_detail(locality, None)
         return HttpResponse(formattedReturn(request, value), content_type='application/json')
-
-
-def get_heathsite_by_polygon(request, polygon):
-    healthsites = Locality.objects.in_polygon(
-            polygon)
-
-    facility_type = ""
-    if 'facility_type' in request.GET:
-        facility_type = request.GET['facility_type']
-
-    output = []
-    index = 1;
-    for healthsite in healthsites:
-        if healthsite.is_type(facility_type):
-            output.append(healthsite.repr_dict())
-            index += 1
-        if index == limit:
-            break
-    return output
 
 
 class LocalitiesAPI(JSONResponseMixin, View):
@@ -120,8 +102,19 @@ class LocalitySearchAPI(JSONResponseMixin, View):
             for locality in locality_values:
                 guid = locality.locality.uuid
                 locality = Locality.objects.get(uuid=guid)
-                output.append(getLocalityDetail(locality, None))
+                output.append(get_locality_detail(locality, None))
                 index += 1
                 if index == limit:
                     break
             return HttpResponse(formattedReturn(request, output), content_type='application/json')
+
+
+class LocalityCreateAPI(JSONResponseMixin, View):
+    def _parse_request_params(self, request):
+        if not (all(param in request.GET for param in ['name'])):
+            raise Http404
+
+        return request
+
+    def get(self, request, *args, **kwargs):
+        return HttpResponse(formattedReturn(request, locality_create(request)), content_type='application/json')
