@@ -65,6 +65,7 @@ PIPELINE_JS['project'] = {
         'js/custom-jquery.js',
         'js/csrf-ajax.js',
         'js/nav-bar.js',
+        'js/google-analytics.js',
     ),
     'output_filename': 'js/project.js',
 }
@@ -74,7 +75,6 @@ PIPELINE_JS['map'] = {
         'js/locality-sidebar.js',
         'js/map-functionality.js',
         'js/_app.js',
-        'js/google-analytics.js',
     ),
     'output_filename': 'js/map.js',
 }
