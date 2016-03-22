@@ -307,9 +307,17 @@
 
             if (this._curReq && this._curReq.abort)
                 this._curReq.abort();       //prevent parallel requests
+            var geoname = "";
+            var tag = "";
             var spec = "";
             var data = "";
             var uuid = "";
+            if (this.geoname) {
+                geoname = this.geoname;
+            }
+            if (this.tag) {
+                tag = this.tag;
+            }
             if (this.spec) {
                 spec = this.spec['spec'];
                 data = this.spec['data'];
@@ -324,8 +332,8 @@
                     'bbox': bb.toBBoxString(),
                     'zoom': this._map.getZoom(),
                     'iconsize': [48, 46],
-                    'geoname': this.geoname,
-                    'tag': this.tag,
+                    'geoname': geoname,
+                    'tag': tag,
                     'spec': spec,
                     'data': data,
                     'uuid': uuid,

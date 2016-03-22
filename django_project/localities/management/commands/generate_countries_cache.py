@@ -50,5 +50,6 @@ class Command(BaseCommand):
                 file.write(result)  # python will convert \n to os.linesep
                 file.close()  # you can omit in most cases as the destructor will call it
                 print country.name + " cache is finished"
-            except:
+            except Exception as e:
+                print e
                 print "skip"

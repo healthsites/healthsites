@@ -1,24 +1,26 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-import uuid
+import os
 
 LOG = logging.getLogger(__name__)
+
 # register signals
 from .forms import DataLoaderForm
 from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification
-from .tasks import regenerate_cache
 from .utils import parse_bbox, get_country_statistic, get_locality_detail, locality_create, locality_edit, \
     locality_updates, get_locality_by_spec_data
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 from datetime import datetime
+from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
-from django.contrib.gis.geos import Point
 from django.http import HttpResponse, Http404
 from django.views.generic import DetailView, ListView, FormView
 from localities.models import Country
+
+LOG = logging.getLogger(__name__)
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -64,42 +66,71 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
     def get(self, request, *args, **kwargs):
         # parse request params
         bbox, zoom, iconsize, geoname, tag, spec, data, uuid = self._parse_request_params(request)
-        # cluster Localites for a view
-        localities = Locality.objects.in_bbox(bbox)
-        exception = False
-        try:
-            if geoname != "":
-                # getting country's polygon
-                country = Country.objects.get(
-                        name__iexact=geoname)
-                polygon = country.polygon_geometry
-                localities = localities.in_polygon(polygon)
-        except Country.DoesNotExist:
-            if geoname != "" and geoname != "undefined":
-                exception = True
-            else:
-                # searching by tag
-                if tag != "" and tag != "undefined":
-                    localities = Value.objects.filter(
-                            specification__attribute__key='tags').filter(data__icontains="|" + tag + "|").values(
-                            'locality')
-                    localities = Locality.objects.filter(id__in=localities)
+        print not geoname and not tag and not spec and not data and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM
+        if not geoname and not tag and not spec and not data and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
+            # if geoname and tag are not set we can return the cached layer
+            # try to read localities from disk
+            filename = os.path.join(
+                    settings.CLUSTER_CACHE_DIR,
+                    '{}_{}_{}_localities.json'.format(zoom, *iconsize)
+            )
+
+            try:
+                cached_locs = open(filename, 'rb')
+                cached_data = cached_locs.read()
+
+                return HttpResponse(
+                        cached_data, content_type='application/json', status=200
+                )
+            except IOError as e:
+                print e
+                localities = Locality.objects.in_bbox(parse_bbox('-180,-90,180,90'))
+                object_list = cluster(localities, zoom, *iconsize)
+
+                # create the missing cache
+                with open(filename, 'wb') as cache_file:
+                    json.dump(object_list, cache_file)
+
+                return self.render_json_response(object_list)
+        else:
+            # cluster Localites for a view
+            localities = Locality.objects.in_bbox(bbox)
+            exception = False
+            try:
+                if geoname != "":
+                    # getting country's polygon
+                    country = Country.objects.get(
+                            name__iexact=geoname)
+                    polygon = country.polygon_geometry
+                    localities = localities.in_polygon(polygon)
                 else:
-                    # serching by value
-                    if spec != "" and spec != "undefined" and data != "" and data != "undefined":
-                        localities = get_locality_by_spec_data(spec, data, uuid)
+                    raise Country.DoesNotExist
+            except Country.DoesNotExist:
+                if geoname != "" and geoname != "undefined":
+                    exception = True
+                else:
+                    # searching by tag
+                    if tag != "" and tag != "undefined":
+                        localities = Value.objects.filter(
+                                specification__attribute__key='tags').filter(data__icontains="|" + tag + "|").values(
+                                'locality')
                         localities = Locality.objects.filter(id__in=localities)
-        object_list = []
-        focused = []
-        if uuid:
-            localities = localities.exclude(uuid=uuid)
-            focused = Locality.objects.filter(uuid=uuid)
-            focused = cluster(focused, zoom, *iconsize)
-        if not exception:
-            object_list = cluster(localities, zoom, *iconsize)
-            if focused:
-                object_list = object_list + focused
-        return self.render_json_response(object_list)
+                    else:
+                        # serching by value
+                        if spec != "" and spec != "undefined" and data != "" and data != "undefined":
+                            localities = get_locality_by_spec_data(spec, data, uuid)
+                            localities = Locality.objects.filter(id__in=localities)
+            object_list = []
+            focused = []
+            if uuid:
+                localities = localities.exclude(uuid=uuid)
+                focused = Locality.objects.filter(uuid=uuid)
+                focused = cluster(focused, zoom, *iconsize)
+            if not exception:
+                object_list = cluster(localities, zoom, *iconsize)
+                if focused:
+                    object_list = object_list + focused
+            return self.render_json_response(object_list)
 
 
 class LocalityInfo(JSONResponseMixin, DetailView):
