@@ -42,11 +42,11 @@ def send_email(data_loader, csv_importer):
     email_message += "You receive this email because you are the admin of Healthsites.io"
 
     send_mail(
-        subject='Healthsites Data Loader Report',
-        message=email_message,
-        from_email='dataloader@healthsites.io',
-        recipient_list=recipient_list,
-        fail_silently=False,
+            subject='Healthsites Data Loader Report',
+            message=email_message,
+            from_email='dataloader@healthsites.io',
+            recipient_list=recipient_list,
+            fail_silently=False,
     )
 
 
@@ -60,14 +60,14 @@ def load_data_task(self, data_loader_pk):
         logger.info('Start loading data')
         # Process data
         csv_importer = CSVImporter(
-            data_loader,
-            'Health',
-            data_loader.organisation_name,
-            data_loader.csv_data.path,
-            data_loader.json_concept_mapping.path,
-            use_tabs=False,
-            user=data_loader.author,
-            mode=data_loader.data_loader_mode
+                data_loader,
+                'Health',
+                data_loader.organisation_name,
+                data_loader.csv_data.path,
+                data_loader.json_concept_mapping.path,
+                use_tabs=False,
+                user=data_loader.author,
+                mode=data_loader.data_loader_mode
         )
         logger.info('Finish loading data')
 
@@ -83,6 +83,7 @@ def load_data_task(self, data_loader_pk):
 
         send_email(data_loader, csv_importer)
         call_command('generate_countries_cache')
+        regenerate_cache_cluster()
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)
 
@@ -106,8 +107,8 @@ def regenerate_cache(self, changeset_pk, locality_pk):
 
         # write world cache
         filename = os.path.join(
-            settings.CLUSTER_CACHE_DIR,
-            'world_statistic')
+                settings.CLUSTER_CACHE_DIR,
+                'world_statistic')
         healthsites = Locality.objects.all()
         output = get_statistic(healthsites)
         result = json.dumps(output, cls=DjangoJSONEncoder)
@@ -122,8 +123,8 @@ def regenerate_cache(self, changeset_pk, locality_pk):
 
             # write country cache
             filename = os.path.join(
-                settings.CLUSTER_CACHE_DIR,
-                country.name + '_statistic'
+                    settings.CLUSTER_CACHE_DIR,
+                    country.name + '_statistic'
             )
             healthsites = Locality.objects.in_polygon(
                     polygons)
@@ -139,3 +140,9 @@ def regenerate_cache(self, changeset_pk, locality_pk):
         raise self.retry(exc=exc, countdown=5, max_retries=10)
     except Exception as e:
         print e
+
+
+@app.task(bind=True)
+def regenerate_cache_cluster(self):
+    from django.core.management import call_command
+    call_command('gen_cluster_cache', 48, 46)
