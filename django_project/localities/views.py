@@ -66,7 +66,6 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
     def get(self, request, *args, **kwargs):
         # parse request params
         bbox, zoom, iconsize, geoname, tag, spec, data, uuid = self._parse_request_params(request)
-        print not geoname and not tag and not spec and not data and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM
         if not geoname and not tag and not spec and not data and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
             # if geoname and tag are not set we can return the cached layer
             # try to read localities from disk
@@ -83,7 +82,6 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                         cached_data, content_type='application/json', status=200
                 )
             except IOError as e:
-                print e
                 localities = Locality.objects.in_bbox(parse_bbox('-180,-90,180,90'))
                 object_list = cluster(localities, zoom, *iconsize)
 
