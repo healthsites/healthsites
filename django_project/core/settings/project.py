@@ -92,6 +92,7 @@ PIPELINE_CSS['project'] = {
         'media': 'screen, projection',
     },
 }
+
 PIPELINE_CSS['map'] = {
     'source_filenames': (
         'css/map.css',
@@ -113,3 +114,4 @@ PIPELINE_CSS['home'] = {
 
 # Cache folder
 CLUSTER_CACHE_DIR = 'cache'
+CLUSTER_CACHE_MAX_ZOOM = 5
