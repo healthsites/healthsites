@@ -534,7 +534,16 @@
 {% javascript 'map' %}
 {% javascript 'map.js' %}
 <script type="text/javascript">
-
+    if (isLoggedIn) {
+        var type = getCookie("type");
+        if (type != 'create' && type != 'edit') {
+            var oldURL = getCookie("oldurl");
+            resetCookies();
+            if (oldURL != "") {
+                window.location.href = oldURL;
+            }
+        }
+    }
     var APP;
     $(document).ready(function () {
         // Set viewport if exist
@@ -659,12 +668,6 @@
                     $APP.trigger('locality.map.click', {'locality_uuid': uuid});
                     $APP.trigger('set.hash.silent', {'locality': uuid});
                     {# cookie will be reseted if already loaded the uuid #}
-                }
-            } else {
-                var oldURL = getCookie("oldurl");
-                resetCookies();
-                if (oldURL != "") {
-                    window.location.href = oldURL;
                 }
             }
         }
