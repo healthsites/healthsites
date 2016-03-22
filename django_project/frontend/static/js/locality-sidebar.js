@@ -1042,6 +1042,16 @@ window.LocalitySidebar = (function () {
                 var type = getCookie("type");
                 if (type) {
                     if (type == 'edit') {
+                        var center = getCookie("center");
+                        if (center != "") {
+                            center = center.split(",");
+                            if (center.length > 0) {
+                                var zoom = getCookie("zoom");
+                                if (zoom != "") {
+                                    $APP.trigger('map.pan', {'location': data.geom, 'zoom': zoom});
+                                }
+                            }
+                        }
                         self.$editButton.click();
                     }
                     resetCookies();
