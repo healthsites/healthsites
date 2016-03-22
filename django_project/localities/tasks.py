@@ -83,6 +83,7 @@ def load_data_task(self, data_loader_pk):
 
         send_email(data_loader, csv_importer)
         call_command('generate_countries_cache')
+        regenerate_cache_cluster()
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)
 
@@ -126,7 +127,7 @@ def regenerate_cache(self, changeset_pk, locality_pk):
                 country.name + '_statistic'
             )
             healthsites = Locality.objects.in_polygon(
-                    polygons)
+                polygons)
             output = get_statistic(healthsites)
             result = json.dumps(output, cls=DjangoJSONEncoder)
             file = open(filename, 'w')
@@ -139,3 +140,9 @@ def regenerate_cache(self, changeset_pk, locality_pk):
         raise self.retry(exc=exc, countdown=5, max_retries=10)
     except Exception as e:
         print e
+
+
+@app.task(bind=True)
+def regenerate_cache_cluster(self):
+    from django.core.management import call_command
+    call_command('gen_cluster_cache', 48, 46)

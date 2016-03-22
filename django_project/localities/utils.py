@@ -16,7 +16,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Max
 from localities.models import Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification, User, \
     Value, ValueArchive
-from localities.tasks import regenerate_cache
+from localities.tasks import regenerate_cache, regenerate_cache_cluster
 from social_users.utils import get_profile
 
 limit = 100
@@ -282,6 +282,8 @@ def locality_create(request):
                 loc.set_values(json_request, request.user, tmp_changeset)
 
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
+                print "regenerate"
+                regenerate_cache_cluster.delay()
 
                 return {"success": json_request['is_valid'], "uuid": tmp_uuid, "reason": ""}
             else:
@@ -300,6 +302,7 @@ def locality_edit(request):
             # checking mandatory
             if json_request['is_valid'] == True:
                 locality = Locality.objects.get(uuid=json_request['uuid'])
+                old_geom = [locality.geom.x, locality.geom.y]
                 locality.set_geom(float(json_request['long']), float(json_request['lat']))
                 # there are some changes so create a new changeset
                 tmp_changeset = Changeset.objects.create(
@@ -310,6 +313,11 @@ def locality_edit(request):
                 locality.set_values(json_request, request.user, tmp_changeset)
 
                 regenerate_cache.delay(tmp_changeset.pk, locality.pk)
+
+                # if location is changed
+                new_geom = [locality.geom.x, locality.geom.y]
+                if new_geom != old_geom:
+                    regenerate_cache_cluster.delay()
 
                 return {"success": json_request['is_valid'], "uuid": json_request['uuid'], "reason": ""}
             else:
