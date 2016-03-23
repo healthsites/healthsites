@@ -7,7 +7,8 @@ LOG = logging.getLogger(__name__)
 
 from braces.views import JSONResponseMixin
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import Http404, HttpResponse
+from django.core.urlresolvers import reverse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.views.generic import View
 from frontend.views import search_place
 from localities.models import Country, Locality, Value
@@ -118,3 +119,42 @@ class LocalityCreateAPI(JSONResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         return HttpResponse(formattedReturn(request, locality_create(request)), content_type='application/json')
+
+
+class LoginAPI(JSONResponseMixin, View):
+    slug_field = 'social'
+    slug_url_kwarg = 'social'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            if 'next' in request.GET:
+                return HttpResponseRedirect(request.GET['next'])
+            else:
+                return HttpResponse("logged in", content_type='application/json')
+
+        next = ""
+        if 'next' in request.GET:
+            next = '?next=%s' % request.GET['next']
+
+        # check social
+        social = kwargs['social']
+        url = ""
+        print social
+        if social == "facebook":
+            url = '/login/facebook/' + next
+        elif social == "twitter":
+            url = '/login/twitter/' + next
+        elif social == "openstreetmap":
+            url = '/login/openstreetmap/' + next
+        elif social == "github":
+            url = '/login/github/' + next
+        elif social == "google":
+            url = '/login/google-oauth2/' + next
+        elif social == "linkedin":
+            url = '/login/linkedin-oauth2/' + next
+
+        # redirect to url
+        if url != "":
+            return HttpResponseRedirect(url)
+        else:
+            return HttpResponse("social name doesn't found", content_type='application/json')
