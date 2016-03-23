@@ -655,11 +655,13 @@ class DataLoaderPermission(models.Model):
 
 # method for updating
 def change_file(sender, instance, **kwargs):
+    import os
     # get cache
     try:
-        filename = "{0}{1}".format(settings.MEDIA_ROOT, instance.accepted_csv.url.replace("/media", ""))
-        file = open(filename, 'w+')
+        filename = instance.accepted_csv.path
+        file = open(filename, 'r')
         data = file.read()
+        file = open(filename, 'w')
         file.write("#" + instance.key + "\n" + data)
         file.close()
     except Exception as e:
