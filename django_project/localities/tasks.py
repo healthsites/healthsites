@@ -21,7 +21,7 @@ logger = get_task_logger(__name__)
 from .importers import CSVImporter
 
 
-def send_email(data_loader, csv_importer):
+def send_email(data_loader, report):
     """Send email for data loader."""
     logger.info('Send email report.')
     recipient_list = [
@@ -37,7 +37,7 @@ def send_email(data_loader, csv_importer):
     email_message += 'Uploaded on: %s\n' % data_loader.date_time_uploaded
     email_message += 'Finished loading on: %s\n\n' % data_loader.date_time_applied
 
-    email_message += csv_importer.generate_report() + '\n\n'
+    email_message += report + '\n\n'
 
     email_message += "You receive this email because you are the admin of Healthsites.io"
 
@@ -53,37 +53,66 @@ def send_email(data_loader, csv_importer):
 @app.task(bind=True)
 def load_data_task(self, data_loader_pk):
     # Put here to avoid circular import
-    from .models import DataLoader
+    from .models import DataLoader, DataLoaderPermission
+    import os.path, time
     from django.core.management import call_command
     try:
         data_loader = DataLoader.objects.get(pk=data_loader_pk)
         logger.info('Start loading data')
-        # Process data
-        csv_importer = CSVImporter(
-            data_loader,
-            'Health',
-            data_loader.organisation_name,
-            data_loader.csv_data.path,
-            data_loader.json_concept_mapping.path,
-            use_tabs=False,
-            user=data_loader.author,
-            mode=data_loader.data_loader_mode
-        )
-        logger.info('Finish loading data')
+        keys = []
+        with open(data_loader.csv_data.path) as f:
+            contents = f.readlines()
+            for key in contents:
+                if key[0] == "#":
+                    keys.append(key.replace("#","").replace("\n",""))
+                else:
+                    break
+        permissions = DataLoaderPermission.objects.filter(key__in=keys)
+        permission_id = -999
+        try:
+            for permission in permissions:
+                if permission.uploader == data_loader.author:
+                    with open(data_loader.csv_data.path) as f1:
+                        with open(permission.accepted_csv.path) as f2:
+                            if f1.read() == f2.read():
+                                permission_id = permission.id
+        except Exception as e:
+            print e
 
-        # update data_loader
-        data_loader.applied = True
-        data_loader.date_time_applied = datetime.utcnow()
-        data_loader.notes = csv_importer.generate_report()
-        logger.info('date_time_applied: %s' % data_loader.date_time_applied)
-        data_loader.save()
+        try:
+            permission = DataLoaderPermission.objects.get(id=permission_id)
+            csv_importer = CSVImporter(
+                data_loader,
+                'Health',
+                data_loader.organisation_name,
+                data_loader.csv_data.path,
+                data_loader.json_concept_mapping.path,
+                use_tabs=False,
+                user=data_loader.author,
+                mode=data_loader.data_loader_mode
+            )
+            logger.info('Finish loading data')
 
-        # send email
-        logger.info(csv_importer.generate_report())
+            # update data_loader
+            data_loader.applied = True
+            data_loader.date_time_applied = datetime.utcnow()
+            data_loader.notes = csv_importer.generate_report()
+            logger.info('date_time_applied: %s' % data_loader.date_time_applied)
+            data_loader.save()
 
-        send_email(data_loader, csv_importer)
-        call_command('generate_countries_cache')
-        regenerate_cache_cluster()
+            # send email
+            logger.info(csv_importer.generate_report())
+
+            send_email(data_loader, csv_importer.generate_report())
+            call_command('generate_countries_cache')
+            regenerate_cache_cluster()
+
+            # remove the permission
+            permission.delete()
+        except DataLoaderPermission.DoesNotExist :
+            logger.info("file is not authenticated")
+            send_email(data_loader, "file is not authenticated")
+
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)
 
