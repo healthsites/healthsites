@@ -6,7 +6,7 @@ from .models import (
     Specification,
     Changeset,
     DataLoader,
-    Country,
+    DataLoaderPermission,
 )
 from .forms import DomainModelForm
 
@@ -53,3 +53,12 @@ class DataUpdateAdmin(admin.ModelAdmin):
 
 
 admin.site.register(DataLoader, DataUpdateAdmin)
+
+
+class DataLoaderPermissionAdmin(admin.ModelAdmin):
+    list_display = (
+        'uploader', 'accepted_csv', 'key')
+    readonly_fields = ('key',)
+
+
+admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
