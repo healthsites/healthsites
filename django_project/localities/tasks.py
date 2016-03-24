@@ -149,7 +149,7 @@ def regenerate_cache(self, changeset_pk, locality_pk):
                 country.name + '_statistic'
             )
             healthsites = Locality.objects.in_polygon(
-                    polygons)
+                polygons)
             output = get_statistic(healthsites)
             result = json.dumps(output, cls=DjangoJSONEncoder)
             file = open(filename, 'w')
