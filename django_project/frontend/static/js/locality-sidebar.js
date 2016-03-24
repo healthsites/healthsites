@@ -1048,7 +1048,7 @@ window.LocalitySidebar = (function () {
                             if (center.length > 0) {
                                 var zoom = getCookie("zoom");
                                 if (zoom != "") {
-                                    $APP.trigger('map.pan', {'location': data.geom, 'zoom': zoom});
+                                    $APP.trigger('map.pan', {'location': [data.geom[1], data.geom[0]], 'zoom': zoom});
                                 }
                             }
                         }
