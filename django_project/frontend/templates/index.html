@@ -125,7 +125,12 @@
                 <div class="col-xs-6 hide-mobile pad0x"><a target="_blank" href="/map"
                                                            class="col-xs-11 button white pad0x">edit the
                     map</a></div>
-                <div class="col-xs-6 pad0x"><a href="#lifecycle" class="col-xs-11 button stroke pad0x">how it works</a>
+                <div class="col-xs-6 pad0x">
+                    {% if uploader %}
+                        <a href="/upload-form" class="col-xs-11 button stroke pad0x" target="_blank">upload data</a>
+                    {% else %}
+                        <a href="#lifecycle" class="col-xs-11 button stroke pad0x">how it works</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
