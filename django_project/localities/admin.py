@@ -57,8 +57,7 @@ admin.site.register(DataLoader, DataUpdateAdmin)
 
 class DataLoaderPermissionAdmin(admin.ModelAdmin):
     list_display = (
-        'uploader', 'accepted_csv', 'key')
-    readonly_fields = ('key',)
+        'uploader', 'accepted_csv',)
 
 
 admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)

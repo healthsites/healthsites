@@ -42,11 +42,11 @@ def send_email(data_loader, report):
     email_message += "You receive this email because you are the admin of Healthsites.io"
 
     send_mail(
-        subject='Healthsites Data Loader Report',
-        message=email_message,
-        from_email='dataloader@healthsites.io',
-        recipient_list=recipient_list,
-        fail_silently=False,
+            subject='Healthsites Data Loader Report',
+            message=email_message,
+            from_email='dataloader@healthsites.io',
+            recipient_list=recipient_list,
+            fail_silently=False,
     )
 
 
@@ -54,42 +54,33 @@ def send_email(data_loader, report):
 def load_data_task(self, data_loader_pk):
     # Put here to avoid circular import
     from .models import DataLoader, DataLoaderPermission
-    import os.path, time
     from django.core.management import call_command
     try:
         data_loader = DataLoader.objects.get(pk=data_loader_pk)
-        logger.info('Start loading data')
-        keys = []
-        with open(data_loader.csv_data.path) as f:
-            contents = f.readlines()
-            for key in contents:
-                if key[0] == "#":
-                    keys.append(key.replace("#","").replace("\n",""))
-                else:
-                    break
-        permissions = DataLoaderPermission.objects.filter(key__in=keys)
+        permissions = DataLoaderPermission.objects.filter(uploader=data_loader.author)
         permission_id = -999
         try:
             for permission in permissions:
-                if permission.uploader == data_loader.author:
-                    with open(data_loader.csv_data.path) as f1:
-                        with open(permission.accepted_csv.path) as f2:
-                            if f1.read() == f2.read():
-                                permission_id = permission.id
+                with open(data_loader.csv_data.path) as f1:
+                    with open(permission.accepted_csv.path) as f2:
+                        if f1.read() == f2.read():
+                            permission_id = permission.id
+                            break
+
         except Exception as e:
             print e
 
         try:
             permission = DataLoaderPermission.objects.get(id=permission_id)
             csv_importer = CSVImporter(
-                data_loader,
-                'Health',
-                data_loader.organisation_name,
-                data_loader.csv_data.path,
-                data_loader.json_concept_mapping.path,
-                use_tabs=False,
-                user=data_loader.author,
-                mode=data_loader.data_loader_mode
+                    data_loader,
+                    'Health',
+                    data_loader.organisation_name,
+                    data_loader.csv_data.path,
+                    data_loader.json_concept_mapping.path,
+                    use_tabs=False,
+                    user=data_loader.author,
+                    mode=data_loader.data_loader_mode
             )
             logger.info('Finish loading data')
 
@@ -104,12 +95,14 @@ def load_data_task(self, data_loader_pk):
             logger.info(csv_importer.generate_report())
 
             send_email(data_loader, csv_importer.generate_report())
-            call_command('generate_countries_cache')
-            regenerate_cache_cluster()
 
             # remove the permission
             permission.delete()
-        except DataLoaderPermission.DoesNotExist :
+            
+            call_command('generate_countries_cache')
+            regenerate_cache_cluster()
+        except DataLoaderPermission.DoesNotExist:
+            print "file is not authenticated"
             logger.info("file is not authenticated")
             send_email(data_loader, "file is not authenticated")
 
@@ -136,8 +129,8 @@ def regenerate_cache(self, changeset_pk, locality_pk):
 
         # write world cache
         filename = os.path.join(
-            settings.CLUSTER_CACHE_DIR,
-            'world_statistic')
+                settings.CLUSTER_CACHE_DIR,
+                'world_statistic')
         healthsites = Locality.objects.all()
         output = get_statistic(healthsites)
         result = json.dumps(output, cls=DjangoJSONEncoder)
@@ -152,11 +145,11 @@ def regenerate_cache(self, changeset_pk, locality_pk):
 
             # write country cache
             filename = os.path.join(
-                settings.CLUSTER_CACHE_DIR,
-                country.name + '_statistic'
+                    settings.CLUSTER_CACHE_DIR,
+                    country.name + '_statistic'
             )
             healthsites = Locality.objects.in_polygon(
-                polygons)
+                    polygons)
             output = get_statistic(healthsites)
             result = json.dumps(output, cls=DjangoJSONEncoder)
             file = open(filename, 'w')

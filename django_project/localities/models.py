@@ -635,40 +635,8 @@ class DataLoaderPermission(models.Model):
             null=False
     )
 
-    key = models.CharField(
-            verbose_name='key',
-            help_text='',
-            max_length=50,
-            null=True,
-            blank=True)
-
     def __str__(self):
         return "%s : %s" % (self.accepted_csv, self.uploader)
-
-    def key_generator(self, size=30, chars=string.ascii_uppercase + string.digits):
-        return ''.join(random.choice(chars) for _ in range(size))
-
-    def save(self, *args, **kwargs):
-        self.key = self.key_generator()
-        super(DataLoaderPermission, self).save(*args, **kwargs)
-
-
-# method for updating
-def change_file(sender, instance, **kwargs):
-    import os
-    # get cache
-    try:
-        filename = instance.accepted_csv.path
-        file = open(filename, 'r')
-        data = file.read()
-        file = open(filename, 'w')
-        file.write("#" + instance.key + "\n" + data)
-        file.close()
-    except Exception as e:
-        print e
-
-
-post_save.connect(change_file, sender=DataLoaderPermission)
 
 
 def data_loader_deleted(sender, instance, **kwargs):
