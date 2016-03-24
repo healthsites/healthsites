@@ -294,7 +294,7 @@ window.LocalitySidebar = (function () {
                     fields += '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient_service) +
-                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags)+ "&master_uuid=SDSSS";
+                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags) + "&master_uuid=SDSSS";
 
                     // GET DEFINING HOURS
                     fields += "&defining_hours=" + that.getDefiningHoursFormat()["format1"];
@@ -1038,6 +1038,7 @@ window.LocalitySidebar = (function () {
                         'geom': data.geom
                     });
                 }
+                console.log(data.geom);
                 // check cookies
                 // reset cookie because it is done
                 var type = getCookie("type");
@@ -1049,7 +1050,7 @@ window.LocalitySidebar = (function () {
                             if (center.length > 0) {
                                 var zoom = getCookie("zoom");
                                 if (zoom != "") {
-                                    $APP.trigger('map.pan', {'location': data.geom, 'zoom': zoom});
+                                    $APP.trigger('map.pan', {'location': [data.geom[1], data.geom[0]], 'zoom': zoom});
                                 }
                             }
                         }
