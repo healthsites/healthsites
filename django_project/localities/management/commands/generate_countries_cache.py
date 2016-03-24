@@ -7,7 +7,7 @@ from localities.models import Country, Locality
 import os
 import json
 from django.conf import settings
-from localities.views import get_statistic
+from localities.utils import get_statistic
 from django.core.serializers.json import DjangoJSONEncoder
 
 
@@ -25,7 +25,6 @@ class Command(BaseCommand):
                     'world_statistic')
             healthsites = Locality.objects.all()
             output = get_statistic(healthsites)
-            print output
             result = json.dumps(output, cls=DjangoJSONEncoder)
             file = open(filename, 'w')
             file.write(result)  # python will convert \n to os.linesep
@@ -51,5 +50,6 @@ class Command(BaseCommand):
                 file.write(result)  # python will convert \n to os.linesep
                 file.close()  # you can omit in most cases as the destructor will call it
                 print country.name + " cache is finished"
-            except:
+            except Exception as e:
+                print e
                 print "skip"

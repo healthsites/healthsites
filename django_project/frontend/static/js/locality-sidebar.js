@@ -35,6 +35,7 @@ window.LocalitySidebar = (function () {
 
     // constructor
     var module = function () {
+        this.$signin = $('#signin-button');
         this.$sidebar = $('#locality-info');
         // new style
         this.$line_updates = $('#line-updates');
@@ -177,6 +178,7 @@ window.LocalitySidebar = (function () {
             this.$addButton.on('click', this.showEdit.bind(this, "create"));
             this.$createButton.on('click', this.sendCreate.bind(this));
             this.$cancelButton.on('click', this.showEdit.bind(this));
+            this.$signin.on('click', this.goToSignin.bind(this));
 
             // -------------------------------------------------------------------
             // FORM IF SUBMIT
@@ -341,17 +343,23 @@ window.LocalitySidebar = (function () {
                         // Put the results in a div
                         posting.done(function (data) {
                             var data = JSON.parse(data);
-                            if (data["valid"]) {
+                            if (data["success"]) {
                                 that.locality_uuid = data["uuid"];
                                 $APP.trigger('set.hash.silent', {'locality': that.locality_uuid});
                                 that.getInfo();
                             } else {
-                                alert(data["key"] + " can't be empty");
+                                alert(data["reason"]);
                             }
                         });
                     }
                 }
             });
+        },
+        goToSignin: function () {
+            resetCookies();
+            setCookie("oldurl", window.location.href, 30);
+            window.location.href = "/signin/";
+
         },
         addedNewOptons: function (wrapper) {
             // SCOPE OPTIONS
@@ -445,6 +453,10 @@ window.LocalitySidebar = (function () {
             this.$createButton.hide();
             this.$line_updates.show();
             if (isEditingMode && !isLoggedIn) {
+                setCookie("type", mode, 30);
+                setCookie("center", APP.getCenterOfMap().lat + "," + APP.getCenterOfMap().lng, 30);
+                setCookie("zoom", APP.getZoomOfMap(), 30);
+                setCookie("uuid", this.locality_uuid, 30);
                 window.location.href = "/signin/";
             } else if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create"))) {
                 if (mode == "edit" && is_enable_edit) {
@@ -466,6 +478,9 @@ window.LocalitySidebar = (function () {
                     edit_fields[i].show();
                 }
             } else {
+                if (APP.getNowHasher() == "") {
+                    changeToDefault();
+                }
                 $APP.trigger('locality.cancel');
                 for (var i = 0; i < info_fields.length; i++) {
                     info_fields[i].show();
@@ -1021,6 +1036,25 @@ window.LocalitySidebar = (function () {
                     $APP.trigger('locality.history-hide', {
                         'geom': data.geom
                     });
+                }
+                // check cookies
+                // reset cookie because it is done
+                var type = getCookie("type");
+                if (type) {
+                    if (type == 'edit') {
+                        var center = getCookie("center");
+                        if (center != "") {
+                            center = center.split(",");
+                            if (center.length > 0) {
+                                var zoom = getCookie("zoom");
+                                if (zoom != "") {
+                                    $APP.trigger('map.pan', {'location': data.geom, 'zoom': zoom});
+                                }
+                            }
+                        }
+                        self.$editButton.click();
+                    }
+                    resetCookies();
                 }
             });
         },

@@ -54,6 +54,7 @@ def send_email(data_loader, csv_importer):
 def load_data_task(self, data_loader_pk):
     # Put here to avoid circular import
     from .models import DataLoader
+    from django.core.management import call_command
     try:
         data_loader = DataLoader.objects.get(pk=data_loader_pk)
         logger.info('Start loading data')
@@ -81,6 +82,8 @@ def load_data_task(self, data_loader_pk):
         logger.info(csv_importer.generate_report())
 
         send_email(data_loader, csv_importer)
+        call_command('generate_countries_cache')
+        regenerate_cache_cluster()
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)
 
@@ -94,13 +97,25 @@ def regenerate_cache(self, changeset_pk, locality_pk):
     import os
     import json
     from django.conf import settings
-    from localities.views import get_statistic
+    from localities.utils import get_statistic
     from django.core.serializers.json import DjangoJSONEncoder
 
     try:
         changeset = Changeset.objects.get(pk=changeset_pk)
         locality = Locality.objects.get(pk=locality_pk)
         country = Country.objects.filter(polygon_geometry__contains=locality.geom)
+
+        # write world cache
+        filename = os.path.join(
+            settings.CLUSTER_CACHE_DIR,
+            'world_statistic')
+        healthsites = Locality.objects.all()
+        output = get_statistic(healthsites)
+        result = json.dumps(output, cls=DjangoJSONEncoder)
+        file = open(filename, 'w')
+        file.write(result)  # python will convert \n to os.linesep
+        file.close()  # you can omit in most cases as the destructor will call it
+
         # getting country's polygon
         if len(country):
             country = country[0]
@@ -112,20 +127,8 @@ def regenerate_cache(self, changeset_pk, locality_pk):
                 country.name + '_statistic'
             )
             healthsites = Locality.objects.in_polygon(
-                    polygons)
+                polygons)
             output = get_statistic(healthsites)
-            result = json.dumps(output, cls=DjangoJSONEncoder)
-            file = open(filename, 'w')
-            file.write(result)  # python will convert \n to os.linesep
-            file.close()  # you can omit in most cases as the destructor will call it
-
-            # write world cache
-            filename = os.path.join(
-                settings.CLUSTER_CACHE_DIR,
-                'world_statistic')
-            healthsites = Locality.objects.all()
-            output = get_statistic(healthsites)
-            print output
             result = json.dumps(output, cls=DjangoJSONEncoder)
             file = open(filename, 'w')
             file.write(result)  # python will convert \n to os.linesep
@@ -137,3 +140,9 @@ def regenerate_cache(self, changeset_pk, locality_pk):
         raise self.retry(exc=exc, countdown=5, max_retries=10)
     except Exception as e:
         print e
+
+
+@app.task(bind=True)
+def regenerate_cache_cluster(self):
+    from django.core.management import call_command
+    call_command('gen_cluster_cache', 48, 46)

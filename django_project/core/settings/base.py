@@ -9,7 +9,7 @@ from django.contrib.messages import constants as messages
 
 ADMINS = (
     ('Tim Sutton', 'tim@kartoza.com'),
-    ('Ismail Sunni', 'ismail@kartoza.com')
+    ('Irwan Fathurrahman', 'irwan@kartoza.com')
 )
 
 # This should be done in prod rather

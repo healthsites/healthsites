@@ -3,10 +3,7 @@ from django.conf.urls import patterns, url
 from .views import (
     LocalitiesLayer,
     LocalityInfo,
-    LocalityUpdate,
-    LocalityCreate,
-    DataLoaderView,
-    SearchView
+    DataLoaderView
 )
 
 urlpatterns = patterns(
@@ -24,19 +21,11 @@ urlpatterns = patterns(
         name='locality-info-history'
     ),
     url(
-        r'^localities/(?P<uuid>\w{32})/form$', LocalityUpdate.as_view(),
-        name='locality-update'
-    ),
-    url(
-        r'^localities/form/(?P<domain>\w+)$', LocalityCreate.as_view(),
-        name='locality-create'
-    ),
-    url(
-        r'^localities/edit$', 'localities.views.locality_edit',
+        r'^localities/edit$', 'localities.views.locality_edit_view',
         name='locality-edit'
     ),
     url(
-        r'^localities/create$', 'localities.views.locality_create',
+        r'^localities/create$', 'localities.views.locality_create_view',
         name='locality-create'
     ),
 
@@ -71,5 +60,5 @@ urlpatterns = patterns(
         r'^load-data$', 'localities.views.load_data', name='load-data'
     ),
 
-    url(r'^search$', SearchView.as_view(), name='search')
+    # url(r'^search$', SearchView.as_view(), name='search')
 )

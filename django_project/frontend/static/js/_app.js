@@ -96,6 +96,26 @@ window.APP = (function () {
         _closeSidebar: function () {
 
         },
+
+        getCenterOfMap: function () {
+            if (_MAP) {
+                return _MAP.MAP.getCenter();
+            } else {
+                return {lat: 0, lng: 0}
+            }
+        },
+
+        getZoomOfMap: function () {
+            if (_MAP) {
+                return _MAP.MAP.getZoom();
+            } else {
+                return 0
+            }
+        },
+
+        getNowHasher: function () {
+            return hasher.getHash();
+        }
     }
 
     // return module

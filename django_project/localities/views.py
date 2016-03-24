@@ -1,34 +1,26 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
-from django.core.serializers.json import DjangoJSONEncoder
+import os
 
 LOG = logging.getLogger(__name__)
-import os
-import googlemaps
-import json
-import uuid
+
 # register signals
-import signals  # noqa
-from .forms import LocalityForm, DomainForm, DataLoaderForm, SearchForm
+from .forms import DataLoaderForm
 from .map_clustering import cluster
-from .models import Locality, Domain, Changeset, Value, Attribute, Specification, User
-from .models import LocalityArchive, ValueArchive
-from .utils import render_fragment, parse_bbox
+from .models import Locality, Domain, Changeset, Value, Attribute, Specification
+from .utils import parse_bbox, get_country_statistic, get_locality_detail, locality_create, locality_edit, \
+    locality_updates, get_locality_by_spec_data
+
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 from datetime import datetime
 from django.conf import settings
-from django.contrib.gis.geos import Point
-from django.core.urlresolvers import reverse
-from django.db import transaction
-from django.db.models import Count, Max
+from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, Http404
 from django.views.generic import DetailView, ListView, FormView
-from django.views.generic.detail import SingleObjectMixin
-from localities.models import Country, DataLoader
-from django.contrib.gis.measure import D
-from social_users.views import getProfile
-from core.utilities import extract_time, extract_updates
-from .tasks import regenerate_cache
+from localities.models import Country
+
+LOG = logging.getLogger(__name__)
 
 
 class LocalitiesLayer(JSONResponseMixin, ListView):
@@ -74,42 +66,69 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
     def get(self, request, *args, **kwargs):
         # parse request params
         bbox, zoom, iconsize, geoname, tag, spec, data, uuid = self._parse_request_params(request)
-        # cluster Localites for a view
-        localities = Locality.objects.in_bbox(bbox)
-        exception = False
-        try:
-            if geoname != "":
-                # getting country's polygon
-                country = Country.objects.get(
-                        name__iexact=geoname)
-                polygon = country.polygon_geometry
-                localities = localities.in_polygon(polygon)
-        except Country.DoesNotExist:
-            if geoname != "" and geoname != "undefined":
-                exception = True
-            else:
-                # searching by tag
-                if tag != "" and tag != "undefined":
-                    localities = Value.objects.filter(
-                            specification__attribute__key='tags').filter(data__icontains="|" + tag + "|").values(
-                            'locality')
-                    localities = Locality.objects.filter(id__in=localities)
+        if not geoname and not tag and not spec and not data and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
+            # if geoname and tag are not set we can return the cached layer
+            # try to read localities from disk
+            filename = os.path.join(
+                    settings.CLUSTER_CACHE_DIR,
+                    '{}_{}_{}_localities.json'.format(zoom, *iconsize)
+            )
+
+            try:
+                cached_locs = open(filename, 'rb')
+                cached_data = cached_locs.read()
+
+                return HttpResponse(
+                        cached_data, content_type='application/json', status=200
+                )
+            except IOError as e:
+                localities = Locality.objects.in_bbox(parse_bbox('-180,-90,180,90'))
+                object_list = cluster(localities, zoom, *iconsize)
+
+                # create the missing cache
+                with open(filename, 'wb') as cache_file:
+                    json.dump(object_list, cache_file)
+
+                return self.render_json_response(object_list)
+        else:
+            # cluster Localites for a view
+            localities = Locality.objects.in_bbox(bbox)
+            exception = False
+            try:
+                if geoname != "":
+                    # getting country's polygon
+                    country = Country.objects.get(
+                            name__iexact=geoname)
+                    polygon = country.polygon_geometry
+                    localities = localities.in_polygon(polygon)
                 else:
-                    # serching by value
-                    if spec != "" and spec != "undefined" and data != "" and data != "undefined":
-                        localities = get_locality_by_spec_data(spec, data, uuid)
+                    raise Country.DoesNotExist
+            except Country.DoesNotExist:
+                if geoname != "" and geoname != "undefined":
+                    exception = True
+                else:
+                    # searching by tag
+                    if tag != "" and tag != "undefined":
+                        localities = Value.objects.filter(
+                                specification__attribute__key='tags').filter(data__icontains="|" + tag + "|").values(
+                                'locality')
                         localities = Locality.objects.filter(id__in=localities)
-        object_list = []
-        focused = []
-        if uuid:
-            localities = localities.exclude(uuid=uuid)
-            focused = Locality.objects.filter(uuid=uuid)
-            focused = cluster(focused, zoom, *iconsize)
-        if not exception:
-            object_list = cluster(localities, zoom, *iconsize)
-            if focused:
-                object_list = object_list + focused
-        return self.render_json_response(object_list)
+                    else:
+                        # serching by value
+                        if spec != "" and spec != "undefined" and data != "" and data != "undefined":
+                            localities = get_locality_by_spec_data(spec, data, uuid)
+                            localities = Locality.objects.filter(id__in=localities)
+            object_list = []
+            focused = []
+            if uuid:
+                localities = localities.exclude(uuid=uuid)
+                focused = Locality.objects.filter(uuid=uuid)
+                focused = cluster(focused, zoom, *iconsize)
+            if not exception:
+                object_list = cluster(localities, zoom, *iconsize)
+                if focused:
+                    object_list = object_list + focused
+            return self.render_json_response(object_list)
 
 
 class LocalityInfo(JSONResponseMixin, DetailView):
@@ -130,115 +149,11 @@ class LocalityInfo(JSONResponseMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # get attributes
-        attribute_count = 18
-        # count completeness based attributes
-        obj_repr = self.object.repr_dict()
-        data_repr = render_fragment(
-                self.object.domain.template_fragment, obj_repr
-        )
-        obj_repr.update({'repr': data_repr})
-
-        num_data = len(obj_repr['values']) + 1  # geom
-        completeness = (num_data + 0.0) / (attribute_count + 0.0) * 100  # percentage
-        obj_repr.update({'completeness': '%s%%' % format(completeness, '.2f')})
-
-        # get latest update
-        try:
-            updates = []
-            last_updates = locality_updates(self.object.id, datetime.now())
-            for last_update in last_updates:
-                updates.append({"last_update": last_update['changeset__created'],
-                                "uploader": last_update['changeset__social_user__username'],
-                                "nickname": last_update['nickname'],
-                                "changeset_id": last_update['changeset']});
-            obj_repr.update({'updates': updates})
-        except Exception as e:
-            print e
-
-        # FOR HISTORY
-        obj_repr['history'] = False
-        if kwargs.has_key("changes"):
-            changes = kwargs['changes']
-            changeset = Changeset.objects.get(id=changes)
-            obj_repr['updates'][0]['last_update'] = changeset.created
-            obj_repr['updates'][0]['uploader'] = changeset.social_user.username
-            obj_repr['updates'][0]['changeset_id'] = changes
-            try:
-                localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
-                for archive in localityArchives:
-                    obj_repr['geom'] = (archive.geom.x, archive.geom.y)
-                    obj_repr['history'] = True
-            except LocalityArchive.DoesNotExist:
-                print "next"
-
-            try:
-                localityArchives = ValueArchive.objects.filter(changeset=changes).filter(locality_id=self.object.id)
-                for archive in localityArchives:
-                    try:
-                        specification = Specification.objects.get(id=archive.specification_id)
-                        obj_repr['values'][specification.attribute.key] = archive.data
-                        obj_repr['history'] = True
-                    except Specification.DoesNotExist:
-                        print "next"
-            except LocalityArchive.DoesNotExist:
-                print "next"
-        print obj_repr
-
+        if kwargs.has_key('changes'):
+            obj_repr = get_locality_detail(self.object, kwargs['changes']);
+        else:
+            obj_repr = get_locality_detail(self.object, None);
         return self.render_json_response(obj_repr)
-
-
-class LocalityUpdate(LoginRequiredMixin, SingleObjectMixin, FormView):
-    """
-    Handles Locality updates, users need to be logged in order to update a
-    Locality
-    """
-
-    raise_exception = True
-    form_class = LocalityForm
-    template_name = 'updateform.html'
-    slug_field = 'uuid'
-    slug_url_kwarg = 'uuid'
-
-    def get_queryset(self):
-        queryset = (
-            Locality.objects.select_related('domain')
-        )
-        return queryset
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super(LocalityUpdate, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super(LocalityUpdate, self).post(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        # update everything in one transaction
-        with transaction.atomic():
-            self.object.set_geom(
-                    form.cleaned_data.pop('lon'),
-                    form.cleaned_data.pop('lat')
-            )
-            if self.object.tracker.changed():
-                # there are some changes so create a new changeset
-                tmp_changeset = Changeset.objects.create(
-                        social_user=self.request.user
-                )
-                self.object.changeset = tmp_changeset
-            self.object.save()
-            self.object.set_values(
-                    form.cleaned_data, social_user=self.request.user
-            )
-
-            return HttpResponse('OK')
-
-        # transaction failed
-        return HttpResponse('ERROR updating Locality and values')
-
-    def get_form(self, form_class):
-        return form_class(locality=self.object, **self.get_form_kwargs())
 
 
 def get_json_from_request(request):
@@ -300,133 +215,12 @@ def get_json_from_request(request):
     return json
 
 
-def locality_edit(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated():
-            json_request = get_json_from_request(request)
-            # checking mandatory
-            if json_request['is_valid'] == True:
-                locality = Locality.objects.get(uuid=json_request['uuid'])
-                locality.set_geom(float(json_request['long']), float(json_request['lat']))
-                # there are some changes so create a new changeset
-                tmp_changeset = Changeset.objects.create(
-                        social_user=request.user
-                )
-                locality.changeset = tmp_changeset
-                locality.save()
-                locality.set_values(json_request, request.user, tmp_changeset)
-
-                regenerate_cache.delay(tmp_changeset.pk, locality.pk)
-
-                return HttpResponse(json.dumps(
-                        {"valid": json_request['is_valid'], "uuid": json_request['uuid']}))
-            else:
-                return HttpResponse(
-                        json.dumps({"valid": json_request['is_valid'], "key": json_request['invalid_key']}))
-
-    else:
-        print "not logged in"
-    return HttpResponse('ERROR updating Locality and values')
+def locality_edit_view(request):
+    return HttpResponse(json.dumps(locality_edit(request)))
 
 
-def locality_create(request):
-    if request.method == 'POST':
-        if request.user.is_authenticated():
-            json_request = get_json_from_request(request)
-            # checking mandatory
-            if json_request['is_valid'] == True:
-                tmp_changeset = Changeset.objects.create(
-                        social_user=request.user
-                )
-                # generate new uuid
-                tmp_uuid = uuid.uuid4().hex
-
-                loc = Locality()
-                loc.changeset = tmp_changeset
-                loc.domain = Domain.objects.get(name="Health")
-                loc.uuid = tmp_uuid
-
-                # generate unique upstream_id
-                loc.upstream_id = u'web¶{}'.format(tmp_uuid)
-
-                loc.geom = Point(
-                        float(json_request['long']), float(json_request['lat'])
-                )
-                loc.save()
-                loc.set_values(json_request, request.user, tmp_changeset)
-
-                regenerate_cache.delay(tmp_changeset.pk, loc.pk)
-
-                return HttpResponse(json.dumps(
-                        {"valid": json_request['is_valid'], "uuid": tmp_uuid}))
-            else:
-                return HttpResponse(
-                        json.dumps({"valid": json_request['is_valid'], "key": json_request['invalid_key']}))
-
-    else:
-        print "not logged in"
-    return HttpResponse('ERROR updating Locality and values')
-
-
-class LocalityCreate(LoginRequiredMixin, SingleObjectMixin, FormView):
-    """
-    Handles Locality creates, users need to be logged in order to create a
-    Locality
-    """
-
-    raise_exception = True
-    form_class = DomainForm
-    template_name = 'updateform.html'
-
-    def get_queryset(self):
-        queryset = Domain.objects
-        return queryset
-
-    def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset()
-        queryset = queryset.filter(name=self.kwargs.get('domain'))
-
-        obj = queryset.get()
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super(LocalityCreate, self).get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        return super(LocalityCreate, self).post(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        # create new as a single transaction
-        with transaction.atomic():
-            tmp_changeset = Changeset.objects.create(
-                    social_user=self.request.user
-            )
-
-            # generate new uuid
-            tmp_uuid = uuid.uuid4().hex
-
-            loc = Locality()
-            loc.changeset = tmp_changeset
-            loc.domain = self.object
-            loc.uuid = tmp_uuid
-
-            # generate unique upstream_id
-            loc.upstream_id = u'web¶{}'.format(tmp_uuid)
-
-            loc.geom = Point(
-                    form.cleaned_data.pop('lon'), form.cleaned_data.pop('lat')
-            )
-            loc.save()
-            loc.set_values(form.cleaned_data, social_user=self.request.user)
-
-            return HttpResponse(loc.pk)
-        # transaction failed
-        return HttpResponse('ERROR creating Locality and values')
-
-    def get_form(self, form_class):
-        return form_class(domain=self.object, **self.get_form_kwargs())
+def locality_create_view(request):
+    return HttpResponse(json.dumps(locality_create(request)))
 
 
 class DataLoaderView(LoginRequiredMixin, FormView):
@@ -460,14 +254,10 @@ def load_data(request):
                               user=request.user)
         if form.is_valid():
             data_loader = form.save(True)
-
             # load_data_task.delay(data_loader.pk)
 
             response = {}
             success_message = 'You have successfully upload your data'
-            # response['created'] = csv_importer.report['created']
-            # response['modified'] = csv_importer.report['modified']
-            # response['duplicated'] = csv_importer.report['duplicated']
 
             response['message'] = success_message
             response['success'] = True
@@ -475,11 +265,6 @@ def load_data(request):
                 'Please wait several minutes for Healthsites to load your data. We will send you an email if we '
                 'have finished loading the data.'
             )
-            # if response['duplicated'] > 0:
-            #     response['detailed_message'] += (
-            #         ' You also have %s possible duplicated localities, '
-            #         'and they are not added.' % response['duplicated']
-            #     )
             return HttpResponse(json.dumps(
                     response,
                     ensure_ascii=False),
@@ -499,23 +284,6 @@ def load_data(request):
         pass
 
 
-class SearchView(FormView):
-    template_name = 'search.html'
-    form_class = SearchForm
-
-    def post(self, request, *args, **kwargs):
-        return super(SearchView, self).post(request, *args, **kwargs)
-
-    def get_success_url(self):
-        google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
-        gmaps = googlemaps.Client(key=google_maps_api_key)
-        geoname = self.form_class.cleaned_data['id_search']
-        LOG.info(geoname)
-        geocode_result = gmaps.geocode(geoname)
-        LOG.info(geocode_result)
-        return reverse('search')
-
-
 def search_locality_by_name(request):
     if request.method == 'GET':
         query = request.GET.get('q')
@@ -527,166 +295,6 @@ def search_locality_by_name(request):
             result.append(locality_value.data)
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')
-
-
-def get_statistic(healthsites):
-    # locality which in polygon
-    # data for frontend
-    complete = 0
-    partial = 0
-    basic = 0
-
-    healthsites_number = healthsites.count()
-    values = Value.objects.filter(locality__in=healthsites)
-
-    hospital_number = values.filter(
-            specification__attribute__key='type').filter(
-            data__iexact='hospital').count()
-    medical_clinic_number = values.filter(
-            specification__attribute__key='type').filter(
-            data__iexact='clinic').count()
-    orthopaedic_clinic_number = values.filter(
-            specification__attribute__key='type').filter(
-            data__iexact='orthopaedic').count()
-
-    # check completnees
-    values = Value.objects.filter(locality__in=healthsites).exclude(data__isnull=True).exclude(
-            data__exact='').values('locality').annotate(
-            value_count=Count('locality'))
-    # get attributes
-    attribute_count = 18
-    # count completeness based attributes
-    # this make long waiting, need to more good query
-    complete = values.filter(value_count__gte=attribute_count).count()
-    partial = values.filter(value_count__gte=4).filter(value_count__lte=attribute_count - 1).count()
-    basic = values.filter(value_count__lte=3).count()
-
-    output = {"numbers": {"hospital": hospital_number, "medical_clinic": medical_clinic_number
-        , "orthopaedic_clinic": orthopaedic_clinic_number},
-              "completeness": {"complete": complete, "partial": partial, "basic": basic},
-              "localities": healthsites_number}
-    # updates
-    histories = localities_updates(healthsites)
-    output["last_update"] = extract_updates(histories)
-    return output
-
-
-def search_locality_by_tag(query):
-    try:
-        localities = Value.objects.filter(
-                specification__attribute__key='tags').filter(data__icontains="|" + query + "|").values('locality')
-        return get_statistic(localities)
-    except Value.DoesNotExist:
-        return []
-
-
-def get_locality_by_spec_data(spec, data, uuid):
-    try:
-        if spec == "attribute":
-            if uuid:
-                locality = Locality.objects.get(uuid=uuid)
-                localities = Locality.objects.filter(
-                        geom__distance_lte=(locality.geom, D(mi=100))
-                ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
-                localities = Value.objects.filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
-            else:
-                localities = Value.objects.filter(
-                        data__icontains=data).values('locality')
-        else:
-            if uuid:
-                locality = Locality.objects.get(uuid=uuid)
-                localities = Locality.objects.filter(
-                        geom__distance_lte=(locality.geom, D(mi=100))
-                ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
-                localities = Value.objects.filter(
-                        specification__attribute__key=spec).filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
-            else:
-                localities = Value.objects.filter(
-                        specification__attribute__key=spec).filter(
-                        data__icontains=data).values('locality')
-        return localities
-    except Value.DoesNotExist:
-        return []
-
-
-def search_locality_by_spec_data(spec, data, uuid):
-    localities = get_locality_by_spec_data(spec, data, uuid)
-    print localities
-    if localities == []:
-        return []
-    else:
-        output = get_statistic(localities)
-        output['locality_name'] = ""
-        output['location'] = 0.0
-        if uuid:
-            try:
-                locality = Locality.objects.get(uuid=uuid)
-                locality_name = Value.objects.filter(locality=locality).filter(
-                        specification__attribute__key='name')[0].data
-                output['locality_name'] = locality_name
-                output['location'] = {'x': "%f" % locality.geom.x, 'y': "%f" % locality.geom.y}
-            except Locality.DoesNotExist:
-                print "locality not found"
-        return output
-
-
-def get_country_statistic(query):
-    output = ""
-    try:
-        if query != "":
-            # getting country's polygon
-            country = Country.objects.get(
-                    name__iexact=query)
-            polygons = country.polygon_geometry
-
-            # get cache
-            filename = os.path.join(
-                    settings.CLUSTER_CACHE_DIR,
-                    country.name + '_statistic'
-            )
-            try:
-                file = open(filename, 'r')
-                data = file.read()
-                output = json.loads(data)
-            except IOError as e:
-                try:
-                    # query for each of attribute
-                    healthsites = Locality.objects.in_polygon(
-                            polygons)
-                    output = get_statistic(healthsites)
-                    result = json.dumps(output, cls=DjangoJSONEncoder)
-                    file = open(filename, 'w')
-                    file.write(result)  # python will convert \n to os.linesep
-                    file.close()  # you can omit in most cases as the destructor will call it
-                except Exception as e:
-                    print e
-        else:
-            # get cache
-            filename = os.path.join(
-                    settings.CLUSTER_CACHE_DIR,
-                    'world_statistic'
-            )
-            try:
-                file = open(filename, 'r')
-                data = file.read()
-                output = json.loads(data)
-            except IOError as e:
-                try:
-                    # query for each of attribute
-                    healthsites = Locality.objects.all()
-                    output = get_statistic(healthsites)
-                    result = json.dumps(output, cls=DjangoJSONEncoder)
-                    file = open(filename, 'w')
-                    file.write(result)  # python will convert \n to os.linesep
-                    file.close()  # you can omit in most cases as the destructor will call it
-                except Exception as e:
-                    print e
-
-    except Country.DoesNotExist:
-        output = ""
-    return output
 
 
 def search_locality_by_country(request):
@@ -732,66 +340,3 @@ def get_locality_update(request):
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')
-
-
-def locality_updates(locality_id, date):
-    updates = []
-    try:
-        updates1 = LocalityArchive.objects.filter(object_id=locality_id).filter(changeset__created__lt=date).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-                edit_count=Count('changeset'))[:15]
-        for update in updates1:
-            updates.append(update)
-        updates2 = ValueArchive.objects.filter(locality_id=locality_id).filter(
-                changeset__created__lt=date).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-                edit_count=Count('changeset'))[:15]
-        for update in updates2:
-            updates.append(update)
-        updates.sort(key=extract_time, reverse=True)
-    except LocalityArchive.DoesNotExist:
-        print "Locality Archive not exist"
-
-    output = []
-    prev_changeset = 0
-    for update in updates:
-        if prev_changeset != update['changeset']:
-            profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
-            update['nickname'] = profile.screen_name
-            update['changeset__created'] = str(update['changeset__created'])
-            output.append(update)
-        prev_changeset = update['changeset']
-    return output[:10]
-
-
-def localities_updates(locality_ids):
-    updates = []
-    try:
-        updates1 = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-                edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
-        for update in updates1:
-            updates.append(update)
-        updates2 = ValueArchive.objects.filter(locality_id__in=locality_ids).filter(version__gt=1).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-                edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
-        for update in updates2:
-            updates.append(update)
-        updates.sort(key=extract_time, reverse=True)
-    except LocalityArchive.DoesNotExist:
-        print "Locality Archive not exist"
-
-    output = []
-    prev_changeset = 0
-    for update in updates:
-        if prev_changeset != update['changeset']:
-            profile = getProfile(User.objects.get(username=update['changeset__social_user__username']))
-            update['nickname'] = profile.screen_name
-            update['changeset__created'] = str(update['changeset__created'])
-            output.append(update)
-        prev_changeset = update['changeset']
-    return output[:10]

@@ -98,8 +98,10 @@ $(window).scroll(function () {
     var scroll = $(window).scrollTop();
     if (scroll >= 72) {
         $(".home .masthead").addClass("no-tag");
+		$(".home").addClass("h-short");
     } else {
         $(".home .masthead").removeClass("no-tag");
+		$(".home").removeClass("h-short");
     }
 
 
