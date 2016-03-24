@@ -145,6 +145,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     upstream_id = models.TextField(null=True, unique=True)
     geom = models.PointField(srid=4326)
     specifications = models.ManyToManyField('Specification', through='Value')
+    master = models.ForeignKey('Locality', null=True, default=None)
 
     objects = PassThroughGeoManager.for_queryset_class(LocalitiesQuerySet)()
 

@@ -294,7 +294,7 @@ window.LocalitySidebar = (function () {
                     fields += '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient_service) +
-                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags);
+                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags)+ "&master_uuid=SDSSS";
 
                     // GET DEFINING HOURS
                     fields += "&defining_hours=" + that.getDefiningHoursFormat()["format1"];
@@ -340,6 +340,7 @@ window.LocalitySidebar = (function () {
                     if (isFormValid) {
                         //Send the data using post
                         var posting = $.post(url, fields);
+                        console.log(fields);
                         // Put the results in a div
                         posting.done(function (data) {
                             var data = JSON.parse(data);

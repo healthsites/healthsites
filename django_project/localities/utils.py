@@ -137,7 +137,7 @@ def get_heathsite_by_polygon(request, polygon):
 
 def get_json_from_request(request):
     # special request:
-    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid"]
+    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid", "master_uuid"]
 
     mstring = []
     json = {}
@@ -282,7 +282,6 @@ def locality_create(request):
                 loc.set_values(json_request, request.user, tmp_changeset)
 
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
-                print "regenerate"
                 regenerate_cache_cluster.delay()
 
                 return {"success": json_request['is_valid'], "uuid": tmp_uuid, "reason": ""}
@@ -303,12 +302,29 @@ def locality_edit(request):
             if json_request['is_valid'] == True:
                 locality = Locality.objects.get(uuid=json_request['uuid'])
                 old_geom = [locality.geom.x, locality.geom.y]
+
                 locality.set_geom(float(json_request['long']), float(json_request['lat']))
+
                 # there are some changes so create a new changeset
                 tmp_changeset = Changeset.objects.create(
                         social_user=request.user
                 )
                 locality.changeset = tmp_changeset
+
+                # get master
+                master_uuid = ""
+                if 'master_uuid' in json_request:
+                    master_uuid = json_request['master_uuid']
+                try:
+                    if master_uuid == "":
+                        master = None
+                    else:
+                        master = Locality.objects.get(uuid=master_uuid)
+                except Locality.DoesNotExist:
+                    return {"success": False,
+                            "reason": "master is not found"}
+
+                locality.master = master
                 locality.save()
                 locality.set_values(json_request, request.user, tmp_changeset)
 

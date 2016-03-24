@@ -285,6 +285,13 @@
     font-family: "Ubuntu", sans-serif;
 }
 
+.location-info .master {
+    background: #f9f9f9;
+    padding: 10px 20px 10px 20px;
+    font-family: "Ubuntu", sans-serif;
+    color: #f44a52;
+}
+
 .details .line {
     border-bottom: 1px solid #eff0f0;
     clear: both;
@@ -345,7 +352,7 @@
     margin-bottom: 0;
     display: block;
     white-space: nowrap;
-    width: 80%; 
+    width: 80%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
