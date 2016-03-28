@@ -292,6 +292,15 @@
     color: #f44a52;
 }
 
+.location-info .master-uuid {
+    color: #3c4c57;
+    cursor: pointer;
+}
+
+.location-info .master-uuid:hover {
+    text-decoration: underline;
+}
+
 .details .line {
     border-bottom: 1px solid #eff0f0;
     clear: both;

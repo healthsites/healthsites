@@ -240,6 +240,16 @@ class Locality(UpdateMixin, ChangesetMixin):
         """
         Basic locality representation, as a dictionary
         """
+        if self.master:
+            try:
+                master_name = Value.objects.filter(locality=self.master).filter(
+                        specification__attribute__key='name')[0].data
+            except Value.DoesNotExist:
+                master_name = self.master.uuid
+
+            master = {'master_uuid': self.master.uuid, 'master_name': master_name}
+        else:
+            master = {'master_uuid': "", 'master_name': ""}
 
         return {
             u'uuid': self.uuid,
@@ -247,6 +257,7 @@ class Locality(UpdateMixin, ChangesetMixin):
                 val.specification.attribute.key: val.data
                 for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact='')
                 },
+            u'master': master,
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
             u'changeset': self.changeset_id

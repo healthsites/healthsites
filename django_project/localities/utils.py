@@ -278,6 +278,26 @@ def locality_create(request):
                 loc.geom = Point(
                         float(json_request['long']), float(json_request['lat'])
                 )
+
+                # get master
+                #  ------------------------------------------------------
+                master_uuid = ""
+                if 'master_uuid' in json_request:
+                    master_uuid = json_request['master_uuid']
+                try:
+                    if master_uuid == "":
+                        master = None
+                    if master_uuid == loc.uuid:
+                        return {"success": False,
+                                "reason": "cannot use it's uuid as master"}
+                    else:
+                        master = Locality.objects.get(uuid=master_uuid)
+                except Locality.DoesNotExist:
+                    return {"success": False,
+                            "reason": "master is not found"}
+                loc.master = master
+                #  ------------------------------------------------------
+
                 loc.save()
                 loc.set_values(json_request, request.user, tmp_changeset)
 
@@ -312,19 +332,24 @@ def locality_edit(request):
                 locality.changeset = tmp_changeset
 
                 # get master
+                #  ------------------------------------------------------
                 master_uuid = ""
                 if 'master_uuid' in json_request:
                     master_uuid = json_request['master_uuid']
                 try:
                     if master_uuid == "":
                         master = None
+                    if master_uuid == locality.uuid:
+                        return {"success": False,
+                                "reason": "cannot use it's uuid as master"}
                     else:
                         master = Locality.objects.get(uuid=master_uuid)
                 except Locality.DoesNotExist:
                     return {"success": False,
                             "reason": "master is not found"}
-
                 locality.master = master
+                #  ------------------------------------------------------
+
                 locality.save()
                 locality.set_values(json_request, request.user, tmp_changeset)
 

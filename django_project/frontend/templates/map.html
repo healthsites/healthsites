@@ -249,8 +249,15 @@
                 </div>
                 <div class="info">
                     <div class="line">
-                        <div class="master" id="locality-master">
-                            <center><b>MASTER</b></center>
+                        <div class="master">
+                            <div id="locality-master">
+                                <center><b id="locality-master-indicator">MASTER</b></center>
+                            </div>
+                            <div id="locality-master-input" style="text-align: center; display: none">
+                                <input id="locality-master-input-flag" type="checkbox">master
+                                <input id="locality-master-input-text-box" type="text" placeholder="uuid"
+                                       style="margin-bottom: 10px;margin-left: 20px"/>
+                            </div>
                         </div>
                     </div>
                     <div id="line-updates" class="line updates">
