@@ -116,8 +116,8 @@ def get_country_statistic(query):
     return output
 
 
-def get_heathsite_by_polygon(request, polygon):
-    healthsites = Locality.objects.in_polygon(
+def get_heathsites_master_by_polygon(request, polygon):
+    healthsites = Locality.objects.filter(master=None).in_polygon(
             polygon)
 
     facility_type = ""

@@ -763,16 +763,14 @@ window.LocalitySidebar = (function () {
                 {
                     var master = this.locality_data.master;
                     if (master) {
-                        if (master['master_uuid'] != "") {
-                            this.$locality_master_input_text_box.val(master['master_uuid']);
-                            this.$locality_master_indicator.html('MASTER : <span id="' + master['master_uuid'] + '" class="master-uuid">' + master['master_name'] + '</span>');
-                            $('#' + master['master_uuid']).click(function () {
-                                $APP.trigger('locality.map.click', {'locality_uuid': master['master_uuid']});
-                                $APP.trigger('set.hash.silent', {'locality': master['master_uuid']});
-                            })
-                        } else {
-                            this.$locality_master_input_flag.click();
-                        }
+                        this.$locality_master_input_text_box.val(master['master_uuid']);
+                        this.$locality_master_indicator.html('MASTER : <span id="' + master['master_uuid'] + '" class="master-uuid">' + master['master_name'] + '</span>');
+                        $('#' + master['master_uuid']).click(function () {
+                            $APP.trigger('locality.map.click', {'locality_uuid': master['master_uuid']});
+                            $APP.trigger('set.hash.silent', {'locality': master['master_uuid']});
+                        })
+                    } else {
+                        this.$locality_master_input_flag.click();
                     }
                 }
             }
@@ -1064,7 +1062,6 @@ window.LocalitySidebar = (function () {
                 }
             }
             $.getJSON(url, function (data) {
-                console.log(data);
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {
