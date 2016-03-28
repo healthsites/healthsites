@@ -288,7 +288,7 @@ def locality_create(request):
                 try:
                     if master_uuid == "":
                         master = None
-                    if master_uuid == loc.uuid:
+                    elif master_uuid == loc.uuid:
                         return {"success": False,
                                 "reason": "cannot use it's uuid as master"}
                     else:
@@ -340,7 +340,7 @@ def locality_edit(request):
                 try:
                     if master_uuid == "":
                         master = None
-                    if master_uuid == locality.uuid:
+                    elif master_uuid == locality.uuid:
                         return {"success": False,
                                 "reason": "cannot use it's uuid as master"}
                     else:
