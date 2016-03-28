@@ -222,7 +222,6 @@ def get_locality_detail(locality, changes):
 
     # FOR HISTORY
     obj_repr['history'] = False
-    print obj_repr['updates'][0]
     if changes:
         changeset = Changeset.objects.get(id=changes)
         obj_repr['updates'][0]['last_update'] = changeset.created
@@ -232,10 +231,12 @@ def get_locality_detail(locality, changes):
         profile = get_profile(User.objects.get(username=changeset.social_user.username))
         obj_repr['updates'][0]['nickname'] = profile.screen_name
         obj_repr['updates'][0]['changeset_id'] = changes
-        print obj_repr['updates'][0]
         try:
             localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
             for archive in localityArchives:
+                locality.master = archive.master
+                new_obj_repr = locality.repr_dict()
+                obj_repr['master'] = new_obj_repr['master']
                 obj_repr['geom'] = (archive.geom.x, archive.geom.y)
                 obj_repr['history'] = True
         except LocalityArchive.DoesNotExist:
@@ -507,7 +508,6 @@ def get_locality_by_spec_data(spec, data, uuid):
 
 def search_locality_by_spec_data(spec, data, uuid):
     localities = get_locality_by_spec_data(spec, data, uuid)
-    print localities
     if localities == []:
         return []
     else:

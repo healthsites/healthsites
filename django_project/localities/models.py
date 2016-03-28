@@ -286,6 +286,9 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
+    def get_synonyms(self):
+        return Locality.objects.filter(master=self)
+
     def __unicode__(self):
         return u'{}'.format(self.id)
 
@@ -305,6 +308,7 @@ class LocalityArchive(ArchiveMixin):
     uuid = models.TextField()
     upstream_id = models.TextField(null=True)
     geom = models.PointField(srid=4326)
+    master = models.ForeignKey('Locality', null=True, default=None)
 
 
 class Value(UpdateMixin, ChangesetMixin):
