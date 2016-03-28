@@ -293,6 +293,8 @@ def locality_create(request):
                                 "reason": "cannot use it's uuid as master"}
                     else:
                         master = Locality.objects.get(uuid=master_uuid)
+                        if master.master:
+                            master = master.master
                 except Locality.DoesNotExist:
                     return {"success": False,
                             "reason": "master is not found"}
@@ -345,6 +347,8 @@ def locality_edit(request):
                                 "reason": "cannot use it's uuid as master"}
                     else:
                         master = Locality.objects.get(uuid=master_uuid)
+                        if master.master:
+                            master = master.master
                 except Locality.DoesNotExist:
                     return {"success": False,
                             "reason": "master is not found"}
