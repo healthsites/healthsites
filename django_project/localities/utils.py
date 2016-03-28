@@ -116,8 +116,8 @@ def get_country_statistic(query):
     return output
 
 
-def get_heathsite_by_polygon(request, polygon):
-    healthsites = Locality.objects.in_polygon(
+def get_heathsites_master_by_polygon(request, polygon):
+    healthsites = Locality.objects.filter(master=None).in_polygon(
             polygon)
 
     facility_type = ""
@@ -137,7 +137,7 @@ def get_heathsite_by_polygon(request, polygon):
 
 def get_json_from_request(request):
     # special request:
-    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid"]
+    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid", "master_uuid"]
 
     mstring = []
     json = {}
@@ -222,7 +222,6 @@ def get_locality_detail(locality, changes):
 
     # FOR HISTORY
     obj_repr['history'] = False
-    print obj_repr['updates'][0]
     if changes:
         changeset = Changeset.objects.get(id=changes)
         obj_repr['updates'][0]['last_update'] = changeset.created
@@ -232,10 +231,12 @@ def get_locality_detail(locality, changes):
         profile = get_profile(User.objects.get(username=changeset.social_user.username))
         obj_repr['updates'][0]['nickname'] = profile.screen_name
         obj_repr['updates'][0]['changeset_id'] = changes
-        print obj_repr['updates'][0]
         try:
             localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
             for archive in localityArchives:
+                locality.master = archive.master
+                new_obj_repr = locality.repr_dict()
+                obj_repr['master'] = new_obj_repr['master']
                 obj_repr['geom'] = (archive.geom.x, archive.geom.y)
                 obj_repr['history'] = True
         except LocalityArchive.DoesNotExist:
@@ -278,11 +279,30 @@ def locality_create(request):
                 loc.geom = Point(
                         float(json_request['long']), float(json_request['lat'])
                 )
+
+                # get master
+                #  ------------------------------------------------------
+                master_uuid = ""
+                if 'master_uuid' in json_request:
+                    master_uuid = json_request['master_uuid']
+                try:
+                    if master_uuid == "":
+                        master = None
+                    if master_uuid == loc.uuid:
+                        return {"success": False,
+                                "reason": "cannot use it's uuid as master"}
+                    else:
+                        master = Locality.objects.get(uuid=master_uuid)
+                except Locality.DoesNotExist:
+                    return {"success": False,
+                            "reason": "master is not found"}
+                loc.master = master
+                #  ------------------------------------------------------
+
                 loc.save()
                 loc.set_values(json_request, request.user, tmp_changeset)
 
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
-                print "regenerate"
                 regenerate_cache_cluster.delay()
 
                 return {"success": json_request['is_valid'], "uuid": tmp_uuid, "reason": ""}
@@ -303,12 +323,34 @@ def locality_edit(request):
             if json_request['is_valid'] == True:
                 locality = Locality.objects.get(uuid=json_request['uuid'])
                 old_geom = [locality.geom.x, locality.geom.y]
+
                 locality.set_geom(float(json_request['long']), float(json_request['lat']))
+
                 # there are some changes so create a new changeset
                 tmp_changeset = Changeset.objects.create(
                         social_user=request.user
                 )
                 locality.changeset = tmp_changeset
+
+                # get master
+                #  ------------------------------------------------------
+                master_uuid = ""
+                if 'master_uuid' in json_request:
+                    master_uuid = json_request['master_uuid']
+                try:
+                    if master_uuid == "":
+                        master = None
+                    if master_uuid == locality.uuid:
+                        return {"success": False,
+                                "reason": "cannot use it's uuid as master"}
+                    else:
+                        master = Locality.objects.get(uuid=master_uuid)
+                except Locality.DoesNotExist:
+                    return {"success": False,
+                            "reason": "master is not found"}
+                locality.master = master
+                #  ------------------------------------------------------
+
                 locality.save()
                 locality.set_values(json_request, request.user, tmp_changeset)
 
@@ -466,7 +508,6 @@ def get_locality_by_spec_data(spec, data, uuid):
 
 def search_locality_by_spec_data(spec, data, uuid):
     localities = get_locality_by_spec_data(spec, data, uuid)
-    print localities
     if localities == []:
         return []
     else:
