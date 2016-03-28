@@ -4,38 +4,40 @@ import json
 
 LOG = logging.getLogger(__name__)
 
+import googlemaps
+
 from braces.views import FormMessagesMixin
 from envelope.views import ContactView
-from django.views.generic import TemplateView
-from django.conf import settings
-from django.shortcuts import render_to_response
-from django.views.decorators.csrf import csrf_exempt
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-import googlemaps
-from localities.models import Locality, Value, Country
-from localities.utils import search_locality_by_tag, get_country_statistic, search_locality_by_spec_data
-from django.shortcuts import get_object_or_404
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext
+from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
+from localities.utils import get_country_statistic, search_locality_by_spec_data, search_locality_by_tag
+from localities.models import Country, DataLoaderPermission, Locality, Value
 from social_users.utils import get_profile
 
 
 class MainView(TemplateView):
     template_name = 'index.html'
 
-    def get_context_data(self, **kwargs):
-        """
-        *debug* toggles GoogleAnalytics support on the main page
-        """
-
-        context = super(MainView, self).get_context_data(**kwargs)
-
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
-
         context['locality_count'] = Locality.objects.count()
-
-        return context
+        if request.user.is_authenticated():
+            permission = DataLoaderPermission.objects.filter(uploader=request.user)
+            if len(permission) <= 0:
+                context['uploader'] = False
+            else:
+                context['uploader'] = True
+        else:
+            context['uploader'] = False
+        print context
+        return self.render_to_response(context)
 
 
 class ContactView(FormMessagesMixin, ContactView):

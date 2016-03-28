@@ -18,7 +18,7 @@ from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, Http404
 from django.views.generic import DetailView, ListView, FormView
-from localities.models import Country
+from localities.models import Country, DataLoaderPermission
 
 LOG = logging.getLogger(__name__)
 
@@ -237,12 +237,14 @@ class DataLoaderView(LoginRequiredMixin, FormView):
         pass
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
+        permission = DataLoaderPermission.objects.filter(uploader=request.user)
+        if len(permission) <= 0:
             raise Http404("Can not access this page")
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
+        permission = DataLoaderPermission.objects.filter(uploader=request.user)
+        if len(permission) <= 0:
             raise Http404("Can not access this page")
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 

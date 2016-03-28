@@ -4,17 +4,21 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import itertools
+import random
+import string
+
+from .querysets import PassThroughGeoManager, LocalitiesQuerySet
 from datetime import datetime
-from django.utils import timezone
-from django.utils.text import slugify
-from django.contrib.gis.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.gis.db import models
+from django.db.models.signals import post_save, pre_delete
+from django.utils import timezone
+from django.utils.text import slugify
+
 from model_utils import FieldTracker
 from pg_fts.fields import TSVectorField
-from .querysets import PassThroughGeoManager, LocalitiesQuerySet
-from django.db.models.signals import post_save
 
 
 class ChangesetMixin(models.Model):
@@ -619,3 +623,38 @@ class Country(Boundary):
 
 Country._meta.get_field('name').verbose_name = 'Country name'
 Country._meta.get_field('name').help_text = 'The name of the country.'
+
+from django.core.exceptions import ValidationError
+
+
+def validate_file_extension(value):
+    if value.file.content_type != 'text/csv':
+        raise ValidationError(u'Just receive csv file')
+
+
+class DataLoaderPermission(models.Model):
+    accepted_csv = models.FileField(
+            verbose_name='Accepted CSV Data',
+            help_text='Accepted CSV data that contains the data.',
+            upload_to='accepted_csv_data/',
+            max_length=100,
+            validators=[validate_file_extension]
+    )
+
+    uploader = models.ForeignKey(
+            User,
+            verbose_name='Uploader',
+            help_text='The user who propose the data loader.',
+            null=False
+    )
+
+    def __str__(self):
+        return "%s : %s" % (self.accepted_csv, self.uploader)
+
+
+def data_loader_deleted(sender, instance, **kwargs):
+    # Pass false so FileField doesn't save the model.
+    instance.accepted_csv.delete(False)
+
+
+pre_delete.connect(data_loader_deleted, sender=DataLoaderPermission)
