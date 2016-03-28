@@ -373,7 +373,6 @@ window.LocalitySidebar = (function () {
                     if (isFormValid) {
                         //Send the data using post
                         var posting = $.post(url, fields);
-                        console.log(fields);
                         // Put the results in a div
                         posting.done(function (data) {
                             var data = JSON.parse(data);
