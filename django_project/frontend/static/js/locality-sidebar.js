@@ -3,7 +3,7 @@ window.LocalitySidebar = (function () {
     var separator = "|";
     var special_attribute = ["uuid", "geom", "long", "lat", "nature_of_facility", "inpatient_service", "staff", "ownership", "nature_of_facility",
         "scope_of_service", "notes", "ancillary_services", "operation", "activities", "data_source",
-        "name", "email", "mobile", "phone", "physical_address", "services", "tags", "defining_hours"];
+        "name", "email", "mobile", "phone", "physical_address", "services", "tags", "defining_hours", "master_uuid"];
 
     var nature_options = ["", "clinic without beds", "clinic with beds", "first referral hospital", "second referral hospital or General hospital", "tertiary level including University hospital"];
     var scope_options = ["specialized care", "general acute care", "rehabilitation care", "old age/hospice care"];
@@ -41,6 +41,10 @@ window.LocalitySidebar = (function () {
         this.$line_updates = $('#line-updates');
         this.$name = $('#locality-name');
         this.$nature_of_facility = $('#locality-nature-of-facility');
+
+        this.$locality_master = $('#locality-master');
+        this.$locality_master_indicator = $('#locality-master-indicator');
+
         this.$completenees = $('#locality-completeness');
         this.$coordinates = $('#locality-coordinates');
         this.$physical_address = $('#locality-physical-address');
@@ -66,6 +70,11 @@ window.LocalitySidebar = (function () {
         this.$cancelButton = $('#cancel-button');
         this.$physical_address_input = $('#locality-physical-address-input');
         this.$name_input = $('#locality-name-input');
+
+        this.$locality_master_input = $('#locality-master-input');
+        this.$locality_master_input_flag = $('#locality-master-input-flag');
+        this.$locality_master_input_text_box = $('#locality-master-input-text-box');
+
         this.$phone_input = $('#locality-phone-input');
         this.$phone_input_number = $('#locality-phone-input-number');
         this.$phone_input_int = $('#locality-phone-input-int');
@@ -129,6 +138,7 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$other_data);
         info_fields.push(this.$tag_data);
         info_fields.push(this.$defining_hours_section);
+        info_fields.push(this.$locality_master);
 
         // set editfield array
         edit_fields.push(this.$cancelButton);
@@ -152,6 +162,7 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$tag_input);
         edit_fields.push(this.$tag_input_text);
         edit_fields.push(this.$defining_hours_input);
+        edit_fields.push(this.$locality_master_input);
 
         this.setEnable(is_enable_edit);
         this.showDefaultInfo();
@@ -180,10 +191,21 @@ window.LocalitySidebar = (function () {
             this.$cancelButton.on('click', this.showEdit.bind(this));
             this.$signin.on('click', this.goToSignin.bind(this));
 
+            var that = this;
+            // -------------------------------------------------------------------
+            // MASTER FLAG
+            // -------------------------------------------------------------------
+            this.$locality_master_input_flag.change(function () {
+                if (this.checked) {
+                    that.$locality_master_input_text_box.hide();
+                    that.$locality_master_input_text_box.val("");
+                } else {
+                    that.$locality_master_input_text_box.show();
+                }
+            });
             // -------------------------------------------------------------------
             // FORM IF SUBMIT
             // -------------------------------------------------------------------
-            var that = this;
             this.$form.submit(function (event) {
                 var url = that.$form.attr("action");
                 var fields = that.$form.serialize();
@@ -288,13 +310,24 @@ window.LocalitySidebar = (function () {
                     tags = tags.join(separator);
                     tags = "|" + tags + "|";
 
+                    // GET master
+                    var master_uuid = "";
+                    if (that.$locality_master_input_text_box.is(":visible")) {
+                        if (that.$locality_master_input_text_box.val().length == 0) {
+                            isFormValid = false;
+                            alert("uuid of master cannot be empty");
+                        } else {
+                            master_uuid = that.$locality_master_input_text_box.val();
+                        }
+                    }
+
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
                     }
                     fields += '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient_service) +
-                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags);
+                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags) + "&master_uuid=" + encodeURIComponent(master_uuid);
 
                     // GET DEFINING HOURS
                     fields += "&defining_hours=" + that.getDefiningHoursFormat()["format1"];
@@ -627,6 +660,10 @@ window.LocalitySidebar = (function () {
             $("#locality-statistic").hide();
             $("#locality-info").show();
             $("#locality-default").hide();
+            this.$locality_master_input_text_box.val("");
+            if (this.$locality_master_input_flag[0].checked) {
+                this.$locality_master_input_flag.click();
+            }
             this.addedNewOptons("scope"); // this.$scope_of_service_input
             this.addedNewOptons("ancillary"); // this.$ancillary_service_input
             this.addedNewOptons("activities"); // this.$ancillary_service_input
@@ -707,6 +744,7 @@ window.LocalitySidebar = (function () {
             this.$uploader.text("@sharehealthdata");
             this.$uploader.attr("href", "profile/sharehealthdata");
             this.$defining_hours.html(no_operation_hours_found);
+            this.$locality_master_indicator.html("MASTER");
         },
 
         showInfo: function (evt) {
@@ -719,6 +757,21 @@ window.LocalitySidebar = (function () {
                 this.$coordinates.text('lat: ' + this.locality_data.geom[1] + ', long: ' + this.locality_data.geom[0]);
                 this.$coordinates_lat_input.val(this.locality_data.geom[1]);
                 this.$coordinates_long_input.val(this.locality_data.geom[0]);
+
+                // MASTER
+                {
+                    var master = this.locality_data.master;
+                    if (master) {
+                        this.$locality_master_input_text_box.val(master['master_uuid']);
+                        this.$locality_master_indicator.html('MASTER : <span id="' + master['master_uuid'] + '" class="master-uuid">' + master['master_name'] + '</span>');
+                        $('#' + master['master_uuid']).click(function () {
+                            $APP.trigger('locality.map.click', {'locality_uuid': master['master_uuid']});
+                            $APP.trigger('set.hash.silent', {'locality': master['master_uuid']});
+                        })
+                    } else {
+                        this.$locality_master_input_flag.click();
+                    }
+                }
             }
 
             if (this.locality_data.updates) {
@@ -1048,7 +1101,7 @@ window.LocalitySidebar = (function () {
                             if (center.length > 0) {
                                 var zoom = getCookie("zoom");
                                 if (zoom != "") {
-                                    $APP.trigger('map.pan', {'location': data.geom, 'zoom': zoom});
+                                    $APP.trigger('map.pan', {'location': [data.geom[1], data.geom[0]], 'zoom': zoom});
                                 }
                             }
                         }
