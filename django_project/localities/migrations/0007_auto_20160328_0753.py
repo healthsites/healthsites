@@ -16,4 +16,9 @@ class Migration(migrations.Migration):
             name='master',
             field=models.ForeignKey(default=None, to='localities.Locality', null=True),
         ),
+        migrations.AddField(
+            model_name='localityarchive',
+            name='master',
+            field=models.ForeignKey(default=None, to='localities.Locality', null=True),
+        ),
     ]
