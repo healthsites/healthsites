@@ -22,4 +22,14 @@ class Migration(migrations.Migration):
                 ('uploader', models.ForeignKey(verbose_name=b'Uploader', to=settings.AUTH_USER_MODEL, help_text=b'The user who propose the data loader.')),
             ],
         ),
+        migrations.AddField(
+            model_name='locality',
+            name='master',
+            field=models.ForeignKey(default=None, to='localities.Locality', null=True),
+        ),
+        migrations.AddField(
+            model_name='localityarchive',
+            name='master',
+            field=models.ForeignKey(default=None, to='localities.Locality', null=True),
+        ),
     ]
