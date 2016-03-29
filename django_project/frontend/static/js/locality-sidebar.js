@@ -742,6 +742,7 @@ window.LocalitySidebar = (function () {
             this.$uploader.attr("href", "profile/sharehealthdata");
             this.$defining_hours.html(no_operation_hours_found);
             this.$locality_master_indicator.html("MASTER");
+            this.$locality_master_indicator.show();
         },
 
         showInfo: function (evt) {
@@ -758,7 +759,8 @@ window.LocalitySidebar = (function () {
                 // MASTER
                 {
                     var master = this.locality_data.master;
-                    if (master) {
+                    if (master && master['master_name']) {
+                        // HERE IS SYNONYMS RENDERING
                         this.$locality_master_input_text_box.val(master['master_uuid']);
                         var indicator = 'MASTER : <span ';
                         if (master['master_uuid'] != "") {
@@ -773,7 +775,42 @@ window.LocalitySidebar = (function () {
                             })
                         }
                     } else {
+                        // HERE IS MASTER RENDERING
                         this.$locality_master_input_flag.click();
+                        var synonyms = this.locality_data.synonyms;
+                        if (synonyms) {
+                            this.$locality_master_indicator.html('SYNONYMS</br>');
+                            for (var i = 0; i < synonyms.length; i++) {
+                                // synonym's attribute
+                                // check attribute
+                                var name = "";
+                                var uuid = "";
+                                if (synonyms[i].values.name) {
+                                    name = synonyms[i].values.name;
+                                }
+                                if (synonyms[i].uuid) {
+                                    uuid = synonyms[i].uuid;
+                                }
+                                // render this
+                                var indicator = '<span ';
+                                if (uuid != "") {
+                                    indicator += 'id="' + uuid + '"';
+                                }
+                                indicator += 'class="master-uuid">' + name + '</span>';
+                                if (i < synonyms.length - 1) {
+                                    indicator += ", ";
+                                }
+                                this.$locality_master_indicator.append(indicator);
+                                if (uuid != "") {
+                                    $('#' + uuid).click(function () {
+                                        $APP.trigger('locality.map.click', {'locality_uuid': uuid});
+                                        $APP.trigger('set.hash.silent', {'locality': uuid});
+                                    })
+                                }
+                            }
+                        } else {
+                            this.$locality_master_indicator.hide();
+                        }
                     }
                 }
             }
@@ -1065,6 +1102,7 @@ window.LocalitySidebar = (function () {
                 }
             }
             $.getJSON(url, function (data) {
+                console.log(data);
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {

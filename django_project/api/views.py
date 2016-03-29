@@ -125,7 +125,6 @@ class LocalitySearchAPI(JSONResponseMixin, View):
             locality_values = Value.objects.filter(
                     specification__attribute__key='name').filter(
                     data__icontains=place_name)
-            print locality_values
             output = []
             index = 1;
             for locality in locality_values:

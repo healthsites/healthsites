@@ -264,6 +264,7 @@ class Locality(UpdateMixin, ChangesetMixin):
                 try:
                     master_name = Value.objects.filter(locality=self.master).filter(
                         specification__attribute__key='name')[0].data
+                    master_uuid = self.master.uuid
                 except Value.DoesNotExist:
                     print "value does not exist"
 
