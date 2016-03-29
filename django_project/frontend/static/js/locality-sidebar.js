@@ -313,12 +313,9 @@ window.LocalitySidebar = (function () {
                     // GET master
                     var master_uuid = "";
                     if (that.$locality_master_input_text_box.is(":visible")) {
-                        if (that.$locality_master_input_text_box.val().length == 0) {
-                            isFormValid = false;
-                            alert("uuid of master cannot be empty");
-                        } else {
-                            master_uuid = that.$locality_master_input_text_box.val();
-                        }
+                        master_uuid = that.$locality_master_input_text_box.val();
+                    } else {
+                        master_uuid = "None";
                     }
 
                     if (that.locality_data != null) {
@@ -763,11 +760,18 @@ window.LocalitySidebar = (function () {
                     var master = this.locality_data.master;
                     if (master) {
                         this.$locality_master_input_text_box.val(master['master_uuid']);
-                        this.$locality_master_indicator.html('MASTER : <span id="' + master['master_uuid'] + '" class="master-uuid">' + master['master_name'] + '</span>');
-                        $('#' + master['master_uuid']).click(function () {
-                            $APP.trigger('locality.map.click', {'locality_uuid': master['master_uuid']});
-                            $APP.trigger('set.hash.silent', {'locality': master['master_uuid']});
-                        })
+                        var indicator = 'MASTER : <span ';
+                        if (master['master_uuid'] != "") {
+                            indicator += 'id="' + master['master_uuid'] + '"';
+                        }
+                        indicator += 'class="master-uuid">' + master['master_name'] + '</span>';
+                        this.$locality_master_indicator.html(indicator);
+                        if (master['master_uuid'] != "") {
+                            $('#' + master['master_uuid']).click(function () {
+                                $APP.trigger('locality.map.click', {'locality_uuid': master['master_uuid']});
+                                $APP.trigger('set.hash.silent', {'locality': master['master_uuid']});
+                            })
+                        }
                     } else {
                         this.$locality_master_input_flag.click();
                     }

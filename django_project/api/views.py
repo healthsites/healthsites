@@ -68,7 +68,7 @@ class LocalitySynonymsAPI(JSONResponseMixin, View):
             return HttpResponse(formattedReturn(request, {'error': "facility doesn't exist"}),
                                 content_type='application/json')
         value = []
-        for synonym in Locality.objects.filter(master=locality):
+        for synonym in locality.get_synonyms():
             value.append(get_locality_detail(synonym, None))
         return HttpResponse(formattedReturn(request, value), content_type='application/json')
 
