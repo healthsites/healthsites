@@ -34,7 +34,7 @@ def extract_updates(updates):
             try:
                 locality = Locality.objects.get(pk=update['locality_id'])
                 locality_name = Value.objects.filter(locality=locality).filter(
-                        specification__attribute__key='name')
+                    specification__attribute__key='name')
                 update['locality_uuid'] = locality.uuid
                 update['locality'] = locality_name[0].data
             except Locality.DoesNotExist:
@@ -65,13 +65,13 @@ def get_country_statistic(query):
         if query != "":
             # getting country's polygon
             country = Country.objects.get(
-                    name__iexact=query)
+                name__iexact=query)
             polygons = country.polygon_geometry
 
             # get cache
             filename = os.path.join(
-                    settings.CLUSTER_CACHE_DIR,
-                    country.name + '_statistic'
+                settings.CLUSTER_CACHE_DIR,
+                country.name + '_statistic'
             )
             try:
                 file = open(filename, 'r')
@@ -81,7 +81,7 @@ def get_country_statistic(query):
                 try:
                     # query for each of attribute
                     healthsites = Locality.objects.in_polygon(
-                            polygons)
+                        polygons)
                     output = get_statistic(healthsites)
                     result = json.dumps(output, cls=DjangoJSONEncoder)
                     file = open(filename, 'w')
@@ -92,8 +92,8 @@ def get_country_statistic(query):
         else:
             # get cache
             filename = os.path.join(
-                    settings.CLUSTER_CACHE_DIR,
-                    'world_statistic'
+                settings.CLUSTER_CACHE_DIR,
+                'world_statistic'
             )
             try:
                 file = open(filename, 'r')
@@ -116,9 +116,13 @@ def get_country_statistic(query):
     return output
 
 
+def get_heathsites_master():
+    return Locality.objects.filter(master=None)
+
+
 def get_heathsites_master_by_polygon(request, polygon):
-    healthsites = Locality.objects.filter(master=None).in_polygon(
-            polygon)
+    healthsites = get_heathsites_master().in_polygon(
+        polygon)
 
     facility_type = ""
     if 'facility_type' in request.GET:
@@ -154,7 +158,7 @@ def get_json_from_request(request):
         except:
             if req[0] not in special_request:
                 tmp_changeset = Changeset.objects.create(
-                        social_user=request.user
+                    social_user=request.user
                 )
                 attribute = Attribute()
                 attribute.key = req[0]
@@ -200,7 +204,7 @@ def get_locality_detail(locality, changes):
     # count completeness based attributes
     obj_repr = locality.repr_dict()
     data_repr = render_fragment(
-            locality.domain.template_fragment, obj_repr
+        locality.domain.template_fragment, obj_repr
     )
 
     num_data = len(obj_repr['values']) + 1  # geom
@@ -256,6 +260,24 @@ def get_locality_detail(locality, changes):
     return obj_repr
 
 
+def get_locality_master(master_uuid, locality):
+    # get master
+    #  ------------------------------------------------------
+    try:
+        if master_uuid == "None":
+            master = None
+        elif master_uuid == "":
+            master = locality
+        else:
+            master = Locality.objects.get(uuid=master_uuid)
+            if master.master:
+                master = master.master
+    except Locality.DoesNotExist:
+        return Locality.DoesNotExist
+    return master
+    #  ------------------------------------------------------
+
+
 def locality_create(request):
     if request.method == 'POST':
         if request.user.is_authenticated():
@@ -263,7 +285,7 @@ def locality_create(request):
             # checking mandatory
             if json_request['is_valid'] == True:
                 tmp_changeset = Changeset.objects.create(
-                        social_user=request.user
+                    social_user=request.user
                 )
                 # generate new uuid
                 tmp_uuid = uuid.uuid4().hex
@@ -277,7 +299,7 @@ def locality_create(request):
                 loc.upstream_id = u'web¶{}'.format(tmp_uuid)
 
                 loc.geom = Point(
-                        float(json_request['long']), float(json_request['lat'])
+                    float(json_request['long']), float(json_request['lat'])
                 )
 
                 # get master
@@ -285,19 +307,12 @@ def locality_create(request):
                 master_uuid = ""
                 if 'master_uuid' in json_request:
                     master_uuid = json_request['master_uuid']
-                try:
-                    if master_uuid == "":
-                        master = None
-                    elif master_uuid == loc.uuid:
-                        return {"success": False,
-                                "reason": "cannot use it's uuid as master"}
-                    else:
-                        master = Locality.objects.get(uuid=master_uuid)
-                        if master.master:
-                            master = master.master
-                except Locality.DoesNotExist:
+
+                master = get_locality_master(master_uuid, loc)
+                if master == Locality.DoesNotExist:
                     return {"success": False,
                             "reason": "master is not found"}
+
                 loc.master = master
                 #  ------------------------------------------------------
 
@@ -330,7 +345,7 @@ def locality_edit(request):
 
                 # there are some changes so create a new changeset
                 tmp_changeset = Changeset.objects.create(
-                        social_user=request.user
+                    social_user=request.user
                 )
                 locality.changeset = tmp_changeset
 
@@ -339,19 +354,12 @@ def locality_edit(request):
                 master_uuid = ""
                 if 'master_uuid' in json_request:
                     master_uuid = json_request['master_uuid']
-                try:
-                    if master_uuid == "":
-                        master = None
-                    elif master_uuid == locality.uuid:
-                        return {"success": False,
-                                "reason": "cannot use it's uuid as master"}
-                    else:
-                        master = Locality.objects.get(uuid=master_uuid)
-                        if master.master:
-                            master = master.master
-                except Locality.DoesNotExist:
+
+                master = get_locality_master(master_uuid, locality)
+                if master == Locality.DoesNotExist:
                     return {"success": False,
                             "reason": "master is not found"}
+
                 locality.master = master
                 #  ------------------------------------------------------
 
@@ -385,19 +393,19 @@ def get_statistic(healthsites):
     values = Value.objects.filter(locality__in=healthsites)
 
     hospital_number = values.filter(
-            specification__attribute__key='type').filter(
-            data__iexact='hospital').count()
+        specification__attribute__key='type').filter(
+        data__iexact='hospital').count()
     medical_clinic_number = values.filter(
-            specification__attribute__key='type').filter(
-            data__iexact='clinic').count()
+        specification__attribute__key='type').filter(
+        data__iexact='clinic').count()
     orthopaedic_clinic_number = values.filter(
-            specification__attribute__key='type').filter(
-            data__iexact='orthopaedic').count()
+        specification__attribute__key='type').filter(
+        data__iexact='orthopaedic').count()
 
     # check completnees
     values = Value.objects.filter(locality__in=healthsites).exclude(data__isnull=True).exclude(
-            data__exact='').values('locality').annotate(
-            value_count=Count('locality'))
+        data__exact='').values('locality').annotate(
+        value_count=Count('locality'))
     # get attributes
     attribute_count = 18
     # count completeness based attributes
@@ -420,15 +428,15 @@ def localities_updates(locality_ids):
     updates = []
     try:
         updates1 = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-                edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
+            '-changeset__created').values(
+            'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+            edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
         for update in updates1:
             updates.append(update)
         updates2 = ValueArchive.objects.filter(locality_id__in=locality_ids).filter(version__gt=1).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-                edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
+            '-changeset__created').values(
+            'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+            edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
         for update in updates2:
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
@@ -451,16 +459,16 @@ def locality_updates(locality_id, date):
     updates = []
     try:
         updates1 = LocalityArchive.objects.filter(object_id=locality_id).filter(changeset__created__lt=date).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-                edit_count=Count('changeset'))[:15]
+            '-changeset__created').values(
+            'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+            edit_count=Count('changeset'))[:15]
         for update in updates1:
             updates.append(update)
         updates2 = ValueArchive.objects.filter(locality_id=locality_id).filter(
-                changeset__created__lt=date).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-                edit_count=Count('changeset'))[:15]
+            changeset__created__lt=date).order_by(
+            '-changeset__created').values(
+            'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+            edit_count=Count('changeset'))[:15]
         for update in updates2:
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
@@ -485,26 +493,26 @@ def get_locality_by_spec_data(spec, data, uuid):
             if uuid:
                 locality = Locality.objects.get(uuid=uuid)
                 localities = Locality.objects.filter(
-                        geom__distance_lte=(locality.geom, D(mi=100))
+                    geom__distance_lte=(locality.geom, D(mi=100))
                 ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
                 localities = Value.objects.filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                    data__icontains=data).filter(locality__in=localities).values('locality')[:5]
             else:
                 localities = Value.objects.filter(
-                        data__icontains=data).values('locality')
+                    data__icontains=data).values('locality')
         else:
             if uuid:
                 locality = Locality.objects.get(uuid=uuid)
                 localities = Locality.objects.filter(
-                        geom__distance_lte=(locality.geom, D(mi=100))
+                    geom__distance_lte=(locality.geom, D(mi=100))
                 ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
                 localities = Value.objects.filter(
-                        specification__attribute__key=spec).filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                    specification__attribute__key=spec).filter(
+                    data__icontains=data).filter(locality__in=localities).values('locality')[:5]
             else:
                 localities = Value.objects.filter(
-                        specification__attribute__key=spec).filter(
-                        data__icontains=data).values('locality')
+                    specification__attribute__key=spec).filter(
+                    data__icontains=data).values('locality')
         return localities
     except Value.DoesNotExist:
         return []
@@ -522,7 +530,7 @@ def search_locality_by_spec_data(spec, data, uuid):
             try:
                 locality = Locality.objects.get(uuid=uuid)
                 locality_name = Value.objects.filter(locality=locality).filter(
-                        specification__attribute__key='name')[0].data
+                    specification__attribute__key='name')[0].data
                 output['locality_name'] = locality_name
                 output['location'] = {'x': "%f" % locality.geom.x, 'y': "%f" % locality.geom.y}
             except Locality.DoesNotExist:
@@ -533,7 +541,7 @@ def search_locality_by_spec_data(spec, data, uuid):
 def search_locality_by_tag(query):
     try:
         localities = Value.objects.filter(
-                specification__attribute__key='tags').filter(data__icontains="|" + query + "|").values('locality')
+            specification__attribute__key='tags').filter(data__icontains="|" + query + "|").values('locality')
         return get_statistic(localities)
     except Value.DoesNotExist:
         return []

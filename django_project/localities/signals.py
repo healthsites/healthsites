@@ -112,7 +112,7 @@ def locality_archive_handler(sender, instance, created, raw, **kwargs):
         synonyms = instance.get_synonyms()
         for synonym in synonyms:
             if synonym == instance.master:
-                synonym.master = None
+                print "locality same : it is synonym but still don't has master"
             else:
                 synonym.master = instance.master
             synonym.save()

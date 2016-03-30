@@ -290,11 +290,13 @@
     padding: 10px 20px 10px 20px;
     font-family: "Ubuntu", sans-serif;
     color: #f44a52;
+    text-align: center;
 }
 
 .location-info .master-uuid {
     color: #3c4c57;
     cursor: pointer;
+    font-style: italic;
 }
 
 .location-info .master-uuid:hover {
