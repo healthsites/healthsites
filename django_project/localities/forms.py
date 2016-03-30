@@ -8,6 +8,7 @@ from django.forms import models
 
 from .models import Domain, DataLoader
 from .utils import render_fragment
+from social_users.models import Organization
 
 
 class DomainModelForm(forms.ModelForm):
@@ -105,16 +106,10 @@ class DataLoaderForm(models.ModelForm):
     class Meta:
         model = DataLoader
         fields = (
-            'organisation_name',
             'json_concept_mapping',
             'csv_data',
             'data_loader_mode',
         )
-
-    organisation_name = forms.CharField(
-        widget=forms.TextInput(
-            attrs={'class': 'form-control'})
-    )
 
     json_concept_mapping = forms.FileField(
         widget=forms.FileInput(
@@ -137,6 +132,9 @@ class DataLoaderForm(models.ModelForm):
         self.user = kwargs.pop('user', None)
         super(DataLoaderForm, self).__init__(*args, **kwargs)
 
+        self.fields['organizations'] = forms.ChoiceField(
+            choices=[(org.id, org.name) for org in Organization.objects.filter(trusted_users__user=self.user)])
+
     def save(self, commit=True):
         """Save method.
         """
@@ -144,6 +142,7 @@ class DataLoaderForm(models.ModelForm):
         data_loader = super(DataLoaderForm, self).save(commit=False)
         data_loader.author = self.user
         data_loader.applied = False
+        data_loader.organisation_name = Organization.objects.get(id=data['organizations']).name
         if commit:
             data_loader.save()
         return data_loader

@@ -36,7 +36,6 @@ class MainView(TemplateView):
                 context['uploader'] = True
         else:
             context['uploader'] = False
-        print context
         return self.render_to_response(context)
 
 
@@ -153,7 +152,6 @@ def map(request):
             result = search_place(request, place)
         else:
             uuid = request.GET.get('uuid')
-            print uuid
             for item in request.GET:
                 if item != "uuid":
                     spec = item

@@ -4,8 +4,6 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import itertools
-import random
-import string
 
 from .querysets import PassThroughGeoManager, LocalitiesQuerySet
 from datetime import datetime
@@ -633,11 +631,16 @@ Country._meta.get_field('name').verbose_name = 'Country name'
 Country._meta.get_field('name').help_text = 'The name of the country.'
 
 from django.core.exceptions import ValidationError
+from social_users.models import TrustedUser
 
 
 def validate_file_extension(value):
     if value.file.content_type != 'text/csv':
         raise ValidationError(u'Just receive csv file')
+
+
+def get_trusted_user():
+    return TrustedUser.objects.values_list('user__id')
 
 
 class DataLoaderPermission(models.Model):
@@ -653,7 +656,10 @@ class DataLoaderPermission(models.Model):
         User,
         verbose_name='Uploader',
         help_text='The user who propose the data loader.',
-        null=False
+        null=False,
+        limit_choices_to={
+            'id__in': get_trusted_user,
+        }
     )
 
     def __str__(self):

@@ -234,10 +234,6 @@ class DataLoaderView(LoginRequiredMixin, FormView):
     form_class = DataLoaderForm
     template_name = 'dataloaderform.html'
 
-    def get_form(self, form_class):
-
-        return form_class()
-
     def form_valid(self, form):
         pass
 
@@ -252,6 +248,15 @@ class DataLoaderView(LoginRequiredMixin, FormView):
         if len(permission) <= 0:
             raise Http404("Can not access this page")
         return super(DataLoaderView, self).post(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        """This method is what injects forms with their keyword
+            arguments."""
+        # grab the current set of form #kwargs
+        kwargs = super(DataLoaderView, self).get_form_kwargs()
+        # Update the kwargs with the user_id
+        kwargs['user'] = self.request.user
+        return kwargs
 
 
 def load_data(request):
