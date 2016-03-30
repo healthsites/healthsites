@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
 from .models import (
+    Country,
     Domain,
     Attribute,
     Specification,
@@ -61,3 +62,11 @@ class DataLoaderPermissionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
+
+
+class CountryAdmin(admin.ModelAdmin):
+    list_display = (
+        'name', 'polygon_geometry',)
+
+
+admin.site.register(Country, CountryAdmin)

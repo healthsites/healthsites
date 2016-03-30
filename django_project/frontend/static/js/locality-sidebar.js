@@ -162,7 +162,9 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$tag_input);
         edit_fields.push(this.$tag_input_text);
         edit_fields.push(this.$defining_hours_input);
-        edit_fields.push(this.$locality_master_input);
+        if (isUserTrusted) {
+            edit_fields.push(this.$locality_master_input);
+        }
 
         this.setEnable(is_enable_edit);
         this.showDefaultInfo();
@@ -1036,8 +1038,11 @@ window.LocalitySidebar = (function () {
                         var hours = hours_each_day[i].split("-");
                         this.setDefiningHour(i, hours[0], hours[1], hours[2], hours[3]);
                     }
-                    this.$defining_hours_input_result.html(this.getDefiningHoursFormat()["format2"]);
-                    this.$defining_hours.html(this.getDefiningHoursFormat()["format2"]);
+                    var cleanDefiningHour = this.getDefiningHoursFormat()["format2"];
+                    if (cleanDefiningHour != "") {
+                        this.$defining_hours_input_result.html(cleanDefiningHour);
+                        this.$defining_hours.html(cleanDefiningHour);
+                    }
                 }
             }
 

@@ -631,7 +631,6 @@ Country._meta.get_field('name').verbose_name = 'Country name'
 Country._meta.get_field('name').help_text = 'The name of the country.'
 
 from django.core.exceptions import ValidationError
-from social_users.models import TrustedUser
 
 
 def validate_file_extension(value):
@@ -640,6 +639,7 @@ def validate_file_extension(value):
 
 
 def get_trusted_user():
+    from social_users.models import TrustedUser
     return TrustedUser.objects.values_list('user__id')
 
 
