@@ -62,11 +62,3 @@ class DataLoaderPermissionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
-
-
-class CountryAdmin(admin.ModelAdmin):
-    list_display = (
-        'name', 'polygon_geometry',)
-
-
-admin.site.register(Country, CountryAdmin)
