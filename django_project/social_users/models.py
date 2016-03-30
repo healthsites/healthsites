@@ -6,6 +6,7 @@ LOG = logging.getLogger(__name__)
 import itertools
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.db.models.signals import pre_delete
 
 
 class Profile(models.Model):
@@ -48,3 +49,11 @@ class Membership(models.Model):
     user = models.ForeignKey(TrustedUser, on_delete=models.CASCADE)
     date_added = models.DateField()
     invite_reason = models.CharField(max_length=64, blank=True)
+
+
+def trusted_user_deleted(sender, instance, **kwargs):
+    DataLoaderPermission.objects.filter(uploader=instance.user).delete()
+
+
+from localities.models import DataLoaderPermission
+pre_delete.connect(trusted_user_deleted, sender=TrustedUser)
