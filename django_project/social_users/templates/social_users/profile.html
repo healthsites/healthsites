@@ -17,6 +17,9 @@
                 <div class="profile-header">
                     <h1>{{ user.screen_name }}</h1>
                 </div>
+                <div class="status">
+                    <span>trusted user</span>
+                </div>
                 <div class="name">
                     <strong>name:</strong>
                     {% if user.get_full_name == "" %}
@@ -24,6 +27,7 @@
                     {% else %}
                         {{ user.get_full_name }}
                     {% endif %}
+                    <strong>organization:</strong> <a href="#">Organization</a>
                 </div>
             </div>
             <div class="col-sm-8 profile-graphs">

@@ -79,3 +79,15 @@
 .right-side {
     width: 100%;
 }
+.profile .status {
+    margin-bottom: 20px;
+}
+.profile .status span {
+    color: #fff;
+    background: #5CB85C;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.profile .name a {
+    color: #f44a52;
+}
