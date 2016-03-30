@@ -61,13 +61,3 @@ class DataLoaderPermissionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
-
-from .models import Locality
-
-
-class LocalityAdmin(admin.ModelAdmin):
-    list_display = (
-        'uuid', 'geom', 'upstream_id','master')
-
-
-admin.site.register(Locality, LocalityAdmin)
