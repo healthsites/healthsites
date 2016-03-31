@@ -51,7 +51,6 @@ window.LocalitySidebar = (function () {
         this.$physical_address = $('#locality-physical-address');
         this.$phone = $('#locality-phone');
         this.$url = $('#locality-url');
-        this.$url_content = $('#locality-url-content');
         this.$scope_of_service = $('#locality-scope-of-service');
         this.$ancillary_service = $('#locality-ancillary-service');
         this.$activities = $('#locality-activities');
@@ -728,7 +727,7 @@ window.LocalitySidebar = (function () {
             this.$coordinates.text('lat: ' + 'n/a' + ', long: ' + 'n/a');
             this.$physical_address.text(no_physical_address);
             this.$phone.text(no_phone_found);
-            this.$url_content.html(no_url_found)
+            this.$url.html('<p class="url"><i class="fa fa-link"></i>' + no_url_found + '</p>')
             this.$scope_of_service.html('');
             this.$scope_of_service.text(no_scope_found);
             this.$ancillary_service.html('');
@@ -1034,11 +1033,32 @@ window.LocalitySidebar = (function () {
             }
 
             // DATA-SOURCE
+            var url_isupdated = false;
             {
                 var url = this.locality_data.values['data_source'];
+                var url_domain = this.locality_data.values['data_source_url'];
                 delete keys[this.getIndex(keys, 'data_source')];
                 if (this.isHasValue(url)) {
-                    this.$url.html("<a href=\"" + url + "\">" + url + "</a>");
+                    var html = '<p class="url"><i class="fa fa-link"></i><a';
+                    if (this.isHasValue(url_domain)) {
+                        html += ' href="' + url_domain + '"';
+                    }
+                    html += '>' + url + '</a></p>';
+                    this.$url.html(html);
+                    url_isupdated = true;
+                }
+            }
+
+            // ROW-DATA
+            {
+                var url = this.locality_data.values['raw_source'];
+                delete keys[this.getIndex(keys, 'data_source')];
+                if (this.isHasValue(url)) {
+                    if (url_isupdated) {
+                        this.$url.append('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '">raw data</a></span></p>');
+                    } else {
+                        this.$url.html('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '">raw data</a></span></p>');
+                    }
                 }
             }
 

@@ -7,6 +7,7 @@ import uuid
 import json
 
 from django.contrib.gis.geos import Point, Polygon
+from django.contrib.sites.models import Site
 from django.db import transaction
 from django.contrib.auth import get_user_model
 
@@ -194,6 +195,20 @@ class CSVImporter:
         gen_master_upstream_id = row_master_upstream_id
         if gen_master_upstream_id != "" and gen_master_upstream_id != "None":
             gen_master_upstream_id = u'{}¶{}'.format(self.source_name, row_master_upstream_id)
+
+        # data link
+        row_data_source = self._read_attr(
+            row_data, self.attr_map['attributes']['data_source']
+        )
+        row_data_source_url = self._read_attr(
+            row_data, self.attr_map['attributes']['data_source_url']
+        )
+        if row_data_source_url and row_data_source:
+            try:
+                Site.objects.get(name=row_data_source)
+            except Site.DoesNotExist:
+                site = Site(name=row_data_source, domain=row_data_source_url)
+                site.save()
 
         self.parsed_data.update({
             gen_upstream_id: {
