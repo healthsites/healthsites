@@ -11,6 +11,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.gis.db import models
+from django.contrib.sites.models import Site
 from django.db.models.signals import post_save, pre_delete
 from django.utils import timezone
 from django.utils.text import slugify
@@ -251,6 +252,13 @@ class Locality(UpdateMixin, ChangesetMixin):
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
             u'changeset': self.changeset_id}
+
+        if 'data_source' in dict[u'values']:
+            try:
+                site = Site.objects.get(name=dict[u'values']['data_source'])
+                dict[u'values']['data_source_url'] = site.domain
+            except Site.DoesNotExist:
+                print "site doesn't exist"
 
         if self.master:
             master_uuid = ""

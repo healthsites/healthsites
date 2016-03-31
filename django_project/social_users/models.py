@@ -3,7 +3,7 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
-import itertools
+from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.db.models.signals import pre_delete
@@ -26,9 +26,15 @@ class Organization(models.Model):
     """
 
     name = models.CharField(blank=False, max_length=64)
-    website = models.CharField(default="", blank=True, max_length=64)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE,null=True, default=None)
     contact = models.CharField(default="", blank=True, max_length=64)
     trusted_users = models.ManyToManyField('TrustedUser', through='Membership', blank=True)
+
+    def clean_website(self):
+        if "http" in self.site.domain:
+            return self.site.domain
+        else:
+            return "http://" + self.site.domain
 
     def __unicode__(self):
         return u'%s' % (self.name)
@@ -56,4 +62,5 @@ def trusted_user_deleted(sender, instance, **kwargs):
 
 
 from localities.models import DataLoaderPermission
+
 pre_delete.connect(trusted_user_deleted, sender=TrustedUser)
