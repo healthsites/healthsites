@@ -35,7 +35,7 @@ admin.site.register(TrustedUser, TrustedUserAdmin)
 
 
 class OrganizationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'website', 'contact', 'list_trusted_user')
+    list_display = ('name', 'site', 'contact', 'list_trusted_user')
 
     def list_trusted_user(self, obj):
         return ", ".join(['<span><a href="/admin/social_users/trusteduser/%s">%s</a></span>' % (p.user.id, p.user.username) for p in
