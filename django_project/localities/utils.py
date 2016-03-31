@@ -139,6 +139,19 @@ def get_heathsites_master_by_polygon(request, polygon):
     return output
 
 
+def get_heathsites_synonyms():
+    healthsites = Locality.objects.exclude(master=None)
+    print healthsites.count()
+    output = []
+    index = 1;
+    for healthsite in healthsites:
+        output.append(healthsite.repr_dict())
+        index += 1
+        if index == limit:
+            break
+    return output
+
+
 def get_json_from_request(request):
     # special request:
     special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid", "master_uuid"]

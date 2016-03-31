@@ -11,7 +11,8 @@ from django.http import Http404, HttpResponse
 from django.views.generic import View
 from frontend.views import search_place
 from localities.models import Country, Locality, Value
-from localities.utils import parse_bbox, get_heathsites_master_by_polygon, limit, locality_create
+from localities.utils import parse_bbox, get_heathsites_master_by_polygon, get_heathsites_synonyms, limit, \
+    locality_create
 from localities.views import get_locality_detail
 
 
@@ -58,15 +59,21 @@ class LocalitySynonymsAPI(JSONResponseMixin, View):
         elif 'uuid' in request.GET:
             return request.GET['uuid']
         else:
-            raise Http404
+            # raise Http404
+            return None
 
     def get(self, request, *args, **kwargs):
         uuid = self._parse_request_params(request)
-        try:
-            locality = Locality.objects.get(uuid=uuid)
-        except Locality.DoesNotExist:
-            return HttpResponse(formattedReturn(request, {'error': "facility doesn't exist"}),
+        if uuid:
+            try:
+                locality = Locality.objects.get(uuid=uuid)
+            except Locality.DoesNotExist:
+                return HttpResponse(formattedReturn(request, {'error': "facility doesn't exist"}),
+                                    content_type='application/json')
+        else:
+            return HttpResponse(formattedReturn(request, get_heathsites_synonyms()),
                                 content_type='application/json')
+
         value = []
         for synonym in locality.get_synonyms():
             value.append(get_locality_detail(synonym, None))
@@ -123,8 +130,8 @@ class LocalitySearchAPI(JSONResponseMixin, View):
 
         if search_type == "facility":
             locality_values = Value.objects.filter(
-                    specification__attribute__key='name').filter(
-                    data__icontains=place_name)
+                specification__attribute__key='name').filter(
+                data__icontains=place_name)
             output = []
             index = 1;
             for locality in locality_values:

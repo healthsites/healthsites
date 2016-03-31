@@ -9,7 +9,7 @@ LOG = logging.getLogger(__name__)
 from .forms import DataLoaderForm
 from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification
-from .utils import parse_bbox, get_country_statistic, get_locality_detail, locality_create, locality_edit, \
+from .utils import parse_bbox, get_country_statistic, get_heathsites_master, get_locality_detail, locality_create, locality_edit, \
     locality_updates, get_locality_by_spec_data
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
@@ -82,7 +82,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     cached_data, content_type='application/json', status=200
                 )
             except IOError as e:
-                localities = Locality.objects.in_bbox(parse_bbox('-180,-90,180,90'))
+                localities = get_heathsites_master().in_bbox(parse_bbox('-180,-90,180,90'))
                 object_list = cluster(localities, zoom, *iconsize)
 
                 # create the missing cache
@@ -92,7 +92,9 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 return self.render_json_response(object_list)
         else:
             # cluster Localites for a view
-            localities = Locality.objects.in_bbox(bbox)
+            # localities = Locality.objects.in_bbox(bbox)
+            # just master
+            localities = get_heathsites_master().in_bbox(bbox)
             exception = False
             try:
                 if geoname != "":

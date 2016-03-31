@@ -7,9 +7,8 @@ import os
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 from localities.models import Locality
-from localities.utils import parse_bbox
 from localities.map_clustering import cluster
-
+from localities.utils import parse_bbox, get_heathsites_master
 
 class Command(BaseCommand):
 
@@ -43,7 +42,7 @@ class Command(BaseCommand):
                 '{}_{}_{}_localities.json'.format(zoom, *icon_size)
             )
 
-            localities = Locality.objects.in_bbox(parse_bbox('-180,-90,180,90'))
+            localities = get_heathsites_master().in_bbox(parse_bbox('-180,-90,180,90'))
             object_list = cluster(localities, zoom, *icon_size)
 
             with open(filename, 'wb') as cache_file:

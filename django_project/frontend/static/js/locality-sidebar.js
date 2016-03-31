@@ -16,6 +16,7 @@ window.LocalitySidebar = (function () {
     var need_information = "needs information";
     var no_physical_address = "..please update address";
     var no_phone_found = "..please update number";
+    var no_url_found = "No url found";
     var no_operation_hours_found = "..please define operating hours";
     var no_scope_found = "..please define scope of service";
     var no_anchillary_found = "..please define ancillary services";
@@ -49,6 +50,8 @@ window.LocalitySidebar = (function () {
         this.$coordinates = $('#locality-coordinates');
         this.$physical_address = $('#locality-physical-address');
         this.$phone = $('#locality-phone');
+        this.$url = $('#locality-url');
+        this.$url_content = $('#locality-url-content');
         this.$scope_of_service = $('#locality-scope-of-service');
         this.$ancillary_service = $('#locality-ancillary-service');
         this.$activities = $('#locality-activities');
@@ -126,6 +129,7 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$name);
         info_fields.push(this.$physical_address);
         info_fields.push(this.$phone);
+        info_fields.push(this.$url);
         info_fields.push(this.$nature_of_facility);
         info_fields.push(this.$scope_of_service);
         info_fields.push(this.$ownership);
@@ -724,6 +728,7 @@ window.LocalitySidebar = (function () {
             this.$coordinates.text('lat: ' + 'n/a' + ', long: ' + 'n/a');
             this.$physical_address.text(no_physical_address);
             this.$phone.text(no_phone_found);
+            this.$url_content.html(no_url_found)
             this.$scope_of_service.html('');
             this.$scope_of_service.text(no_scope_found);
             this.$ancillary_service.html('');
@@ -1025,6 +1030,15 @@ window.LocalitySidebar = (function () {
                     var phones = phone.split("-");
                     this.$phone_input_int.val(phones[0]);
                     this.$phone_input_number.val(phones[1]);
+                }
+            }
+
+            // DATA-SOURCE
+            {
+                var url = this.locality_data.values['data_source'];
+                delete keys[this.getIndex(keys, 'data_source')];
+                if (this.isHasValue(url)) {
+                    this.$url.html("<a href=\"" + url + "\">" + url + "</a>");
                 }
             }
 
