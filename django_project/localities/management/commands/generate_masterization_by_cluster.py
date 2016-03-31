@@ -34,15 +34,15 @@ class Command(BaseCommand):
             # icon sizes should be positive
             raise CommandError('Icon sizes should be positive numbers')
 
-        localities = Locality.objects.all()
+        localities = Locality.objects.filter(master=None)
         # localities = Locality.objects.in_bbox(
         #     parse_bbox('4.4558626413345337,6.5171178387202984,4.4624984264373779,6.5220158579049112'))
         loc_clusters = cluster(localities, self.MAX_ZOOM, icon_size[0], icon_size[1], True)
         number = len(loc_clusters)
         index = 1;
         for loc_cluster in loc_clusters:
-            print "----------------------------------"
             print "%s/%s count : %s" % (index, number, loc_cluster['count'])
+            index += 1
             if loc_cluster['count'] > 1:
                 loc_cluster['localities'].sort(key=extract_time, reverse=False)
                 master = loc_cluster['localities'].pop(0)
@@ -57,12 +57,11 @@ class Command(BaseCommand):
                         # set master of synonym
                         try:
                             locality = Locality.objects.get(id=synonym['id'])
-                            if not locality.master:
-                                locality.master = locality_master
-                                locality.save()
+                            locality.master = locality_master
+                            locality.save()
                             synonyms.append(str(synonym['uuid']))
                         except Exception as e:
                             print e
-                    print 'synonyms : '+', '.join(synonyms)
+                    print 'synonyms : ' + ', '.join(synonyms)
                 except Exception as e:
                     print e
