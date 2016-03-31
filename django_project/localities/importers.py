@@ -276,7 +276,6 @@ class CSVImporter:
                 # apply mode
                 loc.changeset = tmp_changeset
                 loc.geom = Point(*values['geom'])
-                loc.master = self.get_locality_master(values['master_upstream_id'], loc)
 
                 loc.save()
                 LOG.info('Updated %s (%s)', loc.uuid, loc.id)
