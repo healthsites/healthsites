@@ -305,6 +305,12 @@ class CSVImporter:
                 else:
                     loc.set_values(values['values'], social_user=self.user)
 
+                # save master
+                try:
+                    loc.master = self.get_locality_master(values['master_upstream_id'], loc)
+                    loc.save()
+                except Exception as e:
+                    LOG.info('Error at making master for %s (%s)', loc.uuid, loc.id)
                 self.report['modified'] += 1
 
     def envelope(self, lon, lat):
