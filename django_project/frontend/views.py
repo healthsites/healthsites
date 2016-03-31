@@ -16,7 +16,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from localities.utils import get_country_statistic, search_locality_by_spec_data, search_locality_by_tag
+from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, search_locality_by_tag
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from social_users.utils import get_profile
 
@@ -27,7 +27,7 @@ class MainView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
-        context['locality_count'] = Locality.objects.count()
+        context['locality_count'] = get_heathsites_master().count()
         if request.user.is_authenticated():
             permission = DataLoaderPermission.objects.filter(uploader=request.user)
             if len(permission) <= 0:
@@ -71,7 +71,7 @@ class HelpView(TemplateView):
 def search_place(request, place):
     # getting country's polygon
     result = {}
-    result['locality_count'] = Locality.objects.count()
+    result['locality_count'] = get_heathsites_master().count()
     result['countries'] = Country.objects.order_by('name').values('name').distinct()
     # geonames
     google_maps_api_key = settings.GOOGLE_MAPS_API_KEY

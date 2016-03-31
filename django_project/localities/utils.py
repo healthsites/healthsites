@@ -398,6 +398,7 @@ def locality_edit(request):
 def get_statistic(healthsites):
     # locality which in polygon
     # data for frontend
+    healthsites = healthsites.filter(master=None)
     complete = 0
     partial = 0
     basic = 0
