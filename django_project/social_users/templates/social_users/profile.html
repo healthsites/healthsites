@@ -37,7 +37,7 @@
                     {% if user.organization %}
                         {% for org in user.organization %}
                             {% if org.website %}
-                                <a href="http://{{ org.website }}">{{ org.name }}</a>,
+                                <a href="{{ org.website }}">{{ org.name }}</a>,
                             {% else %}
                                 {{ org.name }},
                             {% endif %}

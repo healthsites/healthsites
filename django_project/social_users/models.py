@@ -30,6 +30,12 @@ class Organization(models.Model):
     contact = models.CharField(default="", blank=True, max_length=64)
     trusted_users = models.ManyToManyField('TrustedUser', through='Membership', blank=True)
 
+    def clean_website(self):
+        if "http" in self.website:
+            return self.website
+        else :
+            return "http://"+self.website
+
     def __unicode__(self):
         return u'%s' % (self.name)
 

@@ -26,7 +26,8 @@ def get_profile(user):
     try:
         trusted_user = TrustedUser.objects.get(user=user)
         user.is_trusted_user = True
-        user.organization = [{"name": org.name, "website": org.website} for org in trusted_user.organizations.all()]
+        user.organization = [{"name": org.name, "website": org.clean_website()} for org in
+                             trusted_user.organizations.all()]
     except TrustedUser.DoesNotExist:
         user.is_trusted_user = False
     return user
