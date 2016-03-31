@@ -24,8 +24,9 @@ def get_profile(user):
     user.screen_name = username
     user.shared_links = shared_links
     try:
-        TrustedUser.objects.get(user=user)
+        trusted_user = TrustedUser.objects.get(user=user)
         user.is_trusted_user = True
+        user.organization = [{"name": org.name, "website": org.website} for org in trusted_user.organizations.all()]
     except TrustedUser.DoesNotExist:
         user.is_trusted_user = False
     return user

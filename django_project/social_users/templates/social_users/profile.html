@@ -6,42 +6,61 @@
 
 {% block content %}
     <section class="white container">
-            <div class="col-sm-4 user-profile">
-                <div class="profile-image-size">
-                    {% if user.profile_picture == "" %}
-                        <img class="profile-image" src="{% static "img/no-profile-img.gif" %}"/>
-                    {% else %}
-                        <img class="profile-image" src="{{ user.profile_picture }}"/>
-                    {% endif %}
-                </div>
-                <div class="profile-header">
-                    <h1>{{ user.screen_name }}</h1>
-                </div>
+        <div class="col-sm-4 user-profile">
+            <div class="profile-image-size">
+                {% if user.profile_picture == "" %}
+                    <img class="profile-image" src="{% static "img/no-profile-img.gif" %}"/>
+                {% else %}
+                    <img class="profile-image" src="{{ user.profile_picture }}"/>
+                {% endif %}
+            </div>
+            <div class="profile-header">
+                <h1>{{ user.screen_name }}</h1>
+            </div>
+            {% if user.is_trusted_user %}
                 <div class="status">
                     <span>trusted user</span>
                 </div>
+            {% endif %}
+            <div class="name">
+                <strong>name :</strong>
+                {% if user.get_full_name == "" %}
+                    -
+                {% else %}
+                    {{ user.get_full_name }}
+                {% endif %}
+            </div>
+            {% if user.is_trusted_user %}
                 <div class="name">
-                    <strong>name:</strong>
-                    {% if user.get_full_name == "" %}
-                        -
+                    <strong>organization :</strong>
+                    <span id="organization-list">
+                    {% if user.organization %}
+                        {% for org in user.organization %}
+                            {% if org.website %}
+                                <a href="http://{{ org.website }}">{{ org.name }}</a>,
+                            {% else %}
+                                {{ org.name }},
+                            {% endif %}
+                        {% endfor %}
                     {% else %}
-                        {{ user.get_full_name }}
+                        -
                     {% endif %}
-                    <strong>organization:</strong> <a href="#">Organization</a>
+                    </span>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-sm-8 profile-graphs">
+            <h3>Latest updates</h3>
+
+            <div id="updates-wrapper">
+                <div id="updates-99" class="graph updates">
+                    <div class="entry">-</div>
                 </div>
             </div>
-            <div class="col-sm-8 profile-graphs">
-                <h3>Latest updates</h3>
-
-                    <div id="updates-wrapper">
-                        <div id="updates-99" class="graph updates">
-                            <div class="entry">-</div>
-                        </div>
-                    </div>
-                    <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< view previous</a>
-                        <a class="next opacity-7" onclick="changePage(this)">view
-                            next ></a></div>
-           </div>
+            <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< view previous</a>
+                <a class="next opacity-7" onclick="changePage(this)">view
+                    next ></a></div>
+        </div>
     </section>
 {% endblock content %}
 
