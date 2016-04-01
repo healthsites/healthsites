@@ -52,6 +52,9 @@ class DataUpdateAdmin(admin.ModelAdmin):
     list_display = (
         'organisation_name', 'author', 'data_loader_mode', 'date_time_uploaded', 'applied', 'date_time_applied')
 
+    def has_add_permission(self, request):
+        return False
+
 
 admin.site.register(DataLoader, DataUpdateAdmin)
 

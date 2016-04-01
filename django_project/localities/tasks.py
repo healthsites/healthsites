@@ -25,7 +25,7 @@ def send_email(data_loader, report):
     """Send email for data loader."""
     logger.info('Send email report.')
     recipient_list = [
-        'ismail@kartoza.com',
+        'irwan@kartoza.com',
         'mark.herringer@gmail.com'
     ]
 
