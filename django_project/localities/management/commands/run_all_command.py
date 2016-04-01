@@ -22,7 +22,7 @@ class Command(BaseCommand):
         print "---------------------------------------------"
         print "call gen_cluster_cache"
         print "---------------------------------------------"
-        call_command('gen cluster cache', 48, 46)
+        call_command('gen_cluster_cache', 48, 46)
         print "---------------------------------------------"
         print "call generate countries cache"
         print "---------------------------------------------"
