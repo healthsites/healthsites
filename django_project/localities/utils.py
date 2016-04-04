@@ -81,7 +81,7 @@ def get_country_statistic(query):
                 try:
                     # query for each of attribute
                     healthsites = Locality.objects.in_polygon(
-                        polygons)
+                        polygons).filter(master=None)
                     output = get_statistic(healthsites)
                     result = json.dumps(output, cls=DjangoJSONEncoder)
                     file = open(filename, 'w')
@@ -102,7 +102,7 @@ def get_country_statistic(query):
             except IOError as e:
                 try:
                     # query for each of attribute
-                    healthsites = Locality.objects.all()
+                    healthsites = Locality.objects.filter(master=None)
                     output = get_statistic(healthsites)
                     result = json.dumps(output, cls=DjangoJSONEncoder)
                     file = open(filename, 'w')
@@ -398,7 +398,6 @@ def locality_edit(request):
 def get_statistic(healthsites):
     # locality which in polygon
     # data for frontend
-    healthsites = healthsites.filter(master=None)
     complete = 0
     partial = 0
     basic = 0
@@ -505,24 +504,33 @@ def get_locality_by_spec_data(spec, data, uuid):
     try:
         if spec == "attribute":
             if uuid:
-                locality = Locality.objects.get(uuid=uuid)
-                localities = Locality.objects.filter(
-                    geom__distance_lte=(locality.geom, D(mi=100))
-                ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
-                localities = Value.objects.filter(
-                    data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                try:
+                    locality = Locality.objects.get(uuid=uuid)
+                    localities = Locality.objects.filter(
+                        geom__distance_lte=(locality.geom, D(mi=100))
+                    ).exclude(uuid=uuid).filter(master=None).distance(locality.geom).order_by('-distance')
+                    localities = Value.objects.filter(
+                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                except Locality.DoesNotExist:
+                    localities = Value.objects.filter(
+                        data__icontains=data).values('locality')
             else:
                 localities = Value.objects.filter(
                     data__icontains=data).values('locality')
         else:
             if uuid:
-                locality = Locality.objects.get(uuid=uuid)
-                localities = Locality.objects.filter(
-                    geom__distance_lte=(locality.geom, D(mi=100))
-                ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
-                localities = Value.objects.filter(
-                    specification__attribute__key=spec).filter(
-                    data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                try:
+                    locality = Locality.objects.get(uuid=uuid)
+                    localities = Locality.objects.filter(
+                        geom__distance_lte=(locality.geom, D(mi=100))
+                    ).exclude(uuid=uuid).filter(master=None).distance(locality.geom).order_by('-distance')
+                    localities = Value.objects.filter(
+                        specification__attribute__key=spec).filter(
+                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                except Locality.DoesNotExist:
+                    localities = Value.objects.filter(
+                        specification__attribute__key=spec).filter(
+                        data__icontains=data).values('locality')
             else:
                 localities = Value.objects.filter(
                     specification__attribute__key=spec).filter(
@@ -556,6 +564,7 @@ def search_locality_by_tag(query):
     try:
         localities = Value.objects.filter(
             specification__attribute__key='tags').filter(data__icontains="|" + query + "|").values('locality')
+        localities = Locality.objects.filter(id__in=localities).filter(master=None)
         return get_statistic(localities)
     except Value.DoesNotExist:
         return []
