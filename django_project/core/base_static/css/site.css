@@ -726,6 +726,18 @@ section.container{
     font-size: 14px;
     font-weight: 300;
 }
+.user-profile .status {
+    margin-bottom: 20px;
+}
+.user-profile .status span {
+    color: #fff;
+    background: #5CB85C;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.user-profile .name a {
+    color: #f44a52;
+}
 #updates-wrapper .graph {
 	background: #fff;
 	-moz-border-radius: 5px;
