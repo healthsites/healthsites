@@ -88,7 +88,7 @@
                 <img class="close" src="{% static "img/close.svg" %}" width="16"/>
             </a>
 
-            <div class="hidden" id="site-social" style="width: 115px;">
+            <div class="hidden" id="site-social" style="width: 116px;">
                 <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
                 <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
                    class="withripple twitter-href">
@@ -575,8 +575,7 @@
         $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
         $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
         $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
-		$(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites
-&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
+		$(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
 
         // checking default view
         var url = window.location.href;
