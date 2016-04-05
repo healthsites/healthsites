@@ -132,8 +132,12 @@ class DataLoaderForm(models.ModelForm):
         self.user = kwargs.pop('user', None)
         super(DataLoaderForm, self).__init__(*args, **kwargs)
 
-        self.fields['organizations'] = forms.ChoiceField(
-            choices=[(org.id, org.name) for org in Organization.objects.filter(trusted_users__user=self.user)])
+        if self.user.is_staff:
+            self.fields['organizations'] = forms.ChoiceField(
+            choices=[(org.id, org.name) for org in Organization.objects.all()])
+        else:
+            self.fields['organizations'] = forms.ChoiceField(
+                choices=[(org.id, org.name) for org in Organization.objects.filter(trusted_users__user=self.user)])
 
     def save(self, commit=True):
         """Save method.

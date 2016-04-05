@@ -29,11 +29,14 @@ class MainView(TemplateView):
         context['debug'] = settings.DEBUG
         context['locality_count'] = get_heathsites_master().count()
         if request.user.is_authenticated():
-            permission = DataLoaderPermission.objects.filter(uploader=request.user)
-            if len(permission) <= 0:
-                context['uploader'] = False
-            else:
+            if request.user.is_staff:
                 context['uploader'] = True
+            else:
+                permission = DataLoaderPermission.objects.filter(uploader=request.user)
+                if len(permission) <= 0:
+                    context['uploader'] = False
+                else:
+                    context['uploader'] = True
         else:
             context['uploader'] = False
         return self.render_to_response(context)
