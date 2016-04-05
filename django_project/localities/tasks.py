@@ -58,20 +58,25 @@ def load_data_task(self, data_loader_pk):
     try:
         data_loader = DataLoader.objects.get(pk=data_loader_pk)
         permissions = DataLoaderPermission.objects.filter(uploader=data_loader.author)
+        is_permitted = False
         permission_id = -999
-        try:
-            for permission in permissions:
-                with open(data_loader.csv_data.path) as f1:
-                    with open(permission.accepted_csv.path) as f2:
-                        if f1.read() == f2.read():
-                            permission_id = permission.id
-                            break
+        if not data_loader.author.is_staff:
+            try:
+                for permission in permissions:
+                    with open(data_loader.csv_data.path) as f1:
+                        with open(permission.accepted_csv.path) as f2:
+                            if f1.read() == f2.read():
+                                permission_id = permission.id
+                                break
+            except Exception as e:
+                print e
+        else:
+            is_permitted = True
 
-        except Exception as e:
-            print e
-
         try:
-            permission = DataLoaderPermission.objects.get(id=permission_id)
+            if not is_permitted:
+                permission = DataLoaderPermission.objects.get(id=permission_id)
+
             csv_importer = CSVImporter(
                 data_loader,
                 'Health',
@@ -97,7 +102,8 @@ def load_data_task(self, data_loader_pk):
             send_email(data_loader, csv_importer.generate_report())
 
             # remove the permission
-            permission.delete()
+            if not is_permitted:
+                permission.delete()
             
             call_command('generate_countries_cache')
             regenerate_cache_cluster()

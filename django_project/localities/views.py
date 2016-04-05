@@ -241,13 +241,13 @@ class DataLoaderView(LoginRequiredMixin, FormView):
 
     def get(self, request, *args, **kwargs):
         permission = DataLoaderPermission.objects.filter(uploader=request.user)
-        if len(permission) <= 0:
+        if len(permission) <= 0 and not request.user.is_staff:
             raise Http404("Can not access this page")
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         permission = DataLoaderPermission.objects.filter(uploader=request.user)
-        if len(permission) <= 0:
+        if len(permission) <= 0 and not request.user.is_staff:
             raise Http404("Can not access this page")
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
