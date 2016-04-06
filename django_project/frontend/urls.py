@@ -19,5 +19,5 @@ urlpatterns = patterns(
     url(r'^about$', AboutView.as_view(), name='about'),
     url(r'^help', HelpView.as_view(), name='help'),
     url(r'^map$', 'frontend.views.map', name='map'),
-    # url(r'^attributions$', AttributionsView.as_view(), name='map'),
+    url(r'^attributions$', AttributionsView.as_view(), name='map'),
 )
