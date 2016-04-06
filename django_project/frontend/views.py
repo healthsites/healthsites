@@ -70,6 +70,8 @@ class AboutView(TemplateView):
 class HelpView(TemplateView):
     template_name = 'help.html'
 
+class AttributionsView(TemplateView):
+    template_name = 'attributions.html'
 
 def search_place(request, place):
     # getting country's polygon

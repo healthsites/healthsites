@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
-from .views import MainView, AboutView, HelpView
+from .views import MainView, AboutView, HelpView, AttributionsView
 from envelope.views import ContactView
 from braces.views import FormMessagesMixin
 
@@ -12,11 +12,12 @@ class MessagesContactView(FormMessagesMixin, ContactView):
 
 
 urlpatterns = patterns(
-        '',
-        # basic app views
-        url(r'^$', MainView.as_view(), name='home'),
-        url(r'^contact/', MessagesContactView.as_view(), name='envelope-contact'),
-        url(r'^about$', AboutView.as_view(), name='about'),
-        url(r'^help', HelpView.as_view(), name='help'),
-        url(r'^map$', 'frontend.views.map', name='map'),
+    '',
+    # basic app views
+    url(r'^$', MainView.as_view(), name='home'),
+    url(r'^contact/', MessagesContactView.as_view(), name='envelope-contact'),
+    url(r'^about$', AboutView.as_view(), name='about'),
+    url(r'^help', HelpView.as_view(), name='help'),
+    url(r'^map$', 'frontend.views.map', name='map'),
+    # url(r'^attributions$', AttributionsView.as_view(), name='map'),
 )
