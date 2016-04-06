@@ -9,7 +9,7 @@ LOG = logging.getLogger(__name__)
 from .forms import DataLoaderForm
 from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification
-from .utils import parse_bbox, get_country_statistic, get_locality_detail, locality_create, locality_edit, \
+from .utils import parse_bbox, get_country_statistic, get_heathsites_master, get_locality_detail, locality_create, locality_edit, \
     locality_updates, get_locality_by_spec_data
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
@@ -18,7 +18,7 @@ from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, Http404
 from django.views.generic import DetailView, ListView, FormView
-from localities.models import Country
+from localities.models import Country, DataLoaderPermission
 
 LOG = logging.getLogger(__name__)
 
@@ -70,8 +70,8 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             # if geoname and tag are not set we can return the cached layer
             # try to read localities from disk
             filename = os.path.join(
-                    settings.CLUSTER_CACHE_DIR,
-                    '{}_{}_{}_localities.json'.format(zoom, *iconsize)
+                settings.CLUSTER_CACHE_DIR,
+                '{}_{}_{}_localities.json'.format(zoom, *iconsize)
             )
 
             try:
@@ -79,10 +79,10 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 cached_data = cached_locs.read()
 
                 return HttpResponse(
-                        cached_data, content_type='application/json', status=200
+                    cached_data, content_type='application/json', status=200
                 )
             except IOError as e:
-                localities = Locality.objects.in_bbox(parse_bbox('-180,-90,180,90'))
+                localities = get_heathsites_master().in_bbox(parse_bbox('-180,-90,180,90'))
                 object_list = cluster(localities, zoom, *iconsize)
 
                 # create the missing cache
@@ -92,13 +92,15 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 return self.render_json_response(object_list)
         else:
             # cluster Localites for a view
-            localities = Locality.objects.in_bbox(bbox)
+            # localities = Locality.objects.in_bbox(bbox)
+            # just master
+            localities = get_heathsites_master().in_bbox(bbox)
             exception = False
             try:
                 if geoname != "":
                     # getting country's polygon
                     country = Country.objects.get(
-                            name__iexact=geoname)
+                        name__iexact=geoname)
                     polygon = country.polygon_geometry
                     localities = localities.in_polygon(polygon)
                 else:
@@ -110,8 +112,8 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     # searching by tag
                     if tag != "" and tag != "undefined":
                         localities = Value.objects.filter(
-                                specification__attribute__key='tags').filter(data__icontains="|" + tag + "|").values(
-                                'locality')
+                            specification__attribute__key='tags').filter(data__icontains="|" + tag + "|").values(
+                            'locality')
                         localities = Locality.objects.filter(id__in=localities)
                     else:
                         # serching by value
@@ -153,6 +155,11 @@ class LocalityInfo(JSONResponseMixin, DetailView):
             obj_repr = get_locality_detail(self.object, kwargs['changes']);
         else:
             obj_repr = get_locality_detail(self.object, None);
+        synonyms = []
+        for synonym in self.object.get_synonyms():
+            synonyms.append(get_locality_detail(synonym, None))
+        if len(synonyms) > 0:
+            obj_repr['synonyms'] = synonyms
         return self.render_json_response(obj_repr)
 
 
@@ -175,7 +182,7 @@ def get_json_from_request(request):
         except:
             if req[0] not in special_request:
                 tmp_changeset = Changeset.objects.create(
-                        social_user=request.user
+                    social_user=request.user
                 )
                 attribute = Attribute()
                 attribute.key = req[0]
@@ -229,22 +236,29 @@ class DataLoaderView(LoginRequiredMixin, FormView):
     form_class = DataLoaderForm
     template_name = 'dataloaderform.html'
 
-    def get_form(self, form_class):
-
-        return form_class()
-
     def form_valid(self, form):
         pass
 
     def get(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
+        permission = DataLoaderPermission.objects.filter(uploader=request.user)
+        if len(permission) <= 0 and not request.user.is_staff:
             raise Http404("Can not access this page")
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        if not request.user.is_superuser:
+        permission = DataLoaderPermission.objects.filter(uploader=request.user)
+        if len(permission) <= 0 and not request.user.is_staff:
             raise Http404("Can not access this page")
         return super(DataLoaderView, self).post(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        """This method is what injects forms with their keyword
+            arguments."""
+        # grab the current set of form #kwargs
+        kwargs = super(DataLoaderView, self).get_form_kwargs()
+        # Update the kwargs with the user_id
+        kwargs['user'] = self.request.user
+        return kwargs
 
 
 def load_data(request):
@@ -266,9 +280,9 @@ def load_data(request):
                 'have finished loading the data.'
             )
             return HttpResponse(json.dumps(
-                    response,
-                    ensure_ascii=False),
-                    content_type='application/javascript')
+                response,
+                ensure_ascii=False),
+                content_type='application/javascript')
         else:
             error_message = form.errors
             response = {
@@ -277,9 +291,9 @@ def load_data(request):
                 'message': 'You have failed to load data.'
             }
             return HttpResponse(json.dumps(
-                    response,
-                    ensure_ascii=False),
-                    content_type='application/javascript')
+                response,
+                ensure_ascii=False),
+                content_type='application/javascript')
     else:
         pass
 
@@ -288,8 +302,8 @@ def search_locality_by_name(request):
     if request.method == 'GET':
         query = request.GET.get('q')
         locality_values = Value.objects.filter(
-                specification__attribute__key='name').filter(
-                data__istartswith=query)
+            specification__attribute__key='name').filter(
+            data__istartswith=query)
         result = []
         for locality_value in locality_values:
             result.append(locality_value.data)
@@ -315,7 +329,7 @@ def search_countries(request):
         query = request.GET.get('q')
 
         countries = Country.objects.filter(
-                name__istartswith=query)
+            name__istartswith=query)
         result = []
         for country in countries:
             result.append(country.name)

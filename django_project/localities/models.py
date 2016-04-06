@@ -4,17 +4,20 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import itertools
+
+from .querysets import PassThroughGeoManager, LocalitiesQuerySet
 from datetime import datetime
-from django.utils import timezone
-from django.utils.text import slugify
-from django.contrib.gis.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.gis.db import models
+from django.contrib.sites.models import Site
+from django.db.models.signals import post_save, pre_delete
+from django.utils import timezone
+from django.utils.text import slugify
+
 from model_utils import FieldTracker
 from pg_fts.fields import TSVectorField
-from .querysets import PassThroughGeoManager, LocalitiesQuerySet
-from django.db.models.signals import post_save
 
 
 class ChangesetMixin(models.Model):
@@ -145,6 +148,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     upstream_id = models.TextField(null=True, unique=True)
     geom = models.PointField(srid=4326)
     specifications = models.ManyToManyField('Specification', through='Value')
+    master = models.ForeignKey('Locality', null=True, default=None)
 
     objects = PassThroughGeoManager.for_queryset_class(LocalitiesQuerySet)()
 
@@ -214,7 +218,7 @@ class Locality(UpdateMixin, ChangesetMixin):
                 if obj.tracker.changed():
                     if not (tmp_changeset):
                         tmp_changeset = Changeset.objects.create(
-                                social_user=social_user
+                            social_user=social_user
                         )
                     obj.changeset = tmp_changeset
                     obj.save()
@@ -225,12 +229,12 @@ class Locality(UpdateMixin, ChangesetMixin):
             else:
                 # attr_id was not found (maybe a bad attribute)
                 LOG.warning(
-                        'Locality %s has no attribute key %s', self.pk, key
+                    'Locality %s has no attribute key %s', self.pk, key
                 )
 
         # send values_updated signal
         signals.SIG_locality_values_updated.send(
-                sender=self.__class__, instance=self
+            sender=self.__class__, instance=self
         )
 
         return changed_values
@@ -239,8 +243,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         """
         Basic locality representation, as a dictionary
         """
-
-        return {
+        dict = {
             u'uuid': self.uuid,
             u'values': {
                 val.specification.attribute.key: val.data
@@ -248,8 +251,32 @@ class Locality(UpdateMixin, ChangesetMixin):
                 },
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
-            u'changeset': self.changeset_id
-        }
+            u'changeset': self.changeset_id}
+
+        if 'data_source' in dict[u'values']:
+            try:
+                site = Site.objects.get(name=dict[u'values']['data_source'])
+                dict[u'values']['data_source_url'] = site.domain
+            except Site.DoesNotExist:
+                print "site doesn't exist"
+
+        if self.master:
+            master_uuid = ""
+            master_name = self.master.uuid
+            if self.master == self:
+                master_uuid = ""
+                master_name = "unsetted"
+            else:
+                try:
+                    master_name = Value.objects.filter(locality=self.master).filter(
+                        specification__attribute__key='name')[0].data
+                    master_uuid = self.master.uuid
+                except Value.DoesNotExist:
+                    print "value does not exist"
+
+            dict['master'] = {'master_uuid': master_uuid, 'master_name': master_name}
+
+        return dict
 
     def is_type(self, value):
         if value != "":
@@ -267,12 +294,15 @@ class Locality(UpdateMixin, ChangesetMixin):
         """
 
         data_values = itertools.groupby(
-                self.value_set.order_by('specification__fts_rank')
-                    .values_list('specification__fts_rank', 'data'),
-                lambda x: x[0]
+            self.value_set.order_by('specification__fts_rank')
+                .values_list('specification__fts_rank', 'data'),
+            lambda x: x[0]
         )
 
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
+
+    def get_synonyms(self):
+        return Locality.objects.filter(master=self).exclude(id=self.id)
 
     def __unicode__(self):
         return u'{}'.format(self.id)
@@ -293,6 +323,7 @@ class LocalityArchive(ArchiveMixin):
     uuid = models.TextField()
     upstream_id = models.TextField(null=True)
     geom = models.PointField(srid=4326)
+    master = models.ForeignKey('Locality', null=True, default=None)
 
 
 class Value(UpdateMixin, ChangesetMixin):
@@ -313,7 +344,7 @@ class Value(UpdateMixin, ChangesetMixin):
 
     def __unicode__(self):
         return u'({}) {}={}'.format(
-                self.locality.id, self.specification.attribute.key, self.data
+            self.locality.id, self.specification.attribute.key, self.data
         )
 
 
@@ -480,78 +511,81 @@ class DataLoader(models.Model):
     )
 
     organisation_name = models.CharField(
-            verbose_name='Organization\'s Name',
-            help_text='Organization\'s Name',
-            null=False,
-            blank=False,
-            max_length=100
+        verbose_name='Organisation\'s Name',
+        help_text='Organiation\'s Name',
+        null=False,
+        blank=False,
+        max_length=100
     )
 
     json_concept_mapping = models.FileField(
-            verbose_name='JSON Concept Mapping',
-            help_text='JSON Concept Mapping File.',
-            upload_to='json_mapping/%Y/%m/%d',
-            max_length=100
+        verbose_name='JSON Concept Mapping',
+        help_text='JSON Concept Mapping File.',
+        upload_to='json_mapping/%Y/%m/%d',
+        max_length=100
     )
 
     csv_data = models.FileField(
-            verbose_name='CSV Data',
-            help_text='CSV data that contains the data.',
-            upload_to='csv_data/%Y/%m/%d',
-            max_length=100
+        verbose_name='CSV Data',
+        help_text='CSV data that contains the data.',
+        upload_to='csv_data/%Y/%m/%d',
+        max_length=100
     )
 
     data_loader_mode = models.IntegerField(
-            choices=DATA_LOADER_MODE_CHOICES,
-            verbose_name="Data Loader Mode",
-            help_text='The mode of the data loader.',
-            blank=False,
-            null=False
+        choices=DATA_LOADER_MODE_CHOICES,
+        verbose_name="Data Loader Mode",
+        help_text='The mode of the data loader.',
+        blank=False,
+        null=False
     )
 
     applied = models.BooleanField(
-            verbose_name='Applied',
-            help_text='Whether the data update has been applied or not.',
-            default=False
+        verbose_name='Applied',
+        help_text='Whether the data update has been applied or not.',
+        default=False
     )
 
     author = models.ForeignKey(
-            User,
-            verbose_name='Author',
-            help_text='The user who propose the data loader.',
-            null=False
+        User,
+        verbose_name='Author',
+        help_text='The user who propose the data loader.',
+        null=False
     )
 
     date_time_uploaded = models.DateTimeField(
-            verbose_name='Uploaded (time)',
-            help_text='Timestamp (UTC) when the data uploaded',
-            null=False,
+        verbose_name='Uploaded (time)',
+        help_text='Timestamp (UTC) when the data uploaded',
+        null=False,
     )
 
     date_time_applied = models.DateTimeField(
-            verbose_name='Applied (time)',
-            help_text='When the data applied (loaded)',
-            null=True
+        verbose_name='Applied (time)',
+        help_text='When the data applied (loaded)',
+        null=True
     )
 
     separator = models.IntegerField(
-            choices=SEPARATOR_CHOICES,
-            verbose_name="Separator Character",
-            help_text='Separator character.',
-            null=False,
-            default=COMMA_CODE
+        choices=SEPARATOR_CHOICES,
+        verbose_name="Separator Character",
+        help_text='Separator character.',
+        null=False,
+        default=COMMA_CODE
     )
 
     notes = models.TextField(
-            verbose_name='Notes',
-            help_text='Notes',
-            null=True,
-            blank=True,
-            default=''
+        verbose_name='Notes',
+        help_text='Notes',
+        null=True,
+        blank=True,
+        default=''
     )
 
     def __str__(self):
         return self.organisation_name
+
+    def __unicode__(self):
+        return u'%s' % (self.organisation_name)
 
     def save(self, *args, **kwargs):
         if not self.date_time_uploaded:
@@ -575,17 +609,17 @@ post_save.connect(load_data, sender=DataLoader)
 class Boundary(models.Model):
     """This is an abstract model that vectors can inherit from. e.g. country"""
     name = models.CharField(
-            verbose_name='',
-            help_text='',
-            max_length=50,
-            null=False,
-            blank=False)
+        verbose_name='',
+        help_text='',
+        max_length=50,
+        null=False,
+        blank=False)
 
     polygon_geometry = models.MultiPolygonField(
-            srid=4326)
+        srid=4326)
 
     id = models.AutoField(
-            primary_key=True)
+        primary_key=True)
 
     objects = models.GeoManager()
 
@@ -606,3 +640,46 @@ class Country(Boundary):
 
 Country._meta.get_field('name').verbose_name = 'Country name'
 Country._meta.get_field('name').help_text = 'The name of the country.'
+
+from django.core.exceptions import ValidationError
+
+
+def validate_file_extension(value):
+    if value.file.content_type != 'text/csv':
+        raise ValidationError(u'Just receive csv file')
+
+
+def get_trusted_user():
+    from social_users.models import TrustedUser
+    return TrustedUser.objects.values_list('user__id')
+
+
+class DataLoaderPermission(models.Model):
+    accepted_csv = models.FileField(
+        verbose_name='Accepted CSV Data',
+        help_text='Accepted CSV data that contains the data.',
+        upload_to='accepted_csv_data/',
+        max_length=100,
+        validators=[validate_file_extension]
+    )
+
+    uploader = models.ForeignKey(
+        User,
+        verbose_name='Uploader',
+        help_text='The user who propose the data loader.',
+        null=False,
+        limit_choices_to={
+            'id__in': get_trusted_user,
+        }
+    )
+
+    def __str__(self):
+        return "%s : %s" % (self.accepted_csv, self.uploader)
+
+
+def data_loader_deleted(sender, instance, **kwargs):
+    # Pass false so FileField doesn't save the model.
+    instance.accepted_csv.delete(False)
+
+
+pre_delete.connect(data_loader_deleted, sender=DataLoaderPermission)

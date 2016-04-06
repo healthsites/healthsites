@@ -4,6 +4,7 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 from .models import Profile
+from social_users.models import TrustedUser
 
 
 def get_profile(user):
@@ -22,4 +23,14 @@ def get_profile(user):
     user.profile_picture = profile_picture
     user.screen_name = username
     user.shared_links = shared_links
+    try:
+        trusted_user = TrustedUser.objects.get(user=user)
+        user.is_trusted_user = True
+        user.organisations = [{"name": org.name, "website": org.clean_website()} for org in
+                              trusted_user.organisations_supported.all().filter(organisationsupported__is_staff=True)]
+        user.organisations_supported = [{"name": org.name, "website": org.clean_website()} for org in
+                                        trusted_user.organisations_supported.all().filter(
+                                            organisationsupported__is_staff=False)]
+    except TrustedUser.DoesNotExist:
+        user.is_trusted_user = False
     return user

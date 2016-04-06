@@ -61,8 +61,12 @@
     </head>
     <script>
         var isLoggedIn = false;
+        var isUserTrusted = false;
         {% if user.is_authenticated %}
             isLoggedIn = true;
+            {% if user.is_trusted_user %}
+                isUserTrusted = true;
+            {% endif %}
         {% endif %}
     </script>
 <body class="map-page">
@@ -84,7 +88,7 @@
                 <img class="close" src="{% static "img/close.svg" %}" width="16"/>
             </a>
 
-            <div class="hidden" id="site-social" style="width: 115px;">
+            <div class="hidden" id="site-social" style="width: 116px;">
                 <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
                 <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
                    class="withripple twitter-href">
@@ -96,6 +100,9 @@
                 <a class="googleplus-href"
                    onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-google-plus"></i>
+                </a>
+                <a class="linkedin-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+                    <i class="fa fa-linkedin"></i>
                 </a>
             </div>
             <span class="tagline">Building a free, curated, canonical source of healthcare location data</span>
@@ -248,6 +255,16 @@
                     </p>
                 </div>
                 <div class="info">
+                    <div class="line">
+                        <div id="locality-master">
+                            <div id="locality-master-indicator" class="master">MASTER</div>
+                        </div>
+                        <div id="locality-master-input" class="master" style="display: none">
+                            <input id="locality-master-input-flag" type="checkbox">master
+                            <input id="locality-master-input-text-box" type="text" placeholder="uuid"
+                                   style="margin-bottom: 10px;margin-left: 20px"/>
+                        </div>
+                    </div>
                     <div id="line-updates" class="line updates">
                         <div class="icon-holder">
                             <i class="fa fa-info-circle"></i>
@@ -337,14 +354,9 @@
                                 <br>
                             </div>
 
-                            {#                            <p id="locality-url-input-add" style="cursor: pointer; display: none"#}
-                            {#                               onclick="addOption(this)"> add#}
-                            {#                                link</p>#}
-                            {##}
-                            {#                            <div id="locality-url">#}
-                            {#                            </div>#}
-                            {#                            <div id="locality-url-input" style="display: none">#}
-                            {#                            </div>#}
+                            <div id="locality-url">
+                                <p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href=""></a></span></p>
+                            </div>
                         </div>
                     </div>
                     <div class="line services">
@@ -441,7 +453,7 @@
                     </div>
                     <div id="tag" class="line services">
                         <div class="icon-holder">
-                            <b>tag</b>
+                            <i class="fa fa-tag"></i>
                         </div>
                         <div class="data">
                             <ul id="tag-data"></ul>
@@ -457,7 +469,7 @@
                     </div>
                     <div id="others" class="line ">
                         <div class="icon-holder">
-                            <b>others</b>
+                            <i class="fa fa-circle"></i>
                         </div>
                         <div class="data">
                             <p id="others-add" onclick="addOthers()" style="display: none; cursor: pointer"><b>add new
@@ -563,6 +575,7 @@
         $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
         $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
         $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
+		$(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
 
         // checking default view
         var url = window.location.href;

@@ -59,7 +59,7 @@ def update_minbbox(point, minbbox):
     return new_minbbox
 
 
-def cluster(query_set, zoom, pix_x, pix_y):
+def cluster(query_set, zoom, pix_x, pix_y, localities_is_needed=False):
     """
     Walk though a set of Localities and create point clusters
 
@@ -72,9 +72,13 @@ def cluster(query_set, zoom, pix_x, pix_y):
 
     cluster_points = []
 
-    localites = query_set.get_lnglat().values('id', 'uuid', 'lnglat')
-
+    localites = query_set.get_lnglat().values('id', 'uuid', 'lnglat', 'changeset__created')
+    number = localites.count()
+    index = 1
     for locality in localites.iterator():
+        if localities_is_needed:
+            print "%s/%s" % (index, number)
+        index += 1
         geomx, geomy = map(float, locality['lnglat'].split(','))
 
         # check every point in cluster_points
@@ -83,6 +87,8 @@ def cluster(query_set, zoom, pix_x, pix_y):
                 # it's in the cluster 'catchment' area
                 pt['count'] += 1
                 pt['minbbox'] = update_minbbox((geomx, geomy), pt['minbbox'])
+                if localities_is_needed:
+                    pt['localities'].append(locality)
                 break
 
         else:
@@ -91,7 +97,7 @@ def cluster(query_set, zoom, pix_x, pix_y):
             locality_name = ""
             try:
                 locality_name = Value.objects.filter(locality__uuid=locality['uuid']).filter(
-                        specification__attribute__key='name')[0].data
+                    specification__attribute__key='name')[0].data
             except Exception as e:
                 print e
 
@@ -99,13 +105,18 @@ def cluster(query_set, zoom, pix_x, pix_y):
                 geomx - x_range * 1.5, geomy - y_range * 1.5,
                 geomx + x_range * 1.5, geomy + y_range * 1.5
             )
-            cluster_points.append({
+            new_cluster = {
                 'uuid': locality['uuid'],
                 'name': locality_name,
                 'count': 1,
                 'geom': (geomx, geomy),
                 'bbox': bbox,
-                'minbbox': (geomx, geomy, geomx, geomy)
-            })
+                'minbbox': (geomx, geomy, geomx, geomy),
+                'localities': []
+            }
+            if localities_is_needed:
+                new_cluster['localities'].append(locality)
+
+            cluster_points.append(new_cluster)
 
     return cluster_points

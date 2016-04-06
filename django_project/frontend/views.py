@@ -4,38 +4,42 @@ import json
 
 LOG = logging.getLogger(__name__)
 
+import googlemaps
+
 from braces.views import FormMessagesMixin
 from envelope.views import ContactView
-from django.views.generic import TemplateView
-from django.conf import settings
-from django.shortcuts import render_to_response
-from django.views.decorators.csrf import csrf_exempt
-from django.template import RequestContext
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
-import googlemaps
-from localities.models import Locality, Value, Country
-from localities.utils import search_locality_by_tag, get_country_statistic, search_locality_by_spec_data
-from django.shortcuts import get_object_or_404
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.shortcuts import render_to_response, get_object_or_404
+from django.template import RequestContext
+from django.http import HttpResponseRedirect
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
+from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, search_locality_by_tag
+from localities.models import Country, DataLoaderPermission, Locality, Value
 from social_users.utils import get_profile
 
 
 class MainView(TemplateView):
     template_name = 'index.html'
 
-    def get_context_data(self, **kwargs):
-        """
-        *debug* toggles GoogleAnalytics support on the main page
-        """
-
-        context = super(MainView, self).get_context_data(**kwargs)
-
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
-
-        context['locality_count'] = Locality.objects.count()
-
-        return context
+        context['locality_count'] = get_heathsites_master().count()
+        if request.user.is_authenticated():
+            if request.user.is_staff:
+                context['uploader'] = True
+            else:
+                permission = DataLoaderPermission.objects.filter(uploader=request.user)
+                if len(permission) <= 0:
+                    context['uploader'] = False
+                else:
+                    context['uploader'] = True
+        else:
+            context['uploader'] = False
+        return self.render_to_response(context)
 
 
 class ContactView(FormMessagesMixin, ContactView):
@@ -66,11 +70,13 @@ class AboutView(TemplateView):
 class HelpView(TemplateView):
     template_name = 'help.html'
 
+class AttributionsView(TemplateView):
+    template_name = 'attributions.html'
 
 def search_place(request, place):
     # getting country's polygon
     result = {}
-    result['locality_count'] = Locality.objects.count()
+    result['locality_count'] = get_heathsites_master().count()
     result['countries'] = Country.objects.order_by('name').values('name').distinct()
     # geonames
     google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
@@ -151,7 +157,6 @@ def map(request):
             result = search_place(request, place)
         else:
             uuid = request.GET.get('uuid')
-            print uuid
             for item in request.GET:
                 if item != "uuid":
                     spec = item
