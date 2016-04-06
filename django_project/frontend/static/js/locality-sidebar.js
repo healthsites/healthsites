@@ -1044,7 +1044,7 @@ window.LocalitySidebar = (function () {
                     if (this.isHasValue(url_domain)) {
                         html += ' href="' + url_domain + '"';
                     }
-                    html += '>' + url + '</a></p>';
+                    html += ' data-toggle="tooltip" title="Data supplied by">' + url + '</a></p>';
                     this.$url.html(html);
                     url_isupdated = true;
                 }
@@ -1056,12 +1056,13 @@ window.LocalitySidebar = (function () {
                 delete keys[this.getIndex(keys, 'raw_source')];
                 if (this.isHasValue(url)) {
                     if (url_isupdated) {
-                        this.$url.append('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '">raw data</a></span></p>');
+                        this.$url.append('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data">raw data</a></span></p>');
                     } else {
-                        this.$url.html('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '">raw data</a></span></p>');
+                        this.$url.html('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data">raw data</a></span></p>');
                     }
                 }
             }
+            $('[data-toggle="tooltip"]').tooltip();
 
             // DEFINING HOURS
             {
@@ -1142,7 +1143,6 @@ window.LocalitySidebar = (function () {
                 }
             }
             $.getJSON(url, function (data) {
-                console.log(data);
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {
