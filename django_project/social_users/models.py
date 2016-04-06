@@ -20,15 +20,15 @@ class Profile(models.Model):
     screen_name = models.CharField(default="", max_length=50, blank=True)
 
 
-class Organization(models.Model):
+class Organisation(models.Model):
     """
     Extention of User
     """
 
     name = models.CharField(blank=False, max_length=64)
-    site = models.ForeignKey(Site, on_delete=models.CASCADE,null=True, default=None)
+    site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, default=None)
     contact = models.CharField(default="", blank=True, max_length=64)
-    trusted_users = models.ManyToManyField('TrustedUser', through='Membership', blank=True)
+    trusted_users = models.ManyToManyField('TrustedUser', through='OrganisationSupported', blank=True)
 
     def clean_website(self):
         if "http" in self.site.domain:
@@ -47,14 +47,18 @@ class TrustedUser(models.Model):
 
     user = models.OneToOneField(
         User, default=1, unique=True)
-    organizations = models.ManyToManyField('Organization', through=Organization.trusted_users.through, blank=True)
+    organisations_supported = models.ManyToManyField('Organisation', through=Organisation.trusted_users.through,
+                                                     blank=True)
 
 
-class Membership(models.Model):
-    organisation = models.ForeignKey(Organization, on_delete=models.CASCADE)
+class OrganisationSupported(models.Model):
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     user = models.ForeignKey(TrustedUser, on_delete=models.CASCADE)
+    is_staff = models.BooleanField(
+        verbose_name='Is Staff',
+        default=False
+    )
     date_added = models.DateField()
-    invite_reason = models.CharField(max_length=64, blank=True)
 
 
 def trusted_user_deleted(sender, instance, **kwargs):

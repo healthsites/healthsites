@@ -511,8 +511,8 @@ class DataLoader(models.Model):
     )
 
     organisation_name = models.CharField(
-        verbose_name='Organization\'s Name',
-        help_text='Organization\'s Name',
+        verbose_name='Organisation\'s Name',
+        help_text='Organiation\'s Name',
         null=False,
         blank=False,
         max_length=100
@@ -583,6 +583,9 @@ class DataLoader(models.Model):
 
     def __str__(self):
         return self.organisation_name
+
+    def __unicode__(self):
+        return u'%s' % (self.organisation_name)
 
     def save(self, *args, **kwargs):
         if not self.date_time_uploaded:

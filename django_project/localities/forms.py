@@ -8,7 +8,7 @@ from django.forms import models
 
 from .models import Domain, DataLoader
 from .utils import render_fragment
-from social_users.models import Organization
+from social_users.models import Organisation
 
 
 class DomainModelForm(forms.ModelForm):
@@ -133,11 +133,11 @@ class DataLoaderForm(models.ModelForm):
         super(DataLoaderForm, self).__init__(*args, **kwargs)
 
         if self.user.is_staff:
-            self.fields['organizations'] = forms.ChoiceField(
-            choices=[(org.id, org.name) for org in Organization.objects.all()])
+            self.fields['organisations'] = forms.ChoiceField(
+            choices=[(org.id, org.name) for org in Organisation.objects.all()])
         else:
-            self.fields['organizations'] = forms.ChoiceField(
-                choices=[(org.id, org.name) for org in Organization.objects.filter(trusted_users__user=self.user)])
+            self.fields['organisations'] = forms.ChoiceField(
+                choices=[(org.id, org.name) for org in Organisation.objects.filter(trusted_users__user=self.user)])
 
     def save(self, commit=True):
         """Save method.
@@ -146,7 +146,7 @@ class DataLoaderForm(models.ModelForm):
         data_loader = super(DataLoaderForm, self).save(commit=False)
         data_loader.author = self.user
         data_loader.applied = False
-        data_loader.organisation_name = Organization.objects.get(id=data['organizations']).name
+        data_loader.organisation_name = Organisation.objects.get(id=data['organisations']).name
         if commit:
             data_loader.save()
         return data_loader

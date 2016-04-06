@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import (
     Profile,
     TrustedUser,
-    Organization
+    Organisation
 )
 
 
@@ -15,26 +15,26 @@ class ProfileAdmin(admin.ModelAdmin):
 admin.site.register(Profile, ProfileAdmin)
 
 
-class OrganizationInline(admin.TabularInline):
-    model = TrustedUser.organizations.through
+class OrganisationInline(admin.TabularInline):
+    model = TrustedUser.organisations_supported.through
     extra = 0  # how many rows to show
 
 
 class TrustedUserAdmin(admin.ModelAdmin):
-    list_display = ('user', 'list_organizations')
-    inlines = (OrganizationInline,)
+    list_display = ('user', 'list_organisation_supported')
+    inlines = (OrganisationInline,)
 
-    def list_organizations(self, obj):
-        return ", ".join(['<span><a href="/admin/social_users/organization/%s">%s</a></span>' % (p.id, p.name) for p in
-                          obj.organizations.all()])
+    def list_organisation_supported(self, obj):
+        return ", ".join(['<span><a href="/admin/social_users/organisation/%s">%s</a></span>' % (p.id, p.name) for p in
+                          obj.organisations_supported.all()])
 
-    list_organizations.allow_tags = True
+    list_organisation_supported.allow_tags = True
 
 
 admin.site.register(TrustedUser, TrustedUserAdmin)
 
 
-class OrganizationAdmin(admin.ModelAdmin):
+class OrganisationAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'contact', 'list_trusted_user')
 
     def list_trusted_user(self, obj):
@@ -44,4 +44,4 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_trusted_user.allow_tags = True
 
 
-admin.site.register(Organization, OrganizationAdmin)
+admin.site.register(Organisation, OrganisationAdmin)
