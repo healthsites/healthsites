@@ -1143,6 +1143,7 @@ window.LocalitySidebar = (function () {
                 }
             }
             $.getJSON(url, function (data) {
+                console.log(data);
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {
