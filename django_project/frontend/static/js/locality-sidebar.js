@@ -1044,7 +1044,7 @@ window.LocalitySidebar = (function () {
                     if (this.isHasValue(url_domain)) {
                         html += ' href="' + url_domain + '"';
                     }
-                    html += ' data-toggle="tooltip" title="Data supplied by">' + url + '</a></p>';
+                    html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">' + url + '</a></p>';
                     this.$url.html(html);
                     url_isupdated = true;
                 }
@@ -1056,9 +1056,9 @@ window.LocalitySidebar = (function () {
                 delete keys[this.getIndex(keys, 'raw_source')];
                 if (this.isHasValue(url)) {
                     if (url_isupdated) {
-                        this.$url.append('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data">raw data</a></span></p>');
+                        this.$url.append('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data" target="_blank">Raw Data</a></span></p>');
                     } else {
-                        this.$url.html('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data">raw data</a></span></p>');
+                        this.$url.html('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data" target="_blank">Raw Data</a></span></p>');
                     }
                 }
             }
@@ -1110,7 +1110,7 @@ window.LocalitySidebar = (function () {
                 }
                 for (var i = 0; i < keys.length; i++) {
                     if (typeof keys[i] !== 'undefined') {
-                        this.addOther(keys[i].replace("_", " "), this.locality_data.values[keys[i]]);
+                        this.addOther(keys[i].replaceAll("_", " "), this.locality_data.values[keys[i]]);
                         others_attr.push(keys[i]);
                     }
                 }
