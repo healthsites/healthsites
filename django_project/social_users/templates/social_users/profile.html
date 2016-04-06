@@ -32,10 +32,26 @@
             </div>
             {% if user.is_trusted_user %}
                 <div class="name">
-                    <strong>organization :</strong>
+                    <strong>organisation :</strong>
                     <span id="organization-list">
-                    {% if user.organization %}
-                        {% for org in user.organization %}
+                    {% if user.organisations %}
+                        {% for org in user.organisations %}
+                            {% if org.website %}
+                                <a href="{{ org.website }}">{{ org.name }}</a>,
+                            {% else %}
+                                {{ org.name }},
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        -
+                    {% endif %}
+                    </span>
+                </div>
+                <div class="name">
+                    <strong>organisations supported :</strong>
+                    <span id="organization-list">
+                    {% if user.organisations_supported %}
+                        {% for org in user.organisations_supported %}
                             {% if org.website %}
                                 <a href="{{ org.website }}">{{ org.name }}</a>,
                             {% else %}
