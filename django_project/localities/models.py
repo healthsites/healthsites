@@ -596,7 +596,7 @@ class DataLoader(models.Model):
 # method for updating
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
-        load_data_task(instance.pk)
+        load_data_task.delay(instance.pk)
 
 
 # register the signal
