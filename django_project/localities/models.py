@@ -260,6 +260,26 @@ class Locality(UpdateMixin, ChangesetMixin):
             except Site.DoesNotExist:
                 print "site doesn't exist"
 
+        # exclusive for open street map
+        if "openstreetmap" in self.upstream_id:
+            osm_whole_id = self.upstream_id.split(u"¶")
+            dict[u'values']['data_source'] = "OpenStreetMap"
+            dict[u'values']['data_source_url'] = "https://www.openstreetmap.org/"
+            if len(osm_whole_id) > 0:
+                osm_whole_id = osm_whole_id[1]
+                identifier = osm_whole_id[0]
+                osm_id = osm_whole_id[1:]
+                if identifier == 'n':
+                    url = 'http://www.openstreetmap.org/node/' + osm_id
+                elif identifier == 'r':
+                    url = 'http://www.openstreetmap.org/relation/' + osm_id
+                elif identifier == 'w':
+                    url = 'http://www.openstreetmap.org/way/' + osm_id
+                print url
+
+                if url:
+                    dict[u'values']['raw_source'] = url
+
         if self.master:
             master_uuid = ""
             master_name = self.master.uuid
