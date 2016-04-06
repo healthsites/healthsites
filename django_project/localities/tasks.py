@@ -21,13 +21,14 @@ logger = get_task_logger(__name__)
 from .importers import CSVImporter
 
 
-def send_email(data_loader, report):
+def send_email(data_loader, report, additional_email=[]):
     """Send email for data loader."""
     logger.info('Send email report.')
     recipient_list = [
         'irwan@kartoza.com',
-        'mark.herringer@gmail.com'
+        'mark@healthsites.io',
     ]
+    recipient_list = recipient_list + additional_email
 
     email_message = 'Loading data for %s\n\n' % data_loader.organisation_name
 
@@ -99,18 +100,18 @@ def load_data_task(self, data_loader_pk):
             # send email
             logger.info(csv_importer.generate_report())
 
-            send_email(data_loader, csv_importer.generate_report())
+            send_email(data_loader, csv_importer.generate_report(), [data_loader.author.email])
 
             # remove the permission
             if not is_permitted:
                 permission.delete()
-            
+
             call_command('generate_countries_cache')
             regenerate_cache_cluster()
         except DataLoaderPermission.DoesNotExist:
             print "file is not authenticated"
             logger.info("file is not authenticated")
-            send_email(data_loader, "file is not authenticated")
+            send_email(data_loader, "file is not authenticated", [data_loader.author.email])
 
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)

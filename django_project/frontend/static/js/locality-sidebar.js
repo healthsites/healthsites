@@ -1038,12 +1038,13 @@ window.LocalitySidebar = (function () {
                 var url = this.locality_data.values['data_source'];
                 var url_domain = this.locality_data.values['data_source_url'];
                 delete keys[this.getIndex(keys, 'data_source')];
+                delete keys[this.getIndex(keys, 'data_source_url')];
                 if (this.isHasValue(url)) {
                     var html = '<p class="url"><i class="fa fa-link"></i><a';
                     if (this.isHasValue(url_domain)) {
                         html += ' href="' + url_domain + '"';
                     }
-                    html += '>' + url + '</a></p>';
+                    html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">' + url + '</a></p>';
                     this.$url.html(html);
                     url_isupdated = true;
                 }
@@ -1052,15 +1053,16 @@ window.LocalitySidebar = (function () {
             // ROW-DATA
             {
                 var url = this.locality_data.values['raw_source'];
-                delete keys[this.getIndex(keys, 'data_source')];
+                delete keys[this.getIndex(keys, 'raw_source')];
                 if (this.isHasValue(url)) {
                     if (url_isupdated) {
-                        this.$url.append('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '">raw data</a></span></p>');
+                        this.$url.append('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data" target="_blank">Raw Data</a></span></p>');
                     } else {
-                        this.$url.html('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '">raw data</a></span></p>');
+                        this.$url.html('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data" target="_blank">Raw Data</a></span></p>');
                     }
                 }
             }
+            $('[data-toggle="tooltip"]').tooltip();
 
             // DEFINING HOURS
             {
@@ -1108,7 +1110,7 @@ window.LocalitySidebar = (function () {
                 }
                 for (var i = 0; i < keys.length; i++) {
                     if (typeof keys[i] !== 'undefined') {
-                        this.addOther(keys[i].replace("_", " "), this.locality_data.values[keys[i]]);
+                        this.addOther(keys[i].replaceAll("_", " "), this.locality_data.values[keys[i]]);
                         others_attr.push(keys[i]);
                     }
                 }
@@ -1141,7 +1143,6 @@ window.LocalitySidebar = (function () {
                 }
             }
             $.getJSON(url, function (data) {
-                console.log(data);
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {

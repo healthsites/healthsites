@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib import admin
 from .models import (
     Profile,
     TrustedUser,
-    Organization
+    Organisation
 )
 
 
@@ -17,26 +17,26 @@ class ProfileAdmin(admin.ModelAdmin):
 admin.site.register(Profile, ProfileAdmin)
 
 
-class OrganizationInline(admin.TabularInline):
-    model = TrustedUser.organizations.through
+class OrganisationInline(admin.TabularInline):
+    model = TrustedUser.organisations_supported.through
     extra = 0  # how many rows to show
 
 
 class TrustedUserAdmin(admin.ModelAdmin):
-    list_display = ('user', 'list_organizations')
-    inlines = (OrganizationInline,)
+    list_display = ('user', 'list_organisation_supported')
+    inlines = (OrganisationInline,)
 
-    def list_organizations(self, obj):
-        return ", ".join(['<span><a href="/admin/social_users/organization/%s">%s</a></span>' % (p.id, p.name) for p in
-                          obj.organizations.all()])
+    def list_organisation_supported(self, obj):
+        return ", ".join(['<span><a href="/admin/social_users/organisation/%s">%s</a></span>' % (p.id, p.name) for p in
+                          obj.organisations_supported.all()])
 
-    list_organizations.allow_tags = True
+    list_organisation_supported.allow_tags = True
 
 
 admin.site.register(TrustedUser, TrustedUserAdmin)
 
 
-class OrganizationAdmin(admin.ModelAdmin):
+class OrganisationAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'contact', 'list_trusted_user')
 
     def list_trusted_user(self, obj):
@@ -47,7 +47,7 @@ class OrganizationAdmin(admin.ModelAdmin):
     list_trusted_user.allow_tags = True
 
 
-admin.site.register(Organization, OrganizationAdmin)
+admin.site.register(Organisation, OrganisationAdmin)
 
 from social.apps.django_app.default.models import UserSocialAuth
 from social_users.models import Profile, TrustedUser
@@ -70,21 +70,21 @@ class SocialAuthInline(admin.TabularInline):
 
 class TrustedUserInline(admin.TabularInline):
     model = TrustedUser
-    readonly_fields = ('is_trusted', 'list_organizations')
+    readonly_fields = ('is_trusted', 'list_organisations')
     fk_name = 'user'
     can_delete = False
-    max_num = 1
+    max_num = 0
     extra = 0
 
     def is_trusted(self, obj):
-            return '<a href="/admin/social_users/trusteduser/%s"><img src="/static/admin/img/icon-yes.gif" alt="True"></a>' % obj.id
+        return '<a href="/admin/social_users/trusteduser/%s"><img src="/static/admin/img/icon-yes.gif" alt="True"></a>' % obj.id
 
-    def list_organizations(self, obj):
+    def list_organisations(self, obj):
         return ", ".join(['<span><a href="/admin/social_users/organization/%s">%s</a></span>' % (p.id, p.name) for p in
-                          obj.organizations.all()])
+                          obj.organisations_supported.all()])
 
     is_trusted.allow_tags = True
-    list_organizations.allow_tags = True
+    list_organisations.allow_tags = True
 
 
 class UserAdmin(BaseUserAdmin):
@@ -120,5 +120,6 @@ class UserAdmin(BaseUserAdmin):
     is_trusted.allow_tags = True
 
 
+admin.site.unregister(Group)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

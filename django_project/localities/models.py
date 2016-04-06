@@ -511,8 +511,8 @@ class DataLoader(models.Model):
     )
 
     organisation_name = models.CharField(
-        verbose_name='Organization\'s Name',
-        help_text='Organization\'s Name',
+        verbose_name='Organisation\'s Name',
+        help_text='Organiation\'s Name',
         null=False,
         blank=False,
         max_length=100
@@ -584,6 +584,9 @@ class DataLoader(models.Model):
     def __str__(self):
         return self.organisation_name
 
+    def __unicode__(self):
+        return u'%s' % (self.organisation_name)
+
     def save(self, *args, **kwargs):
         if not self.date_time_uploaded:
             self.date_time_uploaded = datetime.utcnow()
@@ -593,7 +596,7 @@ class DataLoader(models.Model):
 # method for updating
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
-        load_data_task.delay(instance.pk)
+        load_data_task(instance.pk)
 
 
 # register the signal
