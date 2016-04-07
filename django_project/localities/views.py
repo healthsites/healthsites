@@ -326,13 +326,19 @@ def search_locality_by_country(request):
 
 def search_countries(request):
     if request.method == 'GET':
-        query = request.GET.get('q')
+        if 'q' in request.GET:
+            query = request.GET.get('q')
 
-        countries = Country.objects.filter(
-            name__istartswith=query)
-        result = []
-        for country in countries:
-            result.append(country.name)
+            countries = Country.objects.filter(
+                name__istartswith=query)
+            result = []
+            for country in countries:
+                result.append(country.name)
+        else:
+            countries = Country.objects.all()
+            result = []
+            for country in countries:
+                result.append(country.name)
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')
 
