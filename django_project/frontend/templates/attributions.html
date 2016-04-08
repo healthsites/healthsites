@@ -4,14 +4,33 @@
 
 {% block title %}Healthsites{% endblock %}
 {% block stylesheet %}
-    <link rel="stylesheet" href="/static/css/attributions.css">/>
+    <link rel="stylesheet" href="/static/css/attributions.css">
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
 {% endblock stylesheet %}
 
 {% block content %}
-    <section class="white container">
-        {# HTML BODY #}
-    </section>
+    <section id="attribution">
+    <div id="pagebanner">
+        <div class="container">
+            <h1>Attribution</h1>
+            <p>We use openly licensed software, images and other media to produce this site. We are thankful for all creators who have have openly licensed their work.</p>
+        </div>
+    </div>
+    <div class="container content">
+        <h3>Icons</h3>
+        <p><strong>Icon Credits:</strong><br/>
+            Wave by <a href="http://www.flaticon.com/authors/ocha">OCHA</a> from <a href="www.flaticon.com">www.flaticon.com</a><br/>
+            Earth by Dave Gandy from <a href="http://fortawesome.github.io/Font-Awesome/icon/globe/" target="_blank">FontAwesome</a><br/>
+            Refresh by Dave Gandy from <a href="http://fortawesome.github.io/Font-Awesome/icon/refresh/" target="_blank">FontAwesome</a><br/>
+            Accessible by Maria Solovyeva (Kartoza) <a href="http://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution 2.0</a><br/>
+            Focus by Maria Solovyeva (Kartoza) <a href="http://creativecommons.org/licenses/by/2.0/" target="_blank">Creative Commons Attribution 2.0</a><br/>
+            Health location icons by Dave Gandy from <a href="http://fortawesome.github.io/Font-Awesome/" target="_blank">FontAwesome</a> </p>
+        <h3>Licenses</h3>
+        <p><strong>Data:</strong> <a href="http://opendatacommons.org/licenses/odbl/1.0/" target="_blank">Open Database License</a><br/>
+        <strong>Code:</strong> <a href="https://www.freebsd.org/copyright/freebsd-license.html" target="_blank">Free BSD License</a><br/>
+        <strong>Content:</strong> <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">Attribution 4.0 International</a></p>
+    </div>
+</section>
 {% endblock content %}
 
 {% block extra_js %}
