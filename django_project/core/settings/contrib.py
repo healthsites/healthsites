@@ -51,7 +51,6 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_uid',
     'social.pipeline.social_auth.auth_allowed',
     'social.pipeline.social_auth.social_user',
-    'social_users.views.get_username',
     'social.pipeline.user.get_username',
     'social.pipeline.user.create_user',
     'social_users.views.save_profile',

@@ -11,17 +11,14 @@ def get_profile(user):
     shared_links = []
     # check if the user has profile_picture
     # if not, just send empty string
-    username = user.username
     try:
         user_detail = Profile.objects.get(user=user)
         profile_picture = user_detail.profile_picture
-        if user_detail.screen_name != "":
-            username = user_detail.screen_name
     except Profile.DoesNotExist:
         profile_picture = ""
 
     user.profile_picture = profile_picture
-    user.screen_name = username
+    user.screen_name = user.username
     user.shared_links = shared_links
     try:
         trusted_user = TrustedUser.objects.get(user=user)
