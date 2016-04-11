@@ -30,4 +30,18 @@ def get_profile(user):
                                             organisationsupported__is_staff=False)]
     except TrustedUser.DoesNotExist:
         user.is_trusted_user = False
+
+    # GETTING SOCIAL LINK
+    user.social = []
+    try:
+        uid = user.social_auth.get(provider='twitter').uid
+        user.social.append({"provider": "twitter", "uid": user.username})
+    except Exception as e:
+        pass
+
+    try:
+        uid = user.social_auth.get(provider='facebook').uid
+        user.social.append({"provider": "facebook", "uid": uid})
+    except Exception as e:
+        pass
     return user
