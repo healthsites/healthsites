@@ -14,5 +14,4 @@
 })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
 ga('create', 'UA-56378524-1', 'auto');
-ga('require', 'linkid');
-ga('send', 'pageview');
+ga('send', 'pageview', { 'page': location.pathname + location.search + location.hash});
