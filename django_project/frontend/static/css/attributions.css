@@ -1,0 +1,33 @@
+/* Attribution
+
+-------------------------------------------------- */
+#attribution {
+    padding-top: 72px;
+}
+.h-short #attribution {
+     padding-top: 53px;
+}
+.cookiebar-enabled #attribution, .policy-enabled #attribution {
+     padding-top: 102px;
+}
+.h-short.cookiebar-enabled #attribution, .h-short.policy-enabled #attribution {
+     padding-top: 83px;
+}
+@media only screen and (max-width:632px) {
+.cookiebar-enabled #attribution, .policy-enabled #attribution {
+     padding-top: 132px;
+}
+.h-short.cookiebar-enabled #attribution, .h-short.policy-enabled #attribution {
+     padding-top: 113px;
+}
+}
+#pagebanner {
+  background: #3C4C57;
+  color: white;
+  padding-bottom: 34px;
+  padding-top: 23px;
+}
+#attribution .content {
+    padding-top: 30px;
+    padding-bottom: 30px;
+}
