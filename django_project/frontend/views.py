@@ -17,7 +17,7 @@ from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, search_locality_by_tag
-from localities.models import Country, DataLoaderPermission, Locality, Value
+from localities.models import Country, DataLoaderPermission, Value
 from social_users.utils import get_profile
 
 

@@ -315,6 +315,8 @@ def locality_create(request):
                     float(json_request['long']), float(json_request['lat'])
                 )
 
+                loc.save()
+
                 # get master
                 #  ------------------------------------------------------
                 master_uuid = ""
@@ -327,9 +329,8 @@ def locality_create(request):
                             "reason": "master is not found"}
 
                 loc.master = master
-                #  ------------------------------------------------------
-
                 loc.save()
+                #  ------------------------------------------------------
                 loc.set_values(json_request, request.user, tmp_changeset)
 
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
