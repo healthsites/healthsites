@@ -10,11 +10,11 @@ html, body {
 .page-wrapper {
   min-height: 100%;
   /* equal to footer height */
-  margin-bottom: -181px; 
+  margin-bottom: -181px;
 }
 @media only screen and (max-width:992px) {
     .page-wrapper {
-      margin-bottom: 0; 
+      margin-bottom: 0;
     }
 }
 .page-wrapper:after {
@@ -22,11 +22,11 @@ html, body {
   display: block;
 }
 #colophon, .page-wrapper:after {
-  height: 181px; 
+  height: 181px;
 }
 @media only screen and (max-width:992px) {
     #colophon, .page-wrapper:after {
-      height: auto; 
+      height: auto;
     }
 }
 
@@ -713,7 +713,7 @@ section.container{
     height: 180px !important;
     overflow: hidden;
     display: inline-block;
-    border: 1px solid #778289 !important; 
+    border: 1px solid #778289 !important;
 }
 .profile-image {
     width: 180px;
@@ -820,4 +820,12 @@ section.container{
 .h-short.cookiebar-enabled .gitter-chat-embed, .h-short.policy-enabled .gitter-chat-embed {
     top: 113px;
 }
+}
+
+.ui-autocomplete {
+    max-height: 70%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: fixed !important;
+    width: 350px !important;
 }
