@@ -330,9 +330,9 @@ def search_locality_by_name(request):
         query = request.GET.get('q')
 
         with_place = False
-        if " in " in query:
-            place = query.split(" in ")[1]
-            query = query.split(" in ")[0]
+        if "," in query:
+            place = query.split(",", 1)[1].strip()
+            query = query.split(",", 1)[0].strip()
             if len(place) > 2:
                 with_place = True
                 google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
