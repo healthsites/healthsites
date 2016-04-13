@@ -118,7 +118,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                             )
                         except IOError as e:
                             polygon = country.polygon_geometry
-                            localities = localities.in_polygon(polygon)
+                            localities = get_heathsites_master().in_polygon(polygon)
                             object_list = cluster(localities, zoom, *iconsize)
 
                             # create the missing cache
