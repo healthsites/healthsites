@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import googlemaps
 import json
 import logging
 import os
@@ -9,7 +10,8 @@ LOG = logging.getLogger(__name__)
 from .forms import DataLoaderForm
 from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification
-from .utils import parse_bbox, get_country_statistic, get_heathsites_master, get_locality_detail, locality_create, locality_edit, \
+from .utils import parse_bbox, get_country_statistic, get_heathsites_master, get_locality_detail, locality_create, \
+    locality_edit, \
     locality_updates, get_locality_by_spec_data
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
@@ -301,12 +303,44 @@ def load_data(request):
 def search_locality_by_name(request):
     if request.method == 'GET':
         query = request.GET.get('q')
-        locality_values = Value.objects.filter(
+
+        with_place = False
+        if " in " in query:
+            place = query.split(" in ")[1]
+            query = query.split(" in ")[0]
+            if len(place) > 2:
+                with_place = True
+                google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+                gmaps = googlemaps.Client(key=google_maps_api_key)
+                try:
+                    geocode_result = gmaps.geocode(place)[0]
+                    viewport = geocode_result['geometry']['viewport']
+                    polygon = parse_bbox("%s,%s,%s,%s" % (
+                        viewport['southwest']['lng'], viewport['southwest']['lat'], viewport['northeast']['lng'],
+                        viewport['northeast']['lat']))
+                    healthsites = Locality.objects.in_polygon(
+                        polygon).filter(master=None)
+                except Exception as e:
+                    healthsites = []
+
+        names_start_with = Value.objects.filter(
             specification__attribute__key='name').filter(
-            data__istartswith=query)
+            data__istartswith=query).order_by('data')
+        names_contains_with = Value.objects.filter(
+            specification__attribute__key='name').filter(
+            data__contains=query).exclude(data__istartswith=query).order_by('data')
+        if with_place:
+            names_start_with = names_start_with.filter(locality__in=healthsites)
+            names_contains_with = names_contains_with.filter(locality__in=healthsites)
+
         result = []
-        for locality_value in locality_values:
-            result.append(locality_value.data)
+        # start with with query
+        for name_start_with in names_start_with:
+            result.append(name_start_with.data)
+
+        # contains with query
+        for name_contains_with in names_contains_with:
+            result.append(name_contains_with.data)
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')
 
