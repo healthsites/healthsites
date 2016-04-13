@@ -90,7 +90,6 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 # create the missing cache
                 with open(filename, 'wb') as cache_file:
                     json.dump(object_list, cache_file)
-
                 return self.render_json_response(object_list)
         else:
             # cluster Localites for a view
@@ -103,8 +102,33 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     # getting country's polygon
                     country = Country.objects.get(
                         name__iexact=geoname)
-                    polygon = country.polygon_geometry
-                    localities = localities.in_polygon(polygon)
+                    if zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
+                        # check the cache
+                        # try to read localities from disk
+                        filename = os.path.join(
+                            settings.CLUSTER_CACHE_DIR,
+                            '{}_{}_{}_localities_{}.json'.format(zoom, iconsize[0], iconsize[1], country.name)
+                        )
+                        try:
+                            cached_locs = open(filename, 'rb')
+                            cached_data = cached_locs.read()
+
+                            return HttpResponse(
+                                cached_data, content_type='application/json', status=200
+                            )
+                        except IOError as e:
+                            polygon = country.polygon_geometry
+                            localities = get_heathsites_master().in_polygon(polygon)
+                            object_list = cluster(localities, zoom, *iconsize)
+
+                            # create the missing cache
+                            with open(filename, 'wb') as cache_file:
+                                json.dump(object_list, cache_file)
+                            return self.render_json_response(object_list)
+                    else:
+                        polygon = country.polygon_geometry
+                        localities = localities.in_polygon(polygon)
+
                 else:
                     raise Country.DoesNotExist
             except Country.DoesNotExist:
@@ -122,6 +146,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                         if spec != "" and spec != "undefined" and data != "" and data != "undefined":
                             localities = get_locality_by_spec_data(spec, data, uuid)
                             localities = Locality.objects.filter(id__in=localities)
+
             object_list = []
             focused = []
             if uuid:

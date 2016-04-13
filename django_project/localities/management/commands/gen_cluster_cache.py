@@ -6,12 +6,12 @@ import json
 import os
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from localities.models import Locality
+from localities.models import Locality, Country
 from localities.map_clustering import cluster
 from localities.utils import parse_bbox, get_heathsites_master
 
-class Command(BaseCommand):
 
+class Command(BaseCommand):
     args = '<icon_width> <icon_height>'
     help = 'Generate locality cluster cache'
 
@@ -49,3 +49,20 @@ class Command(BaseCommand):
                 json.dump(object_list, cache_file)
 
             self.stdout.write('Generated cluster cache for zoom: %s' % zoom)
+
+        for country in Country.objects.all():
+            self.stdout.write('Generated cluster for %s' % country.name)
+            polygon = country.polygon_geometry
+            localities = get_heathsites_master().in_polygon(polygon)
+            for zoom in range(settings.CLUSTER_CACHE_MAX_ZOOM + 1):
+                filename = os.path.join(
+                    settings.CLUSTER_CACHE_DIR,
+                    '{}_{}_{}_localities_{}.json'.format(zoom, icon_size[0], icon_size[1], country.name)
+                )
+
+                object_list = cluster(localities, zoom, *icon_size)
+
+                with open(filename, 'wb') as cache_file:
+                    json.dump(object_list, cache_file)
+
+                self.stdout.write('Generated cluster cache for zoom: %s' % zoom)
