@@ -328,7 +328,7 @@ def search_locality_by_name(request):
             data__istartswith=query).order_by('data')
         names_contains_with = Value.objects.filter(
             specification__attribute__key='name').filter(
-            data__contains=query).exclude(data__istartswith=query).order_by('data')
+            data__icontains=query).exclude(data__istartswith=query).order_by('data')
         if with_place:
             names_start_with = names_start_with.filter(locality__in=healthsites)
             names_contains_with = names_contains_with.filter(locality__in=healthsites)
