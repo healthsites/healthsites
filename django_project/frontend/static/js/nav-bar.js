@@ -16,6 +16,7 @@ $(document).ready(function () {
     function set_search_url(url, data_type) {
         $("#search-box").autocomplete({
             source: function (request, response) {
+                $("#search-box").css("cursor", "wait");
                 $.ajax({
                     url: url,
                     dataType: data_type,
@@ -24,7 +25,11 @@ $(document).ready(function () {
                     },
                     success: function (data) {
                         response(data);
-                    }
+                        $("#search-box").css("cursor", "");
+                    },
+                    error: function (request, error) {
+                        $("#search-box").css("cursor", "");
+                    },
                 });
             },
             minLength: 3,
