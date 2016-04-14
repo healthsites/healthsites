@@ -12,6 +12,7 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Max
 from localities.models import Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification, User, \
@@ -88,7 +89,7 @@ def get_country_statistic(query):
                     file.write(result)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
                 except Exception as e:
-                    print e
+                    pass
         else:
             # get cache
             filename = os.path.join(
@@ -109,7 +110,7 @@ def get_country_statistic(query):
                     file.write(result)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
                 except Exception as e:
-                    print e
+                    pass
 
     except Country.DoesNotExist:
         output = ""
@@ -139,9 +140,22 @@ def get_heathsites_master_by_polygon(request, polygon):
     return output
 
 
+def get_heathsites_master_by_page(page):
+    healthsites = get_heathsites_master()
+    paginator = Paginator(healthsites, 100)
+    try:
+        healthsites = paginator.page(page)
+    except Exception as e:
+        return []
+
+    output = []
+    for healthsite in healthsites:
+        output.append(healthsite.repr_dict())
+    return output
+
+
 def get_heathsites_synonyms():
     healthsites = Locality.objects.exclude(master=None)
-    print healthsites.count()
     output = []
     index = 1;
     for healthsite in healthsites:
@@ -205,7 +219,7 @@ def get_json_from_request(request):
                     json['invalid_key'] = attribute.attribute.key
                     break
             except:
-                print "except"
+                pass
 
     json['is_valid'] = is_valid
     return json
@@ -235,7 +249,7 @@ def get_locality_detail(locality, changes):
                             "changeset_id": last_update['changeset']});
         obj_repr.update({'updates': updates})
     except Exception as e:
-        print e
+        pass
 
     # FOR HISTORY
     obj_repr['history'] = False
@@ -253,11 +267,12 @@ def get_locality_detail(locality, changes):
             for archive in localityArchives:
                 locality.master = archive.master
                 new_obj_repr = locality.repr_dict()
-                obj_repr['master'] = new_obj_repr['master']
+                if 'master' in new_obj_repr:
+                    obj_repr['master'] = new_obj_repr['master']
                 obj_repr['geom'] = (archive.geom.x, archive.geom.y)
                 obj_repr['history'] = True
         except LocalityArchive.DoesNotExist:
-            print "next"
+            pass
 
         try:
             localityArchives = ValueArchive.objects.filter(changeset=changes).filter(locality_id=locality.id)
@@ -267,9 +282,9 @@ def get_locality_detail(locality, changes):
                     obj_repr['values'][specification.attribute.key] = archive.data
                     obj_repr['history'] = True
                 except Specification.DoesNotExist:
-                    print "next"
+                    pass
         except LocalityArchive.DoesNotExist:
-            print "next"
+            pass
     return obj_repr
 
 
@@ -455,7 +470,7 @@ def localities_updates(locality_ids):
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
-        print "Locality Archive not exist"
+         pass
 
     output = []
     prev_changeset = 0
@@ -487,7 +502,7 @@ def locality_updates(locality_id, date):
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
-        print "Locality Archive not exist"
+        pass
 
     output = []
     prev_changeset = 0
@@ -557,7 +572,7 @@ def search_locality_by_spec_data(spec, data, uuid):
                 output['locality_name'] = locality_name
                 output['location'] = {'x': "%f" % locality.geom.x, 'y': "%f" % locality.geom.y}
             except Locality.DoesNotExist:
-                print "locality not found"
+                pass
         return output
 
 
