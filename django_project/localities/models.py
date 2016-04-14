@@ -251,14 +251,16 @@ class Locality(UpdateMixin, ChangesetMixin):
                 },
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
-            u'changeset': self.changeset_id}
+            u'date_modified': self.changeset.created,
+            # u'changeset': self.changeset_id}
+        }
 
         if 'data_source' in dict[u'values']:
             try:
                 site = Site.objects.get(name=dict[u'values']['data_source'])
                 dict[u'values']['data_source_url'] = site.domain
             except Site.DoesNotExist:
-                print "site doesn't exist"
+                pass
 
         # exclusive for open street map
         if "openstreetmap" in self.upstream_id:
@@ -275,7 +277,6 @@ class Locality(UpdateMixin, ChangesetMixin):
                     url = 'http://www.openstreetmap.org/relation/' + osm_id
                 elif identifier == 'w':
                     url = 'http://www.openstreetmap.org/way/' + osm_id
-                print url
 
                 if url:
                     dict[u'values']['raw_source'] = url
@@ -292,7 +293,7 @@ class Locality(UpdateMixin, ChangesetMixin):
                         specification__attribute__key='name')[0].data
                     master_uuid = self.master.uuid
                 except Value.DoesNotExist:
-                    print "value does not exist"
+                    pass
 
             dict['master'] = {'master_uuid': master_uuid, 'master_name': master_name}
 

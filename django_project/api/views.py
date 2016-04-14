@@ -11,7 +11,8 @@ from django.http import Http404, HttpResponse
 from django.views.generic import View
 from frontend.views import search_place
 from localities.models import Country, Locality, Value
-from localities.utils import parse_bbox, get_heathsites_master_by_polygon, get_heathsites_synonyms, limit, \
+from localities.utils import parse_bbox, get_heathsites_master_by_polygon, get_heathsites_master_by_page, \
+    get_heathsites_synonyms, limit, \
     locality_create
 from localities.views import get_locality_detail
 
@@ -82,19 +83,31 @@ class LocalitySynonymsAPI(JSONResponseMixin, View):
 
 class LocalitiesAPI(JSONResponseMixin, View):
     def _parse_request_params(self, request):
-        if not (all(param in request.GET for param in ['extent'])):
+        if not (all(param in request.GET for param in ['extent', 'page'])):
             raise Http404
 
-        try:
-            bbox_poly = parse_bbox(request.GET.get('extent'))
-        except Exception as e:
-            raise Http404
-        return bbox_poly
+        return request
 
     def get(self, request, *args, **kwargs):
-        bbox_poly = self._parse_request_params(request)
-        return HttpResponse(formattedReturn(request, get_heathsites_master_by_polygon(request, bbox_poly)),
-                            content_type='application/json')
+        if 'extent' in request.GET:
+            try:
+                bbox_poly = parse_bbox(request.GET.get('extent'))
+                return HttpResponse(formattedReturn(request, get_heathsites_master_by_polygon(request, bbox_poly)),
+                                    content_type='application/json')
+            except Exception as e:
+                raise Http404
+        elif 'page' in request.GET:
+            page = request.GET.get('page')
+            try:
+                page = int(page)
+                if page == 0:
+                    return HttpResponse(formattedReturn(request, {'error': "page less than 1"}),
+                                        content_type='application/json')
+                return HttpResponse(formattedReturn(request, get_heathsites_master_by_page(page)),
+                                    content_type='application/json')
+            except ValueError:
+                return HttpResponse(formattedReturn(request, {'error': "page is not a number"}),
+                                    content_type='application/json')
 
 
 class LocalitySearchAPI(JSONResponseMixin, View):
