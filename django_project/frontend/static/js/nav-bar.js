@@ -1,5 +1,5 @@
 var search_localities_name_url = "/search/localities/name";
-var search_geoname_url = "http://gd.geobytes.com/AutoCompleteCity";
+var search_geoname_url = "/search/cities/name";
 $(document).ready(function () {
     // set share url
     var baseURL = location.protocol + "//" + location.hostname + "/";
@@ -52,7 +52,7 @@ $(document).ready(function () {
 
         // set data for autocomplete
         if (this.value == 'place') {
-            set_search_url(search_geoname_url, 'jsonp');
+            set_search_url(search_geoname_url, 'json');
         } else if (this.value == 'healthsite') {
             set_search_url(search_localities_name_url, 'json');
         } else {

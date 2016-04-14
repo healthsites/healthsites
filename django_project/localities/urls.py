@@ -36,6 +36,12 @@ urlpatterns = patterns(
     ),
 
     url(
+        r'^search/cities/name',
+        'localities.views.search_cities_by_name',
+        name='cities-name-search'
+    ),
+
+    url(
         r'^countries$',
         'localities.views.search_countries',
         name='countries'

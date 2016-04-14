@@ -370,6 +370,29 @@ def search_locality_by_name(request):
         return HttpResponse(result, content_type='application/json')
 
 
+def search_cities_by_name(request):
+    if request.method == 'GET':
+        result = []
+        try:
+            types = ["political"]
+            query = request.GET.get('q')
+            google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+            gmaps = googlemaps.Client(key=google_maps_api_key)
+            geocodes = gmaps.places_autocomplete(query, type="political")
+
+            result = []
+            for geocode in geocodes:
+                if query.lower() in geocode['description'].lower():
+                    for type in types:
+                        if type in geocode["types"]:
+                            result.append(geocode['description'])
+                            break;
+        except Exception as e:
+            print e
+        result = json.dumps(result)
+        return HttpResponse(result, content_type='application/json')
+
+
 def search_locality_by_country(request):
     if request.method == 'GET':
         query = request.GET.get('q')
