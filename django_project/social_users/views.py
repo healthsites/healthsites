@@ -4,6 +4,7 @@ import json
 
 LOG = logging.getLogger(__name__)
 
+from braces.views import LoginRequiredMixin
 from core.utilities import extract_time
 from datetime import datetime
 from django.contrib.auth import logout as auth_logout
@@ -12,7 +13,6 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Max
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from braces.views import LoginRequiredMixin
 from django.views.generic import TemplateView, View
 from localities.models import LocalityArchive, ValueArchive
 from localities.utils import extract_updates
@@ -56,10 +56,6 @@ class LogoutUser(View):
         return HttpResponseRedirect('/')
 
 
-def get_username(strategy, details, user=None, *args, **kwargs):
-    return {'name': details['username']}
-
-
 def save_profile(backend, user, response, *args, **kwargs):
     url = None
     if backend.name == 'facebook':
@@ -68,19 +64,26 @@ def save_profile(backend, user, response, *args, **kwargs):
         url = response.get('profile_image_url', '').replace('_normal', '')
     if backend.name == 'google-oauth2':
         url = response['image'].get('url')
+    # get old user
+    if kwargs['is_new']:
+        if 'username' in kwargs['details']:
+            new_username = kwargs['details']['username']
+            new_username = new_username.replace(" ","")
+            if user.username != new_username:
+                try:
+                    old_username = user.username
+                    user = User.objects.get(username=new_username)
+                    User.objects.get(username=old_username).delete()
+                except User.DoesNotExist:
+                    pass
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
         profile = Profile(user=user)
-
-    # if there is an username
-    if kwargs['name']:
-        username = kwargs['name']
-
-    profile.screen_name = username
     if url:
         profile.profile_picture = url
     profile.save()
+    return {'user': user}
 
 
 def user_updates(user, date):
