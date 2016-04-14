@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import googlemaps
 import json
 import logging
 import os
@@ -9,7 +10,8 @@ LOG = logging.getLogger(__name__)
 from .forms import DataLoaderForm
 from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification
-from .utils import parse_bbox, get_country_statistic, get_heathsites_master, get_locality_detail, locality_create, locality_edit, \
+from .utils import parse_bbox, get_country_statistic, get_heathsites_master, get_locality_detail, locality_create, \
+    locality_edit, \
     locality_updates, get_locality_by_spec_data
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
@@ -88,7 +90,6 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 # create the missing cache
                 with open(filename, 'wb') as cache_file:
                     json.dump(object_list, cache_file)
-
                 return self.render_json_response(object_list)
         else:
             # cluster Localites for a view
@@ -101,8 +102,33 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     # getting country's polygon
                     country = Country.objects.get(
                         name__iexact=geoname)
-                    polygon = country.polygon_geometry
-                    localities = localities.in_polygon(polygon)
+                    if zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
+                        # check the cache
+                        # try to read localities from disk
+                        filename = os.path.join(
+                            settings.CLUSTER_CACHE_DIR,
+                            '{}_{}_{}_localities_{}.json'.format(zoom, iconsize[0], iconsize[1], country.name)
+                        )
+                        try:
+                            cached_locs = open(filename, 'rb')
+                            cached_data = cached_locs.read()
+
+                            return HttpResponse(
+                                cached_data, content_type='application/json', status=200
+                            )
+                        except IOError as e:
+                            polygon = country.polygon_geometry
+                            localities = get_heathsites_master().in_polygon(polygon)
+                            object_list = cluster(localities, zoom, *iconsize)
+
+                            # create the missing cache
+                            with open(filename, 'wb') as cache_file:
+                                json.dump(object_list, cache_file)
+                            return self.render_json_response(object_list)
+                    else:
+                        polygon = country.polygon_geometry
+                        localities = localities.in_polygon(polygon)
+
                 else:
                     raise Country.DoesNotExist
             except Country.DoesNotExist:
@@ -120,6 +146,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                         if spec != "" and spec != "undefined" and data != "" and data != "undefined":
                             localities = get_locality_by_spec_data(spec, data, uuid)
                             localities = Locality.objects.filter(id__in=localities)
+
             object_list = []
             focused = []
             if uuid:
@@ -301,12 +328,67 @@ def load_data(request):
 def search_locality_by_name(request):
     if request.method == 'GET':
         query = request.GET.get('q')
-        locality_values = Value.objects.filter(
+
+        with_place = False
+        if "," in query:
+            place = query.split(",", 1)[1].strip()
+            query = query.split(",", 1)[0].strip()
+            if len(place) > 2:
+                with_place = True
+                google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+                gmaps = googlemaps.Client(key=google_maps_api_key)
+                try:
+                    geocode_result = gmaps.geocode(place)[0]
+                    viewport = geocode_result['geometry']['viewport']
+                    polygon = parse_bbox("%s,%s,%s,%s" % (
+                        viewport['southwest']['lng'], viewport['southwest']['lat'], viewport['northeast']['lng'],
+                        viewport['northeast']['lat']))
+                    healthsites = Locality.objects.in_polygon(
+                        polygon).filter(master=None)
+                except Exception as e:
+                    healthsites = []
+
+        names_start_with = Value.objects.filter(
             specification__attribute__key='name').filter(
-            data__istartswith=query)
+            data__istartswith=query).order_by('data')
+        names_contains_with = Value.objects.filter(
+            specification__attribute__key='name').filter(
+            data__icontains=query).exclude(data__istartswith=query).order_by('data')
+        if with_place:
+            names_start_with = names_start_with.filter(locality__in=healthsites)
+            names_contains_with = names_contains_with.filter(locality__in=healthsites)
+
         result = []
-        for locality_value in locality_values:
-            result.append(locality_value.data)
+        # start with with query
+        for name_start_with in names_start_with:
+            result.append(name_start_with.data)
+
+        # contains with query
+        for name_contains_with in names_contains_with:
+            result.append(name_contains_with.data)
+        result = json.dumps(result)
+        return HttpResponse(result, content_type='application/json')
+
+
+def search_cities_by_name(request):
+    if request.method == 'GET':
+        result = []
+        try:
+            types = ["political"]
+            query = request.GET.get('q')
+            google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+            gmaps = googlemaps.Client(key=google_maps_api_key)
+            geocodes = gmaps.places_autocomplete(query, type="political")
+
+            result = []
+            for geocode in geocodes:
+                if query.lower() in geocode['description'].lower():
+                    for type in types:
+                        if type in geocode["types"]:
+                            result.append(geocode['description'])
+                            break;
+        except Exception as e:
+            print e
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')
 
@@ -326,13 +408,19 @@ def search_locality_by_country(request):
 
 def search_countries(request):
     if request.method == 'GET':
-        query = request.GET.get('q')
+        if 'q' in request.GET:
+            query = request.GET.get('q')
 
-        countries = Country.objects.filter(
-            name__istartswith=query)
-        result = []
-        for country in countries:
-            result.append(country.name)
+            countries = Country.objects.filter(
+                name__istartswith=query)
+            result = []
+            for country in countries:
+                result.append(country.name)
+        else:
+            countries = Country.objects.all()
+            result = []
+            for country in countries:
+                result.append(country.name)
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')
 

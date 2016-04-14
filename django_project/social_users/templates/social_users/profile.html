@@ -14,6 +14,20 @@
                     <img class="profile-image" src="{{ user.profile_picture }}"/>
                 {% endif %}
             </div>
+            <div class="name" style="font-size: 24px">
+                {% if user.social %}
+                    {% for social in user.social %}
+                        {% if social.provider == "facebook" %}
+                            <a href="https://www.facebook.com/{{ social.uid }}" target="_blank"><i
+                                    class="fa fa-facebook-square"></i></a>
+                        {% endif %}
+                        {% if social.provider == "twitter" %}
+                            <a href="https://twitter.com/{{ social.uid }}" target="_blank"><i
+                                    class="fa fa-twitter-square"></i></a>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
             <div class="profile-header">
                 <h1>{{ user.screen_name }}</h1>
             </div>

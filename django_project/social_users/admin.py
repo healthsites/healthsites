@@ -11,7 +11,7 @@ from .models import (
 
 class ProfileAdmin(admin.ModelAdmin):
     list_display = (
-        'user', 'profile_picture', 'screen_name')
+        'user', 'profile_picture')
 
 
 admin.site.register(Profile, ProfileAdmin)

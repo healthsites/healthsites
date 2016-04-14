@@ -1,5 +1,5 @@
 var search_localities_name_url = "/search/localities/name";
-var search_geoname_url = "http://gd.geobytes.com/AutoCompleteCity";
+var search_geoname_url = "/search/cities/name";
 $(document).ready(function () {
     // set share url
     var baseURL = location.protocol + "//" + location.hostname + "/";
@@ -16,6 +16,7 @@ $(document).ready(function () {
     function set_search_url(url, data_type) {
         $("#search-box").autocomplete({
             source: function (request, response) {
+                $("#search-box").css("cursor", "wait");
                 $.ajax({
                     url: url,
                     dataType: data_type,
@@ -24,7 +25,11 @@ $(document).ready(function () {
                     },
                     success: function (data) {
                         response(data);
-                    }
+                        $("#search-box").css("cursor", "");
+                    },
+                    error: function (request, error) {
+                        $("#search-box").css("cursor", "");
+                    },
                 });
             },
             minLength: 3,
@@ -47,7 +52,7 @@ $(document).ready(function () {
 
         // set data for autocomplete
         if (this.value == 'place') {
-            set_search_url(search_geoname_url, 'jsonp');
+            set_search_url(search_geoname_url, 'json');
         } else if (this.value == 'healthsite') {
             set_search_url(search_localities_name_url, 'json');
         } else {
@@ -65,4 +70,12 @@ $(document).ready(function () {
             centerMode: true,
         });
     }
+
+    $('#navbar a').click(function () {
+        var match = jQuery(this).attr('href').match(/#\S+/);
+        if (match) {
+            console.log(match);
+            ga('send', 'pageview', location.pathname + match[0]);
+        }
+    });
 })
