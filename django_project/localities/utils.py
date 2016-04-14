@@ -253,7 +253,8 @@ def get_locality_detail(locality, changes):
             for archive in localityArchives:
                 locality.master = archive.master
                 new_obj_repr = locality.repr_dict()
-                obj_repr['master'] = new_obj_repr['master']
+                if 'master' in new_obj_repr:
+                    obj_repr['master'] = new_obj_repr['master']
                 obj_repr['geom'] = (archive.geom.x, archive.geom.y)
                 obj_repr['history'] = True
         except LocalityArchive.DoesNotExist:
