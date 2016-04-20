@@ -281,21 +281,24 @@ class Locality(UpdateMixin, ChangesetMixin):
                 if url:
                     dict[u'values']['raw_source'] = url
 
-        if self.master:
-            master_uuid = ""
-            master_name = self.master.uuid
-            if self.master == self:
+        try:
+            if self.master:
                 master_uuid = ""
-                master_name = "unsetted"
-            else:
-                try:
-                    master_name = Value.objects.filter(locality=self.master).filter(
-                        specification__attribute__key='name')[0].data
-                    master_uuid = self.master.uuid
-                except Value.DoesNotExist:
-                    pass
+                master_name = self.master.uuid
+                if self.master == self:
+                    master_uuid = ""
+                    master_name = "unsetted"
+                else:
+                    try:
+                        master_name = Value.objects.filter(locality=self.master).filter(
+                            specification__attribute__key='name')[0].data
+                        master_uuid = self.master.uuid
+                    except Value.DoesNotExist:
+                        pass
 
-            dict['master'] = {'master_uuid': master_uuid, 'master_name': master_name}
+                dict['master'] = {'master_uuid': master_uuid, 'master_name': master_name}
+        except Locality.DoesNotExist:
+            dict['master'] = {'master_uuid': "", 'master_name': "unsetted"}
 
         return dict
 
