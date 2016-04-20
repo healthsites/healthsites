@@ -24,7 +24,7 @@ class Command(BaseCommand):
         # - not openstreetmap
         # - not web
         incorrect_localities = Locality.objects.exclude(id__in=localities_with_raw_data).exclude(
-            upstream_id__contains='openstreetmap¶').exclude(upstream_id__contains='web¶')
+            upstream_id__contains='openstreetmap¶').exclude(upstream_id__contains='web¶').filter(master=None)
         for locality in incorrect_localities:
             dict = locality.repr_dict()
             upstream = locality.upstream_id.encode('utf-8')
