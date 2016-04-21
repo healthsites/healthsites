@@ -254,8 +254,12 @@
             var that = this;
             mrk.on('click', function (evt) {
                 if (evt.target.data['count'] === 1) {
-                    $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
-                    $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
+                    if (window.location.href.indexOf("map") > -1) {
+                        $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
+                        $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
+                    } else {
+                        window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
+                    }
                 }
                 else {
                     var bounds = L.latLngBounds(
@@ -263,7 +267,7 @@
                         L.latLng(evt.target.data['bbox'][3], evt.target.data['bbox'][0])
                     );
                     // zoom to cluster bounds
-                    this._map.fitBounds(bounds);
+                    that._map.fitBounds(bounds);
                 }
             });
             // add marker to the layer

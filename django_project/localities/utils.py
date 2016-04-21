@@ -81,8 +81,8 @@ def get_country_statistic(query):
             except IOError as e:
                 try:
                     # query for each of attribute
-                    healthsites = Locality.objects.in_polygon(
-                        polygons).filter(master=None)
+                    healthsites = get_heathsites_master().in_polygon(
+                        polygons)
                     output = get_statistic(healthsites)
                     result = json.dumps(output, cls=DjangoJSONEncoder)
                     file = open(filename, 'w')
@@ -103,7 +103,7 @@ def get_country_statistic(query):
             except IOError as e:
                 try:
                     # query for each of attribute
-                    healthsites = Locality.objects.filter(master=None)
+                    healthsites = get_heathsites_master()
                     output = get_statistic(healthsites)
                     result = json.dumps(output, cls=DjangoJSONEncoder)
                     file = open(filename, 'w')
@@ -226,17 +226,8 @@ def get_json_from_request(request):
 
 
 def get_locality_detail(locality, changes):
-    # get attributes
-    attribute_count = 18
     # count completeness based attributes
     obj_repr = locality.repr_dict()
-    data_repr = render_fragment(
-        locality.domain.template_fragment, obj_repr
-    )
-
-    num_data = len(obj_repr['values']) + 1  # geom
-    completeness = (num_data + 0.0) / (attribute_count + 0.0) * 100  # percentage
-    obj_repr.update({'completeness': '%s%%' % format(completeness, '.2f')})
 
     # get latest update
     try:
@@ -254,14 +245,16 @@ def get_locality_detail(locality, changes):
     # FOR HISTORY
     obj_repr['history'] = False
     if changes:
+        # get updates
         changeset = Changeset.objects.get(id=changes)
         obj_repr['updates'][0]['last_update'] = changeset.created
         obj_repr['updates'][0]['uploader'] = changeset.social_user.username
-
+        obj_repr['updates'][0]['changeset_id'] = changes
         # get profile name
         profile = get_profile(User.objects.get(username=changeset.social_user.username))
         obj_repr['updates'][0]['nickname'] = profile.screen_name
-        obj_repr['updates'][0]['changeset_id'] = changes
+
+        # check archive
         try:
             localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
             for archive in localityArchives:
@@ -304,7 +297,6 @@ def get_locality_master(master_uuid, locality):
         return Locality.DoesNotExist
     return master
     #  ------------------------------------------------------
-
 
 def locality_create(request):
     if request.method == 'POST':
@@ -414,34 +406,25 @@ def locality_edit(request):
 def get_statistic(healthsites):
     # locality which in polygon
     # data for frontend
-    complete = 0
-    partial = 0
-    basic = 0
 
     healthsites_number = healthsites.count()
     values = Value.objects.filter(locality__in=healthsites)
 
     hospital_number = values.filter(
         specification__attribute__key='type').filter(
-        data__iexact='hospital').count()
+        data__icontains='hospital').count()
     medical_clinic_number = values.filter(
         specification__attribute__key='type').filter(
-        data__iexact='clinic').count()
+        data__icontains='clinic').count()
     orthopaedic_clinic_number = values.filter(
         specification__attribute__key='type').filter(
-        data__iexact='orthopaedic').count()
+        data__icontains='orthopaedic').count()
 
-    # check completnees
-    values = Value.objects.filter(locality__in=healthsites).exclude(data__isnull=True).exclude(
-        data__exact='').values('locality').annotate(
-        value_count=Count('locality'))
-    # get attributes
-    attribute_count = 18
     # count completeness based attributes
     # this make long waiting, need to more good query
-    complete = values.filter(value_count__gte=attribute_count).count()
-    partial = values.filter(value_count__gte=4).filter(value_count__lte=attribute_count - 1).count()
-    basic = values.filter(value_count__lte=3).count()
+    complete = healthsites.filter(completeness=100).count()
+    partial = healthsites.filter(completeness__gt=30).filter(completeness__lt=100).count()
+    basic = healthsites.filter(completeness__lte=30).count()
 
     output = {"numbers": {"hospital": hospital_number, "medical_clinic": medical_clinic_number
         , "orthopaedic_clinic": orthopaedic_clinic_number},
@@ -470,7 +453,7 @@ def localities_updates(locality_ids):
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
-         pass
+        pass
 
     output = []
     prev_changeset = 0

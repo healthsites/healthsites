@@ -40,7 +40,7 @@ function loadCountry(country) {
                 number = data.localities;
             }
             $("#" + this.number).html(number);
-            $("#" + this.completeness).html(completness);
+            $("#" + this.completeness).html(completness.toFixed(2));
         },
         fail: function (data) {
             $("#" + this.number).html("fail");
