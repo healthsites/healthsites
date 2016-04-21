@@ -30,9 +30,9 @@ class Command(BaseCommand):
             upstream = locality.upstream_id.encode('utf-8')
             if not "raw_source" in dict["values"]:
                 incorrect_localities_count += 1
-                upstream += " : incorrect"
-                locality.delete()
-            print upstream
+                locality.master = locality
+                locality.save()
+            print upstream+" : "+locality.uuid.encode('utf-8')
 
         # get correct locality to be reported
         correct_localities = Locality.objects.filter(id__in=localities_with_raw_data)

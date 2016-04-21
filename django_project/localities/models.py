@@ -18,6 +18,7 @@ from django.utils.text import slugify
 
 from model_utils import FieldTracker
 from pg_fts.fields import TSVectorField
+from .variables import attributes_availables
 
 
 class ChangesetMixin(models.Model):
@@ -150,8 +151,11 @@ class Locality(UpdateMixin, ChangesetMixin):
     specifications = models.ManyToManyField('Specification', through='Value')
     master = models.ForeignKey('Locality', null=True, default=None)
 
-    objects = PassThroughGeoManager.for_queryset_class(LocalitiesQuerySet)()
+    # completeness is a big calculation
+    # so it has to be an field
+    completeness = models.FloatField(null=True, default=0.0)
 
+    objects = PassThroughGeoManager.for_queryset_class(LocalitiesQuerySet)()
     tracker = FieldTracker()
 
     def before_save(self, *args, **kwargs):
@@ -237,6 +241,10 @@ class Locality(UpdateMixin, ChangesetMixin):
             sender=self.__class__, instance=self
         )
 
+        # calculate completeness
+        self.completeness = self.calculate_completeness()
+        self.save()
+
         return changed_values
 
     def repr_dict(self):
@@ -252,7 +260,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
             u'date_modified': self.changeset.created,
-            # u'changeset': self.changeset_id}
+            u'completeness': '%s%%' % format(self.completeness, '.2f'),
         }
 
         if 'data_source' in dict[u'values']:
@@ -310,6 +318,29 @@ class Locality(UpdateMixin, ChangesetMixin):
             except Exception as e:
                 return False
         return True
+
+    def calculate_completeness(self):
+        DEFAULT_VALUE = 2  # GUID & GEOM
+        global_attr = attributes_availables['global']
+        specific_attr = attributes_availables['hospital']
+        for key in attributes_availables.keys():
+            try:
+                self.value_set.filter(specification__attribute__key='type').get(data__icontains=key)
+                specific_attr = attributes_availables[key]
+            except Value.DoesNotExist:
+                continue
+
+        values = self.repr_dict()['values']
+        counted_value = DEFAULT_VALUE
+        max_value = len(global_attr) + len(specific_attr) + DEFAULT_VALUE
+
+        for attr in global_attr + specific_attr:
+            if attr in values:
+                data = values[attr]
+                if len(data.replace("-", "").replace("|", "").strip()) != 0:
+                    counted_value += 1
+
+        return (counted_value + 0.0) / (max_value + 0.0) * 100
 
     def prepare_for_fts(self):
         """

@@ -390,162 +390,15 @@ window.LocalitySidebar = (function () {
                 }
             });
         },
-        goToSignin: function () {
-            resetCookies();
-            setCookie("oldurl", window.location.href, 30);
-            window.location.href = "/signin/";
-
-        },
-        addedNewOptons: function (wrapper) {
-            // SCOPE OPTIONS
-            if (wrapper == "scope") {
-                var html = "";
-                // create nature options
-                for (var i = 0; i < scope_options.length; i++) {
-                    html += "<input type=\"checkbox\">" + scope_options[i] + "<br>";
-                }
-                html += "";
-                this.$scope_of_service_input.html(html);
-            }
-            // ANCILLARY OPTIONS
-            else if (wrapper == "ancillary") {
-                var html = "";
-                // create nature options
-                for (var i = 0; i < scope_options.length; i++) {
-                    html += "<input type=\"checkbox\">" + ancillary_options[i] + "<br>";
-                }
-                html += "";
-                this.$ancillary_service_input.html(html);
-            }
-            // ACTIVITIES OPTIONS
-            else if (wrapper == "activities") {
-                var html = "";
-                // create nature options
-                for (var i = 0; i < scope_options.length; i++) {
-                    html += "<input type=\"checkbox\">" + activities_options[i] + "<br>";
-                }
-                html += "";
-                this.$activities_input.html(html);
-            }
-            // notes OPTIONS
-            else if (wrapper == "notes") {
-                var html = "";
-                // create nature options
-                for (var i = 0; i < notes_options.length; i++) {
-                    html += "<input type=\"checkbox\">" + notes_options[i] + "<br>";
-                }
-                html += "";
-                this.$notes_input.html(html);
-            }
-
-        },
-        checkingOptions: function (wrapper, selected) {
-            // SCOPE UPDATES
-            if (wrapper == "scope") {
-                var scope_inputs = this.$scope_of_service_input.find('input');
-                // create nature options
-                for (var i = 0; i < scope_options.length; i++) {
-                    if (selected == scope_options[i]) {
-                        $(scope_inputs[i]).prop('checked', true);
-                    }
-                }
-            }
-            // ANCILLARY UPDATES
-            else if (wrapper == "ancillary") {
-                var ancillary_service_input = this.$ancillary_service_input.find('input');
-                // create nature options
-                for (var i = 0; i < ancillary_options.length; i++) {
-                    if (selected == ancillary_options[i]) {
-                        $(ancillary_service_input[i]).prop('checked', true);
-                    }
-                }
-            }
-            // ACTIVITIES UPDATES
-            else if (wrapper == "activities") {
-                var activities_input = this.$activities_input.find('input');
-                // create nature options
-                for (var i = 0; i < activities_options.length; i++) {
-                    if (selected == activities_options[i]) {
-                        $(activities_input[i]).prop('checked', true);
-                    }
-                }
-            }
-            // notes UPDATES
-            else if (wrapper == "notes") {
-                var notes_input = this.$notes_input.find('input');
-                // create nature options
-                for (var i = 0; i < notes_options.length; i++) {
-                    if (selected == notes_input[i]) {
-                        $(notes_input[i]).prop('checked', true);
-                    }
-                }
-            }
-        },
-
-        showEdit: function (mode, event) {
-            var isEditingMode = !(this.$editButton.is(":visible") && this.$createButton.is(":visible"));
-            this.$saveButton.hide();
-            this.$createButton.hide();
-            this.$line_updates.show();
-            if (isEditingMode && !isLoggedIn) {
-                setCookie("type", mode, 30);
-                setCookie("center", APP.getCenterOfMap().lat + "," + APP.getCenterOfMap().lng, 30);
-                setCookie("zoom", APP.getZoomOfMap(), 30);
-                setCookie("uuid", this.locality_uuid, 30);
-                window.location.href = "/signin/";
-            } else if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create"))) {
-                if (mode == "edit" && is_enable_edit) {
-                    this.$saveButton.show();
-                    this.showInfo();
-                    $APP.trigger('locality.edit');
-                }
-                else {
-                    this.$createButton.show();
-                    this.$line_updates.hide();
-                    this.showDefaultEdit();
-                    $APP.trigger('locality.create');
-                }
-                //this.showInfo();
-                for (var i = 0; i < info_fields.length; i++) {
-                    info_fields[i].hide();
-                }
-                for (var i = 0; i < edit_fields.length; i++) {
-                    edit_fields[i].show();
-                }
-            } else {
-                if (APP.getNowHasher() == "") {
-                    changeToDefault();
-                }
-                $APP.trigger('locality.cancel');
-                for (var i = 0; i < info_fields.length; i++) {
-                    info_fields[i].show();
-                }
-                for (var i = 0; i < edit_fields.length; i++) {
-                    edit_fields[i].hide();
-                }
-            }
-        },
-
-        setEnable: function (input) {
-            this.$addButton.css({'opacity': 1});
-            is_enable_edit = input;
-            if (input) {
-                this.$editButton.css({'opacity': 1});
-            } else {
-                this.$editButton.css({'opacity': 0.7});
-            }
-        },
 
         sendEdit: function (evt, payload) {
             this.$form.attr('action', "localities/edit");
             this.$form.submit();
         },
-
         sendCreate: function (evt, payload) {
             this.$form.attr('action', "localities/create");
             this.$form.submit();
         },
-
         handleXHRError: function (evt, payload) {
             var xhr = payload['xhr'];
 
@@ -557,104 +410,38 @@ window.LocalitySidebar = (function () {
             }
         },
 
-        updateCoordinates: function (evt, payload) {
-            // set new values
-            this.$coordinates_long_input.val(payload.latlng.lng);
-            this.$coordinates_lat_input.val(payload.latlng.lat);
-        },
+        showDefaultInfo: function (evt) {
+            $APP.trigger('locality.history-hide');
+            this.showDefaultEdit();
+            this.$name.text(no_name);
+            this.$nature_of_facility.text(need_information);
+            this.$completenees.attr('style', 'width:0%');
+            this.$completenees.text('0% Complete');
+            this.$coordinates.text('lat: ' + 'n/a' + ', long: ' + 'n/a');
+            this.$physical_address.text(no_physical_address);
+            this.$phone.text(no_phone_found);
+            this.$url.html('<p class="url"><i class="fa fa-link"></i>' + no_url_found + '</p>')
+            this.$scope_of_service.html('');
+            this.$scope_of_service.text(no_scope_found);
+            this.$ancillary_service.html('');
+            this.$ancillary_service.text(no_anchillary_found);
+            this.$activities.html('');
+            this.$activities.text(no_activities_found);
+            this.$staff.text(no_staff_found);
+            this.$ownership.text(no_ownership_found);
+            this.$inpatient_service.text(no_inpatient_found);
+            this.$notes_text.text(no_notes_found);
 
-        getDefiningHoursFormat: function () {
-            var format1 = ""; // for send to database
-            var format2 = ""; // for show in UI
-            var list_hours = [];
-            for (var i = 0; i < days.length; i++) {
-                var list_input = $('#' + days[i]).find('input');
-                var checked = $(list_input[0]).prop('checked');
-                var split = $('#' + days[i]).find('.unsplit').css('opacity') == 1 ? true : false;
-                var time1 = [$(list_input[1]).val(), $(list_input[2]).val()];
-                var time2 = [$(list_input[3]).val(), $(list_input[4]).val()];
-
-                //format1
-                if (checked) {
-                    //format 1
-                    format1 += time1.join("-");
-                    format1 += "-";
-                    if (split) {
-                        format1 += time2.join("-");
-                    } else {
-                        format1 += "-";
-                    }
-                } else {
-                    //format 1
-                    format1 += "-";
-                }
-                format1 += "|"
-
-                time1 = ["<b>" + $(list_input[1]).val() + "</b>", "<b>" + $(list_input[2]).val() + "</b>"];
-                time2 = ["<b>" + $(list_input[3]).val() + "</b>", "<b>" + $(list_input[4]).val() + "</b>"];
-                //format2
-                var isSame = false;
-                if (i != 0) {
-                    var isChecked = checked == list_hours[i - 1][1];
-                    var isSplit = split == list_hours[i - 1][2];
-                    var isTime1Same = time1[0] == list_hours[i - 1][3][0] && time1[1] == list_hours[i - 1][3][1];
-                    var isTime2Same = time2[0] == list_hours[i - 1][4][0] && time2[1] == list_hours[i - 1][4][1];
-                    if (isChecked && isSplit && isTime1Same && isTime2Same) {
-                        isSame = true;
-                    }
-                }
-                list_hours.push([days[i], checked, split, time1, time2, isSame]);
-            }
-            list_hours.push([days]);
-            // lets render the text
-            var last_init_hour = 0;
-            for (var i = 0; i < list_hours.length; i++) {
-                if (i != 0) {
-                    if (list_hours[i][5] != true || i == list_hours.length - 1) {
-                        // render
-                        if (last_init_hour != i - 1) {
-                            // render to
-                            if (list_hours[i - 1][1] == true) {
-                                format2 += list_hours[last_init_hour][0] + " to " + list_hours[i - 1][0] + " : " + list_hours[last_init_hour][3].join("-");
-                                if (list_hours[last_init_hour][2] == true) {
-                                    format2 += " and " + list_hours[last_init_hour][4].join("-");
-                                }
-                                format2 += "<br>";
-                            }
-                        } else {
-                            if (list_hours[i - 1][1] == true) {
-                                format2 += list_hours[last_init_hour][0] + " : " + list_hours[last_init_hour][3].join("-");
-                                if (list_hours[last_init_hour][2] == true) {
-                                    format2 += " and " + list_hours[last_init_hour][4].join("-");
-                                }
-                                format2 += "<br>";
-                            }
-                        }
-                        last_init_hour = i;
-                    }
-                }
-            }
-            //check for 24 hours
-            format2 = format2.replaceAll("<b>00:00</b>-<b>23:59</b>", "<b>24H</b>");
-            format2 = format2.replaceAll("<b>00:00</b>-<b>00:00</b>", "<b>24H</b>");
-            //check for 24/7 hours
-            format2 = format2.replaceAll("Monday to Sunday : <b>24H</b><br>", "<b>24/7</b>");
-            return {"format1": format1, "format2": format2};
-        },
-        setDefiningHour: function (days_index, from1, to1, from2, to2) {
-            var list_input = $('#' + days[days_index]).find('input');
-            if (typeof from1 !== 'undefined' && from1 != "") {
-                $(list_input[0]).prop('checked', true);
-            } else {
-                $(list_input[0]).prop('checked', false);
-            }
-            if (typeof from1 !== 'undefined' && from1 != "") $(list_input[1]).val(from1);
-            if (typeof to1 !== 'undefined' && to1 != "") $(list_input[2]).val(to1);
-            if (typeof from2 !== 'undefined' && from2 != "") {
-                $('#' + days[days_index]).find('.split').click();
-                $(list_input[3]).val(from2);
-            }
-            if (typeof to2 !== 'undefined' && to2 != "") $(list_input[4]).val(to2);
+            this.$other_data.html(no_others_found);
+            this.$other_data_input.html("");
+            this.$tag_data.html(no_tag_found);
+            others_attr = [];
+            this.$lastupdate.text("11 may 2015 17:23:15");
+            this.$uploader.text("@sharehealthdata");
+            this.$uploader.attr("href", "profile/sharehealthdata");
+            this.$defining_hours.html(no_operation_hours_found);
+            this.$locality_master_indicator.html("MASTER");
+            this.$locality_master_indicator.show();
         },
         showDefaultEdit: function (evt) {
             $('#full-list').html("");
@@ -715,44 +502,10 @@ window.LocalitySidebar = (function () {
                     that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
                 },
             })
-
-        },
-        showDefaultInfo: function (evt) {
-            $APP.trigger('locality.history-hide');
-            this.showDefaultEdit();
-            this.$name.text(no_name);
-            this.$nature_of_facility.text(need_information);
-            this.$completenees.attr('style', 'width:0%');
-            this.$completenees.text('0% Complete');
-            this.$coordinates.text('lat: ' + 'n/a' + ', long: ' + 'n/a');
-            this.$physical_address.text(no_physical_address);
-            this.$phone.text(no_phone_found);
-            this.$url.html('<p class="url"><i class="fa fa-link"></i>' + no_url_found + '</p>')
-            this.$scope_of_service.html('');
-            this.$scope_of_service.text(no_scope_found);
-            this.$ancillary_service.html('');
-            this.$ancillary_service.text(no_anchillary_found);
-            this.$activities.html('');
-            this.$activities.text(no_activities_found);
-            this.$staff.text(no_staff_found);
-            this.$ownership.text(no_ownership_found);
-            this.$inpatient_service.text(no_inpatient_found);
-            this.$notes_text.text(no_notes_found);
-
-            this.$other_data.html(no_others_found);
-            this.$other_data_input.html("");
-            this.$tag_data.html(no_tag_found);
-            others_attr = [];
-            this.$lastupdate.text("11 may 2015 17:23:15");
-            this.$uploader.text("@sharehealthdata");
-            this.$uploader.attr("href", "profile/sharehealthdata");
-            this.$defining_hours.html(no_operation_hours_found);
-            this.$locality_master_indicator.html("MASTER");
-            this.$locality_master_indicator.show();
         },
 
         showInfo: function (evt) {
-            // reset first
+            // RESET FIRST
             this.showDefaultInfo();
             // COORDINATE AND COMPLETNESS
             {
@@ -1116,23 +869,6 @@ window.LocalitySidebar = (function () {
                 }
             }
         },
-        isHasValue: function (value) {
-            if (value && value.length > 0) {
-                return true;
-            } else {
-                return false;
-            }
-        },
-        getIndex: function (array, value) {
-            var index = -99;
-            for (var i = 0; i < array.length; i++) {
-                if (array[i] == value) {
-                    index = i;
-                    break;
-                }
-            }
-            return index;
-        },
 
         getInfo: function (evt, payload) {
             var self = this;
@@ -1143,6 +879,7 @@ window.LocalitySidebar = (function () {
                 }
             }
             $.getJSON(url, function (data) {
+                console.log(data);
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {
@@ -1192,6 +929,263 @@ window.LocalitySidebar = (function () {
                     resetCookies();
                 }
             });
+        },
+        addedNewOptons: function (wrapper) {
+            // SCOPE OPTIONS
+            if (wrapper == "scope") {
+                var html = "";
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + scope_options[i] + "<br>";
+                }
+                html += "";
+                this.$scope_of_service_input.html(html);
+            }
+            // ANCILLARY OPTIONS
+            else if (wrapper == "ancillary") {
+                var html = "";
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + ancillary_options[i] + "<br>";
+                }
+                html += "";
+                this.$ancillary_service_input.html(html);
+            }
+            // ACTIVITIES OPTIONS
+            else if (wrapper == "activities") {
+                var html = "";
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + activities_options[i] + "<br>";
+                }
+                html += "";
+                this.$activities_input.html(html);
+            }
+            // notes OPTIONS
+            else if (wrapper == "notes") {
+                var html = "";
+                // create nature options
+                for (var i = 0; i < notes_options.length; i++) {
+                    html += "<input type=\"checkbox\">" + notes_options[i] + "<br>";
+                }
+                html += "";
+                this.$notes_input.html(html);
+            }
+
+        },
+        checkingOptions: function (wrapper, selected) {
+            // SCOPE UPDATES
+            if (wrapper == "scope") {
+                var scope_inputs = this.$scope_of_service_input.find('input');
+                // create nature options
+                for (var i = 0; i < scope_options.length; i++) {
+                    if (selected == scope_options[i]) {
+                        $(scope_inputs[i]).prop('checked', true);
+                    }
+                }
+            }
+            // ANCILLARY UPDATES
+            else if (wrapper == "ancillary") {
+                var ancillary_service_input = this.$ancillary_service_input.find('input');
+                // create nature options
+                for (var i = 0; i < ancillary_options.length; i++) {
+                    if (selected == ancillary_options[i]) {
+                        $(ancillary_service_input[i]).prop('checked', true);
+                    }
+                }
+            }
+            // ACTIVITIES UPDATES
+            else if (wrapper == "activities") {
+                var activities_input = this.$activities_input.find('input');
+                // create nature options
+                for (var i = 0; i < activities_options.length; i++) {
+                    if (selected == activities_options[i]) {
+                        $(activities_input[i]).prop('checked', true);
+                    }
+                }
+            }
+            // notes UPDATES
+            else if (wrapper == "notes") {
+                var notes_input = this.$notes_input.find('input');
+                // create nature options
+                for (var i = 0; i < notes_options.length; i++) {
+                    if (selected == notes_input[i]) {
+                        $(notes_input[i]).prop('checked', true);
+                    }
+                }
+            }
+        },
+        getDefiningHoursFormat: function () {
+            var format1 = ""; // for send to database
+            var format2 = ""; // for show in UI
+            var list_hours = [];
+            for (var i = 0; i < days.length; i++) {
+                var list_input = $('#' + days[i]).find('input');
+                var checked = $(list_input[0]).prop('checked');
+                var split = $('#' + days[i]).find('.unsplit').css('opacity') == 1 ? true : false;
+                var time1 = [$(list_input[1]).val(), $(list_input[2]).val()];
+                var time2 = [$(list_input[3]).val(), $(list_input[4]).val()];
+
+                //format1
+                if (checked) {
+                    //format 1
+                    format1 += time1.join("-");
+                    format1 += "-";
+                    if (split) {
+                        format1 += time2.join("-");
+                    } else {
+                        format1 += "-";
+                    }
+                } else {
+                    //format 1
+                    format1 += "-";
+                }
+                format1 += "|"
+
+                time1 = ["<b>" + $(list_input[1]).val() + "</b>", "<b>" + $(list_input[2]).val() + "</b>"];
+                time2 = ["<b>" + $(list_input[3]).val() + "</b>", "<b>" + $(list_input[4]).val() + "</b>"];
+                //format2
+                var isSame = false;
+                if (i != 0) {
+                    var isChecked = checked == list_hours[i - 1][1];
+                    var isSplit = split == list_hours[i - 1][2];
+                    var isTime1Same = time1[0] == list_hours[i - 1][3][0] && time1[1] == list_hours[i - 1][3][1];
+                    var isTime2Same = time2[0] == list_hours[i - 1][4][0] && time2[1] == list_hours[i - 1][4][1];
+                    if (isChecked && isSplit && isTime1Same && isTime2Same) {
+                        isSame = true;
+                    }
+                }
+                list_hours.push([days[i], checked, split, time1, time2, isSame]);
+            }
+            list_hours.push([days]);
+            // lets render the text
+            var last_init_hour = 0;
+            for (var i = 0; i < list_hours.length; i++) {
+                if (i != 0) {
+                    if (list_hours[i][5] != true || i == list_hours.length - 1) {
+                        // render
+                        if (last_init_hour != i - 1) {
+                            // render to
+                            if (list_hours[i - 1][1] == true) {
+                                format2 += list_hours[last_init_hour][0] + " to " + list_hours[i - 1][0] + " : " + list_hours[last_init_hour][3].join("-");
+                                if (list_hours[last_init_hour][2] == true) {
+                                    format2 += " and " + list_hours[last_init_hour][4].join("-");
+                                }
+                                format2 += "<br>";
+                            }
+                        } else {
+                            if (list_hours[i - 1][1] == true) {
+                                format2 += list_hours[last_init_hour][0] + " : " + list_hours[last_init_hour][3].join("-");
+                                if (list_hours[last_init_hour][2] == true) {
+                                    format2 += " and " + list_hours[last_init_hour][4].join("-");
+                                }
+                                format2 += "<br>";
+                            }
+                        }
+                        last_init_hour = i;
+                    }
+                }
+            }
+            //check for 24 hours
+            format2 = format2.replaceAll("<b>00:00</b>-<b>23:59</b>", "<b>24H</b>");
+            format2 = format2.replaceAll("<b>00:00</b>-<b>00:00</b>", "<b>24H</b>");
+            //check for 24/7 hours
+            format2 = format2.replaceAll("Monday to Sunday : <b>24H</b><br>", "<b>24/7</b>");
+            return {"format1": format1, "format2": format2};
+        },
+        getIndex: function (array, value) {
+            var index = -99;
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] == value) {
+                    index = i;
+                    break;
+                }
+            }
+            return index;
+        },
+        goToSignin: function () {
+            resetCookies();
+            setCookie("oldurl", window.location.href, 30);
+            window.location.href = "/signin/";
+
+        },
+        isHasValue: function (value) {
+            if (value && value.length > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        setDefiningHour: function (days_index, from1, to1, from2, to2) {
+            var list_input = $('#' + days[days_index]).find('input');
+            if (typeof from1 !== 'undefined' && from1 != "") {
+                $(list_input[0]).prop('checked', true);
+            } else {
+                $(list_input[0]).prop('checked', false);
+            }
+            if (typeof from1 !== 'undefined' && from1 != "") $(list_input[1]).val(from1);
+            if (typeof to1 !== 'undefined' && to1 != "") $(list_input[2]).val(to1);
+            if (typeof from2 !== 'undefined' && from2 != "") {
+                $('#' + days[days_index]).find('.split').click();
+                $(list_input[3]).val(from2);
+            }
+            if (typeof to2 !== 'undefined' && to2 != "") $(list_input[4]).val(to2);
+        },
+        setEnable: function (input) {
+            this.$addButton.css({'opacity': 1});
+            is_enable_edit = input;
+            if (input) {
+                this.$editButton.css({'opacity': 1});
+            } else {
+                this.$editButton.css({'opacity': 0.7});
+            }
+        },
+        showEdit: function (mode, event) {
+            var isEditingMode = !(this.$editButton.is(":visible") && this.$createButton.is(":visible"));
+            this.$saveButton.hide();
+            this.$createButton.hide();
+            this.$line_updates.show();
+            if (isEditingMode && !isLoggedIn) {
+                setCookie("type", mode, 30);
+                setCookie("center", APP.getCenterOfMap().lat + "," + APP.getCenterOfMap().lng, 30);
+                setCookie("zoom", APP.getZoomOfMap(), 30);
+                setCookie("uuid", this.locality_uuid, 30);
+                window.location.href = "/signin/";
+            } else if (isEditingMode && ((mode == "edit" && is_enable_edit) || (mode == "create"))) {
+                if (mode == "edit" && is_enable_edit) {
+                    this.$saveButton.show();
+                    this.showInfo();
+                    $APP.trigger('locality.edit');
+                }
+                else {
+                    this.$createButton.show();
+                    this.$line_updates.hide();
+                    this.showDefaultEdit();
+                    $APP.trigger('locality.create');
+                }
+                for (var i = 0; i < info_fields.length; i++) {
+                    info_fields[i].hide();
+                }
+                for (var i = 0; i < edit_fields.length; i++) {
+                    edit_fields[i].show();
+                }
+            } else {
+                if (APP.getNowHasher() == "") {
+                    changeToDefault();
+                }
+                $APP.trigger('locality.cancel');
+                for (var i = 0; i < info_fields.length; i++) {
+                    info_fields[i].show();
+                }
+                for (var i = 0; i < edit_fields.length; i++) {
+                    edit_fields[i].hide();
+                }
+            }
+        },
+        updateCoordinates: function (evt, payload) {
+            // set new values
+            this.$coordinates_long_input.val(payload.latlng.lng);
+            this.$coordinates_lat_input.val(payload.latlng.lat);
         },
 
         _bindExternalEvents: function () {

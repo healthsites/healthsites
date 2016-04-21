@@ -46,7 +46,6 @@ class Command(BaseCommand):
                 pass
 
         localities = Locality.objects.all()
-        # localities = Locality.objects.in_bbox(parse_bbox('107.14000000,-6.839783821352297,107.14100000,-6.80000000'))
         loc_clusters = cluster(localities, self.MAX_ZOOM, icon_size[0], icon_size[1], True)
         number = len(loc_clusters)
         index = 1;
