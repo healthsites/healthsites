@@ -15,6 +15,15 @@ deploy: run
 	@echo "You can access it on http://localhost:49631"
 	@echo "------------------------------------------------------------------"
 
+clean:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Cleaning in production mode - this will remove the $(PROJECT_ID)_uwsgi image"
+	@echo "make sure that you have make kill and make rm first."
+	@echo "------------------------------------------------------------------"
+	@docker rmi $(PROJECT_ID)_uwsgi
+
+
 build:
 	@echo
 	@echo "------------------------------------------------------------------"
