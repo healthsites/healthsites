@@ -232,15 +232,15 @@ mediasync:
 	@echo "------------------------------------------------------------------"
 	@echo "Syncing media files from live server"
 	@echo "------------------------------------------------------------------"
-	@rsync -av --progress kartoza4:/home/web/healthsites/deployment/media/ media
+	@rsync -av --progress hs1-production:/home/web/healthsites/deployment/media/ media
 
 dbsync:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Syncing database files from live server"
 	@echo "------------------------------------------------------------------"
-	-@ssh inasafe-docker "cd /home/data/changelog.inasafe.org/deployment; make dbbackup"
-	@rsync -av --progress kartoza4:/home/web/healthsites/deployment/backups/ backups
+	-@ssh hs1-production "cd /home/web/healthsites/deployment; make dbbackup"
+	@rsync -av --progress hs1-production:/home/web/healthsites/deployment/backups/ backups
 
 # ----------------------------------------------------------------------------
 #    DEVELOPMENT C O M M A N D S
