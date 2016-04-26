@@ -8,6 +8,8 @@ LOG = logging.getLogger(__name__)
 from braces.views import JSONResponseMixin
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.views.generic import View
 from frontend.views import search_place
 from localities.models import Country, Locality, Value
@@ -166,3 +168,21 @@ class LocalityCreateAPI(JSONResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         return HttpResponse(formattedReturn(request, locality_create(request)), content_type='application/json')
+
+
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+
+
+class LocalityCreateAPIStrict(JSONResponseMixin, View):
+    def _parse_request_params(self, request):
+        if not (all(param in request.GET for param in ['geom'])):
+            raise Http404
+
+        return request.GET['geom']
+
+    def get(self, request, *args, **kwargs):
+        geom = self._parse_request_params(request)
+        request.session['new_geom'] = geom
+        map_url = reverse('map')
+        return HttpResponseRedirect(map_url)
