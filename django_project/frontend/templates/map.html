@@ -101,7 +101,8 @@
                    onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-google-plus"></i>
                 </a>
-                <a class="linkedin-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+                <a class="linkedin-href"
+                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-linkedin"></i>
                 </a>
             </div>
@@ -355,7 +356,8 @@
                             </div>
 
                             <div id="locality-url">
-                                <p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href=""></a></span></p>
+                                <p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href=""></a></span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -575,7 +577,7 @@
         $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
         $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
         $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
-		$(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
+        $(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
 
         // checking default view
         var url = window.location.href;
@@ -658,6 +660,12 @@
         });
 
 
+        // check cookie for create mode from request
+        {% if new_geom %}
+            var new_geom = "{{ new_geom }}".split(",");
+            $APP.trigger('map.pan', {'location': [new_geom[0], new_geom[1]], 'zoom': 10});
+            $('#add-button').click();
+        {% endif %}
         // check cookie for create mode
         if (isLoggedIn) {
             var type = getCookie("type");
