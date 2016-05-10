@@ -4,6 +4,8 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import itertools
+import json
+import requests
 
 from .querysets import PassThroughGeoManager, LocalitiesQuerySet
 from datetime import datetime
@@ -355,6 +357,27 @@ class Locality(UpdateMixin, ChangesetMixin):
         )
 
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
+
+    def update_what3words(self, user, changeset):
+        print "get what3words for %s" % self.uuid
+        try:
+            value = Value.objects.get(
+                specification__attribute__key='what3words',
+                locality=self)
+            print value.locality, value.data
+        except Value.DoesNotExist:
+            what3words_api_key = settings.WHAT3WORDS_API_KEY
+            api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, self.geom.y, self.geom.x)
+            request = requests.get(api_url, stream=True)
+            response = ''.join([line for line in request.iter_lines()])
+            response = response.replace(' ', '').replace('\n', '')
+            response = response.replace('}{', '},{')
+            data = json.loads(response)
+            if "words" in data:
+                what3words = '.'.join(data['words'])
+                print what3words
+                self.set_values({'what3words': what3words}, user, changeset)
+                self.save()
 
     def get_synonyms(self):
         return Locality.objects.filter(master=self).exclude(id=self.id)

@@ -116,6 +116,21 @@ def map(request):
             map_url = reverse('map')
             return HttpResponseRedirect(
                 map_url + "?place=%s" % search_query)
+        elif option == 'what3words':
+            locality_values = Value.objects.filter(
+                specification__attribute__key='what3words').filter(
+                data=search_query)
+            if locality_values:
+                locality_value = locality_values[0]
+            else:
+                return render_to_response(
+                    'map.html',
+                    context_instance=RequestContext(request)
+                )
+            locality_uuid = locality_value.locality.uuid
+            map_url = reverse('map')
+            return HttpResponseRedirect(
+                map_url + "#!/locality/%s" % locality_uuid)
         elif option == 'healthsite':
             locality_values = Value.objects.filter(
                 specification__attribute__key='name').filter(
