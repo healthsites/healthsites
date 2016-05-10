@@ -72,7 +72,7 @@ admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
 
 class LocalityAdmin(admin.ModelAdmin):
     list_display = (
-        'upstream_id', 'locality_uuid', 'locality_name', 'locality_location',)
+        'upstream_id', 'locality_uuid', 'locality_name', 'locality_location', 'is_master',)
     readonly_fields = ('upstream_id', 'locality_uuid', 'core_field', 'locality_location')
     fieldsets = (
         ('Masterization', {
@@ -142,7 +142,24 @@ admin.site.register(SynonymLocalities, SynonymLocalitiesAdmin)
 
 
 class UnconfirmedSynonymAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('master', 'potential_synonym')
+    readonly_fields = ('master', 'potential_synonym')
+    fieldsets = (
+        (None, {
+            'fields': (
+                'master',
+                'potential_synonym',),
+        }),
+    )
+
+    def master(self, obj):
+        return "%s (%s)" % (obj.locality.repr_dict()['values']['name'], obj.locality.uuid)
+
+    def potential_synonym(self, obj):
+        return "%s (%s)" % (obj.synonym.repr_dict()['values']['name'], obj.synonym.uuid)
+
+    master.short_description = 'Master'
+    master.admin_order_field = 'locality__uuid'
 
 
 admin.site.register(UnconfirmedSynonym, UnconfirmedSynonymAdmin)

@@ -740,6 +740,12 @@ pre_delete.connect(data_loader_deleted, sender=DataLoaderPermission)
 # MASTERIZATION
 # -------------------------------------------------
 
+
+class UnconfirmedSynonym(models.Model):
+    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym')
+    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym')
+
+
 class SynonymLocalities(models.Model):
     synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='synonym_of_locality')
     locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_synonym')
@@ -753,9 +759,4 @@ def update_others_synonyms(sender, instance, **kwargs):
         synonym.save()
 
 
-pre_delete.connect(update_others_synonyms, sender=SynonymLocalities)
-
-
-class UnconfirmedSynonym(models.Model):
-    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym')
-    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym')
+post_save.connect(update_others_synonyms, sender=SynonymLocalities)

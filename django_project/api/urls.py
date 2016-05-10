@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
 
-from .views import LocalityAPI, LocalitySynonymsAPI, LocalitiesAPI, LocalitySearchAPI, LocalityCreateAPIStrict
+from .views import LocalityAPI, LocalitySynonymsAPI, LocalitiesAPI, LocalitySearchAPI, LocalityCreateAPIStrict, LocalityReportDuplicate
 
 urlpatterns = patterns(
     '',
@@ -28,6 +28,11 @@ urlpatterns = patterns(
     url(
         r'^v1/healthsites/synonyms',
         LocalitySynonymsAPI.as_view(),
+        name='api_locality_synonyms'
+    ),
+    url(
+        r'^v1/healthsites/facility/report',
+        LocalityReportDuplicate.as_view(),
         name='api_locality_synonyms'
     ),
 )

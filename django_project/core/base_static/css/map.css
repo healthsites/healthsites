@@ -608,3 +608,32 @@ table {
     padding: 10px;
     font-size: 14px;
 }
+
+#report-flag {
+    background: #d93434;
+    background-image: -webkit-linear-gradient(top, #d93434, #570a0a);
+    background-image: -moz-linear-gradient(top, #d93434, #570a0a);
+    background-image: -ms-linear-gradient(top, #d93434, #570a0a);
+    background-image: -o-linear-gradient(top, #d93434, #570a0a);
+    background-image: linear-gradient(to bottom, #d93434, #570a0a);
+    -webkit-border-radius: 3;
+    -moz-border-radius: 3;
+    border-radius: 3px;
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 8px;
+    padding: 2px 4px 2px 4px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#report-flag:hover {
+    background: #ff3030;
+    background-image: -webkit-linear-gradient(top, #ff3030, #ad1111);
+    background-image: -moz-linear-gradient(top, #ff3030, #ad1111);
+    background-image: -ms-linear-gradient(top, #ff3030, #ad1111);
+    background-image: -o-linear-gradient(top, #ff3030, #ad1111);
+    background-image: linear-gradient(to bottom, #ff3030, #ad1111);
+    text-decoration: none;
+    cursor: pointer;
+}

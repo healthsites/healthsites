@@ -244,7 +244,9 @@
             </div>
             <div id="locality-info" class="details" style="display: none">
                 <div class="header">
-                    <h1 id="locality-name">No Name</h1>
+                    <h1><span id="locality-name">No Name</span>
+                        <span id="report-flag" title="Report this locality as duplication"
+                              onclick="show_popup()">R</span></h1>
                     <input type="text" id="locality-name-input" name="name"
                            placeholder="Locality name" style="display: none; width: 100%"/>
 
@@ -256,14 +258,9 @@
                     </p>
                 </div>
                 <div class="info">
-                    <div class="line" style="display: none">
+                    <div class="line">
                         <div id="locality-master">
                             <div id="locality-master-indicator" class="master">MASTER</div>
-                        </div>
-                        <div id="locality-master-input" class="master" style="display: none">
-                            <input id="locality-master-input-flag" type="checkbox">master
-                            <input id="locality-master-input-text-box" type="text" placeholder="uuid"
-                                   style="margin-bottom: 10px;margin-left: 20px"/>
                         </div>
                     </div>
                     <div id="line-updates" class="line updates">
@@ -881,8 +878,21 @@
             }
         }
     });
+
+    function show_popup() {
+        var uuid = prompt("Please enter uuid of it's master", "");
+        if (uuid != null) {
+            $APP.trigger('sidebar.report-duplication', {'uuid': uuid});
+        }
+    }
+    function synonyms_clicked(element) {
+        var uuid = $(element).attr('id');
+        $APP.trigger('locality.map.click', {'locality_uuid': uuid});
+        $APP.trigger('set.hash.silent', {'locality': uuid});
+    }
 </script>
 
 <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
+<p id="alert"></p>
 </body>
 </html>

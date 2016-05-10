@@ -8,11 +8,9 @@ LOG = logging.getLogger(__name__)
 from braces.views import JSONResponseMixin
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.views.generic import View
 from frontend.views import search_place
-from localities.models import Country, Locality, Value
+from localities.models import Country, Locality, UnconfirmedSynonym, Value
 from localities.utils import parse_bbox, get_heathsites_master_by_polygon, get_heathsites_master_by_page, \
     get_heathsites_synonyms, limit, \
     locality_create
@@ -186,3 +184,39 @@ class LocalityCreateAPIStrict(JSONResponseMixin, View):
         request.session['new_geom'] = geom
         map_url = reverse('map')
         return HttpResponseRedirect(map_url)
+
+
+class LocalityReportDuplicate(JSONResponseMixin, View):
+    def post(self, request, *args, **kwargs):
+        if 'master' not in request.POST:
+            return HttpResponse(formattedReturn(request, {'error': "master uuid parameter isn't provided"}),
+                                content_type='application/json')
+        if 'synonym' not in request.POST:
+            return HttpResponse(formattedReturn(request, {'error': "synonym uuid parameter isn't provided"}),
+                                content_type='application/json')
+
+        master = request.POST['master']
+        try:
+            master = Locality.objects.get(uuid=master)
+        except Locality.DoesNotExist:
+            return HttpResponse(formattedReturn(request, {'error': "master is not found"}),
+                                content_type='application/json')
+
+        synonym = request.POST['synonym']
+        try:
+            synonym = Locality.objects.get(uuid=synonym)
+        except Locality.DoesNotExist:
+            return HttpResponse(formattedReturn(request, {'error': "synonym is not found"}),
+                                content_type='application/json')
+
+        if synonym == master:
+            return HttpResponse(formattedReturn(request, {'error': "cannot assign duplication to itself"}),
+                                content_type='application/json')
+
+        try:
+            UnconfirmedSynonym.objects.get(locality=master, synonym=synonym)
+        except UnconfirmedSynonym.DoesNotExist:
+            UnconfirmedSynonym(locality=master, synonym=synonym).save()
+
+        return HttpResponse(formattedReturn(request, {'success': "report has submitted"}),
+                            content_type='application/json')
