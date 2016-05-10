@@ -251,12 +251,32 @@ class Locality(UpdateMixin, ChangesetMixin):
         """
         Basic locality representation, as a dictionary
         """
+        # get synonyms
+        synonyms = []
+        for val in SynonymLocalities.objects.filter(locality_id=self.id):
+            synonym_uuid = val.synonym.uuid
+            synonym_name = synonym_uuid
+            if 'name' in val.synonym.repr_dict()['values']:
+                synonym_name = val.synonym.repr_dict()['values']['name']
+            synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
+
+        # get unconfirmed synonyms
+        unconfirmed_synonyms = []
+        for val in UnconfirmedSynonym.objects.filter(locality_id=self.id):
+            synonym_uuid = val.synonym.uuid
+            synonym_name = synonym_uuid
+            if 'name' in val.synonym.repr_dict()['values']:
+                synonym_name = val.synonym.repr_dict()['values']['name']
+            unconfirmed_synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
+
         dict = {
             u'uuid': self.uuid,
             u'values': {
                 val.specification.attribute.key: val.data
                 for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact='')
                 },
+            u'synonyms': synonyms,
+            u'unconfirmed_synonyms': unconfirmed_synonyms,
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
             u'date_modified': self.changeset.created,
@@ -714,3 +734,28 @@ def data_loader_deleted(sender, instance, **kwargs):
 
 
 pre_delete.connect(data_loader_deleted, sender=DataLoaderPermission)
+
+
+# -------------------------------------------------
+# MASTERIZATION
+# -------------------------------------------------
+
+class SynonymLocalities(models.Model):
+    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='synonym_of_locality')
+    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_synonym')
+
+
+def update_others_synonyms(sender, instance, **kwargs):
+    new_synonym = instance.synonym
+    new_master = instance.locality
+    for synonym in SynonymLocalities.objects.filter(locality=new_synonym):
+        synonym.locality = new_master
+        synonym.save()
+
+
+pre_delete.connect(update_others_synonyms, sender=SynonymLocalities)
+
+
+class UnconfirmedSynonym(models.Model):
+    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym')
+    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym')

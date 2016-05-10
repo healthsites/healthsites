@@ -8,10 +8,11 @@ from .models import (
     Domain,
     Locality,
     Specification,
+    SynonymLocalities,
+    UnconfirmedSynonym,
     Value,
 )
 from .forms import DomainModelForm
-
 
 
 class ChangesetMixin():
@@ -74,6 +75,10 @@ class LocalityAdmin(admin.ModelAdmin):
         'upstream_id', 'locality_uuid', 'locality_name', 'locality_location',)
     readonly_fields = ('upstream_id', 'locality_uuid', 'core_field', 'locality_location')
     fieldsets = (
+        ('Masterization', {
+            'fields': (
+                'is_master',),
+        }),
         ('Mandatory Attribute', {
             'fields': (
                 'upstream_id',
@@ -127,3 +132,17 @@ class LocalityAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Locality, LocalityAdmin)
+
+
+class SynonymLocalitiesAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(SynonymLocalities, SynonymLocalitiesAdmin)
+
+
+class UnconfirmedSynonymAdmin(admin.ModelAdmin):
+    pass
+
+
+admin.site.register(UnconfirmedSynonym, UnconfirmedSynonymAdmin)
