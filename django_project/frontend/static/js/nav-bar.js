@@ -1,5 +1,6 @@
 var search_localities_name_url = "/search/localities/name";
 var search_geoname_url = "/search/cities/name";
+var search_localities_what3words = "/search/localities/what3words";
 $(document).ready(function () {
     // set share url
     var baseURL = location.protocol + "//" + location.hostname + "/";
@@ -55,6 +56,8 @@ $(document).ready(function () {
             set_search_url(search_geoname_url, 'json');
         } else if (this.value == 'healthsite') {
             set_search_url(search_localities_name_url, 'json');
+        } else if (this.value == 'what3words') {
+            set_search_url(search_localities_what3words, 'json');
         } else {
             set_search_url(search_localities_name_url, 'json');
         }
