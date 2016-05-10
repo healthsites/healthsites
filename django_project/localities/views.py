@@ -182,11 +182,6 @@ class LocalityInfo(JSONResponseMixin, DetailView):
             obj_repr = get_locality_detail(self.object, kwargs['changes']);
         else:
             obj_repr = get_locality_detail(self.object, None);
-        synonyms = []
-        for synonym in self.object.get_synonyms():
-            synonyms.append(get_locality_detail(synonym, None))
-        if len(synonyms) > 0:
-            obj_repr['synonyms'] = synonyms
         return self.render_json_response(obj_repr)
 
 
@@ -343,8 +338,8 @@ def search_locality_by_name(request):
                     polygon = parse_bbox("%s,%s,%s,%s" % (
                         viewport['southwest']['lng'], viewport['southwest']['lat'], viewport['northeast']['lng'],
                         viewport['northeast']['lat']))
-                    healthsites = Locality.objects.in_polygon(
-                        polygon).filter(master=None)
+                    healthsites = get_heathsites_master().in_polygon(
+                        polygon)
                 except Exception as e:
                     healthsites = []
 
