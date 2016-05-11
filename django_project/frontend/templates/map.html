@@ -136,6 +136,10 @@
                                                         value="place"><span></span><label class="option"
                                                                                           for="radio-healthsite">place</label>
                 </div>
+                <div class="option"><span></span><input type="radio" name="option" id="radio-what3words"
+                                                        value="what3words"><span></span><label class="option"
+                                                                                               for="radio-what3words">what3words</label>
+                </div>
             </div>
             <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
         </form>
@@ -258,7 +262,7 @@
                     </p>
                 </div>
                 <div class="info">
-                    <div class="line">
+                    <div class="line" style="display: none">
                         <div id="locality-master">
                             <div id="locality-master-indicator" class="master">MASTER</div>
                         </div>
@@ -300,15 +304,17 @@
                             <p class="address" id="locality-physical-address">54, Praed st, London, W2 NY<br/>
                                 Unighted Kingdom</p>
                             <input type="text" id="locality-physical-address-input" name="physical_address"
-                                   placeholder="Physical Address" style="display: none"/>
+                                   placeholder="Physical Address" style="display: none; margin-bottom: 5px;"/>
 
+                            <p class="coordinates" style="margin-bottom: 5px"><b id="locality-what3words">test</b></p>
                             <p class="coordinates" id="locality-coordinates">lat: 0, long: 0</p>
 
-                            <p class="coordinates" id="locality-coordinates-input" style="display: none">lat: <input
-                                    type="number"
-                                    id="locality-coordinates-lat-input"
-                                    style="width: 80px"
-                                    min="-180" max="180" onchange="onChange(this)"/>,
+                            <p class="coordinates" id="locality-coordinates-input"
+                               style="display: none; margin-top: 5px;">
+                                lat: <input type="number"
+                                            id="locality-coordinates-lat-input"
+                                            style="width: 80px"
+                                            min="-180" max="180" onchange="onChange(this)"/>,
                                 long: <input type="number"
                                              id="locality-coordinates-long-input" style="width: 80px" min="-180"
                                              max="180" onchange="onChange(this)"/></p>
@@ -317,12 +323,14 @@
                             <p>
                                 <i class="fa fa-phone"></i>
                                 <span id="locality-phone" class="call">0141 636 6116</span>
-                                <span id="locality-phone-input" style="display: none">+<input type="number"
-                                                                                              id="locality-phone-input-int"
-                                                                                              style="width: 50px; margin-right: 5px"
-                                                                                              onkeypress="onKeyPress(this)"/><input
-                                        type="number"
-                                        id="locality-phone-input-number"/></span>
+                                <span id="locality-phone-input" style="display: none">+
+                                    <input type="number"
+                                           id="locality-phone-input-int"
+                                           style="width: 50px; margin-right: 5px"
+                                           onkeypress="onKeyPress(this)"/>
+                                    <input type="number"
+                                           id="locality-phone-input-number"/>
+                                </span>
                             </p>
 
                             <p id="locality-operating-hours-section">
@@ -340,9 +348,7 @@
                                             style="cursor: pointer; margin-right: 10px"><a>24/5</a></span>
                                     </div>
                                     <hr>
-                                    <table id="locality-operating-hours-input-table" style="width:100%">
-
-                                    </table>
+                                    <table id="locality-operating-hours-input-table" style="width:100%"></table>
                                     <hr>
                                     <div>
                                         <strong>RESULT :</strong><br>
@@ -399,13 +405,15 @@
                         <div class="data">
                             <p id="locality-inpatient-service"></p>
 
-                            <p id="locality-inpatient-service-input" style="display: none"><input type="number"
-                                                                                                  id="locality-inpatient-service-full-input"
-                                                                                                  min="0"
-                                                                                                  style="width: 50px"/>
+                            <p id="locality-inpatient-service-input" style="display: none">
+                                <input type="number"
+                                       id="locality-inpatient-service-full-input"
+                                       min="0"
+                                       style="width: 50px"/>
                                 full
-                                time beds, <input type="number" id="locality-inpatient-service-part-input" min="0"
-                                                  style="width: 50px"/>
+                                time beds,
+                                <input type="number" id="locality-inpatient-service-part-input" min="0"
+                                       style="width: 50px"/>
                                 part time beds</p>
                         </div>
                     </div>
@@ -428,13 +436,15 @@
                         <div class="data">
                             <p id="locality-staff"></p>
 
-                            <p id="locality-staff-input" style="display: none"><input type="number"
-                                                                                      id="locality-staff-doctor-input"
-                                                                                      min="0"
-                                                                                      style="width: 50px"/>
-                                full time doctors, <input type="number" id="locality-staff-nurse-input"
-                                                          min="0"
-                                                          style="width: 50px"/>
+                            <p id="locality-staff-input" style="display: none">
+                                <input type="number"
+                                       id="locality-staff-doctor-input"
+                                       min="0"
+                                       style="width: 50px"/>
+                                full time doctors,
+                                <input type="number" id="locality-staff-nurse-input"
+                                       min="0"
+                                       style="width: 50px"/>
                                 full time nurses</p>
                         </div>
                     </div>

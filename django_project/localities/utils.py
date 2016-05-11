@@ -182,7 +182,7 @@ def get_json_from_request(request):
         json[req[0].lower()] = req[1]
         try:
             Attribute.objects.get(key=req[0].lower())
-        except:
+        except Attribute.DoesNotExist:
             if req[0] not in special_request:
                 tmp_changeset = Changeset.objects.create(
                     social_user=request.user

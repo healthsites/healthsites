@@ -3,11 +3,13 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+from django.contrib.auth.models import User
 from django.dispatch import receiver, Signal
 from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
 
 from .models import (
+    Changeset,
     Domain,
     DomainArchive,
     Attribute,
@@ -117,6 +119,24 @@ def locality_archive_handler(sender, instance, created, raw, **kwargs):
                 synonym.master = instance.master
             synonym.save()
     archive.save()
+
+    try:
+        # update what3words
+        # get user that responsibility to change this
+        user = None
+        try:
+            user = User.objects.get(username="sharehealthdata")
+        except User.DoesNotExist:
+            try:
+                user = User.objects.get(username="admin")
+            except User.DoesNotExist:
+                pass
+
+        # create changeset
+        changeset = Changeset.objects.create(social_user=user)
+        instance.update_what3words(user, changeset)
+    except Exception as e:
+        print e
 
 
 @receiver(post_save, sender=Value)
