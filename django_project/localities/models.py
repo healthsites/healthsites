@@ -359,13 +359,13 @@ class Locality(UpdateMixin, ChangesetMixin):
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
     def update_what3words(self, user, changeset):
-        print "get what3words for %s" % self.uuid
         try:
             value = Value.objects.get(
                 specification__attribute__key='what3words',
                 locality=self)
             print value.locality, value.data
         except Value.DoesNotExist:
+            print "get what3words for %s" % self.uuid
             what3words_api_key = settings.WHAT3WORDS_API_KEY
             api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, self.geom.y, self.geom.x)
             request = requests.get(api_url, stream=True)
@@ -771,18 +771,29 @@ class UnconfirmedSynonym(models.Model):
     synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym')
     locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym')
 
+    class Meta:
+        ordering = ["locality", "synonym"]
+        verbose_name = "Potential Synonym"
+        verbose_name_plural = "Potential Synonyms"
+
 
 class SynonymLocalities(models.Model):
     synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='synonym_of_locality')
     locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_synonym')
 
+    class Meta:
+        ordering = ["locality", "synonym"]
+        verbose_name = "Synonyms"
+        verbose_name_plural = "Synonyms"
+
+
+from masterization import downgrade_master_as_synonyms
+
 
 def update_others_synonyms(sender, instance, **kwargs):
     new_synonym = instance.synonym
     new_master = instance.locality
-    for synonym in SynonymLocalities.objects.filter(locality=new_synonym):
-        synonym.locality = new_master
-        synonym.save()
+    downgrade_master_as_synonyms(new_synonym.id, new_master.id)
 
 
 post_save.connect(update_others_synonyms, sender=SynonymLocalities)

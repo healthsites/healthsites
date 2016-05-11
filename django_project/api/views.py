@@ -184,39 +184,3 @@ class LocalityCreateAPIStrict(JSONResponseMixin, View):
         request.session['new_geom'] = geom
         map_url = reverse('map')
         return HttpResponseRedirect(map_url)
-
-
-class LocalityReportDuplicate(JSONResponseMixin, View):
-    def post(self, request, *args, **kwargs):
-        if 'master' not in request.POST:
-            return HttpResponse(formattedReturn(request, {'error': "master uuid parameter isn't provided"}),
-                                content_type='application/json')
-        if 'synonym' not in request.POST:
-            return HttpResponse(formattedReturn(request, {'error': "synonym uuid parameter isn't provided"}),
-                                content_type='application/json')
-
-        master = request.POST['master']
-        try:
-            master = Locality.objects.get(uuid=master)
-        except Locality.DoesNotExist:
-            return HttpResponse(formattedReturn(request, {'error': "master is not found"}),
-                                content_type='application/json')
-
-        synonym = request.POST['synonym']
-        try:
-            synonym = Locality.objects.get(uuid=synonym)
-        except Locality.DoesNotExist:
-            return HttpResponse(formattedReturn(request, {'error': "synonym is not found"}),
-                                content_type='application/json')
-
-        if synonym == master:
-            return HttpResponse(formattedReturn(request, {'error': "cannot assign duplication to itself"}),
-                                content_type='application/json')
-
-        try:
-            UnconfirmedSynonym.objects.get(locality=master, synonym=synonym)
-        except UnconfirmedSynonym.DoesNotExist:
-            UnconfirmedSynonym(locality=master, synonym=synonym).save()
-
-        return HttpResponse(formattedReturn(request, {'success': "report has submitted"}),
-                            content_type='application/json')

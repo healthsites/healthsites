@@ -1236,7 +1236,7 @@ window.LocalitySidebar = (function () {
         },
         reportDuplication: function (uuid) {
             $.ajax({
-                url: "/api/v1/healthsites/facility/report",
+                url: "/report",
                 method: 'POST',
                 data: {
                     master: this.locality_uuid,
