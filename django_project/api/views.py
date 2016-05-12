@@ -8,11 +8,9 @@ LOG = logging.getLogger(__name__)
 from braces.views import JSONResponseMixin
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
-from django.shortcuts import render_to_response
-from django.template import RequestContext
 from django.views.generic import View
 from frontend.views import search_place
-from localities.models import Country, Locality, Value
+from localities.models import Country, Locality, UnconfirmedSynonym, Value
 from localities.utils import parse_bbox, get_heathsites_master_by_polygon, get_heathsites_master_by_page, \
     get_heathsites_synonyms, limit, \
     locality_create

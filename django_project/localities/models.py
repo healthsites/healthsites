@@ -151,11 +151,11 @@ class Locality(UpdateMixin, ChangesetMixin):
     upstream_id = models.TextField(null=True, unique=True)
     geom = models.PointField(srid=4326)
     specifications = models.ManyToManyField('Specification', through='Value')
-    master = models.ForeignKey('Locality', null=True, default=None)
 
     # completeness is a big calculation
     # so it has to be an field
     completeness = models.FloatField(null=True, default=0.0)
+    is_master = models.BooleanField(default=True)
 
     objects = PassThroughGeoManager.for_queryset_class(LocalitiesQuerySet)()
     tracker = FieldTracker()
@@ -253,12 +253,32 @@ class Locality(UpdateMixin, ChangesetMixin):
         """
         Basic locality representation, as a dictionary
         """
+        # get synonyms
+        synonyms = []
+        for val in SynonymLocalities.objects.filter(locality_id=self.id):
+            synonym_uuid = val.synonym.uuid
+            synonym_name = synonym_uuid
+            if 'name' in val.synonym.repr_dict()['values']:
+                synonym_name = val.synonym.repr_dict()['values']['name']
+            synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
+
+        # get unconfirmed synonyms
+        unconfirmed_synonyms = []
+        for val in UnconfirmedSynonym.objects.filter(locality_id=self.id):
+            synonym_uuid = val.synonym.uuid
+            synonym_name = synonym_uuid
+            if 'name' in val.synonym.repr_dict()['values']:
+                synonym_name = val.synonym.repr_dict()['values']['name']
+            unconfirmed_synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
+
         dict = {
             u'uuid': self.uuid,
             u'values': {
                 val.specification.attribute.key: val.data
                 for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact='')
                 },
+            u'synonyms': synonyms,
+            u'unconfirmed_synonyms': unconfirmed_synonyms,
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
             u'date_modified': self.changeset.created,
@@ -290,26 +310,6 @@ class Locality(UpdateMixin, ChangesetMixin):
 
                 if url:
                     dict[u'values']['raw_source'] = url
-
-        try:
-            if self.master:
-                master_uuid = ""
-                master_name = self.master.uuid
-                if self.master == self:
-                    master_uuid = ""
-                    master_name = "unsetted"
-                else:
-                    try:
-                        master_name = Value.objects.filter(locality=self.master).filter(
-                            specification__attribute__key='name')[0].data
-                        master_uuid = self.master.uuid
-                    except Value.DoesNotExist:
-                        pass
-
-                dict['master'] = {'master_uuid': master_uuid, 'master_name': master_name}
-        except Locality.DoesNotExist:
-            dict['master'] = {'master_uuid': "", 'master_name': "unsetted"}
-
         return dict
 
     def is_type(self, value):
@@ -359,13 +359,13 @@ class Locality(UpdateMixin, ChangesetMixin):
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
     def update_what3words(self, user, changeset):
-        print "get what3words for %s" % self.uuid
         try:
             value = Value.objects.get(
                 specification__attribute__key='what3words',
                 locality=self)
             print value.locality, value.data
         except Value.DoesNotExist:
+            print "get what3words for %s" % self.uuid
             what3words_api_key = settings.WHAT3WORDS_API_KEY
             api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, self.geom.y, self.geom.x)
             request = requests.get(api_url, stream=True)
@@ -380,7 +380,7 @@ class Locality(UpdateMixin, ChangesetMixin):
                 self.save()
 
     def get_synonyms(self):
-        return Locality.objects.filter(master=self).exclude(id=self.id)
+        synonyms = SynonymLocalities.objects.get(locality=self)
 
     def __unicode__(self):
         return u'{}'.format(self.id)
@@ -401,7 +401,6 @@ class LocalityArchive(ArchiveMixin):
     uuid = models.TextField()
     upstream_id = models.TextField(null=True)
     geom = models.PointField(srid=4326)
-    master = models.ForeignKey('Locality', null=True, default=None)
 
 
 class Value(UpdateMixin, ChangesetMixin):
@@ -761,3 +760,40 @@ def data_loader_deleted(sender, instance, **kwargs):
 
 
 pre_delete.connect(data_loader_deleted, sender=DataLoaderPermission)
+
+
+# -------------------------------------------------
+# MASTERIZATION
+# -------------------------------------------------
+
+
+class UnconfirmedSynonym(models.Model):
+    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym')
+    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym')
+
+    class Meta:
+        ordering = ["locality", "synonym"]
+        verbose_name = "Potential Synonym"
+        verbose_name_plural = "Potential Synonyms"
+
+
+class SynonymLocalities(models.Model):
+    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='synonym_of_locality')
+    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_synonym')
+
+    class Meta:
+        ordering = ["locality", "synonym"]
+        verbose_name = "Synonyms"
+        verbose_name_plural = "Synonyms"
+
+
+from masterization import downgrade_master_as_synonyms
+
+
+def update_others_synonyms(sender, instance, **kwargs):
+    new_synonym = instance.synonym
+    new_master = instance.locality
+    downgrade_master_as_synonyms(new_synonym.id, new_master.id)
+
+
+post_save.connect(update_others_synonyms, sender=SynonymLocalities)

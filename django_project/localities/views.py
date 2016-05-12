@@ -19,8 +19,9 @@ from datetime import datetime
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, Http404
-from django.views.generic import DetailView, ListView, FormView
+from django.views.generic import DetailView, ListView, FormView, View
 from localities.models import Country, DataLoaderPermission
+from masterization import report_locality_as_unconfirmed_synonym
 
 LOG = logging.getLogger(__name__)
 
@@ -182,11 +183,6 @@ class LocalityInfo(JSONResponseMixin, DetailView):
             obj_repr = get_locality_detail(self.object, kwargs['changes']);
         else:
             obj_repr = get_locality_detail(self.object, None);
-        synonyms = []
-        for synonym in self.object.get_synonyms():
-            synonyms.append(get_locality_detail(synonym, None))
-        if len(synonyms) > 0:
-            obj_repr['synonyms'] = synonyms
         return self.render_json_response(obj_repr)
 
 
@@ -343,8 +339,8 @@ def search_locality_by_name(request):
                     polygon = parse_bbox("%s,%s,%s,%s" % (
                         viewport['southwest']['lng'], viewport['southwest']['lat'], viewport['northeast']['lng'],
                         viewport['northeast']['lat']))
-                    healthsites = Locality.objects.in_polygon(
-                        polygon).filter(master=None)
+                    healthsites = get_heathsites_master().in_polygon(
+                        polygon)
                 except Exception as e:
                     healthsites = []
 
@@ -368,6 +364,7 @@ def search_locality_by_name(request):
             result.append(name_contains_with.data)
         result = json.dumps(result)
         return HttpResponse(result, content_type='application/json')
+
 
 def search_locality_by_what3words(request):
     if request.method == 'GET':
@@ -464,3 +461,39 @@ def get_locality_update(request):
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')
+
+
+class LocalityReportDuplicate(JSONResponseMixin, View):
+    def post(self, request, *args, **kwargs):
+        if 'master' not in request.POST:
+            result = json.dumps({'error': "master uuid parameter isn't provided"}, cls=DjangoJSONEncoder)
+            return HttpResponse(result, content_type='application/json')
+        if 'synonym' not in request.POST:
+            result = json.dumps({'error': "synonym uuid parameter isn't provided"}, cls=DjangoJSONEncoder)
+            return HttpResponse(result, content_type='application/json')
+
+        master = request.POST['master']
+        try:
+            master = Locality.objects.get(uuid=master)
+        except Locality.DoesNotExist:
+            result = json.dumps({'error': "master is not found"}, cls=DjangoJSONEncoder)
+            return HttpResponse(result, content_type='application/json')
+
+        synonym = request.POST['synonym']
+        try:
+            synonym = Locality.objects.get(uuid=synonym)
+        except Locality.DoesNotExist:
+            result = json.dumps({'error': "synonym is not found"}, cls=DjangoJSONEncoder)
+            return HttpResponse(result, content_type='application/json')
+
+        if synonym == master:
+            result = json.dumps({'error': "cannot assign duplication to itself"}, cls=DjangoJSONEncoder)
+            return HttpResponse(result, content_type='application/json')
+
+        result = report_locality_as_unconfirmed_synonym(synonym.id, master.id)
+        if result:
+            result = json.dumps({'success': "report has submitted"}, cls=DjangoJSONEncoder)
+            return HttpResponse(result, content_type='application/json')
+        else:
+            result = json.dumps({'error': "submitting report was failed"}, cls=DjangoJSONEncoder)
+            return HttpResponse(result, content_type='application/json')

@@ -33,7 +33,7 @@
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css"
           media="screen, projection"/>
-    <link href="https://wvega.github.io/timepicker/resources/jquery-timepicker/jquery.timepicker.min.css"
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.css"
           rel="stylesheet" type="text/css"
           media="screen, projection"/>
     <link rel="shortcut icon" href="static/img/favicon.ico" type="image/x-icon">
@@ -248,7 +248,9 @@
             </div>
             <div id="locality-info" class="details" style="display: none">
                 <div class="header">
-                    <h1 id="locality-name">No Name</h1>
+                    <h1><span id="locality-name">No Name</span>
+                    <span id="report-flag" title="Report this healthsite as duplication"
+                          onclick="show_popup()">R</span></h1>
                     <input type="text" id="locality-name-input" name="name"
                            placeholder="Locality name" style="display: none; width: 100%"/>
 
@@ -260,14 +262,9 @@
                     </p>
                 </div>
                 <div class="info">
-                    <div class="line" style="display: none">
+                    <div class="line">
                         <div id="locality-master">
                             <div id="locality-master-indicator" class="master">MASTER</div>
-                        </div>
-                        <div id="locality-master-input" class="master" style="display: none">
-                            <input id="locality-master-input-flag" type="checkbox">master
-                            <input id="locality-master-input-text-box" type="text" placeholder="uuid"
-                                   style="margin-bottom: 10px;margin-left: 20px"/>
                         </div>
                     </div>
                     <div id="line-updates" class="line updates">
@@ -552,7 +549,7 @@
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
 <script type="text/javascript"
-        src="https://wvega.github.io/timepicker/resources/jquery-timepicker/jquery.timepicker.min.js"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.min.js"></script>
 
 {% javascript 'project' %}
 {% javascript 'map' %}
@@ -891,8 +888,21 @@
             }
         }
     });
+
+    function show_popup() {
+        var uuid = prompt("Please enter uuid of it's master", "");
+        if (uuid != null) {
+            $APP.trigger('sidebar.report-duplication', {'uuid': uuid});
+        }
+    }
+    function synonyms_clicked(element) {
+        var uuid = $(element).attr('id');
+        $APP.trigger('locality.map.click', {'locality_uuid': uuid});
+        $APP.trigger('set.hash.silent', {'locality': uuid});
+    }
 </script>
 
 <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
+<p id="alert"></p>
 </body>
 </html>

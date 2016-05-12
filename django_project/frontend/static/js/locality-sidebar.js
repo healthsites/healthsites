@@ -63,6 +63,7 @@ window.LocalitySidebar = (function () {
         this.$tag_data = $('#tag-data');
         this.$defining_hours_section = $('#locality-operating-hours-section');
         this.$defining_hours = $('#locality-operating-hours');
+        this.$report_flag = $('#report-flag');
 
         // form
         this.$form = $('#locality-form');
@@ -73,10 +74,6 @@ window.LocalitySidebar = (function () {
         this.$cancelButton = $('#cancel-button');
         this.$physical_address_input = $('#locality-physical-address-input');
         this.$name_input = $('#locality-name-input');
-
-        this.$locality_master_input = $('#locality-master-input');
-        this.$locality_master_input_flag = $('#locality-master-input-flag');
-        this.$locality_master_input_text_box = $('#locality-master-input-text-box');
 
         this.$phone_input = $('#locality-phone-input');
         this.$phone_input_number = $('#locality-phone-input-number');
@@ -143,6 +140,7 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$tag_data);
         info_fields.push(this.$defining_hours_section);
         info_fields.push(this.$locality_master);
+        info_fields.push(this.$report_flag);
 
         // set editfield array
         edit_fields.push(this.$cancelButton);
@@ -166,9 +164,6 @@ window.LocalitySidebar = (function () {
         edit_fields.push(this.$tag_input);
         edit_fields.push(this.$tag_input_text);
         edit_fields.push(this.$defining_hours_input);
-        if (isUserTrusted) {
-            edit_fields.push(this.$locality_master_input);
-        }
 
         this.setEnable(is_enable_edit);
         this.showDefaultInfo();
@@ -198,17 +193,6 @@ window.LocalitySidebar = (function () {
             this.$signin.on('click', this.goToSignin.bind(this));
 
             var that = this;
-            // -------------------------------------------------------------------
-            // MASTER FLAG
-            // -------------------------------------------------------------------
-            this.$locality_master_input_flag.change(function () {
-                if (this.checked) {
-                    that.$locality_master_input_text_box.hide();
-                    that.$locality_master_input_text_box.val("");
-                } else {
-                    that.$locality_master_input_text_box.show();
-                }
-            });
             // -------------------------------------------------------------------
             // FORM IF SUBMIT
             // -------------------------------------------------------------------
@@ -316,21 +300,13 @@ window.LocalitySidebar = (function () {
                     tags = tags.join(separator);
                     tags = "|" + tags + "|";
 
-                    // GET master
-                    var master_uuid = "";
-                    if (that.$locality_master_input_text_box.is(":visible")) {
-                        master_uuid = that.$locality_master_input_text_box.val();
-                    } else {
-                        master_uuid = "None";
-                    }
-
                     if (that.locality_data != null) {
                         fields += '&uuid=' + that.locality_data.uuid;
                     }
                     fields += '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient_service) +
-                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags) + "&master_uuid=" + encodeURIComponent(master_uuid);
+                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags);
 
                     // GET DEFINING HOURS
                     fields += "&defining_hours=" + that.getDefiningHoursFormat()["format1"];
@@ -451,10 +427,6 @@ window.LocalitySidebar = (function () {
             $("#locality-statistic").hide();
             $("#locality-info").show();
             $("#locality-default").hide();
-            this.$locality_master_input_text_box.val("");
-            if (this.$locality_master_input_flag[0].checked) {
-                this.$locality_master_input_flag.click();
-            }
             this.addedNewOptons("scope"); // this.$scope_of_service_input
             this.addedNewOptons("ancillary"); // this.$ancillary_service_input
             this.addedNewOptons("activities"); // this.$ancillary_service_input
@@ -498,7 +470,7 @@ window.LocalitySidebar = (function () {
                 that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
             });
             $('input.timepicker').timepicker({
-                timeFormat: 'HH:mm',
+                timeFormat: 'H:i',
                 interval: 15, // 15 minutes});
                 change: function (time) {
                     that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
@@ -516,63 +488,52 @@ window.LocalitySidebar = (function () {
                 this.$coordinates.text('lat: ' + this.locality_data.geom[1] + ', long: ' + this.locality_data.geom[0]);
                 this.$coordinates_lat_input.val(this.locality_data.geom[1]);
                 this.$coordinates_long_input.val(this.locality_data.geom[0]);
-
-                // MASTER
-                {
-                    var master = this.locality_data.master;
-                    if (master && master['master_name']) {
-                        // HERE IS SYNONYMS RENDERING
-                        this.$locality_master_input_text_box.val(master['master_uuid']);
-                        var indicator = 'MASTER : <span ';
-                        if (master['master_uuid'] != "") {
-                            indicator += 'id="' + master['master_uuid'] + '"';
+            }
+            {
+                // GET SYNONYMS
+                var synonyms_indicator = "";
+                var synonyms = this.locality_data.synonyms;
+                if (synonyms.length > 0) {
+                    synonyms_indicator += 'SYNONYMS</br>';
+                    for (var i = 0; i < synonyms.length; i++) {
+                        // synonym's attribute
+                        // check attribute
+                        var uuid = synonyms[i].uuid;
+                        var name = uuid;
+                        if (synonyms[i].name) {
+                            name = synonyms[i].name;
                         }
-                        indicator += 'class="master-uuid">' + master['master_name'] + '</span>';
-                        this.$locality_master_indicator.html(indicator);
-                        if (master['master_uuid'] != "") {
-                            $('#' + master['master_uuid']).click(function () {
-                                $APP.trigger('locality.map.click', {'locality_uuid': master['master_uuid']});
-                                $APP.trigger('set.hash.silent', {'locality': master['master_uuid']});
-                            })
+                        // render this
+                        var indicator = '<span id="' + uuid + '" class="master-uuid" onclick="synonyms_clicked(this)">' + name + '</span>';
+                        if (i < synonyms.length - 1) {
+                            indicator += ", ";
                         }
-                    } else {
-                        // HERE IS MASTER RENDERING
-                        this.$locality_master_input_flag.click();
-                        var synonyms = this.locality_data.synonyms;
-                        if (synonyms) {
-                            this.$locality_master_indicator.html('SYNONYMS</br>');
-                            for (var i = 0; i < synonyms.length; i++) {
-                                // synonym's attribute
-                                // check attribute
-                                var name = "";
-                                var uuid = "";
-                                if (synonyms[i].values.name) {
-                                    name = synonyms[i].values.name;
-                                }
-                                if (synonyms[i].uuid) {
-                                    uuid = synonyms[i].uuid;
-                                }
-                                // render this
-                                var indicator = '<span ';
-                                if (uuid != "") {
-                                    indicator += 'id="' + uuid + '"';
-                                }
-                                indicator += 'class="master-uuid">' + name + '</span>';
-                                if (i < synonyms.length - 1) {
-                                    indicator += ", ";
-                                }
-                                this.$locality_master_indicator.append(indicator);
-                                if (uuid != "") {
-                                    $('#' + uuid).click(function () {
-                                        $APP.trigger('locality.map.click', {'locality_uuid': uuid});
-                                        $APP.trigger('set.hash.silent', {'locality': uuid});
-                                    })
-                                }
-                            }
-                        } else {
-                            this.$locality_master_indicator.hide();
-                        }
+                        synonyms_indicator += indicator;
                     }
+                }
+                var synonyms = this.locality_data.unconfirmed_synonyms;
+                if (synonyms.length > 0) {
+                    synonyms_indicator += 'SYNONYMS</br>';
+                    for (var i = 0; i < synonyms.length; i++) {
+                        // synonym's attribute
+                        // check attribute
+                        var uuid = synonyms[i].uuid;
+                        var name = uuid;
+                        if (synonyms[i].name) {
+                            name = synonyms[i].name;
+                        }
+                        // render this
+                        var indicator = '<span id="' + uuid + '" class="master-uuid" onclick="synonyms_clicked(this)">' + name + '</span>';
+                        if (i < synonyms.length - 1) {
+                            indicator += ", ";
+                        }
+                        synonyms_indicator += indicator;
+                    }
+                }
+
+                this.$locality_master_indicator.html(synonyms_indicator);
+                if (synonyms_indicator.length == 0) {
+                    this.$locality_master_indicator.hide();
                 }
             }
 
@@ -1228,6 +1189,9 @@ window.LocalitySidebar = (function () {
             $APP.on('sidebar.split-event', function (evt, payload) {
                 self.$defining_hours_input_result.html(self.getDefiningHoursFormat()["format2"]);
             });
+            $APP.on('sidebar.report-duplication', function (evt, payload) {
+                self.reportDuplication(payload.uuid);
+            });
         },
         onchange: function (element) {
             if (element.id == this.$coordinates_lat_input.attr('id')) {
@@ -1271,6 +1235,31 @@ window.LocalitySidebar = (function () {
             } else {
                 this.$tag_input_error_warning.show();
             }
+        },
+        reportDuplication: function (uuid) {
+            $.ajax({
+                url: "/report",
+                method: 'POST',
+                data: {
+                    master: this.locality_uuid,
+                    synonym: uuid,
+                },
+                beforeSend: function (xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                },
+                success: function (data) {
+                    if (data.success) {
+                        alert(data.success);
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                },
+                error: function (request, error) {
+
+                }
+            })
         }
     }
 

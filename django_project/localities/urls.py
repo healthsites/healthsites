@@ -3,7 +3,8 @@ from django.conf.urls import patterns, url
 from .views import (
     LocalitiesLayer,
     LocalityInfo,
-    DataLoaderView
+    LocalityReportDuplicate,
+    DataLoaderView,
 )
 
 urlpatterns = patterns(
@@ -73,4 +74,12 @@ urlpatterns = patterns(
     ),
 
     # url(r'^search$', SearchView.as_view(), name='search')
+    # -------------------------------------------------------------------------
+    # MASTERIZATION URLS
+    # -------------------------------------------------------------------------
+    url(
+        r'^report$',
+        LocalityReportDuplicate.as_view(),
+        name='api_locality_synonyms'
+    ),
 )

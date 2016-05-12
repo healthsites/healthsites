@@ -118,7 +118,7 @@ def get_country_statistic(query):
 
 
 def get_heathsites_master():
-    return Locality.objects.filter(master=None)
+    return Locality.objects.filter(is_master=True)
 
 
 def get_heathsites_master_by_polygon(request, polygon):
@@ -155,7 +155,7 @@ def get_heathsites_master_by_page(page):
 
 
 def get_heathsites_synonyms():
-    healthsites = Locality.objects.exclude(master=None)
+    healthsites = Locality.objects.all()
     output = []
     index = 1;
     for healthsite in healthsites:
@@ -168,7 +168,7 @@ def get_heathsites_synonyms():
 
 def get_json_from_request(request):
     # special request:
-    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid", "master_uuid"]
+    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid"]
 
     mstring = []
     json = {}
@@ -258,10 +258,6 @@ def get_locality_detail(locality, changes):
         try:
             localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
             for archive in localityArchives:
-                locality.master = archive.master
-                new_obj_repr = locality.repr_dict()
-                if 'master' in new_obj_repr:
-                    obj_repr['master'] = new_obj_repr['master']
                 obj_repr['geom'] = (archive.geom.x, archive.geom.y)
                 obj_repr['history'] = True
         except LocalityArchive.DoesNotExist:
@@ -280,23 +276,6 @@ def get_locality_detail(locality, changes):
             pass
     return obj_repr
 
-
-def get_locality_master(master_uuid, locality):
-    # get master
-    #  ------------------------------------------------------
-    try:
-        if master_uuid == "None":
-            master = None
-        elif master_uuid == "":
-            master = locality
-        else:
-            master = Locality.objects.get(uuid=master_uuid)
-            if master.master:
-                master = master.master
-    except Locality.DoesNotExist:
-        return Locality.DoesNotExist
-    return master
-    #  ------------------------------------------------------
 
 def locality_create(request):
     if request.method == 'POST':
@@ -322,20 +301,6 @@ def locality_create(request):
                     float(json_request['long']), float(json_request['lat'])
                 )
 
-                loc.save()
-
-                # get master
-                #  ------------------------------------------------------
-                master_uuid = ""
-                if 'master_uuid' in json_request:
-                    master_uuid = json_request['master_uuid']
-
-                master = get_locality_master(master_uuid, loc)
-                if master == Locality.DoesNotExist:
-                    return {"success": False,
-                            "reason": "master is not found"}
-
-                loc.master = master
                 loc.save()
                 #  ------------------------------------------------------
                 loc.set_values(json_request, request.user, tmp_changeset)
@@ -369,20 +334,6 @@ def locality_edit(request):
                     social_user=request.user
                 )
                 locality.changeset = tmp_changeset
-
-                # get master
-                #  ------------------------------------------------------
-                master_uuid = ""
-                if 'master_uuid' in json_request:
-                    master_uuid = json_request['master_uuid']
-
-                master = get_locality_master(master_uuid, locality)
-                if master == Locality.DoesNotExist:
-                    return {"success": False,
-                            "reason": "master is not found"}
-
-                locality.master = master
-                #  ------------------------------------------------------
 
                 locality.save()
                 locality.set_values(json_request, request.user, tmp_changeset)
@@ -501,69 +452,58 @@ def locality_updates(locality_id, date):
 
 def get_locality_by_spec_data(spec, data, uuid):
     try:
+        locality = Locality.objects.get(uuid=uuid)
+        localities = get_heathsites_master().filter(
+            geom__distance_lte=(locality.geom, D(mi=100))
+        ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
+    except Locality.DoesNotExist:
+        localities = get_heathsites_master()
+
+    try:
         if spec == "attribute":
             if uuid:
-                try:
-                    locality = Locality.objects.get(uuid=uuid)
-                    localities = Locality.objects.filter(
-                        geom__distance_lte=(locality.geom, D(mi=100))
-                    ).exclude(uuid=uuid).filter(master=None).distance(locality.geom).order_by('-distance')
-                    localities = Value.objects.filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
-                except Locality.DoesNotExist:
-                    localities = Value.objects.filter(
-                        data__icontains=data).values('locality')
+                localities = Value.objects.filter(
+                    data__icontains=data).filter(locality__in=localities).values('locality')[:5]
             else:
                 localities = Value.objects.filter(
                     data__icontains=data).values('locality')
         else:
             if uuid:
-                try:
-                    locality = Locality.objects.get(uuid=uuid)
-                    localities = Locality.objects.filter(
-                        geom__distance_lte=(locality.geom, D(mi=100))
-                    ).exclude(uuid=uuid).filter(master=None).distance(locality.geom).order_by('-distance')
-                    localities = Value.objects.filter(
-                        specification__attribute__key=spec).filter(
-                        data__icontains=data).filter(locality__in=localities).values('locality')[:5]
-                except Locality.DoesNotExist:
-                    localities = Value.objects.filter(
-                        specification__attribute__key=spec).filter(
-                        data__icontains=data).values('locality')
+                localities = Value.objects.filter(
+                    specification__attribute__key=spec).filter(
+                    data__icontains=data).filter(locality__in=localities).values('locality')[:5]
             else:
                 localities = Value.objects.filter(
                     specification__attribute__key=spec).filter(
                     data__icontains=data).values('locality')
-        return localities
     except Value.DoesNotExist:
-        return []
+        pass
+
+    return Locality.objects.filter(id__in=localities)
 
 
 def search_locality_by_spec_data(spec, data, uuid):
     localities = get_locality_by_spec_data(spec, data, uuid)
-    if localities == []:
-        return []
-    else:
-        output = get_statistic(localities)
-        output['locality_name'] = ""
-        output['location'] = 0.0
-        if uuid:
-            try:
-                locality = Locality.objects.get(uuid=uuid)
-                locality_name = Value.objects.filter(locality=locality).filter(
-                    specification__attribute__key='name')[0].data
-                output['locality_name'] = locality_name
-                output['location'] = {'x': "%f" % locality.geom.x, 'y': "%f" % locality.geom.y}
-            except Locality.DoesNotExist:
-                pass
-        return output
+    output = get_statistic(localities)
+    output['locality_name'] = ""
+    output['location'] = 0.0
+    if uuid:
+        try:
+            locality = Locality.objects.get(uuid=uuid)
+            locality_name = Value.objects.filter(locality=locality).filter(
+                specification__attribute__key='name')[0].data
+            output['locality_name'] = locality_name
+            output['location'] = {'x': "%f" % locality.geom.x, 'y': "%f" % locality.geom.y}
+        except Locality.DoesNotExist:
+            pass
+    return output
 
 
 def search_locality_by_tag(query):
     try:
         localities = Value.objects.filter(
             specification__attribute__key='tags').filter(data__icontains="|" + query + "|").values('locality')
-        localities = Locality.objects.filter(id__in=localities).filter(master=None)
+        localities = get_heathsites_master().filter(id__in=localities)
         return get_statistic(localities)
     except Value.DoesNotExist:
         return []
