@@ -63,6 +63,7 @@ window.LocalitySidebar = (function () {
         this.$tag_data = $('#tag-data');
         this.$defining_hours_section = $('#locality-operating-hours-section');
         this.$defining_hours = $('#locality-operating-hours');
+        this.$report_flag = $('#report-flag');
 
         // form
         this.$form = $('#locality-form');
@@ -139,6 +140,7 @@ window.LocalitySidebar = (function () {
         info_fields.push(this.$tag_data);
         info_fields.push(this.$defining_hours_section);
         info_fields.push(this.$locality_master);
+        info_fields.push(this.$report_flag);
 
         // set editfield array
         edit_fields.push(this.$cancelButton);
@@ -304,7 +306,7 @@ window.LocalitySidebar = (function () {
                     fields += '&phone=' + encodeURIComponent(phone) + '&lat=' + lat + '&long=' + long +
                         '&scope_of_service=' + encodeURIComponent(scope) +
                         "&ancillary_services=" + encodeURIComponent(ancillary) + "&activities=" + encodeURIComponent(activities) + "&inpatient_service=" + encodeURIComponent(inpatient_service) +
-                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags) + "&master_uuid=" + encodeURIComponent(master_uuid);
+                        "&staff=" + encodeURIComponent(staffs) + "&notes=" + encodeURIComponent(notes) + "&tags=" + encodeURIComponent(tags);
 
                     // GET DEFINING HOURS
                     fields += "&defining_hours=" + that.getDefiningHoursFormat()["format1"];
@@ -468,7 +470,7 @@ window.LocalitySidebar = (function () {
                 that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
             });
             $('input.timepicker').timepicker({
-                timeFormat: 'HH:mm',
+                timeFormat: 'H:i',
                 interval: 15, // 15 minutes});
                 change: function (time) {
                     that.$defining_hours_input_result.html(that.getDefiningHoursFormat()["format2"]);
