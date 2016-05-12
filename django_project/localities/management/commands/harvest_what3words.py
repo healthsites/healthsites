@@ -7,7 +7,7 @@ import json
 import requests
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from localities.models import Attribute, Domain, Changeset, Locality, Specification
+from localities.models import Attribute, Domain, Changeset, Locality, Specification, Value
 
 
 class Command(BaseCommand):
@@ -34,9 +34,15 @@ class Command(BaseCommand):
         numbers = len(localities)
         index = 1
         for locality in localities:
-            print "%d / %d" % (index, numbers)
-            locality.update_what3words(user, changeset)
-            index += 1
+            try:
+                value = Value.objects.get(
+                    specification__attribute__key='what3words',
+                    locality=locality)
+                print value.locality, value.data
+            except Value.DoesNotExist:
+                print "%d / %d" % (index, numbers)
+                locality.update_what3words(user, changeset)
+                index += 1
 
     def check_what3words_attribute(self, user):
         try:

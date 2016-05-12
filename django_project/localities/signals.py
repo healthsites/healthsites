@@ -109,24 +109,6 @@ def locality_archive_handler(sender, instance, created, raw, **kwargs):
     archive.upstream_id = instance.upstream_id
     archive.geom = instance.geom
 
-    try:
-        # update what3words
-        # get user that responsibility to change this
-        user = None
-        try:
-            user = User.objects.get(username="sharehealthdata")
-        except User.DoesNotExist:
-            try:
-                user = User.objects.get(username="admin")
-            except User.DoesNotExist:
-                pass
-
-        # create changeset
-        changeset = Changeset.objects.create(social_user=user)
-        instance.update_what3words(user, changeset)
-    except Exception as e:
-        print e
-
 
 @receiver(post_save, sender=Value)
 def value_archive_handler(sender, instance, created, raw, **kwargs):

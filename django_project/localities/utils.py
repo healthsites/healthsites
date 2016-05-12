@@ -305,6 +305,7 @@ def locality_create(request):
                 #  ------------------------------------------------------
                 loc.set_values(json_request, request.user, tmp_changeset)
 
+                loc.update_what3words(request.user, tmp_changeset)
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
                 regenerate_cache_cluster.delay()
 
@@ -343,6 +344,8 @@ def locality_edit(request):
                 # if location is changed
                 new_geom = [locality.geom.x, locality.geom.y]
                 if new_geom != old_geom:
+                    locality.update_what3words(request.user, tmp_changeset)
+                    regenerate_cache.delay(tmp_changeset.pk, locality.pk)
                     regenerate_cache_cluster.delay()
 
                 return {"success": json_request['is_valid'], "uuid": json_request['uuid'], "reason": ""}
