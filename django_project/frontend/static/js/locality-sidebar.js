@@ -513,7 +513,10 @@ window.LocalitySidebar = (function () {
                 }
                 var synonyms = this.locality_data.unconfirmed_synonyms;
                 if (synonyms.length > 0) {
-                    synonyms_indicator += 'SYNONYMS</br>';
+                    if (synonyms_indicator.length > 0) {
+                        synonyms_indicator += "<br>";
+                    }
+                    synonyms_indicator += 'POTENTIAL SYNONYMS</br>';
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
                         // check attribute
@@ -530,7 +533,7 @@ window.LocalitySidebar = (function () {
                         synonyms_indicator += indicator;
                     }
                 }
-
+                console.log(synonyms_indicator);
                 this.$locality_master_indicator.html(synonyms_indicator);
                 if (synonyms_indicator.length == 0) {
                     this.$locality_master_indicator.hide();
