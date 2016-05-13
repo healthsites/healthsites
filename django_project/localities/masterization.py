@@ -15,17 +15,21 @@ def report_locality_as_unconfirmed_synonym(locality_id, master_id):
         locality = Locality.objects.get(id=locality_id)
         master = Locality.objects.get(id=master_id)
         try:
+            SynonymLocalities.objects.get(locality=master, synonym=locality)
+            return False
+        except SynonymLocalities.DoesNotExist:
+            pass
+
+        try:
             UnconfirmedSynonym.objects.get(locality=master, synonym=locality)
         except UnconfirmedSynonym.DoesNotExist:
             UnconfirmedSynonym(locality=master, synonym=locality).save()
         return True
     except Locality.DoesNotExist:
-        return False
-    except Exception as e:
-        print e
+        raise Locality.DoesNotExist
 
 
-def reject_unnconfirmed_synonym(id):
+def reject_unconfirmed_synonym(id):
     # id = unconfirmed synonyms relationship id
     # reject unconfirmed synonym
     try:
@@ -83,17 +87,24 @@ def downgrade_master_as_synonyms(locality_id, master_id):
             locality.is_master = False
             locality.save()
 
-        promote_synonym_as_master(master_id)
-        # create synonym relationship
+        # check if master is a synonym
         try:
-            SynonymLocalities.objects.get(locality=master, synonym=locality)
+            synonym = SynonymLocalities.objects.get(synonym=master)
+            master = synonym.locality
         except SynonymLocalities.DoesNotExist:
-            SynonymLocalities(locality=master, synonym=locality).save()
+            pass
 
-        # check all of this other synonyms that this locality as master
-        for synonym in SynonymLocalities.objects.filter(locality=locality):
-            synonym.locality = master
-            synonym.save()
-        return True
+        promote_synonym_as_master(master.id)
+        try:
+            # update synonym relationship
+            SynonymLocalities.objects.get(synonym=locality)
+            # just one synonym
+            for synonym in SynonymLocalities.objects.filter(locality=locality):
+                synonym.locality = master
+                synonym.save()
+            return True
+        except SynonymLocalities.DoesNotExist:
+            # create synonym relationship
+            SynonymLocalities(locality=master, synonym=locality).save()
     except Locality.DoesNotExist:
         return False

@@ -253,23 +253,6 @@ class Locality(UpdateMixin, ChangesetMixin):
         """
         Basic locality representation, as a dictionary
         """
-        # get synonyms
-        synonyms = []
-        for val in SynonymLocalities.objects.filter(locality_id=self.id):
-            synonym_uuid = val.synonym.uuid
-            synonym_name = synonym_uuid
-            if 'name' in val.synonym.repr_dict()['values']:
-                synonym_name = val.synonym.repr_dict()['values']['name']
-            synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
-
-        # get unconfirmed synonyms
-        unconfirmed_synonyms = []
-        for val in UnconfirmedSynonym.objects.filter(locality_id=self.id):
-            synonym_uuid = val.synonym.uuid
-            synonym_name = synonym_uuid
-            if 'name' in val.synonym.repr_dict()['values']:
-                synonym_name = val.synonym.repr_dict()['values']['name']
-            unconfirmed_synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
 
         dict = {
             u'uuid': self.uuid,
@@ -277,8 +260,6 @@ class Locality(UpdateMixin, ChangesetMixin):
                 val.specification.attribute.key: val.data
                 for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact='')
                 },
-            u'synonyms': synonyms,
-            u'unconfirmed_synonyms': unconfirmed_synonyms,
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
             u'date_modified': self.changeset.created,

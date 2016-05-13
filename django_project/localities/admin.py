@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from masterization import promote_unconfirmed_synonym, reject_unnconfirmed_synonym
+from masterization import promote_unconfirmed_synonym, reject_unconfirmed_synonym
 from .models import (
     Attribute,
     Changeset,
@@ -74,7 +74,7 @@ admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
 class LocalityAdmin(admin.ModelAdmin):
     list_display = (
         'upstream_id', 'locality_uuid', 'locality_name', 'locality_location', 'is_master',)
-    readonly_fields = ('upstream_id', 'locality_uuid', 'core_field', 'locality_location')
+    readonly_fields = ('upstream_id', 'locality_uuid', 'core_field', 'locality_location', 'is_master')
     fieldsets = (
         ('Masterization', {
             'fields': (
@@ -172,7 +172,7 @@ def promote_potential_synonyms(modeladmin, request, queryset):
 
 def reject_potential_synonyms(modeladmin, request, queryset):
     for unconfirmed_synonym in queryset:
-        reject_potential_synonyms(unconfirmed_synonym.id)
+        reject_unconfirmed_synonym(unconfirmed_synonym.id)
 
 
 class UnconfirmedSynonymAdmin(admin.ModelAdmin):
