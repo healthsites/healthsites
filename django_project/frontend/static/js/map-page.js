@@ -255,6 +255,7 @@ function toogle_popup() {
             $popup.hide();
         });
     } else {
+        $("#report-popup-text").val("");
         $popup.show();
         $popup.animate({
             opacity: 1.0,
@@ -262,7 +263,6 @@ function toogle_popup() {
         }, 200, function () {
         });
     }
-    $("")
 }
 
 function synonyms_clicked(element) {
