@@ -15,7 +15,8 @@ from django.contrib.gis.measure import D
 from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Max
-from localities.models import Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification, User, \
+from localities.models import Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification, \
+    SynonymLocalities, UnconfirmedSynonym, User, \
     Value, ValueArchive
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
 from social_users.utils import get_profile
@@ -228,7 +229,46 @@ def get_json_from_request(request):
 def get_locality_detail(locality, changes):
     # count completeness based attributes
     obj_repr = locality.repr_dict()
+    # get master
+    masters = []
+    for val in SynonymLocalities.objects.filter(synonym_id=locality.id):
+        master_uuid = val.locality.uuid
+        master_name = master_uuid
+        if 'name' in val.locality.repr_dict()['values']:
+            master_name = val.locality.repr_dict()['values']['name']
+        masters.append({'name': master_name, 'uuid': master_uuid})
 
+    # get synonyms
+    synonyms = []
+    for val in SynonymLocalities.objects.filter(locality_id=locality.id):
+        synonym_uuid = val.synonym.uuid
+        synonym_name = synonym_uuid
+        if 'name' in val.synonym.repr_dict()['values']:
+            synonym_name = val.synonym.repr_dict()['values']['name']
+        synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
+
+    # get potential master
+    potential_masters = []
+    for val in UnconfirmedSynonym.objects.filter(synonym_id=locality.id):
+        master_uuid = val.locality.uuid
+        master_name = master_uuid
+        if 'name' in val.locality.repr_dict()['values']:
+            master_name = val.locality.repr_dict()['values']['name']
+        potential_masters.append({'name': master_name, 'uuid': master_uuid})
+
+    # get unconfirmed synonyms
+    unconfirmed_synonyms = []
+    for val in UnconfirmedSynonym.objects.filter(locality_id=locality.id):
+        synonym_uuid = val.synonym.uuid
+        synonym_name = synonym_uuid
+        if 'name' in val.synonym.repr_dict()['values']:
+            synonym_name = val.synonym.repr_dict()['values']['name']
+        unconfirmed_synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
+
+    obj_repr[u'masters'] = masters
+    obj_repr[u'synonyms'] = synonyms
+    obj_repr[u'potential_masters'] = potential_masters
+    obj_repr[u'unconfirmed_synonyms'] = unconfirmed_synonyms
     # get latest update
     try:
         updates = []

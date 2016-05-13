@@ -492,8 +492,36 @@ window.LocalitySidebar = (function () {
             {
                 // GET SYNONYMS
                 var synonyms_indicator = "";
+                //-----------------------------------------
+                // SHOW MASTERS
+                //-----------------------------------------
+                var synonyms = this.locality_data.masters;
+                if (synonyms.length > 0) {
+                    synonyms_indicator += 'MASTER</br>';
+                    for (var i = 0; i < synonyms.length; i++) {
+                        // synonym's attribute
+                        // check attribute
+                        var uuid = synonyms[i].uuid;
+                        var name = uuid;
+                        if (synonyms[i].name) {
+                            name = synonyms[i].name;
+                        }
+                        // render this
+                        var indicator = '<span id="' + uuid + '" class="master-uuid" onclick="synonyms_clicked(this)">' + name + '</span>';
+                        if (i < synonyms.length - 1) {
+                            indicator += ", ";
+                        }
+                        synonyms_indicator += indicator;
+                    }
+                }
+                //-----------------------------------------
+                // SHOW SYNONYMS
+                //-----------------------------------------
                 var synonyms = this.locality_data.synonyms;
                 if (synonyms.length > 0) {
+                    if (synonyms_indicator.length > 0) {
+                        synonyms_indicator += "<br>";
+                    }
                     synonyms_indicator += 'SYNONYMS</br>';
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
@@ -511,6 +539,34 @@ window.LocalitySidebar = (function () {
                         synonyms_indicator += indicator;
                     }
                 }
+                //-----------------------------------------
+                // SHOW POTENTIAL MASTERS
+                //-----------------------------------------
+                var synonyms = this.locality_data.potential_masters;
+                if (synonyms.length > 0) {
+                    if (synonyms_indicator.length > 0) {
+                        synonyms_indicator += "<br>";
+                    }
+                    synonyms_indicator += 'POTENTIAL MASTERS</br>';
+                    for (var i = 0; i < synonyms.length; i++) {
+                        // synonym's attribute
+                        // check attribute
+                        var uuid = synonyms[i].uuid;
+                        var name = uuid;
+                        if (synonyms[i].name) {
+                            name = synonyms[i].name;
+                        }
+                        // render this
+                        var indicator = '<span id="' + uuid + '" class="master-uuid" onclick="synonyms_clicked(this)">' + name + '</span>';
+                        if (i < synonyms.length - 1) {
+                            indicator += ", ";
+                        }
+                        synonyms_indicator += indicator;
+                    }
+                }
+                //-----------------------------------------
+                // SHOW UNCONFIRMED SYNONYMS
+                //-----------------------------------------
                 var synonyms = this.locality_data.unconfirmed_synonyms;
                 if (synonyms.length > 0) {
                     if (synonyms_indicator.length > 0) {
@@ -533,7 +589,6 @@ window.LocalitySidebar = (function () {
                         synonyms_indicator += indicator;
                     }
                 }
-                console.log(synonyms_indicator);
                 this.$locality_master_indicator.html(synonyms_indicator);
                 if (synonyms_indicator.length == 0) {
                     this.$locality_master_indicator.hide();
@@ -856,7 +911,7 @@ window.LocalitySidebar = (function () {
                 }
             }
             $.getJSON(url, function (data) {
-                console.log(data);
+                hide_popup();
                 self.locality_data = data;
                 self.$sidebar.trigger('show-info');
                 if (payload) {
@@ -1244,8 +1299,8 @@ window.LocalitySidebar = (function () {
                 url: "/report",
                 method: 'POST',
                 data: {
-                    master: this.locality_uuid,
-                    synonym: uuid,
+                    master: uuid,
+                    synonym: this.locality_uuid,
                 },
                 beforeSend: function (xhr, settings) {
                     if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {

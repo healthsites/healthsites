@@ -221,3 +221,52 @@ function unsplit(element) {
     $APP.trigger('sidebar.split-event');
 
 }
+function prerender_popup() {
+    var $popup = $("#report-popup");
+    $popup.css("margin-top", ($popup.height() + 20) * -1)
+    $("#report-button").click(function () {
+        var uuid = $("#report-popup-text").val();
+        if (uuid.length > 0) {
+            if (uuid != null) {
+                $APP.trigger('sidebar.report-duplication', {'uuid': uuid});
+            }
+            toogle_popup();
+        }
+    });
+    $("#cancel-report-button").click(function () {
+        toogle_popup();
+    });
+}
+function hide_popup() {
+    if ($("#report-popup").is(":visible")) {
+        toogle_popup();
+    }
+}
+function toogle_popup() {
+    var $popup = $("#report-popup");
+    var marginTop = 20;
+    var height = $popup.height();
+    if ($popup.is(":visible")) {
+        $popup.animate({
+            opacity: 0.0,
+            marginTop: (height + marginTop) * -1,
+        }, 200, function () {
+            // Animation complete.
+            $popup.hide();
+        });
+    } else {
+        $popup.show();
+        $popup.animate({
+            opacity: 1.0,
+            marginTop: marginTop,
+        }, 200, function () {
+        });
+    }
+    $("")
+}
+
+function synonyms_clicked(element) {
+    var uuid = $(element).attr('id');
+    $APP.trigger('locality.map.click', {'locality_uuid': uuid});
+    $APP.trigger('set.hash.silent', {'locality': uuid});
+}
