@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from optparse import make_option
 
-from core.utilities import extract_time
-from django.core.management.base import BaseCommand, CommandError
-from localities.models import Changeset, Locality, UnconfirmedSynonym
-from localities.map_clustering import cluster
 from django.contrib.auth.models import User
+from django.core.management.base import BaseCommand, CommandError
+from localities.models import Locality
+from localities.map_clustering import cluster
+from localities.masterization import report_locality_as_unconfirmed_synonym
 
 
 class Command(BaseCommand):
@@ -54,11 +54,5 @@ class Command(BaseCommand):
             if loc_cluster['count'] > 1:
                 for potential_master in loc_cluster['localities']:
                     for potential_synonym in loc_cluster['localities']:
-                        print potential_master, potential_synonym
                         if potential_master != potential_synonym:
-                            try:
-                                UnconfirmedSynonym.objects.get(
-                                    locality=potential_master, synonym=potential_synonym)
-                            except UnconfirmedSynonym.DoesNotExist:
-                                UnconfirmedSynonym(locality=potential_master,
-                                                   synonym=potential_synonym).save()
+                            report_locality_as_unconfirmed_synonym(potential_synonym.id, potential_master.id)
