@@ -249,8 +249,11 @@
             <div id="locality-info" class="details" style="display: none">
                 <div class="header">
                     <h1><span id="locality-name">No Name</span>
-                    <span id="report-flag" title="Report this healthsite as duplication"
-                          onclick="toogle_popup()">R</span></h1>
+                        {% if user.is_authenticated %}
+                            <span id="report-flag" title="Report this healthsite as duplication"
+                                  onclick="toogle_popup()">R</span>
+                        {% endif %}
+                    </h1>
                     <input type="text" id="locality-name-input" name="name"
                            placeholder="Locality name" style="display: none; width: 100%"/>
 
