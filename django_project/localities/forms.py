@@ -134,10 +134,10 @@ class DataLoaderForm(models.ModelForm):
 
         if self.user.is_staff:
             self.fields['organisations'] = forms.ChoiceField(
-            choices=[(org.id, org.name) for org in Organisation.objects.all()])
+            choices=[(org.id, org.name) for org in Organisation.objects.all().order_by('name')])
         else:
             self.fields['organisations'] = forms.ChoiceField(
-                choices=[(org.id, org.name) for org in Organisation.objects.filter(trusted_users__user=self.user)])
+                choices=[(org.id, org.name) for org in Organisation.objects.filter(trusted_users__user=self.user).order_by('name')])
 
     def save(self, commit=True):
         """Save method.

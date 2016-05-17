@@ -542,7 +542,7 @@ class DataLoader(models.Model):
     UPDATE_DATA_CODE = 2
 
     DATA_LOADER_MODE_CHOICES = (
-        (REPLACE_DATA_CODE, 'Replace Data'),
+        (REPLACE_DATA_CODE, 'Replace/Insert Data'),
         (UPDATE_DATA_CODE, 'Update Data')
     )
 
