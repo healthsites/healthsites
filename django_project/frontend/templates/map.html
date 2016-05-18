@@ -33,7 +33,7 @@
     <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css"
           media="screen, projection"/>
-    <link href="https://wvega.github.io/timepicker/resources/jquery-timepicker/jquery.timepicker.min.css"
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.css"
           rel="stylesheet" type="text/css"
           media="screen, projection"/>
     <link rel="shortcut icon" href="static/img/favicon.ico" type="image/x-icon">
@@ -101,7 +101,8 @@
                    onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-google-plus"></i>
                 </a>
-                <a class="linkedin-href" onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
+                <a class="linkedin-href"
+                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
                     <i class="fa fa-linkedin"></i>
                 </a>
             </div>
@@ -134,6 +135,10 @@
                 <div class="option"><span></span><input type="radio" name="option" id="radio-place"
                                                         value="place"><span></span><label class="option"
                                                                                           for="radio-healthsite">place</label>
+                </div>
+                <div class="option"><span></span><input type="radio" name="option" id="radio-what3words"
+                                                        value="what3words"><span></span><label class="option"
+                                                                                               for="radio-what3words">what3words</label>
                 </div>
             </div>
             <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
@@ -243,7 +248,12 @@
             </div>
             <div id="locality-info" class="details" style="display: none">
                 <div class="header">
-                    <h1 id="locality-name">No Name</h1>
+                    <h1><span id="locality-name">No Name</span>
+                        {% if user.is_authenticated %}
+                            <span id="report-flag" title="Report this healthsite as duplication"
+                                  onclick="toogle_popup()">R</span>
+                        {% endif %}
+                    </h1>
                     <input type="text" id="locality-name-input" name="name"
                            placeholder="Locality name" style="display: none; width: 100%"/>
 
@@ -258,11 +268,6 @@
                     <div class="line">
                         <div id="locality-master">
                             <div id="locality-master-indicator" class="master">MASTER</div>
-                        </div>
-                        <div id="locality-master-input" class="master" style="display: none">
-                            <input id="locality-master-input-flag" type="checkbox">master
-                            <input id="locality-master-input-text-box" type="text" placeholder="uuid"
-                                   style="margin-bottom: 10px;margin-left: 20px"/>
                         </div>
                     </div>
                     <div id="line-updates" class="line updates">
@@ -302,15 +307,17 @@
                             <p class="address" id="locality-physical-address">54, Praed st, London, W2 NY<br/>
                                 Unighted Kingdom</p>
                             <input type="text" id="locality-physical-address-input" name="physical_address"
-                                   placeholder="Physical Address" style="display: none"/>
+                                   placeholder="Physical Address" style="display: none; margin-bottom: 5px;"/>
 
+                            <p class="coordinates" style="margin-bottom: 5px"><b id="locality-what3words">test</b></p>
                             <p class="coordinates" id="locality-coordinates">lat: 0, long: 0</p>
 
-                            <p class="coordinates" id="locality-coordinates-input" style="display: none">lat: <input
-                                    type="number"
-                                    id="locality-coordinates-lat-input"
-                                    style="width: 80px"
-                                    min="-180" max="180" onchange="onChange(this)"/>,
+                            <p class="coordinates" id="locality-coordinates-input"
+                               style="display: none; margin-top: 5px;">
+                                lat: <input type="number"
+                                            id="locality-coordinates-lat-input"
+                                            style="width: 80px"
+                                            min="-180" max="180" onchange="onChange(this)"/>,
                                 long: <input type="number"
                                              id="locality-coordinates-long-input" style="width: 80px" min="-180"
                                              max="180" onchange="onChange(this)"/></p>
@@ -319,12 +326,14 @@
                             <p>
                                 <i class="fa fa-phone"></i>
                                 <span id="locality-phone" class="call">0141 636 6116</span>
-                                <span id="locality-phone-input" style="display: none">+<input type="number"
-                                                                                              id="locality-phone-input-int"
-                                                                                              style="width: 50px; margin-right: 5px"
-                                                                                              onkeypress="onKeyPress(this)"/><input
-                                        type="number"
-                                        id="locality-phone-input-number"/></span>
+                                <span id="locality-phone-input" style="display: none">+
+                                    <input type="number"
+                                           id="locality-phone-input-int"
+                                           style="width: 50px; margin-right: 5px"
+                                           onkeypress="onKeyPress(this)"/>
+                                    <input type="number"
+                                           id="locality-phone-input-number"/>
+                                </span>
                             </p>
 
                             <p id="locality-operating-hours-section">
@@ -342,9 +351,7 @@
                                             style="cursor: pointer; margin-right: 10px"><a>24/5</a></span>
                                     </div>
                                     <hr>
-                                    <table id="locality-operating-hours-input-table" style="width:100%">
-
-                                    </table>
+                                    <table id="locality-operating-hours-input-table" style="width:100%"></table>
                                     <hr>
                                     <div>
                                         <strong>RESULT :</strong><br>
@@ -355,7 +362,8 @@
                             </div>
 
                             <div id="locality-url">
-                                <p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href=""></a></span></p>
+                                <p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href=""></a></span>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -400,13 +408,15 @@
                         <div class="data">
                             <p id="locality-inpatient-service"></p>
 
-                            <p id="locality-inpatient-service-input" style="display: none"><input type="number"
-                                                                                                  id="locality-inpatient-service-full-input"
-                                                                                                  min="0"
-                                                                                                  style="width: 50px"/>
+                            <p id="locality-inpatient-service-input" style="display: none">
+                                <input type="number"
+                                       id="locality-inpatient-service-full-input"
+                                       min="0"
+                                       style="width: 50px"/>
                                 full
-                                time beds, <input type="number" id="locality-inpatient-service-part-input" min="0"
-                                                  style="width: 50px"/>
+                                time beds,
+                                <input type="number" id="locality-inpatient-service-part-input" min="0"
+                                       style="width: 50px"/>
                                 part time beds</p>
                         </div>
                     </div>
@@ -429,13 +439,15 @@
                         <div class="data">
                             <p id="locality-staff"></p>
 
-                            <p id="locality-staff-input" style="display: none"><input type="number"
-                                                                                      id="locality-staff-doctor-input"
-                                                                                      min="0"
-                                                                                      style="width: 50px"/>
-                                full time doctors, <input type="number" id="locality-staff-nurse-input"
-                                                          min="0"
-                                                          style="width: 50px"/>
+                            <p id="locality-staff-input" style="display: none">
+                                <input type="number"
+                                       id="locality-staff-doctor-input"
+                                       min="0"
+                                       style="width: 50px"/>
+                                full time doctors,
+                                <input type="number" id="locality-staff-nurse-input"
+                                       min="0"
+                                       style="width: 50px"/>
                                 full time nurses</p>
                         </div>
                     </div>
@@ -523,6 +535,23 @@
         <div class="map-page pad0x col-md-8">
             <div id="map">
             </div>
+            <div id="report-popup" style="display: none; opacity: 0.0">
+                please enter uuid of it's master or click marker of master
+                <input type="text" id="report-popup-text"
+                       placeholder="master's uuid"/>
+                <div style="width: 100%; margin-top: 20px">
+                    <div class="col-sm-6 button-left">
+                        <div id="report-button" class="button" style="cursor: pointer">
+                            report
+                        </div>
+                    </div>
+                    <div class="col-sm-6 button-right">
+                        <div id="cancel-report-button" class="button" style="cursor: pointer">
+                            cancel
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </form>
 </section>
@@ -540,7 +569,7 @@
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
 <script type="text/javascript"
-        src="https://wvega.github.io/timepicker/resources/jquery-timepicker/jquery.timepicker.min.js"></script>
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-timepicker/1.10.0/jquery.timepicker.min.js"></script>
 
 {% javascript 'project' %}
 {% javascript 'map' %}
@@ -558,6 +587,7 @@
     }
     var APP;
     $(document).ready(function () {
+        prerender_popup();
         // Set viewport if exist
         {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
             sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
@@ -575,7 +605,7 @@
         $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
         $(".facebook-href").attr("href", "https://www.facebook.com/sharer/sharer.php?u=" + baseURL);
         $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
-		$(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
+        $(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
 
         // checking default view
         var url = window.location.href;
@@ -658,6 +688,12 @@
         });
 
 
+        // check cookie for create mode from request
+        {% if new_geom %}
+            var new_geom = "{{ new_geom }}".split(",");
+            $APP.trigger('map.pan', {'location': [new_geom[0], new_geom[1]], 'zoom': 10});
+            $('#add-button').click();
+        {% endif %}
         // check cookie for create mode
         if (isLoggedIn) {
             var type = getCookie("type");
@@ -876,5 +912,6 @@
 </script>
 
 <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
+<p id="alert"></p>
 </body>
 </html>

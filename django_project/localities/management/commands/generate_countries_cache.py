@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from optparse import make_option
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from localities.models import Country, Locality
 import os
@@ -9,6 +9,7 @@ import json
 from django.conf import settings
 from localities.utils import get_statistic
 from django.core.serializers.json import DjangoJSONEncoder
+from localities.utils import get_heathsites_master
 
 
 class Command(BaseCommand):
@@ -18,12 +19,16 @@ class Command(BaseCommand):
 
         countries = Country.objects.all()
 
+        # check the folder
+        if not os.path.exists(settings.CLUSTER_CACHE_DIR):
+            os.makedirs(settings.CLUSTER_CACHE_DIR)
+
         try:
             # write world cache
             filename = os.path.join(
-                    settings.CLUSTER_CACHE_DIR,
-                    'world_statistic')
-            healthsites = Locality.objects.all()
+                settings.CLUSTER_CACHE_DIR,
+                'world_statistic')
+            healthsites = get_heathsites_master().all()
             output = get_statistic(healthsites)
             result = json.dumps(output, cls=DjangoJSONEncoder)
             file = open(filename, 'w')
@@ -39,11 +44,11 @@ class Command(BaseCommand):
 
                 # write country cache
                 filename = os.path.join(
-                        settings.CLUSTER_CACHE_DIR,
-                        country.name + '_statistic'
+                    settings.CLUSTER_CACHE_DIR,
+                    country.name + '_statistic'
                 )
-                healthsites = Locality.objects.in_polygon(
-                        polygons)
+                healthsites = get_heathsites_master().in_polygon(
+                    polygons)
                 output = get_statistic(healthsites)
                 result = json.dumps(output, cls=DjangoJSONEncoder)
                 file = open(filename, 'w')

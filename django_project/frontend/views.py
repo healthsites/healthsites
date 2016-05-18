@@ -16,7 +16,8 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, search_locality_by_tag
+from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, \
+    search_locality_by_tag
 from localities.models import Country, DataLoaderPermission, Value
 from social_users.utils import get_profile
 
@@ -70,8 +71,10 @@ class AboutView(TemplateView):
 class HelpView(TemplateView):
     template_name = 'help.html'
 
+
 class AttributionsView(TemplateView):
     template_name = 'attributions.html'
+
 
 def search_place(request, place):
     # getting country's polygon
@@ -112,28 +115,43 @@ def map(request):
         if option == 'place':
             map_url = reverse('map')
             return HttpResponseRedirect(
-                    map_url + "?place=%s" % search_query)
+                map_url + "?place=%s" % search_query)
+        elif option == 'what3words':
+            locality_values = Value.objects.filter(
+                specification__attribute__key='what3words').filter(
+                data=search_query)
+            if locality_values:
+                locality_value = locality_values[0]
+            else:
+                return render_to_response(
+                    'map.html',
+                    context_instance=RequestContext(request)
+                )
+            locality_uuid = locality_value.locality.uuid
+            map_url = reverse('map')
+            return HttpResponseRedirect(
+                map_url + "#!/locality/%s" % locality_uuid)
         elif option == 'healthsite':
             locality_values = Value.objects.filter(
-                    specification__attribute__key='name').filter(
-                    data=search_query)
+                specification__attribute__key='name').filter(
+                data=search_query)
             if locality_values:
                 locality_value = locality_values[0]
             else:
                 locality_values = Value.objects.filter(
-                        specification__attribute__key='name').filter(
-                        data__istartswith=search_query)
+                    specification__attribute__key='name').filter(
+                    data__istartswith=search_query)
                 if locality_values:
                     locality_value = locality_values[0]
                 else:
                     return render_to_response(
-                            'map.html',
-                            context_instance=RequestContext(request)
+                        'map.html',
+                        context_instance=RequestContext(request)
                     )
             locality_uuid = locality_value.locality.uuid
             map_url = reverse('map')
             return HttpResponseRedirect(
-                    map_url + "#!/locality/%s" % locality_uuid)
+                map_url + "#!/locality/%s" % locality_uuid)
     else:
         tag = request.GET.get('tag')
         country = request.GET.get('country')
@@ -152,7 +170,8 @@ def map(request):
         elif attribute:
             uuid = request.GET.get('uuid')
             result = search_locality_by_spec_data("attribute", attribute, uuid)
-            result['attribute'] = {'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],'location': result['location']}
+            result['attribute'] = {'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],
+                                   'location': result['location']}
         elif len(request.GET) == 0:
             result = search_place(request, place)
         else:
@@ -162,9 +181,15 @@ def map(request):
                     spec = item
                     data = request.GET.get(item)
                     result = search_locality_by_spec_data(spec, data, uuid)
-                    result['spec'] = {'spec': spec, 'data': data, 'uuid': uuid, 'name': result['locality_name'], 'location': result['location']}
+                    result['spec'] = {'spec': spec, 'data': data, 'uuid': uuid, 'name': result['locality_name'],
+                                      'location': result['location']}
+
+        if 'new_geom' in request.session:
+            print request.session['new_geom']
+            result["new_geom"] = request.session['new_geom']
+            del request.session['new_geom']
         return render_to_response(
-                'map.html',
-                result,
-                context_instance=RequestContext(request)
+            'map.html',
+            result,
+            context_instance=RequestContext(request)
         )

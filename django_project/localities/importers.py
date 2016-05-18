@@ -104,22 +104,6 @@ class CSVImporter:
                 return loc, True
 
     @staticmethod
-    def get_locality_master(master_upstream_id, locality):
-        LOG.info('Master %s', master_upstream_id)
-        try:
-            if master_upstream_id == "None":
-                master = None
-            elif master_upstream_id == "":
-                master = locality
-            else:
-                master = Locality.objects.filter(upstream_id=master_upstream_id).get()
-                if master.master:
-                    master = master.master
-        except Locality.DoesNotExist:
-            return Locality.DoesNotExist
-        return master
-
-    @staticmethod
     def _read_attr(row, attr):
         """
         Try to read attribute from a row
@@ -192,9 +176,9 @@ class CSVImporter:
         row_master_upstream_id = self._read_attr(
             row_data, self.attr_map['master_upstream_id']
         )
-        gen_master_upstream_id = row_master_upstream_id
-        if gen_master_upstream_id != "" and gen_master_upstream_id != "None":
-            gen_master_upstream_id = u'{}¶{}'.format(self.source_name, row_master_upstream_id)
+        row_master_upstream_id = row_master_upstream_id
+        if row_master_upstream_id != "" and row_master_upstream_id != "None":
+            row_master_upstream_id = u'{}¶{}'.format(self.source_name, row_master_upstream_id)
 
         # data link
         row_data_source = self._read_attr(
@@ -215,7 +199,7 @@ class CSVImporter:
                 'uuid': row_uuid,
                 'upstream_id': gen_upstream_id,
                 'geom': tmp_geom,
-                'master_upstream_id': gen_master_upstream_id,
+                'master_upstream_id': row_master_upstream_id,
                 'values': {
                     key: self._read_attr(row_data, row_val)
                     for key, row_val in self.attr_map['attributes'].iteritems()
@@ -262,13 +246,6 @@ class CSVImporter:
                 # save values for Locality
                 loc.set_values(values['values'], social_user=self.user)
 
-                # save master
-                try:
-                    loc.master = self.get_locality_master(values['master_upstream_id'], loc)
-                    loc.save()
-                except Exception as e:
-                    LOG.info('Error at making master for %s (%s)', loc.uuid, loc.id)
-
                 self.report['created'] += 1
             else:
                 # check location duplication
@@ -304,13 +281,9 @@ class CSVImporter:
                 else:
                     loc.set_values(values['values'], social_user=self.user)
 
-                # save master
-                try:
-                    loc.master = self.get_locality_master(values['master_upstream_id'], loc)
-                    loc.save()
-                except Exception as e:
-                    LOG.info('Error at making master for %s (%s)', loc.uuid, loc.id)
                 self.report['modified'] += 1
+
+            loc.update_what3words(loc.changeset.social_user, loc.changeset)
 
     def envelope(self, lon, lat):
         """Return polygon envelope for point (lon, lat)

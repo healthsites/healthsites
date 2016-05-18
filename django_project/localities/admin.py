@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+from masterization import promote_unconfirmed_synonym, reject_unconfirmed_synonym
 from .models import (
     Attribute,
     Changeset,
@@ -8,10 +9,11 @@ from .models import (
     Domain,
     Locality,
     Specification,
+    SynonymLocalities,
+    UnconfirmedSynonym,
     Value,
 )
 from .forms import DomainModelForm
-
 
 
 class ChangesetMixin():
@@ -71,9 +73,13 @@ admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
 
 class LocalityAdmin(admin.ModelAdmin):
     list_display = (
-        'upstream_id', 'locality_uuid', 'locality_name', 'locality_location',)
-    readonly_fields = ('upstream_id', 'locality_uuid', 'core_field', 'locality_location')
+        'upstream_id', 'locality_uuid', 'locality_name', 'locality_location', 'is_master',)
+    readonly_fields = ('upstream_id', 'locality_uuid', 'core_field', 'locality_location', 'is_master')
     fieldsets = (
+        ('Masterization', {
+            'fields': (
+                'is_master',),
+        }),
         ('Mandatory Attribute', {
             'fields': (
                 'upstream_id',
@@ -127,3 +133,75 @@ class LocalityAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Locality, LocalityAdmin)
+
+
+class SynonymLocalitiesAdmin(admin.ModelAdmin):
+    list_display = ('id', 'master', 'the_synonym')
+    readonly_fields = ('id', 'master', 'the_synonym')
+    fieldsets = (
+        (None, {
+            'fields': (
+                'master',
+                'the_synonym',),
+        }),
+    )
+
+    def master(self, obj):
+        return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
+            obj.locality.id, obj.locality.repr_dict()['values']['name'], obj.locality.uuid, obj.locality.uuid)
+
+    def the_synonym(self, obj):
+        return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
+            obj.synonym.id, obj.synonym.repr_dict()['values']['name'], obj.synonym.uuid, obj.synonym.uuid)
+
+    master.short_description = 'Master'
+    master.admin_order_field = 'locality__uuid'
+    the_synonym.short_description = 'Synonym'
+    the_synonym.admin_order_field = 'synonyms__uuid'
+    master.allow_tags = True
+    the_synonym.allow_tags = True
+
+
+admin.site.register(SynonymLocalities, SynonymLocalitiesAdmin)
+
+
+def promote_potential_synonyms(modeladmin, request, queryset):
+    for unconfirmed_synonym in queryset:
+        promote_unconfirmed_synonym(unconfirmed_synonym.id)
+
+
+def reject_potential_synonyms(modeladmin, request, queryset):
+    for unconfirmed_synonym in queryset:
+        reject_unconfirmed_synonym(unconfirmed_synonym.id)
+
+
+class UnconfirmedSynonymAdmin(admin.ModelAdmin):
+    list_display = ('id', 'master', 'potential_synonym')
+    readonly_fields = ('id', 'master', 'potential_synonym')
+    fieldsets = (
+        (None, {
+            'fields': (
+                'master',
+                'potential_synonym',),
+        }),
+    )
+    actions = [promote_potential_synonyms, reject_potential_synonyms]
+
+    def master(self, obj):
+        return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
+            obj.locality.id, obj.locality.repr_dict()['values']['name'], obj.locality.uuid, obj.locality.uuid)
+
+    def potential_synonym(self, obj):
+        return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
+            obj.synonym.id, obj.synonym.repr_dict()['values']['name'], obj.synonym.uuid, obj.synonym.uuid)
+
+    master.short_description = 'Master'
+    master.admin_order_field = 'locality__uuid'
+    potential_synonym.admin_order_field = 'synonyms__uuid'
+    promote_potential_synonyms.short_description = "Promote selected localities as synonyms"
+    reject_potential_synonyms.short_description = "Reject selected localities as synonyms"
+    master.allow_tags = True
+    potential_synonym.allow_tags = True
+
+
+admin.site.register(UnconfirmedSynonym, UnconfirmedSynonymAdmin)

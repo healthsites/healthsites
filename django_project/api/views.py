@@ -10,7 +10,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
 from django.views.generic import View
 from frontend.views import search_place
-from localities.models import Country, Locality, Value
+from localities.models import Country, Locality, UnconfirmedSynonym, Value
 from localities.utils import parse_bbox, get_heathsites_master_by_polygon, get_heathsites_master_by_page, \
     get_heathsites_synonyms, limit, \
     locality_create
@@ -166,3 +166,21 @@ class LocalityCreateAPI(JSONResponseMixin, View):
 
     def get(self, request, *args, **kwargs):
         return HttpResponse(formattedReturn(request, locality_create(request)), content_type='application/json')
+
+
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+
+
+class LocalityCreateAPIStrict(JSONResponseMixin, View):
+    def _parse_request_params(self, request):
+        if not (all(param in request.GET for param in ['geom'])):
+            raise Http404
+
+        return request.GET['geom']
+
+    def get(self, request, *args, **kwargs):
+        geom = self._parse_request_params(request)
+        request.session['new_geom'] = geom
+        map_url = reverse('map')
+        return HttpResponseRedirect(map_url)

@@ -20,6 +20,10 @@ class Command(BaseCommand):
         print "---------------------------------------------"
         call_command('generate_masterization_by_cluster', 48, 46)
         print "---------------------------------------------"
+        print "call clean localities"
+        print "---------------------------------------------"
+        call_command('clean_localities')
+        print "---------------------------------------------"
         print "call gen_cluster_cache"
         print "---------------------------------------------"
         call_command('gen_cluster_cache', 48, 46)

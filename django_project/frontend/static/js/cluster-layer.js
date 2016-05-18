@@ -253,17 +253,26 @@
             }
             var that = this;
             mrk.on('click', function (evt) {
-                if (evt.target.data['count'] === 1) {
-                    $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
-                    $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
-                }
-                else {
-                    var bounds = L.latLngBounds(
-                        L.latLng(evt.target.data['bbox'][1], evt.target.data['bbox'][2]),
-                        L.latLng(evt.target.data['bbox'][3], evt.target.data['bbox'][0])
-                    );
-                    // zoom to cluster bounds
-                    this._map.fitBounds(bounds);
+                // event for getting master's uuid
+                if ($("#report-popup").is(":visible")) {
+                    $("#report-popup-text").val(evt.target.data['uuid']);
+                } else {
+                    if (evt.target.data['count'] === 1) {
+                        if (window.location.href.indexOf("map") > -1) {
+                            $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
+                            $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
+                        } else {
+                            window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
+                        }
+                    }
+                    else {
+                        var bounds = L.latLngBounds(
+                            L.latLng(evt.target.data['bbox'][1], evt.target.data['bbox'][2]),
+                            L.latLng(evt.target.data['bbox'][3], evt.target.data['bbox'][0])
+                        );
+                        // zoom to cluster bounds
+                        that._map.fitBounds(bounds);
+                    }
                 }
             });
             // add marker to the layer

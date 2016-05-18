@@ -40,6 +40,9 @@ function mapcount() {
         $('body').removeClass('search-focus');
         $('#map, #map-home').css('height', c_height);
     }
+
+    // set top of report popup
+    $('#report-popup').css('top', $('.map-page #map').css('top'));
 }
 
 function policyshow() {

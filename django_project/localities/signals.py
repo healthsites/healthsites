@@ -3,11 +3,13 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+from django.contrib.auth.models import User
 from django.dispatch import receiver, Signal
 from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
 
 from .models import (
+    Changeset,
     Domain,
     DomainArchive,
     Attribute,
@@ -106,17 +108,6 @@ def locality_archive_handler(sender, instance, created, raw, **kwargs):
     archive.uuid = instance.uuid
     archive.upstream_id = instance.upstream_id
     archive.geom = instance.geom
-    archive.master = instance.master
-
-    if instance.master:
-        synonyms = instance.get_synonyms()
-        for synonym in synonyms:
-            if synonym == instance.master:
-                print "locality same : it is synonym but still don't has master"
-            else:
-                synonym.master = instance.master
-            synonym.save()
-    archive.save()
 
 
 @receiver(post_save, sender=Value)

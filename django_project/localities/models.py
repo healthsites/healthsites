@@ -4,6 +4,8 @@ import logging
 LOG = logging.getLogger(__name__)
 
 import itertools
+import json
+import requests
 
 from .querysets import PassThroughGeoManager, LocalitiesQuerySet
 from datetime import datetime
@@ -18,6 +20,7 @@ from django.utils.text import slugify
 
 from model_utils import FieldTracker
 from pg_fts.fields import TSVectorField
+from .variables import attributes_availables
 
 
 class ChangesetMixin(models.Model):
@@ -148,10 +151,13 @@ class Locality(UpdateMixin, ChangesetMixin):
     upstream_id = models.TextField(null=True, unique=True)
     geom = models.PointField(srid=4326)
     specifications = models.ManyToManyField('Specification', through='Value')
-    master = models.ForeignKey('Locality', null=True, default=None)
+
+    # completeness is a big calculation
+    # so it has to be an field
+    completeness = models.FloatField(null=True, default=0.0)
+    is_master = models.BooleanField(default=True)
 
     objects = PassThroughGeoManager.for_queryset_class(LocalitiesQuerySet)()
-
     tracker = FieldTracker()
 
     def before_save(self, *args, **kwargs):
@@ -237,12 +243,17 @@ class Locality(UpdateMixin, ChangesetMixin):
             sender=self.__class__, instance=self
         )
 
+        # calculate completeness
+        self.completeness = self.calculate_completeness()
+        self.save()
+
         return changed_values
 
     def repr_dict(self):
         """
         Basic locality representation, as a dictionary
         """
+
         dict = {
             u'uuid': self.uuid,
             u'values': {
@@ -252,7 +263,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
             u'date_modified': self.changeset.created,
-            # u'changeset': self.changeset_id}
+            u'completeness': '%s%%' % format(self.completeness, '.2f'),
         }
 
         if 'data_source' in dict[u'values']:
@@ -280,23 +291,6 @@ class Locality(UpdateMixin, ChangesetMixin):
 
                 if url:
                     dict[u'values']['raw_source'] = url
-
-        if self.master:
-            master_uuid = ""
-            master_name = self.master.uuid
-            if self.master == self:
-                master_uuid = ""
-                master_name = "unsetted"
-            else:
-                try:
-                    master_name = Value.objects.filter(locality=self.master).filter(
-                        specification__attribute__key='name')[0].data
-                    master_uuid = self.master.uuid
-                except Value.DoesNotExist:
-                    pass
-
-            dict['master'] = {'master_uuid': master_uuid, 'master_name': master_name}
-
         return dict
 
     def is_type(self, value):
@@ -307,6 +301,29 @@ class Locality(UpdateMixin, ChangesetMixin):
             except Exception as e:
                 return False
         return True
+
+    def calculate_completeness(self):
+        DEFAULT_VALUE = 2  # GUID & GEOM
+        global_attr = attributes_availables['global']
+        specific_attr = attributes_availables['hospital']
+        for key in attributes_availables.keys():
+            try:
+                self.value_set.filter(specification__attribute__key='type').get(data__icontains=key)
+                specific_attr = attributes_availables[key]
+            except Value.DoesNotExist:
+                continue
+
+        values = self.repr_dict()['values']
+        counted_value = DEFAULT_VALUE
+        max_value = len(global_attr) + len(specific_attr) + DEFAULT_VALUE
+
+        for attr in global_attr + specific_attr:
+            if attr in values:
+                data = values[attr]
+                if len(data.replace("-", "").replace("|", "").strip()) != 0:
+                    counted_value += 1
+
+        return (counted_value + 0.0) / (max_value + 0.0) * 100
 
     def prepare_for_fts(self):
         """
@@ -322,8 +339,23 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
+    def update_what3words(self, user, changeset):
+        print "get what3words for %s" % self.uuid
+        what3words_api_key = settings.WHAT3WORDS_API_KEY
+        api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, self.geom.y, self.geom.x)
+        request = requests.get(api_url, stream=True)
+        response = ''.join([line for line in request.iter_lines()])
+        response = response.replace(' ', '').replace('\n', '')
+        response = response.replace('}{', '},{')
+        data = json.loads(response)
+        if "words" in data:
+            what3words = '.'.join(data['words'])
+            print what3words
+            self.set_values({'what3words': what3words}, user, changeset)
+            self.save()
+
     def get_synonyms(self):
-        return Locality.objects.filter(master=self).exclude(id=self.id)
+        synonyms = SynonymLocalities.objects.get(locality=self)
 
     def __unicode__(self):
         return u'{}'.format(self.id)
@@ -344,7 +376,6 @@ class LocalityArchive(ArchiveMixin):
     uuid = models.TextField()
     upstream_id = models.TextField(null=True)
     geom = models.PointField(srid=4326)
-    master = models.ForeignKey('Locality', null=True, default=None)
 
 
 class Value(UpdateMixin, ChangesetMixin):
@@ -511,7 +542,7 @@ class DataLoader(models.Model):
     UPDATE_DATA_CODE = 2
 
     DATA_LOADER_MODE_CHOICES = (
-        (REPLACE_DATA_CODE, 'Replace Data'),
+        (REPLACE_DATA_CODE, 'Replace/Insert Data'),
         (UPDATE_DATA_CODE, 'Update Data')
     )
 
@@ -704,3 +735,40 @@ def data_loader_deleted(sender, instance, **kwargs):
 
 
 pre_delete.connect(data_loader_deleted, sender=DataLoaderPermission)
+
+
+# -------------------------------------------------
+# MASTERIZATION
+# -------------------------------------------------
+
+
+class UnconfirmedSynonym(models.Model):
+    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym')
+    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym')
+
+    class Meta:
+        ordering = ["locality", "synonym"]
+        verbose_name = "Potential Synonym"
+        verbose_name_plural = "Potential Synonyms"
+
+
+class SynonymLocalities(models.Model):
+    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='synonym_of_locality')
+    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_synonym')
+
+    class Meta:
+        ordering = ["locality", "synonym"]
+        verbose_name = "Synonyms"
+        verbose_name_plural = "Synonyms"
+
+
+from masterization import downgrade_master_as_synonyms
+
+
+def update_others_synonyms(sender, instance, **kwargs):
+    new_synonym = instance.synonym
+    new_master = instance.locality
+    downgrade_master_as_synonyms(new_synonym.id, new_master.id)
+
+
+post_save.connect(update_others_synonyms, sender=SynonymLocalities)

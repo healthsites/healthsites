@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from optparse import make_option
 
-from core.utilities import extract_time
+from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from localities.models import Locality
-from localities.utils import parse_bbox
 from localities.map_clustering import cluster
+from localities.masterization import report_locality_as_unconfirmed_synonym
 
 
 class Command(BaseCommand):
@@ -34,9 +34,17 @@ class Command(BaseCommand):
             # icon sizes should be positive
             raise CommandError('Icon sizes should be positive numbers')
 
-        localities = Locality.objects.filter(master=None)
-        # localities = Locality.objects.in_bbox(
-        #     parse_bbox('4.4558626413345337,6.5171178387202984,4.4624984264373779,6.5220158579049112'))
+        # get user that responsibility to change this
+        user = None
+        try:
+            user = User.objects.get(username="sharehealthdata")
+        except User.DoesNotExist:
+            try:
+                user = User.objects.get(username="admin")
+            except User.DoesNotExist:
+                pass
+
+        localities = Locality.objects.all()
         loc_clusters = cluster(localities, self.MAX_ZOOM, icon_size[0], icon_size[1], True)
         number = len(loc_clusters)
         index = 1;
@@ -44,24 +52,7 @@ class Command(BaseCommand):
             print "%s/%s count : %s" % (index, number, loc_cluster['count'])
             index += 1
             if loc_cluster['count'] > 1:
-                loc_cluster['localities'].sort(key=extract_time, reverse=False)
-                master = loc_cluster['localities'].pop(0)
-                print "master : %s " % master['uuid']
-                try:
-                    locality_master = Locality.objects.get(id=master['id'])
-                    locality_master.master = None
-                    locality_master.save()
-
-                    synonyms = []
-                    for synonym in loc_cluster['localities']:
-                        # set master of synonym
-                        try:
-                            locality = Locality.objects.get(id=synonym['id'])
-                            locality.master = locality_master
-                            locality.save()
-                            synonyms.append(str(synonym['uuid']))
-                        except Exception as e:
-                            print e
-                    print 'synonyms : ' + ', '.join(synonyms)
-                except Exception as e:
-                    print e
+                for potential_master in loc_cluster['localities']:
+                    for potential_synonym in loc_cluster['localities']:
+                        if potential_master != potential_synonym:
+                            report_locality_as_unconfirmed_synonym(potential_synonym.id, potential_master.id)
