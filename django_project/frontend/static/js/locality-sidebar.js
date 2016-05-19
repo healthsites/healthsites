@@ -830,8 +830,8 @@ window.LocalitySidebar = (function () {
                         html += ' href="' + url_domain + '"';
                     }
                     html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">' + url + '</a></p>';
-                    this.$url.html(html);
-                    url_isupdated = true;
+                    //this.$url.html(html);
+                    //url_isupdated = true;
                 }
             }
 
