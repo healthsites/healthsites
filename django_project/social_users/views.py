@@ -14,7 +14,7 @@ from django.db.models import Count, Max
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView, View
-from localities.models import LocalityArchive, ValueArchive
+from localities.models import Locality, LocalityArchive, ValueArchive
 from localities.utils import extract_updates
 from social_users.models import Profile
 from social_users.utils import get_profile
@@ -68,7 +68,7 @@ def save_profile(backend, user, response, *args, **kwargs):
     if kwargs['is_new']:
         if 'username' in kwargs['details']:
             new_username = kwargs['details']['username']
-            new_username = new_username.replace(" ","")
+            new_username = new_username.replace(" ", "")
             if user.username != new_username:
                 try:
                     old_username = user.username
@@ -89,19 +89,27 @@ def save_profile(backend, user, response, *args, **kwargs):
 def user_updates(user, date):
     updates = []
     try:
-        updates1 = LocalityArchive.objects.filter(changeset__social_user=user).filter(
-                changeset__created__lt=date).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-                edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
-        for update in updates1:
+        updates_temp = LocalityArchive.objects.filter(changeset__social_user=user).filter(
+            changeset__created__lt=date).order_by(
+            '-changeset__created').values(
+            'changeset__created', 'changeset__social_user__username', 'version').annotate(
+            edit_count=Count('changeset__created'), locality_id=Max('object_id'))[:15]
+        for update in updates_temp:
             updates.append(update)
-        updates2 = ValueArchive.objects.filter(changeset__social_user=user).filter(
-                changeset__created__lt=date).order_by(
-                '-changeset__created').values(
-                'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-                edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
-        for update in updates2:
+        updates_temp = ValueArchive.objects.filter(changeset__social_user=user).filter(
+            changeset__created__lt=date).order_by(
+            '-changeset__created').values(
+            'changeset__created', 'changeset__social_user__username', 'version').annotate(
+            edit_count=Count('changeset__created'), locality_id=Max('locality_id'))[:15]
+        for update in updates_temp:
+            updates.append(update)
+        # from locality changeset
+        updates_temp = Locality.objects.filter(changeset__social_user=user).filter(
+            changeset__created__lt=date).order_by(
+            '-changeset__created').values(
+            'changeset__created', 'changeset__social_user__username', 'version').annotate(
+            edit_count=Count('changeset__created'), id=Max('id'))[:15]
+        for update in updates_temp:
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
@@ -110,11 +118,11 @@ def user_updates(user, date):
     output = []
     prev_changeset = 0
     for update in updates:
-        if prev_changeset != update['changeset']:
+        if prev_changeset != update['changeset__created']:
             output.append(update)
             profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
             update['nickname'] = profile.screen_name
-        prev_changeset = update['changeset']
+        prev_changeset = update['changeset__created']
     return output[:20]
 
 
