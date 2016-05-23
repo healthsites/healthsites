@@ -89,31 +89,33 @@ def save_profile(backend, user, response, *args, **kwargs):
 def user_updates(user, date):
     updates = []
     try:
+        # from locality archive
         updates_temp = LocalityArchive.objects.filter(changeset__social_user=user).filter(
             changeset__created__lt=date).order_by(
             '-changeset__created').values(
-            'changeset__created', 'changeset__social_user__username', 'version').annotate(
-            edit_count=Count('changeset__created'), locality_id=Max('object_id'))[:15]
+            'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+            edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
         for update in updates_temp:
             updates.append(update)
+        # from value archive
         updates_temp = ValueArchive.objects.filter(changeset__social_user=user).filter(
-            changeset__created__lt=date).order_by(
+            changeset__created__lt=date).filter(version__gt=1).order_by(
             '-changeset__created').values(
-            'changeset__created', 'changeset__social_user__username', 'version').annotate(
-            edit_count=Count('changeset__created'), locality_id=Max('locality_id'))[:15]
+            'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+            edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
         for update in updates_temp:
             updates.append(update)
         # from locality changeset
         updates_temp = Locality.objects.filter(changeset__social_user=user).filter(
             changeset__created__lt=date).order_by(
             '-changeset__created').values(
-            'changeset__created', 'changeset__social_user__username', 'version').annotate(
-            edit_count=Count('changeset__created'), id=Max('id'))[:15]
+            'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+            edit_count=Count('changeset'), locality_id=Max('id'))[:15]
         for update in updates_temp:
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
-        print "Locality Archive not exist"
+        pass
 
     output = []
     prev_changeset = 0
@@ -122,6 +124,8 @@ def user_updates(user, date):
             output.append(update)
             profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
             update['nickname'] = profile.screen_name
+            if update['edit_count'] > 1 and update['version'] == 2:
+                update['version'] = 1
         prev_changeset = update['changeset__created']
     return output[:20]
 
