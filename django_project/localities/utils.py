@@ -393,14 +393,12 @@ def locality_edit(request):
                 locality.save()
                 locality.set_values(json_request, request.user, tmp_changeset)
 
-                regenerate_cache.delay(tmp_changeset.pk, locality.pk)
-
                 # if location is changed
                 new_geom = [locality.geom.x, locality.geom.y]
                 if new_geom != old_geom:
                     locality.update_what3words(request.user, tmp_changeset)
-                    regenerate_cache.delay(tmp_changeset.pk, locality.pk)
                     regenerate_cache_cluster.delay()
+                regenerate_cache.delay(tmp_changeset.id, locality.pk)
 
                 return {"success": json_request['is_valid'], "uuid": json_request['uuid'], "reason": ""}
             else:
@@ -465,7 +463,7 @@ def localities_updates(locality_ids):
         updates_temp = locality_ids.order_by(
             '-changeset__created').values(
             'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-            edit_count=Count('changeset'), id=Max('id'))[:15]
+            edit_count=Count('changeset'), locality_id=Max('id'))[:15]
         for update in updates_temp:
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
