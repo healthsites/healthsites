@@ -446,7 +446,6 @@ def get_statistic(healthsites):
 
 def localities_updates(locality_ids):
     updates = []
-    print locality_ids
     try:
         # from locality archive
         updates_temp = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
