@@ -209,6 +209,7 @@ class CSVImporter:
         })
 
     def save_localities(self):
+        from utils import get_what_3_words
         """
         Save every locality in the parsed_data dictionary
         """
@@ -221,17 +222,6 @@ class CSVImporter:
             loc, _created = self._find_locality(row_uuid, gen_upstream_id)
 
             if _created:
-                # finding duplication
-                # loc_geom = Point(*values['geom'])
-                # loc_envelope = self.envelope(loc_geom.x, loc_geom.y)
-                # duplicate_localities = Locality.objects.filter(
-                #     geom__within=loc_envelope)
-                #
-                # if len(duplicate_localities) > 0:
-                #     LOG.info('Possible duplicate %s (%s) at (%s, %s)',
-                #              loc.uuid, loc.id, loc_geom.x, loc_geom.y)
-                #     self.report['duplicated'] += 1
-                #     continue
 
                 loc.changeset = tmp_changeset
                 loc.domain = self.domain
@@ -244,7 +234,11 @@ class CSVImporter:
                 LOG.info('Created %s (%s)', loc.uuid, loc.id)
 
                 # save values for Locality
-                loc.set_values(values['values'], social_user=self.user)
+                # get what3word
+                what3words = get_what_3_words(loc.geom)
+                if what3words != "":
+                    values['values']['what3words'] = what3words
+                loc.set_values(values['values'], social_user=self.user, changeset=tmp_changeset)
 
                 self.report['created'] += 1
             else:
@@ -267,7 +261,7 @@ class CSVImporter:
                     merged_value = old_value.copy()
                     merged_value.update(new_value)
 
-                    loc.set_values(merged_value, social_user=self.user)
+                    loc.set_values(merged_value, social_user=self.user, changeset=tmp_changeset)
 
                 elif self.mode == 2:
                     # update
@@ -277,13 +271,11 @@ class CSVImporter:
                     new_value = values['values']
                     merged_value = old_value.copy()
                     merged_value.update(new_value)
-                    loc.set_values(merged_value, social_user=self.user)
+                    loc.set_values(merged_value, social_user=self.user, changeset=tmp_changeset)
                 else:
-                    loc.set_values(values['values'], social_user=self.user)
+                    loc.set_values(values['values'], social_user=self.user, changeset=tmp_changeset)
 
                 self.report['modified'] += 1
-
-            loc.update_what3words(loc.changeset.social_user, loc.changeset)
 
     def envelope(self, lon, lat):
         """Return polygon envelope for point (lon, lat)

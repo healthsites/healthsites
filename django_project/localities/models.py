@@ -340,19 +340,10 @@ class Locality(UpdateMixin, ChangesetMixin):
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
     def update_what3words(self, user, changeset):
-        print "get what3words for %s" % self.uuid
-        what3words_api_key = settings.WHAT3WORDS_API_KEY
-        api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, self.geom.y, self.geom.x)
-        request = requests.get(api_url, stream=True)
-        response = ''.join([line for line in request.iter_lines()])
-        response = response.replace(' ', '').replace('\n', '')
-        response = response.replace('}{', '},{')
-        data = json.loads(response)
-        if "words" in data:
-            what3words = '.'.join(data['words'])
-            print what3words
+        from utils import get_what_3_words
+        what3words = get_what_3_words(self.geom)
+        if what3words != "":
             self.set_values({'what3words': what3words}, user, changeset)
-            self.save()
 
     def get_synonyms(self):
         synonyms = SynonymLocalities.objects.get(locality=self)

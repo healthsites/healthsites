@@ -4,6 +4,7 @@ __date__ = '18/03/16'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
+import requests
 import json
 import os
 import uuid
@@ -23,6 +24,19 @@ from social_users.utils import get_profile
 
 limit = 100
 
+def get_what_3_words(geom):
+    what3words_api_key = settings.WHAT3WORDS_API_KEY
+    api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, geom.y, geom.x)
+    request = requests.get(api_url, stream=True)
+    response = ''.join([line for line in request.iter_lines()])
+    response = response.replace(' ', '').replace('\n', '')
+    response = response.replace('}{', '},{')
+    data = json.loads(response)
+    if "words" in data:
+        what3words = '.'.join(data['words'])
+        print what3words
+        return what3words
+    return ""
 
 def extract_updates(updates):
     # updates
@@ -81,7 +95,7 @@ def get_country_statistic(query):
                 output = json.loads(data)
             except IOError as e:
                 try:
-                    # query for each of attribute
+                    # query for each of ATTRIBUTE
                     healthsites = get_heathsites_master().in_polygon(
                         polygons)
                     output = get_statistic(healthsites)
@@ -379,14 +393,12 @@ def locality_edit(request):
                 locality.save()
                 locality.set_values(json_request, request.user, tmp_changeset)
 
-                regenerate_cache.delay(tmp_changeset.pk, locality.pk)
-
                 # if location is changed
                 new_geom = [locality.geom.x, locality.geom.y]
                 if new_geom != old_geom:
                     locality.update_what3words(request.user, tmp_changeset)
-                    regenerate_cache.delay(tmp_changeset.pk, locality.pk)
                     regenerate_cache_cluster.delay()
+                regenerate_cache.delay(tmp_changeset.id, locality.pk)
 
                 return {"success": json_request['is_valid'], "uuid": json_request['uuid'], "reason": ""}
             else:
@@ -433,17 +445,26 @@ def get_statistic(healthsites):
 def localities_updates(locality_ids):
     updates = []
     try:
-        updates1 = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
+        # from locality archive
+        updates_temp = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
             '-changeset__created').values(
             'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
             edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
-        for update in updates1:
+        for update in updates_temp:
             updates.append(update)
-        updates2 = ValueArchive.objects.filter(locality_id__in=locality_ids).filter(version__gt=1).order_by(
+        # from value archive
+        updates_temp = ValueArchive.objects.filter(locality_id__in=locality_ids).filter(version__gt=1).order_by(
             '-changeset__created').values(
             'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
             edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
-        for update in updates2:
+        for update in updates_temp:
+            updates.append(update)
+        # from locality changeset
+        updates_temp = locality_ids.order_by(
+            '-changeset__created').values(
+            'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+            edit_count=Count('changeset'), locality_id=Max('id'))[:15]
+        for update in updates_temp:
             updates.append(update)
         updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
