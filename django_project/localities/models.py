@@ -344,7 +344,6 @@ class Locality(UpdateMixin, ChangesetMixin):
         what3words = get_what_3_words(self.geom)
         if what3words != "":
             self.set_values({'what3words': what3words}, user, changeset)
-            self.save()
 
     def get_synonyms(self):
         synonyms = SynonymLocalities.objects.get(locality=self)
