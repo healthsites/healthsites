@@ -108,6 +108,8 @@ def locality_archive_handler(sender, instance, created, raw, **kwargs):
     archive.uuid = instance.uuid
     archive.upstream_id = instance.upstream_id
     archive.geom = instance.geom
+    archive.name = instance.name
+    archive.source = instance.source
 
 
 @receiver(post_save, sender=Value)

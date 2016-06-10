@@ -138,6 +138,7 @@ class CSVImporter:
         """
 
         row_uuid = self._read_attr(row_data, self.attr_map['uuid'])
+        row_name = self._read_attr(row_data, self.attr_map['name'])
         row_upstream_id = self._read_attr(
             row_data, self.attr_map['upstream_id']
         )
@@ -172,20 +173,12 @@ class CSVImporter:
             self.report['skipped'] += 1
             return None
 
-        # check master
-        row_master_upstream_id = self._read_attr(
-            row_data, self.attr_map['master_upstream_id']
-        )
-        row_master_upstream_id = row_master_upstream_id
-        if row_master_upstream_id != "" and row_master_upstream_id != "None":
-            row_master_upstream_id = u'{}¶{}'.format(self.source_name, row_master_upstream_id)
-
         # data link
         row_data_source = self._read_attr(
-            row_data, self.attr_map['attributes']['data_source']
+            row_data, self.attr_map['data_source']
         )
         row_data_source_url = self._read_attr(
-            row_data, self.attr_map['attributes']['data_source_url']
+            row_data, self.attr_map['data_source_url']
         )
         if row_data_source_url and row_data_source:
             try:
@@ -199,7 +192,8 @@ class CSVImporter:
                 'uuid': row_uuid,
                 'upstream_id': gen_upstream_id,
                 'geom': tmp_geom,
-                'master_upstream_id': row_master_upstream_id,
+                'name': row_name,
+                'source': row_data_source,
                 'values': {
                     key: self._read_attr(row_data, row_val)
                     for key, row_val in self.attr_map['attributes'].iteritems()
@@ -227,6 +221,8 @@ class CSVImporter:
                 loc.domain = self.domain
                 loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
                 loc.upstream_id = gen_upstream_id
+                loc.name = values['name']
+                loc.source = values['source']
 
                 loc.geom = Point(*values['geom'])
                 # save Locality
@@ -247,6 +243,8 @@ class CSVImporter:
                 # apply mode
                 loc.changeset = tmp_changeset
                 loc.geom = Point(*values['geom'])
+                loc.name = values['name']
+                loc.source = values['source']
 
                 loc.save()
                 LOG.info('Updated %s (%s)', loc.uuid, loc.id)

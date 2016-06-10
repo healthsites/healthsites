@@ -13,16 +13,13 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
-from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Max
 from localities.models import Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification, \
-    SynonymLocalities, UnconfirmedSynonym, User, \
-    Value, ValueArchive
+    SynonymLocalities, UnconfirmedSynonym, User, Value, ValueArchive
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
 from social_users.utils import get_profile
 
-limit = 100
 
 def get_what_3_words(geom):
     what3words_api_key = settings.WHAT3WORDS_API_KEY
@@ -38,6 +35,7 @@ def get_what_3_words(geom):
         return what3words
     return ""
 
+
 def extract_updates(updates):
     # updates
     last_updates = []
@@ -49,10 +47,8 @@ def extract_updates(updates):
             # get the locality to show in web
             try:
                 locality = Locality.objects.get(pk=update['locality_id'])
-                locality_name = Value.objects.filter(locality=locality).filter(
-                    specification__attribute__key='name')
                 update['locality_uuid'] = locality.uuid
-                update['locality'] = locality_name[0].data
+                update['locality'] = locality.name
             except Locality.DoesNotExist:
                 update['locality_uuid'] = "unknown"
                 update['locality'] = "unknown"
@@ -136,54 +132,9 @@ def get_heathsites_master():
     return Locality.objects.filter(is_master=True)
 
 
-def get_heathsites_master_by_polygon(request, polygon):
-    healthsites = get_heathsites_master().in_polygon(
-        polygon)
-
-    facility_type = ""
-    if 'facility_type' in request.GET:
-        facility_type = request.GET['facility_type']
-
-    output = []
-    index = 1;
-    for healthsite in healthsites:
-        if healthsite.is_type(facility_type):
-            output.append(healthsite.repr_dict())
-            index += 1
-        if index == limit:
-            break
-    return output
-
-
-def get_heathsites_master_by_page(page):
-    healthsites = get_heathsites_master()
-    paginator = Paginator(healthsites, 100)
-    try:
-        healthsites = paginator.page(page)
-    except Exception as e:
-        return []
-
-    output = []
-    for healthsite in healthsites:
-        output.append(healthsite.repr_dict())
-    return output
-
-
-def get_heathsites_synonyms():
-    healthsites = Locality.objects.all()
-    output = []
-    index = 1;
-    for healthsite in healthsites:
-        output.append(healthsite.repr_dict())
-        index += 1
-        if index == limit:
-            break
-    return output
-
-
 def get_json_from_request(request):
     # special request:
-    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid"]
+    special_request = ["name", "source", "long", "lat", "csrfmiddlewaretoken", "uuid"]
 
     mstring = []
     json = {}
@@ -215,6 +166,9 @@ def get_json_from_request(request):
 
     # check mandatory
     is_valid = True
+    if not json['name'] or json['name'] == "":
+        is_valid = False
+        json['invalid_key'] = "name"
 
     if not json['lat'] or json['lat'] == "":
         is_valid = False
@@ -247,36 +201,28 @@ def get_locality_detail(locality, changes):
     masters = []
     for val in SynonymLocalities.objects.filter(synonym_id=locality.id):
         master_uuid = val.locality.uuid
-        master_name = master_uuid
-        if 'name' in val.locality.repr_dict()['values']:
-            master_name = val.locality.repr_dict()['values']['name']
+        master_name = val.locality.name
         masters.append({'name': master_name, 'uuid': master_uuid})
 
     # get synonyms
     synonyms = []
     for val in SynonymLocalities.objects.filter(locality_id=locality.id):
         synonym_uuid = val.synonym.uuid
-        synonym_name = synonym_uuid
-        if 'name' in val.synonym.repr_dict()['values']:
-            synonym_name = val.synonym.repr_dict()['values']['name']
+        synonym_name = val.synonym.name
         synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
 
     # get potential master
     potential_masters = []
     for val in UnconfirmedSynonym.objects.filter(synonym_id=locality.id):
         master_uuid = val.locality.uuid
-        master_name = master_uuid
-        if 'name' in val.locality.repr_dict()['values']:
-            master_name = val.locality.repr_dict()['values']['name']
+        master_name = val.locality.name
         potential_masters.append({'name': master_name, 'uuid': master_uuid})
 
     # get unconfirmed synonyms
     unconfirmed_synonyms = []
     for val in UnconfirmedSynonym.objects.filter(locality_id=locality.id):
         synonym_uuid = val.synonym.uuid
-        synonym_name = synonym_uuid
-        if 'name' in val.synonym.repr_dict()['values']:
-            synonym_name = val.synonym.repr_dict()['values']['name']
+        synonym_name = val.synonym.name
         unconfirmed_synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
 
     obj_repr[u'masters'] = masters
@@ -354,6 +300,7 @@ def locality_create(request):
                 loc.geom = Point(
                     float(json_request['long']), float(json_request['lat'])
                 )
+                loc.name = json_request['name']
 
                 loc.save()
                 #  ------------------------------------------------------
@@ -383,6 +330,7 @@ def locality_edit(request):
                 old_geom = [locality.geom.x, locality.geom.y]
 
                 locality.set_geom(float(json_request['long']), float(json_request['lat']))
+                locality.name = json_request['name']
 
                 # there are some changes so create a new changeset
                 tmp_changeset = Changeset.objects.create(
@@ -412,7 +360,6 @@ def locality_edit(request):
 def get_statistic(healthsites):
     # locality which in polygon
     # data for frontend
-
     healthsites_number = healthsites.count()
     values = Value.objects.filter(locality__in=healthsites)
 
@@ -508,7 +455,7 @@ def locality_updates(locality_id, date):
         if prev_changeset != update['changeset']:
             profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
             update['nickname'] = profile.screen_name
-            update['changeset__created'] = str(update['changeset__created'])
+            update['changeset__created'] = update['changeset__created']
             output.append(update)
         prev_changeset = update['changeset']
     return output[:10]
@@ -554,8 +501,7 @@ def search_locality_by_spec_data(spec, data, uuid):
     if uuid:
         try:
             locality = Locality.objects.get(uuid=uuid)
-            locality_name = Value.objects.filter(locality=locality).filter(
-                specification__attribute__key='name')[0].data
+            locality_name = locality.name
             output['locality_name'] = locality_name
             output['location'] = {'x': "%f" % locality.geom.x, 'y': "%f" % locality.geom.y}
         except Locality.DoesNotExist:

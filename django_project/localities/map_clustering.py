@@ -72,7 +72,7 @@ def cluster(query_set, zoom, pix_x, pix_y, localities_is_needed=False):
 
     cluster_points = []
 
-    localites = query_set.get_lnglat().values('id', 'uuid', 'lnglat', 'changeset__created')
+    localites = query_set.get_lnglat().values('id', 'name', 'uuid', 'lnglat', 'changeset__created')
     number = localites.count()
     index = 1
     for locality in localites.iterator():
@@ -94,13 +94,7 @@ def cluster(query_set, zoom, pix_x, pix_y, localities_is_needed=False):
         else:
             # point is not in the catchment area of any cluster
             x_range, y_range = overlapping_area(zoom, pix_x, pix_y, geomy)
-            locality_name = ""
-            try:
-                locality_name = Value.objects.filter(locality__uuid=locality['uuid']).filter(
-                    specification__attribute__key='name')[0].data
-            except Exception as e:
-                print e
-
+            locality_name = locality['name']
             bbox = (
                 geomx - x_range * 1.5, geomy - y_range * 1.5,
                 geomx + x_range * 1.5, geomy + y_range * 1.5

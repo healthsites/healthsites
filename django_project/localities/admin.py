@@ -73,8 +73,8 @@ admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
 
 class LocalityAdmin(admin.ModelAdmin):
     list_display = (
-        'upstream_id', 'locality_uuid', 'locality_name', 'locality_location', 'is_master',)
-    readonly_fields = ('upstream_id', 'locality_uuid', 'core_field', 'locality_location', 'is_master')
+        'upstream_id', 'locality_uuid', 'name', 'locality_location', 'is_master',)
+    readonly_fields = ('upstream_id', 'locality_uuid', 'source', 'name', 'core_field', 'locality_location', 'is_master')
     fieldsets = (
         ('Masterization', {
             'fields': (
@@ -84,6 +84,8 @@ class LocalityAdmin(admin.ModelAdmin):
             'fields': (
                 'upstream_id',
                 'locality_uuid',
+                'name',
+                'source',
                 'locality_location',),
         }),
         (None, {
@@ -97,14 +99,6 @@ class LocalityAdmin(admin.ModelAdmin):
 
     def locality_location(self, obj):
         return '(%s , %s)' % (obj.geom.x, obj.geom.y)
-
-    def locality_name(self, obj):
-        try:
-            name = Value.objects.filter(
-                specification__attribute__key='name').get(locality=obj)
-            return name.data
-        except Value.DoesNotExist:
-            return ""
 
     def core_field(self, obj):
         output = ""
@@ -148,11 +142,11 @@ class SynonymLocalitiesAdmin(admin.ModelAdmin):
 
     def master(self, obj):
         return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
-            obj.locality.id, obj.locality.repr_dict()['values']['name'], obj.locality.uuid, obj.locality.uuid)
+            obj.locality.id, obj.locality.name, obj.locality.uuid, obj.locality.uuid)
 
     def the_synonym(self, obj):
         return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
-            obj.synonym.id, obj.synonym.repr_dict()['values']['name'], obj.synonym.uuid, obj.synonym.uuid)
+            obj.synonym.id, obj.synonym.name, obj.synonym.uuid, obj.synonym.uuid)
 
     master.short_description = 'Master'
     master.admin_order_field = 'locality__uuid'
@@ -189,11 +183,11 @@ class UnconfirmedSynonymAdmin(admin.ModelAdmin):
 
     def master(self, obj):
         return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
-            obj.locality.id, obj.locality.repr_dict()['values']['name'], obj.locality.uuid, obj.locality.uuid)
+            obj.locality.id, obj.locality.name, obj.locality.uuid, obj.locality.uuid)
 
     def potential_synonym(self, obj):
         return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
-            obj.synonym.id, obj.synonym.repr_dict()['values']['name'], obj.synonym.uuid, obj.synonym.uuid)
+            obj.synonym.id, obj.synonym.name, obj.synonym.uuid, obj.synonym.uuid)
 
     master.short_description = 'Master'
     master.admin_order_field = 'locality__uuid'
