@@ -18,7 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, \
     search_locality_by_tag
-from localities.models import Country, DataLoaderPermission, Value
+from localities.models import Country, DataLoaderPermission, Locality, Value
 from social_users.utils import get_profile
 
 
@@ -132,26 +132,19 @@ def map(request):
             return HttpResponseRedirect(
                 map_url + "#!/locality/%s" % locality_uuid)
         elif option == 'healthsite':
-            locality_values = Value.objects.filter(
-                specification__attribute__key='name').filter(
-                data=search_query)
-            if locality_values:
-                locality_value = locality_values[0]
+            localities = Locality.objects.filter(
+                name=search_query)
+            if len(localities) > 0:
+                locality = localities[0]
+                locality_uuid = locality.uuid
+                map_url = reverse('map')
+                return HttpResponseRedirect(
+                    map_url + "#!/locality/%s" % locality_uuid)
             else:
-                locality_values = Value.objects.filter(
-                    specification__attribute__key='name').filter(
-                    data__istartswith=search_query)
-                if locality_values:
-                    locality_value = locality_values[0]
-                else:
-                    return render_to_response(
-                        'map.html',
-                        context_instance=RequestContext(request)
-                    )
-            locality_uuid = locality_value.locality.uuid
-            map_url = reverse('map')
-            return HttpResponseRedirect(
-                map_url + "#!/locality/%s" % locality_uuid)
+                return render_to_response(
+                    'map.html',
+                    context_instance=RequestContext(request)
+                )
     else:
         tag = request.GET.get('tag')
         country = request.GET.get('country')

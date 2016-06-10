@@ -10,7 +10,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
 from django.views.generic import View
 from frontend.views import search_place
-from localities.models import Country, Locality, UnconfirmedSynonym, Value
+from localities.models import Country, Locality, Value
 from localities.utils import parse_bbox, get_heathsites_master_by_polygon, get_heathsites_master_by_page, \
     get_heathsites_synonyms, limit, \
     locality_create
@@ -108,6 +108,9 @@ class LocalitiesAPI(JSONResponseMixin, View):
             except ValueError:
                 return HttpResponse(formattedReturn(request, {'error': "page is not a number"}),
                                     content_type='application/json')
+        else:
+            return HttpResponse(formattedReturn(request, {'error': "need parameter"}),
+                                content_type='application/json')
 
 
 class LocalitySearchAPI(JSONResponseMixin, View):
@@ -128,7 +131,7 @@ class LocalitySearchAPI(JSONResponseMixin, View):
             try:
                 country = Country.objects.get(name__icontains=place_name)
                 polygon = country.polygon_geometry
-            except Exception as e:
+            except Country.DoesNotExist:
                 # if country is not found
                 output = search_place(request, place_name)
                 output['countries'] = ""

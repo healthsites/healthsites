@@ -151,6 +151,8 @@ class Locality(UpdateMixin, ChangesetMixin):
     upstream_id = models.TextField(null=True, unique=True)
     geom = models.PointField(srid=4326)
     specifications = models.ManyToManyField('Specification', through='Value')
+    name = models.TextField()
+    source = models.TextField(default='healthsites.io')
 
     # completeness is a big calculation
     # so it has to be an field
@@ -260,24 +262,24 @@ class Locality(UpdateMixin, ChangesetMixin):
                 val.specification.attribute.key: val.data
                 for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact='')
                 },
+            u'upstream': self.upstream_id,
+            u'source': self.source,
+            u'name': self.name,
             u'geom': (self.geom.x, self.geom.y),
             u'version': self.version,
             u'date_modified': self.changeset.created,
             u'completeness': '%s%%' % format(self.completeness, '.2f'),
         }
 
-        if 'data_source' in dict[u'values']:
-            try:
-                site = Site.objects.get(name=dict[u'values']['data_source'])
-                dict[u'values']['data_source_url'] = site.domain
-            except Site.DoesNotExist:
-                pass
+        try:
+            site = Site.objects.get(name=dict[u'source'])
+            dict[u'source_url'] = site.domain
+        except Site.DoesNotExist:
+            pass
 
         # exclusive for open street map
         if "openstreetmap" in self.upstream_id:
             osm_whole_id = self.upstream_id.split(u"¶")
-            dict[u'values']['data_source'] = "OpenStreetMap"
-            dict[u'values']['data_source_url'] = "https://www.openstreetmap.org/"
             if len(osm_whole_id) > 0:
                 osm_whole_id = osm_whole_id[1]
                 identifier = osm_whole_id[0]
@@ -303,7 +305,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         return True
 
     def calculate_completeness(self):
-        DEFAULT_VALUE = 2  # GUID & GEOM
+        DEFAULT_VALUE = 4  # GUID & GEOM & NAME & DATA SOURCE
         global_attr = attributes_availables['global']
         specific_attr = attributes_availables['hospital']
         for key in attributes_availables.keys():
@@ -347,6 +349,7 @@ class Locality(UpdateMixin, ChangesetMixin):
 
     def get_synonyms(self):
         synonyms = SynonymLocalities.objects.get(locality=self)
+        return synonyms
 
     def __unicode__(self):
         return u'{}'.format(self.id)
@@ -367,6 +370,8 @@ class LocalityArchive(ArchiveMixin):
     uuid = models.TextField()
     upstream_id = models.TextField(null=True)
     geom = models.PointField(srid=4326)
+    name = models.TextField()
+    source = models.TextField(default='healthsites.io')
 
 
 class Value(UpdateMixin, ChangesetMixin):

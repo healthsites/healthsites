@@ -289,8 +289,15 @@
     background: #f9f9f9;
     padding: 10px 20px 10px 20px;
     font-family: "Ubuntu", sans-serif;
-    color: #f44a52;
-    text-align: center;
+    text-align: left;
+}
+
+.location-info .master .master-row {
+    margin-bottom: 4px;
+}
+
+.location-info .master .highlight {
+    color: #f44a52 !important;
 }
 
 .location-info .master-uuid {
