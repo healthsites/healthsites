@@ -15,6 +15,15 @@ deploy: run
 	@echo "You can access it on http://localhost:49631"
 	@echo "------------------------------------------------------------------"
 
+clean:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Cleaning in production mode - this will remove the $(PROJECT_ID)_uwsgi image"
+	@echo "make sure that you have make kill and make rm first."
+	@echo "------------------------------------------------------------------"
+	@docker rmi $(PROJECT_ID)_uwsgi
+
+
 build:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -232,15 +241,15 @@ mediasync:
 	@echo "------------------------------------------------------------------"
 	@echo "Syncing media files from live server"
 	@echo "------------------------------------------------------------------"
-	@rsync -av --progress kartoza4:/home/web/healthsites/deployment/media/ media
+	@rsync -av --progress hs1-production:/home/web/healthsites/deployment/media/ media
 
 dbsync:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Syncing database files from live server"
 	@echo "------------------------------------------------------------------"
-	-@ssh inasafe-docker "cd /home/data/changelog.inasafe.org/deployment; make dbbackup"
-	@rsync -av --progress kartoza4:/home/web/healthsites/deployment/backups/ backups
+	-@ssh hs1-production "cd /home/web/healthsites/deployment; make dbbackup"
+	@rsync -av --progress hs1-production:/home/web/healthsites/deployment/backups/ backups
 
 # ----------------------------------------------------------------------------
 #    DEVELOPMENT C O M M A N D S
