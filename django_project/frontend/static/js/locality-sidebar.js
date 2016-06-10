@@ -638,7 +638,7 @@ window.LocalitySidebar = (function () {
                 var what3words = this.locality_data.values['what3words'];
                 delete keys[this.getIndex(keys, 'what3words')];
                 if (this.isHasValue(what3words)) {
-                    this.$what3words.text(what3words);
+                    this.$what3words.text('W3W : ' + what3words);
                     this.$what3words.show();
                 }
             }
@@ -902,9 +902,13 @@ window.LocalitySidebar = (function () {
             }
             // OTHER
             {
+                var html = "<p><strong>uuid: </strong><span>" + this.locality_data.uuid + "</span></p>";
                 keys = cleanArray(keys);
                 if (keys.length > 0) {
-                    this.$other_data.html("");
+                    this.$other_data.html(html);
+                } else {
+                    this.$other_data.html(html + no_others_found);
+
                 }
                 for (var i = 0; i < keys.length; i++) {
                     if (typeof keys[i] !== 'undefined') {
