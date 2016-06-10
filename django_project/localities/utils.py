@@ -13,16 +13,12 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
-from django.core.paginator import Paginator
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Max
 from localities.models import Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification, \
-    SynonymLocalities, UnconfirmedSynonym, User, \
-    Value, ValueArchive
+    SynonymLocalities, UnconfirmedSynonym, User, Value, ValueArchive
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
 from social_users.utils import get_profile
-
-limit = 100
 
 
 def get_what_3_words(geom):
@@ -134,51 +130,6 @@ def get_country_statistic(query):
 
 def get_heathsites_master():
     return Locality.objects.filter(is_master=True)
-
-
-def get_heathsites_master_by_polygon(request, polygon):
-    healthsites = get_heathsites_master().in_polygon(
-        polygon)
-
-    facility_type = ""
-    if 'facility_type' in request.GET:
-        facility_type = request.GET['facility_type']
-
-    output = []
-    index = 1;
-    for healthsite in healthsites:
-        if healthsite.is_type(facility_type):
-            output.append(healthsite.repr_dict())
-            index += 1
-        if index == limit:
-            break
-    return output
-
-
-def get_heathsites_master_by_page(page):
-    healthsites = get_heathsites_master()
-    paginator = Paginator(healthsites, 100)
-    try:
-        healthsites = paginator.page(page)
-    except Exception as e:
-        return []
-
-    output = []
-    for healthsite in healthsites:
-        output.append(healthsite.repr_dict())
-    return output
-
-
-def get_heathsites_synonyms():
-    healthsites = Locality.objects.all()
-    output = []
-    index = 1;
-    for healthsite in healthsites:
-        output.append(healthsite.repr_dict())
-        index += 1
-        if index == limit:
-            break
-    return output
 
 
 def get_json_from_request(request):

@@ -251,17 +251,13 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return changed_values
 
-    def repr_dict(self):
+    def repr_dict(self, clean=False):
         """
         Basic locality representation, as a dictionary
         """
 
         dict = {
             u'uuid': self.uuid,
-            u'values': {
-                val.specification.attribute.key: val.data
-                for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact='')
-                },
             u'upstream': self.upstream_id,
             u'source': self.source,
             u'name': self.name,
@@ -270,6 +266,17 @@ class Locality(UpdateMixin, ChangesetMixin):
             u'date_modified': self.changeset.created,
             u'completeness': '%s%%' % format(self.completeness, '.2f'),
         }
+
+        dict['values'] = {}
+        for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact=''):
+            if clean:
+                val.data = val.data.replace("|", ",")
+                val.specification.attribute.key = val.specification.attribute.key.replace("_", "-")
+                cleaned_data = val.data.replace(",", "")
+                if len(cleaned_data) > 0:
+                    dict['values'][val.specification.attribute.key] = val.data
+            else:
+                dict['values'][val.specification.attribute.key] = val.data
 
         try:
             site = Site.objects.get(name=dict[u'source'])
