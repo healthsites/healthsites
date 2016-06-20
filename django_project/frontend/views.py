@@ -82,23 +82,23 @@ def search_place(request, place):
     result['locality_count'] = get_heathsites_master().count()
     result['countries'] = Country.objects.order_by('name').values('name').distinct()
     # geonames
-    google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
-    gmaps = googlemaps.Client(key=google_maps_api_key)
-    try:
-        geocode_result = gmaps.geocode(place)[0]
-        viewport = geocode_result['geometry']['viewport']
-        northeast_lat = viewport['northeast']['lat']
-        northeast_lng = viewport['northeast']['lng']
-        southwest_lat = viewport['southwest']['lat']
-        southwest_lng = viewport['southwest']['lng']
-        request.session['tempe_bongkrek'] = 'alfonso'
-        result['northeast_lat'] = "%f" % northeast_lat
-        result['northeast_lng'] = "%f" % northeast_lng
-        result['southwest_lat'] = "%f" % southwest_lat
-        result['southwest_lng'] = "%f" % southwest_lng
-
-    except:
-        print "getting place error"
+    if place:
+        google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+        gmaps = googlemaps.Client(key=google_maps_api_key)
+        try:
+            geocode_result = gmaps.geocode(place)[0]
+            viewport = geocode_result['geometry']['viewport']
+            northeast_lat = viewport['northeast']['lat']
+            northeast_lng = viewport['northeast']['lng']
+            southwest_lat = viewport['southwest']['lat']
+            southwest_lng = viewport['southwest']['lng']
+            request.session['tempe_bongkrek'] = 'alfonso'
+            result['northeast_lat'] = "%f" % northeast_lat
+            result['northeast_lng'] = "%f" % northeast_lng
+            result['southwest_lat'] = "%f" % southwest_lat
+            result['southwest_lng'] = "%f" % southwest_lng
+        except:
+            print "getting place error"
     return result
 
 
@@ -178,7 +178,6 @@ def map(request):
                                       'location': result['location']}
 
         if 'new_geom' in request.session:
-            print request.session['new_geom']
             result["new_geom"] = request.session['new_geom']
             del request.session['new_geom']
         return render_to_response(
