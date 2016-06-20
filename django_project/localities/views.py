@@ -491,12 +491,16 @@ class LocalityReportDuplicate(JSONResponseMixin, View):
         try:
             result = report_locality_as_unconfirmed_synonym(synonym.id, master.id)
         except Locality.DoesNotExist:
-            result = json.dumps({'success': "report has submitted"}, cls=DjangoJSONEncoder)
+            result = json.dumps(
+                {'success': "Your duplicate report has been submitted. It will be reviewed our data management team."},
+                cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
 
         if result:
-            result = json.dumps({'success': "report has submitted"}, cls=DjangoJSONEncoder)
+            result = json.dumps(
+                {'success': "Your duplicate report has been submitted. It will be reviewed our data management team."},
+                cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
         else:
-            result = json.dumps({'error': "this locality is already synonym of this master"}, cls=DjangoJSONEncoder)
+            result = json.dumps({'error': "this locality is already alias of this record"}, cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
