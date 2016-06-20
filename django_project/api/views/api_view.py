@@ -8,6 +8,7 @@ import json
 import dicttoxml
 
 from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponseRedirect
 
 
 class ApiView(View):
@@ -29,7 +30,10 @@ class ApiView(View):
             output = json.dumps({"type": "FeatureCollection", "features": response}, cls=DjangoJSONEncoder)
         else:
             output = json.dumps(response, cls=DjangoJSONEncoder)
-        print output
         output.replace("|", ",")
-        print output
         return output
+
+
+class Docs(View):
+    def get(self, request, *args, **kwargs):
+        return HttpResponseRedirect('https://github.com/healthsites/healthsites/wiki/API')

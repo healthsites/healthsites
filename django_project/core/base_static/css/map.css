@@ -645,13 +645,11 @@ table {
     font-family: "Raleway", sans-serif;
     font-size: 13px;
     text-align: center;
-    left: 50%;
     padding: 15px;
-    position: absolute;
+    position: fixed;
     margin-left: -200px;
     margin-top: 20px;
     width: 400px;
-    top: 20px;
 }
 
 #report-popup-text {

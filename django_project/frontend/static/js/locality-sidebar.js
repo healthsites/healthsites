@@ -495,14 +495,15 @@ window.LocalitySidebar = (function () {
                 //-----------------------------------------
                 // SHOW MASTERS
                 //-----------------------------------------
-                var synonyms = this.locality_data.masters;
+                var synonyms = this.locality_data.synonyms;
                 if (synonyms.length > 0) {
                     synonyms_indicator = '<div class="master-row">';
                     if (synonyms.length == 1) {
-                        synonyms_indicator += 'This is a <span class="highlight">synonym</span> record for ';
+                        synonyms_indicator += 'This is the <b>confirmed master</b> for this alias:';
                     } else {
-                        synonyms_indicator += 'This is a <span class="highlight">synonym</span> record for ';
+                        synonyms_indicator += 'This is the <b>confirmed master</b> for these aliases:';
                     }
+                    synonyms_indicator += "<ul>";
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
                         // check attribute
@@ -512,25 +513,20 @@ window.LocalitySidebar = (function () {
                             name = synonyms[i].name;
                         }
                         // render this
-                        var indicator = '<span id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</span>';
-                        if (i < synonyms.length - 1) {
-                            indicator += ", ";
-                        }
+                        var indicator = '<li id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</li>';
                         synonyms_indicator += indicator;
                     }
+                    synonyms_indicator += "</ul>";
                     synonyms_indicator += '</div>';
                 }
                 //-----------------------------------------
                 // SHOW SYNONYMS
                 //-----------------------------------------
-                var synonyms = this.locality_data.synonyms;
+                var synonyms = this.locality_data.masters;
                 if (synonyms.length > 0) {
                     synonyms_indicator += '<div class="master-row">';
-                    if (synonyms.length == 1) {
-                        synonyms_indicator += 'This is a <span class="highlight">master</span> record. It\'s synonym is ';
-                    } else {
-                        synonyms_indicator += 'This is a <span class="highlight">master</span> record. It\'s synonyms are ';
-                    }
+                    synonyms_indicator += 'This is the <b>confirmed alias</b> for this master: ';
+                    synonyms_indicator += "<ul>";
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
                         // check attribute
@@ -540,26 +536,20 @@ window.LocalitySidebar = (function () {
                             name = synonyms[i].name;
                         }
                         // render this
-                        var indicator = '<span id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</span>';
-                        if (i < synonyms.length - 1) {
-                            indicator += ", ";
-                        }
+                        var indicator = '<li id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</li>';
                         synonyms_indicator += indicator;
                     }
+                    synonyms_indicator += "</ul>";
                     synonyms_indicator += '</div>';
                 }
                 //-----------------------------------------
                 // SHOW POTENTIAL MASTERS
                 //-----------------------------------------
-                var synonyms = this.locality_data.potential_masters;
+                var synonyms = this.locality_data.unconfirmed_synonyms;
                 if (synonyms.length > 0) {
                     synonyms_indicator += '<div class="master-row">';
-                    if (synonyms.length == 1) {
-                        synonyms_indicator += 'This is a <span class="highlight">potential master</span> record for ';
-                    } else {
-                        synonyms_indicator += 'This is a <span class="highlight">potential master</span> record for ';
-                    }
-                    synonyms_indicator += 'POTENTIAL MASTERS</br>';
+                    synonyms_indicator += 'This is a <b>potential master</b> for ';
+                    synonyms_indicator += "<ul>";
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
                         // check attribute
@@ -569,25 +559,20 @@ window.LocalitySidebar = (function () {
                             name = synonyms[i].name;
                         }
                         // render this
-                        var indicator = '<span id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</span>';
-                        if (i < synonyms.length - 1) {
-                            indicator += ", ";
-                        }
+                        var indicator = '<li id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</li>';
                         synonyms_indicator += indicator;
                     }
+                    synonyms_indicator += "</ul>";
                     synonyms_indicator += '</div>';
                 }
                 //-----------------------------------------
                 // SHOW UNCONFIRMED SYNONYMS
                 //-----------------------------------------
-                var synonyms = this.locality_data.unconfirmed_synonyms;
+                var synonyms = this.locality_data.potential_masters;
                 if (synonyms.length > 0) {
                     synonyms_indicator += '<div class="master-row">';
-                    if (synonyms.length == 1) {
-                        synonyms_indicator += 'This is a <span class="highlight">potential synonym</span> record for ';
-                    } else {
-                        synonyms_indicator += 'This is a <span class="highlight">potential synonym</span> record for ';
-                    }
+                    synonyms_indicator += 'This is a <b>potential alias</b> for ';
+                    synonyms_indicator += "<ul>";
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
                         // check attribute
@@ -597,12 +582,10 @@ window.LocalitySidebar = (function () {
                             name = synonyms[i].name;
                         }
                         // render this
-                        var indicator = '<span id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</span>';
-                        if (i < synonyms.length - 1) {
-                            indicator += ", ";
-                        }
+                        var indicator = '<li id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</li>';
                         synonyms_indicator += indicator;
                     }
+                    synonyms_indicator += "</ul>";
                     synonyms_indicator += '</div>';
                 }
                 this.$locality_master_indicator.html(synonyms_indicator);
