@@ -12,13 +12,16 @@ window.MAP = (function () {
             this.MAP.setView([0, 0], 2);
         }
 
-        var osm = L.tileLayer('https://otile{s}-s.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
+        this.osm = L.tileLayer('https://otile{s}-s.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}', {
             type: 'map',
             ext: 'jpg',
             attribution: 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             subdomains: '1234'
         });
-        this.MAP.addLayer(osm);
+        this.aerial_map = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        });
+        this.MAP.addLayer(this.osm);
 
         this.redIcon = L.icon({
             iconUrl: '/static/img/healthsite-marker-red.png',
@@ -70,6 +73,46 @@ window.MAP = (function () {
             var nowURL = hasher.getURL().replace("#", "%23");
             javascript:window.open('https://twitter.com/intent/tweet?text=' + name + nowURL, 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
         });
+
+        // making control for sateloite/osm
+        var that = this;
+        L.Control.Command = L.Control.extend({
+            options: {
+                position: 'bottomleft',
+            },
+            onAdd: function (map) {
+                var controlDiv = L.DomUtil.create('div', 'leaflet-control-basemap leaflet-bar');
+                var that = this;
+
+                var basemapControl = L.DomUtil.create('a', "leaflet-control-basemap-child aerial-control", controlDiv);
+                basemapControl.title = 'Satellite View';
+                L.DomEvent
+                    .addListener(basemapControl, 'click', L.DomEvent.stopPropagation)
+                    .addListener(basemapControl, 'click', L.DomEvent.preventDefault)
+                    .addListener(basemapControl, 'click', function () {
+                        that.buttonClicked();
+                    });
+                this.basemapControl = basemapControl;
+                return controlDiv;
+            },
+            buttonClicked: function () {
+                if ($(this.basemapControl).hasClass("aerial-control")) {
+                    that.MAP.removeLayer(that.osm);
+                    that.MAP.addLayer(that.aerial_map);
+                    $(this.basemapControl).removeClass("aerial-control");
+                    $(this.basemapControl).addClass("osm-control");
+                    this.basemapControl.title = 'OSM View';
+                } else {
+                    that.MAP.addLayer(that.osm);
+                    that.MAP.removeLayer(that.aerial_map);
+                    $(this.basemapControl).addClass("aerial-control");
+                    $(this.basemapControl).removeClass("osm-control");
+                    this.basemapControl.title = 'Satellite View';
+                }
+            }
+        });
+        this.control = new L.Control.Command();
+        this.MAP.addControl(this.control);
     }
 
     // prototype
