@@ -12,6 +12,7 @@ from localities.models import Country
 
 class Command(BaseCommand):
     help = 'Import Localities from CSV file'
+    non_countries = ["Scarborough Reef"]
 
     def handle(self, *args, **options):
         Country.objects.all().delete()
@@ -80,4 +81,5 @@ class Command(BaseCommand):
                     geometry = geometry.geojson
                 country = Country(name=country_name)
                 country.polygon_geometry = geometry
-            country.save()
+            if not country_name in self.non_countries:
+                country.save()

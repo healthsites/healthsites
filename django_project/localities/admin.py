@@ -4,6 +4,7 @@ from masterization import promote_unconfirmed_synonym, reject_unconfirmed_synony
 from .models import (
     Attribute,
     Changeset,
+    Country,
     DataLoader,
     DataLoaderPermission,
     Domain,
@@ -199,3 +200,11 @@ class UnconfirmedSynonymAdmin(admin.ModelAdmin):
 
 
 admin.site.register(UnconfirmedSynonym, UnconfirmedSynonymAdmin)
+
+
+class CountryAdmin(ChangesetMixin, admin.ModelAdmin):
+    fields = ('name',)
+    ordering = ('name',)
+
+
+admin.site.register(Country, CountryAdmin)
