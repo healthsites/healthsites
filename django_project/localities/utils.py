@@ -510,6 +510,8 @@ def search_locality_by_spec_data(spec, data, uuid):
             output['location'] = {'x': "%f" % locality.geom.x, 'y': "%f" % locality.geom.y}
         except Locality.DoesNotExist:
             pass
+    output = json.dumps(output, cls=DjangoJSONEncoder)
+    output = json.loads(output)
     return output
 
 
@@ -518,7 +520,9 @@ def search_locality_by_tag(query):
         localities = Value.objects.filter(
             specification__attribute__key='tags').filter(data__icontains="|" + query + "|").values('locality')
         localities = get_heathsites_master().filter(id__in=localities)
-        return get_statistic(localities)
+        output = json.dumps(get_statistic(localities), cls=DjangoJSONEncoder)
+        output = json.loads(output)
+        return output
     except Value.DoesNotExist:
         return []
 
