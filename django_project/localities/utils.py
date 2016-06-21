@@ -22,18 +22,22 @@ from social_users.utils import get_profile
 
 
 def get_what_3_words(geom):
-    what3words_api_key = settings.WHAT3WORDS_API_KEY
-    api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, geom.y, geom.x)
-    request = requests.get(api_url, stream=True)
-    response = ''.join([line for line in request.iter_lines()])
-    response = response.replace(' ', '').replace('\n', '')
-    response = response.replace('}{', '},{')
-    data = json.loads(response)
-    if "words" in data:
-        what3words = '.'.join(data['words'])
-        print what3words
-        return what3words
-    return ""
+    from requests import Timeout, ConnectionError
+    try:
+        what3words_api_key = settings.WHAT3WORDS_API_KEY
+        api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, geom.y, geom.x)
+        request = requests.get(api_url, stream=True)
+        response = ''.join([line for line in request.iter_lines()])
+        response = response.replace(' ', '').replace('\n', '')
+        response = response.replace('}{', '},{')
+        data = json.loads(response)
+        if "words" in data:
+            what3words = '.'.join(data['words'])
+            print what3words
+            return what3words
+        return ""
+    except (Timeout, ConnectionError):
+        return ""
 
 
 def extract_updates(updates):
