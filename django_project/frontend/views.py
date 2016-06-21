@@ -180,7 +180,6 @@ def map(request):
         if 'new_geom' in request.session:
             result["new_geom"] = request.session['new_geom']
             del request.session['new_geom']
-        print result
         return render_to_response(
             'map.html',
             result,
