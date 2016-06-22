@@ -88,22 +88,23 @@ def get_country_statistic(query):
                 settings.CLUSTER_CACHE_DIR,
                 country.name + '_statistic'
             )
-            # try:
-            #     file = open(filename, 'r')
-            #     data = file.read()
-            #     output = json.loads(data)
-            # except IOError as e:
-            #     try:
-            # query for each of ATTRIBUTE
-            healthsites = get_heathsites_master().in_polygon(
-                polygons)
-            output = get_statistic(healthsites)
-            output = json.dumps(output, cls=DjangoJSONEncoder)
-            #     file = open(filename, 'w')
-            #     file.write(result)  # python will convert \n to os.linesep
-            #     file.close()  # you can omit in most cases as the destructor will call it
-            # except Exception as e:
-            #     pass
+            try:
+                file = open(filename, 'r')
+                data = file.read()
+                output = json.loads(data)
+            except IOError as e:
+                try:
+                    # query for each of ATTRIBUTE
+                    healthsites = get_heathsites_master().in_polygon(
+                        polygons)
+                    output = get_statistic(healthsites)
+                    output = json.dumps(output, cls=DjangoJSONEncoder)
+                    file = open(filename, 'w')
+                    file.write(output)  # python will convert \n to os.linesep
+                    file.close()  # you can omit in most cases as the destructor will call it
+                    output = json.loads(output)
+                except Exception as e:
+                    pass
         else:
             # get cache
             filename = os.path.join(
@@ -119,16 +120,16 @@ def get_country_statistic(query):
                     # query for each of attribute
                     healthsites = get_heathsites_master()
                     output = get_statistic(healthsites)
-                    result = json.dumps(output, cls=DjangoJSONEncoder)
+                    output = json.dumps(output, cls=DjangoJSONEncoder)
                     file = open(filename, 'w')
-                    file.write(result)  # python will convert \n to os.linesep
+                    file.write(output)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
+                    output = json.loads(output)
                 except Exception as e:
                     pass
 
     except Country.DoesNotExist:
         output = ""
-    output = json.loads(output)
     return output
 
 
