@@ -33,7 +33,6 @@ def get_what_3_words(geom):
         data = json.loads(response)
         if "words" in data:
             what3words = '.'.join(data['words'])
-            print what3words
             return what3words
         return ""
     except (Timeout, ConnectionError):
@@ -99,10 +98,11 @@ def get_country_statistic(query):
                     healthsites = get_heathsites_master().in_polygon(
                         polygons)
                     output = get_statistic(healthsites)
-                    result = json.dumps(output, cls=DjangoJSONEncoder)
+                    output = json.dumps(output, cls=DjangoJSONEncoder)
                     file = open(filename, 'w')
-                    file.write(result)  # python will convert \n to os.linesep
+                    file.write(output)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
+                    output = json.loads(output)
                 except Exception as e:
                     pass
         else:
@@ -120,10 +120,11 @@ def get_country_statistic(query):
                     # query for each of attribute
                     healthsites = get_heathsites_master()
                     output = get_statistic(healthsites)
-                    result = json.dumps(output, cls=DjangoJSONEncoder)
+                    output = json.dumps(output, cls=DjangoJSONEncoder)
                     file = open(filename, 'w')
-                    file.write(result)  # python will convert \n to os.linesep
+                    file.write(output)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
+                    output = json.loads(output)
                 except Exception as e:
                     pass
 
@@ -402,21 +403,28 @@ def get_update_detail(update):
 
 def localities_updates(locality_ids):
     updates = []
-    try:
-        # from locality archive
-        ids = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
-            '-changeset__created').values(
-            'changeset', 'object_id').annotate(
-            id=Min('id')).values('id')
-        updates_temp = LocalityArchive.objects.filter(object_id__in=locality_ids).filter(
-            id__in=ids).order_by(
-            '-changeset__created').values(
-            'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-            edit_count=Count('changeset'), locality_id=Max('object_id'))
-        for update in updates_temp:
-            updates.append(get_update_detail(update))
-    except LocalityArchive.DoesNotExist:
-        pass
+    # from locality archive
+    ids = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
+        '-changeset__created').values(
+        'changeset', 'object_id').annotate(
+        id=Min('id')).values('id')
+    updates_temp = LocalityArchive.objects.filter(object_id__in=locality_ids).filter(
+        id__in=ids).order_by(
+        '-changeset__created').values(
+        'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+        edit_count=Count('changeset'), locality_id=Max('object_id'))
+    changesets = []
+    for update in updates_temp:
+        changesets.append(update['changeset'])
+        updates.append(get_update_detail(update))
+
+    # get from locality if not in Locality Archive yet
+    updates_temp = locality_ids.exclude(changeset__in=changesets).order_by(
+        '-changeset__created').values(
+        'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
+        edit_count=Count('changeset'), locality_id=Max('id'))[:15]
+    for update in updates_temp:
+        updates.append(get_update_detail(update))
 
     updates.sort(key=extract_time, reverse=True)
     return updates[:10]
@@ -424,16 +432,26 @@ def localities_updates(locality_ids):
 
 def locality_updates(locality_id, date):
     updates = []
-    try:
-        updates1 = LocalityArchive.objects.filter(object_id=locality_id).filter(changeset__created__lt=date).order_by(
-            '-changeset__created').values(
-            'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-            edit_count=Count('changeset'))[:10]
-        for update in updates1:
+    updatestemp = LocalityArchive.objects.filter(object_id=locality_id).filter(
+        changeset__created__lt=date).order_by(
+        '-changeset__created').values(
+        'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+        edit_count=Count('changeset'))[:10]
+    changesets = []
+    for update in updatestemp:
+        changesets.append(update['changeset'])
+        updates.append(get_update_detail(update))
+
+    # get from locality if not in Locality Archive yet
+    updatestemp = Locality.objects.filter(id=locality_id).values(
+        'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+        edit_count=Count('changeset'))
+    for update in updatestemp:
+        if not update['changeset'] in changesets:
+            changesets.append(update['changeset'])
             updates.append(get_update_detail(update))
-        updates.sort(key=extract_time, reverse=True)
-    except LocalityArchive.DoesNotExist:
-        pass
+
+    updates.sort(key=extract_time, reverse=True)
     return updates[:10]
 
 
