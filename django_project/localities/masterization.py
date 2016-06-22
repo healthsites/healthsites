@@ -49,6 +49,7 @@ def promote_unconfirmed_synonym(id):
         # get unconfirmed
         unconfirmed_synonym = UnconfirmedSynonym.objects.get(id=id)
         result = downgrade_master_as_synonyms(unconfirmed_synonym.synonym.id, unconfirmed_synonym.locality.id)
+        print result
         if result:
             unconfirmed_synonym.delete()
         return result
@@ -102,9 +103,9 @@ def downgrade_master_as_synonyms(locality_id, master_id):
             for synonym in SynonymLocalities.objects.filter(locality=locality):
                 synonym.locality = master
                 synonym.save()
-            return True
         except SynonymLocalities.DoesNotExist:
             # create synonym relationship
             SynonymLocalities(locality=master, synonym=locality).save()
+        return True
     except Locality.DoesNotExist:
         return False

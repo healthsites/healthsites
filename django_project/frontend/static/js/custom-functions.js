@@ -42,7 +42,11 @@ function mapcount() {
     }
 
     // set top of report popup
-    $('#report-popup').css('top', $('.map-page #map').css('top'));
+    var offset = $('#map').offset();
+    if (offset) {
+        $('#report-popup').css('top', $('#map').css('top'));
+        $('#report-popup').css('left', ($('#map').width() / 2) + offset.left);
+    }
 }
 
 function policyshow() {

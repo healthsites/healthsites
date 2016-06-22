@@ -325,45 +325,44 @@ def search_locality_by_name(request):
     if request.method == 'GET':
         query = request.GET.get('q')
 
-        with_place = False
-        if "," in query:
-            place = query.split(",", 1)[1].strip()
-            query = query.split(",", 1)[0].strip()
-            if len(place) > 2:
-                with_place = True
-                google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
-                gmaps = googlemaps.Client(key=google_maps_api_key)
-                try:
-                    geocode_result = gmaps.geocode(place)[0]
-                    viewport = geocode_result['geometry']['viewport']
-                    polygon = parse_bbox("%s,%s,%s,%s" % (
-                        viewport['southwest']['lng'], viewport['southwest']['lat'], viewport['northeast']['lng'],
-                        viewport['northeast']['lat']))
-                    healthsites = get_heathsites_master().in_polygon(
-                        polygon)
-                except Exception as e:
-                    healthsites = []
+        try:
+            healthsites = get_heathsites_master()
+            if "," in query:
+                place = query.split(",", 1)[1].strip()
+                query = query.split(",", 1)[0].strip()
+                if len(place) > 2:
+                    with_place = True
+                    google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
+                    gmaps = googlemaps.Client(key=google_maps_api_key)
+                    try:
+                        geocode_result = gmaps.geocode(place)[0]
+                        viewport = geocode_result['geometry']['viewport']
+                        polygon = parse_bbox("%s,%s,%s,%s" % (
+                            viewport['southwest']['lng'], viewport['southwest']['lat'], viewport['northeast']['lng'],
+                            viewport['northeast']['lat']))
+                        healthsites = healthsites.in_polygon(
+                            polygon)
+                    except Exception as e:
+                        print e
+                        healthsites = []
 
-        names_start_with = Value.objects.filter(
-            specification__attribute__key='name').filter(
-            data__istartswith=query).order_by('data')
-        names_contains_with = Value.objects.filter(
-            specification__attribute__key='name').filter(
-            data__icontains=query).exclude(data__istartswith=query).order_by('data')
-        if with_place:
-            names_start_with = names_start_with.filter(locality__in=healthsites)
-            names_contains_with = names_contains_with.filter(locality__in=healthsites)
+            names_start_with = healthsites.filter(
+                name__istartswith=query).order_by('name')
+            names_contains_with = healthsites.filter(
+                name__icontains=query).exclude(name__istartswith=query).order_by('name')
 
-        result = []
-        # start with with query
-        for name_start_with in names_start_with:
-            result.append(name_start_with.data)
+            result = []
+            # start with with query
+            for name_start_with in names_start_with:
+                result.append(name_start_with.name)
 
-        # contains with query
-        for name_contains_with in names_contains_with:
-            result.append(name_contains_with.data)
-        result = json.dumps(result)
-        return HttpResponse(result, content_type='application/json')
+            # contains with query
+            for name_contains_with in names_contains_with:
+                result.append(name_contains_with.name)
+            result = json.dumps(result)
+            return HttpResponse(result, content_type='application/json')
+        except Exception as e:
+            print e
 
 
 def search_locality_by_what3words(request):
@@ -487,17 +486,21 @@ class LocalityReportDuplicate(JSONResponseMixin, View):
             return HttpResponse(result, content_type='application/json')
 
         if synonym == master:
-            result = json.dumps({'error': "cannot assign duplication to itself"}, cls=DjangoJSONEncoder)
+            result = json.dumps({'error': "cannot report duplication to itself"}, cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
         try:
             result = report_locality_as_unconfirmed_synonym(synonym.id, master.id)
         except Locality.DoesNotExist:
-            result = json.dumps({'success': "report has submitted"}, cls=DjangoJSONEncoder)
+            result = json.dumps(
+                {'success': "Your duplicate report has been submitted. It will be reviewed by our data management team."},
+                cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
 
         if result:
-            result = json.dumps({'success': "report has submitted"}, cls=DjangoJSONEncoder)
+            result = json.dumps(
+                {'success': "Your duplicate report has been submitted. It will be reviewed by our data management team."},
+                cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
         else:
-            result = json.dumps({'error': "this locality is already synonym of this master"}, cls=DjangoJSONEncoder)
+            result = json.dumps({'error': "this locality is already alias of this record"}, cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')

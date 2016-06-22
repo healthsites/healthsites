@@ -980,6 +980,36 @@ section.container {
 .ui-autocomplete li {
     border-bottom: #e5e5e5 1px solid;
 }
+
 .ui-autocomplete li:last-child {
     border-bottom: none;
 }
+
+/*-----------------------------------------*/
+/*basemap control*/
+.leaflet-control-basemap {
+    cursor: pointer;
+    background-color: white;
+    height: 75px;
+    padding: 5px;
+    width: 75px;
+}
+
+.leaflet-control-basemap-child {
+    background-size: 70px auto !important;
+    border: none !important;
+    border-radius: 0px !important;
+    height: 100% !important;;
+    width: 100% !important;
+
+}
+
+.aerial-control {
+    background: url("/static/img/aerial_control.png");
+}
+
+.osm-control {
+    background: url("/static/img/osm_control.png");
+}
+
+/*-----------------------------------------*/

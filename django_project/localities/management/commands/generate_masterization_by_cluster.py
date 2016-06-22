@@ -34,16 +34,6 @@ class Command(BaseCommand):
             # icon sizes should be positive
             raise CommandError('Icon sizes should be positive numbers')
 
-        # get user that responsibility to change this
-        user = None
-        try:
-            user = User.objects.get(username="sharehealthdata")
-        except User.DoesNotExist:
-            try:
-                user = User.objects.get(username="admin")
-            except User.DoesNotExist:
-                pass
-
         localities = Locality.objects.all()
         loc_clusters = cluster(localities, self.MAX_ZOOM, icon_size[0], icon_size[1], True)
         number = len(loc_clusters)
@@ -52,6 +42,7 @@ class Command(BaseCommand):
             print "%s/%s count : %s" % (index, number, loc_cluster['count'])
             index += 1
             if loc_cluster['count'] > 1:
+                print loc_cluster['localities']
                 for potential_master in loc_cluster['localities']:
                     for potential_synonym in loc_cluster['localities']:
                         if potential_master != potential_synonym:

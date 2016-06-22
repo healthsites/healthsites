@@ -495,9 +495,15 @@ window.LocalitySidebar = (function () {
                 //-----------------------------------------
                 // SHOW MASTERS
                 //-----------------------------------------
-                var synonyms = this.locality_data.masters;
+                var synonyms = this.locality_data.synonyms;
                 if (synonyms.length > 0) {
-                    synonyms_indicator += 'MASTER</br>';
+                    synonyms_indicator = '<div class="master-row">';
+                    if (synonyms.length == 1) {
+                        synonyms_indicator += 'This is the <b>confirmed master</b> for this alias:';
+                    } else {
+                        synonyms_indicator += 'This is the <b>confirmed master</b> for these aliases:';
+                    }
+                    synonyms_indicator += "<ul>";
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
                         // check attribute
@@ -507,22 +513,20 @@ window.LocalitySidebar = (function () {
                             name = synonyms[i].name;
                         }
                         // render this
-                        var indicator = '<span id="' + uuid + '" class="master-uuid" onclick="synonyms_clicked(this)">' + name + '</span>';
-                        if (i < synonyms.length - 1) {
-                            indicator += ", ";
-                        }
+                        var indicator = '<li id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</li>';
                         synonyms_indicator += indicator;
                     }
+                    synonyms_indicator += "</ul>";
+                    synonyms_indicator += '</div>';
                 }
                 //-----------------------------------------
                 // SHOW SYNONYMS
                 //-----------------------------------------
-                var synonyms = this.locality_data.synonyms;
+                var synonyms = this.locality_data.masters;
                 if (synonyms.length > 0) {
-                    if (synonyms_indicator.length > 0) {
-                        synonyms_indicator += "<br>";
-                    }
-                    synonyms_indicator += 'SYNONYMS</br>';
+                    synonyms_indicator += '<div class="master-row">';
+                    synonyms_indicator += 'This is the <b>confirmed alias</b> for this master: ';
+                    synonyms_indicator += "<ul>";
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
                         // check attribute
@@ -532,22 +536,20 @@ window.LocalitySidebar = (function () {
                             name = synonyms[i].name;
                         }
                         // render this
-                        var indicator = '<span id="' + uuid + '" class="master-uuid" onclick="synonyms_clicked(this)">' + name + '</span>';
-                        if (i < synonyms.length - 1) {
-                            indicator += ", ";
-                        }
+                        var indicator = '<li id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</li>';
                         synonyms_indicator += indicator;
                     }
+                    synonyms_indicator += "</ul>";
+                    synonyms_indicator += '</div>';
                 }
                 //-----------------------------------------
                 // SHOW POTENTIAL MASTERS
                 //-----------------------------------------
-                var synonyms = this.locality_data.potential_masters;
+                var synonyms = this.locality_data.unconfirmed_synonyms;
                 if (synonyms.length > 0) {
-                    if (synonyms_indicator.length > 0) {
-                        synonyms_indicator += "<br>";
-                    }
-                    synonyms_indicator += 'POTENTIAL MASTERS</br>';
+                    synonyms_indicator += '<div class="master-row">';
+                    synonyms_indicator += 'This is a <b>potential master</b> for ';
+                    synonyms_indicator += "<ul>";
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
                         // check attribute
@@ -557,22 +559,20 @@ window.LocalitySidebar = (function () {
                             name = synonyms[i].name;
                         }
                         // render this
-                        var indicator = '<span id="' + uuid + '" class="master-uuid" onclick="synonyms_clicked(this)">' + name + '</span>';
-                        if (i < synonyms.length - 1) {
-                            indicator += ", ";
-                        }
+                        var indicator = '<li id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</li>';
                         synonyms_indicator += indicator;
                     }
+                    synonyms_indicator += "</ul>";
+                    synonyms_indicator += '</div>';
                 }
                 //-----------------------------------------
                 // SHOW UNCONFIRMED SYNONYMS
                 //-----------------------------------------
-                var synonyms = this.locality_data.unconfirmed_synonyms;
+                var synonyms = this.locality_data.potential_masters;
                 if (synonyms.length > 0) {
-                    if (synonyms_indicator.length > 0) {
-                        synonyms_indicator += "<br>";
-                    }
-                    synonyms_indicator += 'POTENTIAL SYNONYMS</br>';
+                    synonyms_indicator += '<div class="master-row">';
+                    synonyms_indicator += 'This is a <b>potential alias</b> for ';
+                    synonyms_indicator += "<ul>";
                     for (var i = 0; i < synonyms.length; i++) {
                         // synonym's attribute
                         // check attribute
@@ -582,12 +582,11 @@ window.LocalitySidebar = (function () {
                             name = synonyms[i].name;
                         }
                         // render this
-                        var indicator = '<span id="' + uuid + '" class="master-uuid" onclick="synonyms_clicked(this)">' + name + '</span>';
-                        if (i < synonyms.length - 1) {
-                            indicator += ", ";
-                        }
+                        var indicator = '<li id="' + uuid + '" class="master-uuid highlight" onclick="synonyms_clicked(this)">' + name + '</li>';
                         synonyms_indicator += indicator;
                     }
+                    synonyms_indicator += "</ul>";
+                    synonyms_indicator += '</div>';
                 }
                 this.$locality_master_indicator.html(synonyms_indicator);
                 if (synonyms_indicator.length == 0) {
@@ -610,8 +609,7 @@ window.LocalitySidebar = (function () {
 
             // LOCALITY NAME
             {
-                var name = this.locality_data.values['name'];
-                delete keys[this.getIndex(keys, 'name')];
+                var name = this.locality_data.name;
                 if (this.isHasValue(name)) {
                     this.$name.text(name);
                     this.$name_input.val(name);
@@ -623,7 +621,7 @@ window.LocalitySidebar = (function () {
                 var what3words = this.locality_data.values['what3words'];
                 delete keys[this.getIndex(keys, 'what3words')];
                 if (this.isHasValue(what3words)) {
-                    this.$what3words.text(what3words);
+                    this.$what3words.text('W3W : ' + what3words);
                     this.$what3words.show();
                 }
             }
@@ -820,18 +818,16 @@ window.LocalitySidebar = (function () {
             // DATA-SOURCE
             var url_isupdated = false;
             {
-                var url = this.locality_data.values['data_source'];
-                var url_domain = this.locality_data.values['data_source_url'];
-                delete keys[this.getIndex(keys, 'data_source')];
-                delete keys[this.getIndex(keys, 'data_source_url')];
+                var url = this.locality_data.source;
+                var url_domain = this.locality_data.source_url;
                 if (this.isHasValue(url)) {
                     var html = '<p class="url"><i class="fa fa-link"></i><a';
                     if (this.isHasValue(url_domain)) {
                         html += ' href="' + url_domain + '"';
                     }
                     html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">' + url + '</a></p>';
-                    //this.$url.html(html);
-                    //url_isupdated = true;
+                    this.$url.html(html);
+                    url_isupdated = true;
                 }
             }
 
@@ -889,9 +885,13 @@ window.LocalitySidebar = (function () {
             }
             // OTHER
             {
+                var html = "<p><strong>uuid: </strong><span>" + this.locality_data.uuid + "</span></p>";
                 keys = cleanArray(keys);
                 if (keys.length > 0) {
-                    this.$other_data.html("");
+                    this.$other_data.html(html);
+                } else {
+                    this.$other_data.html(html + no_others_found);
+
                 }
                 for (var i = 0; i < keys.length; i++) {
                     if (typeof keys[i] !== 'undefined') {
@@ -1295,6 +1295,7 @@ window.LocalitySidebar = (function () {
             }
         },
         reportDuplication: function (uuid) {
+            var self = this;
             $.ajax({
                 url: "/report",
                 method: 'POST',
@@ -1313,6 +1314,7 @@ window.LocalitySidebar = (function () {
                     } else if (data.error) {
                         alert(data.error);
                     }
+                    self.getInfo(null, null);
                 },
                 error: function (request, error) {
 
