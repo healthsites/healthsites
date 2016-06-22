@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Count, Max
+from django.db.models import Count, Max, Min
 from localities.models import Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification, \
     SynonymLocalities, UnconfirmedSynonym, User, Value, ValueArchive
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
@@ -393,44 +393,33 @@ def get_statistic(healthsites):
     return output
 
 
+def get_update_detail(update):
+    profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
+    update['nickname'] = profile.screen_name
+    update['changeset__created'] = update['changeset__created']
+    return update
+
+
 def localities_updates(locality_ids):
     updates = []
     try:
         # from locality archive
-        updates_temp = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
+        ids = LocalityArchive.objects.filter(object_id__in=locality_ids).order_by(
+            '-changeset__created').values(
+            'changeset', 'object_id').annotate(
+            id=Min('id')).values('id')
+        updates_temp = LocalityArchive.objects.filter(object_id__in=locality_ids).filter(
+            id__in=ids).order_by(
             '-changeset__created').values(
             'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-            edit_count=Count('changeset'), locality_id=Max('object_id'))[:15]
+            edit_count=Count('changeset'), locality_id=Max('object_id'))
         for update in updates_temp:
-            updates.append(update)
-        # from value archive
-        updates_temp = ValueArchive.objects.filter(locality_id__in=locality_ids).filter(version__gt=1).order_by(
-            '-changeset__created').values(
-            'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-            edit_count=Count('changeset'), locality_id=Max('locality_id'))[:15]
-        for update in updates_temp:
-            updates.append(update)
-        # from locality changeset
-        updates_temp = locality_ids.order_by(
-            '-changeset__created').values(
-            'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-            edit_count=Count('changeset'), locality_id=Max('id'))[:15]
-        for update in updates_temp:
-            updates.append(update)
-        updates.sort(key=extract_time, reverse=True)
+            updates.append(get_update_detail(update))
     except LocalityArchive.DoesNotExist:
         pass
 
-    output = []
-    prev_changeset = 0
-    for update in updates:
-        if prev_changeset != update['changeset']:
-            profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
-            update['nickname'] = profile.screen_name
-            update['changeset__created'] = update['changeset__created']
-            output.append(update)
-        prev_changeset = update['changeset']
-    return output[:10]
+    updates.sort(key=extract_time, reverse=True)
+    return updates[:10]
 
 
 def locality_updates(locality_id, date):
@@ -439,30 +428,13 @@ def locality_updates(locality_id, date):
         updates1 = LocalityArchive.objects.filter(object_id=locality_id).filter(changeset__created__lt=date).order_by(
             '-changeset__created').values(
             'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-            edit_count=Count('changeset'))[:15]
+            edit_count=Count('changeset'))[:10]
         for update in updates1:
-            updates.append(update)
-        updates2 = ValueArchive.objects.filter(locality_id=locality_id).filter(
-            changeset__created__lt=date).order_by(
-            '-changeset__created').values(
-            'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
-            edit_count=Count('changeset'))[:15]
-        for update in updates2:
-            updates.append(update)
+            updates.append(get_update_detail(update))
         updates.sort(key=extract_time, reverse=True)
     except LocalityArchive.DoesNotExist:
         pass
-
-    output = []
-    prev_changeset = 0
-    for update in updates:
-        if prev_changeset != update['changeset']:
-            profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
-            update['nickname'] = profile.screen_name
-            update['changeset__created'] = update['changeset__created']
-            output.append(update)
-        prev_changeset = update['changeset']
-    return output[:10]
+    return updates[:10]
 
 
 def get_locality_by_spec_data(spec, data, uuid):

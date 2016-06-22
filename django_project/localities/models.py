@@ -246,8 +246,9 @@ class Locality(UpdateMixin, ChangesetMixin):
         )
 
         # calculate completeness
-        self.completeness = self.calculate_completeness()
-        self.save()
+        if changed_values:
+            self.completeness = self.calculate_completeness()
+            self.save()
 
         return changed_values
 

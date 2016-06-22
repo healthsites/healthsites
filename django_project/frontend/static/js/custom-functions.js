@@ -43,8 +43,10 @@ function mapcount() {
 
     // set top of report popup
     var offset = $('#map').offset();
-    $('#report-popup').css('top', $('#map').css('top'));
-    $('#report-popup').css('left', ($('#map').width() / 2) + offset.left);
+    if (offset) {
+        $('#report-popup').css('top', $('#map').css('top'));
+        $('#report-popup').css('left', ($('#map').width() / 2) + offset.left);
+    }
 }
 
 function policyshow() {

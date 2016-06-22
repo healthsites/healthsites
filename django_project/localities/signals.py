@@ -110,6 +110,7 @@ def locality_archive_handler(sender, instance, created, raw, **kwargs):
     archive.geom = instance.geom
     archive.name = instance.name
     archive.source = instance.source
+    archive.save()
 
 
 @receiver(post_save, sender=Value)
@@ -126,7 +127,6 @@ def value_archive_handler(sender, instance, created, raw, **kwargs):
     archive.locality_id = instance.locality.pk
     archive.specification_id = instance.specification.pk
     archive.data = instance.data
-
     archive.save()
 
 
