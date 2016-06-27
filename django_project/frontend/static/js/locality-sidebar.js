@@ -816,7 +816,7 @@ window.LocalitySidebar = (function () {
             }
 
             // DATA-SOURCE
-            var url_isupdated = false;
+            var source_html = "";
             {
                 var url = this.locality_data.source;
                 var url_domain = this.locality_data.source_url;
@@ -826,8 +826,7 @@ window.LocalitySidebar = (function () {
                         html += ' href="' + url_domain + '"';
                     }
                     html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">' + url + '</a></p>';
-                    this.$url.html(html);
-                    url_isupdated = true;
+                    source_html += html;
                 }
             }
 
@@ -836,13 +835,10 @@ window.LocalitySidebar = (function () {
                 var url = this.locality_data.values['raw_source'];
                 delete keys[this.getIndex(keys, 'raw_source')];
                 if (this.isHasValue(url)) {
-                    if (url_isupdated) {
-                        this.$url.append('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data" target="_blank">Raw Data</a></span></p>');
-                    } else {
-                        this.$url.html('<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data" target="_blank">Raw Data</a></span></p>');
-                    }
+                    source_html += '<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data" target="_blank">Raw Data</a></span></p>';
                 }
             }
+            this.$url.html(source_html);
             $('[data-toggle="tooltip"]').tooltip();
 
             // DEFINING HOURS
