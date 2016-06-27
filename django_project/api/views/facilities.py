@@ -19,10 +19,10 @@ class FacilitiesApiView(ApiView):
     - page : returns 100 facilities for each of page
     """
 
-    def get_heathsites_master_by_page(self, page):
+    def get_heathsites_by_page(self, healthsites_query, page=1):
         try:
             healthsites = []
-            paginator = Paginator(get_heathsites_master(), 100)
+            paginator = Paginator(healthsites_query, 100)
             page = paginator.page(page)
             for healthsite in page:
                 if self.format == 'geojson':
@@ -35,26 +35,40 @@ class FacilitiesApiView(ApiView):
 
     def get(self, request, *args, **kwargs):
         super(FacilitiesApiView, self).get(request)
-        if 'extent' in request.GET:
-            polygon = parse_bbox(request.GET.get('extent'))
-            facilities = get_heathsites_master().in_polygon(polygon)
-        elif 'page' in request.GET:
-            page = request.GET.get('page')
+        # checking page
+        if 'page' not in request.GET:
+            page = None
+        else:
             try:
+                page = request.GET.get('page')
                 page = int(page)
                 if page == 0:
                     return HttpResponse(
                         self.formating_response({'error': "page less than 1"}),
                         content_type='application/json')
-                facilities = self.get_heathsites_master_by_page(page)
-                return HttpResponse(
-                    self.formating_response(facilities),
-                    content_type='application/json')
-
             except ValueError:
                 return HttpResponse(
                     self.formating_response({'error': "page is not a number"}),
                     content_type='application/json')
+
+        # get data
+        if 'extent' in request.GET:
+            polygon = parse_bbox(request.GET.get('extent'))
+            if not page:
+                page = 1
+            facilities = self.get_heathsites_by_page(get_heathsites_master().in_polygon(polygon), page)
+            return HttpResponse(
+                self.formating_response(facilities),
+                content_type='application/json')
+        elif 'page' in request.GET:
+            if not page:
+                return HttpResponse(
+                    self.formating_response({'error': "page is wrong type"}),
+                    content_type='application/json')
+            facilities = self.get_heathsites_by_page(get_heathsites_master(), page)
+            return HttpResponse(
+                self.formating_response(facilities),
+                content_type='application/json')
         else:
             return HttpResponse(
                 self.formating_response({'error': "need parameter"}),
@@ -67,6 +81,7 @@ class FacilitiesApiView(ApiView):
             else:
                 facilities_dict.append(json_serializer(healthsite))
 
+        print facilities
         return HttpResponse(
             self.formating_response(facilities_dict),
             content_type='application/json')

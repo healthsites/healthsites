@@ -44,6 +44,11 @@ class LocalitySearchApiView(ApiView):
         place_name = request.GET['name']
         search_type = request.GET['search_type']
 
+        if not place_name:
+            return HttpResponse(
+                self.formating_response({'error': "place name parameter can't be empty"}),
+                content_type='application/json')
+
         if search_type == "placename":
             try:
                 country = Country.objects.get(name__icontains=place_name)
