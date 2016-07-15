@@ -73,15 +73,3 @@ class FacilitiesApiView(ApiView):
             return HttpResponse(
                 self.formating_response({'error': "need parameter"}),
                 content_type='application/json')
-
-        facilities_dict = []
-        for healthsite in facilities:
-            if self.format == 'geojson':
-                facilities_dict.append(geojson_serializer(healthsite))
-            else:
-                facilities_dict.append(json_serializer(healthsite))
-
-        print facilities
-        return HttpResponse(
-            self.formating_response(facilities_dict),
-            content_type='application/json')

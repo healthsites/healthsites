@@ -175,3 +175,9 @@ def regenerate_cache(self, changeset_pk, locality_pk):
 def regenerate_cache_cluster(self):
     from django.core.management import call_command
     call_command('gen_cluster_cache', 48, 46)
+
+from django.core import management
+from celery import shared_task
+@shared_task(name='localities.tasks.generate_shapefile')
+def generate_shapefile():
+    management.call_command('generate_shapefile')

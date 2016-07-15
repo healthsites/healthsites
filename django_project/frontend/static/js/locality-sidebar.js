@@ -832,8 +832,8 @@ window.LocalitySidebar = (function () {
 
             // ROW-DATA
             {
-                var url = this.locality_data.values['raw_source'];
-                delete keys[this.getIndex(keys, 'raw_source')];
+                var url = this.locality_data.values['raw-source'];
+                delete keys[this.getIndex(keys, 'raw-source')];
                 if (this.isHasValue(url)) {
                     source_html += '<p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href="' + url + '" data-toggle="tooltip" title="Link to Raw data" target="_blank">Raw Data</a></span></p>';
                 }

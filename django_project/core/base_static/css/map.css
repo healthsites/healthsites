@@ -675,3 +675,14 @@ table {
     padding-right: 0px !important;
     padding-left: 10px !important;
 }
+
+a.inner-navbar-brand {
+    cursor: pointer;
+}
+
+a.inner-navbar-brand:hover {
+    opacity: 0.8;
+    color: #f44a52;
+    font-weight: 700;
+    text-decoration: none;
+}
