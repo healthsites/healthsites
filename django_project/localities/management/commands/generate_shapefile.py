@@ -9,10 +9,13 @@ import os
 import shapefile
 import zipfile
 from django.conf import settings
-from localities.models import Domain, Specification
+from localities.models import Domain, Specification, Country
 from localities.utils import get_heathsites_master
 
-directory = settings.CLUSTER_CACHE_DIR + "/facilities"
+directory_cache = settings.CLUSTER_CACHE_DIR + "/shapefiles"
+directory_media = settings.MEDIA_ROOT + "/shapefiles"
+fields = [u'uuid', u'upstream', u'source', u'name', u'version', u'date_modified', u'completeness', u'source_url',
+          u'raw-source']
 
 
 def zipdir(path, ziph):
@@ -25,50 +28,52 @@ def zipdir(path, ziph):
             ziph.write(absname, arcname)
 
 
-def insert_to_shapefile(healthsites):
-    fields = [u'uuid', u'upstream', u'source', u'name', u'version', u'date_modified', u'completeness', u'source_url',
-              u'raw-source']
+def insert_to_shapefile(healthsites, shp_filename):
     try:
-        domain = Domain.objects.get(name="Health")
-        specifications = Specification.objects.filter(domain=domain)
-
-        for specification in specifications:
-            fields.append(specification.attribute.key)
+        shp = None
+        shp = shapefile.Writer(shapefile.POINT)
+        for field in fields:
+            shp.field(str(field), 'C', 100)
 
         # write world cache
-        filename = os.path.join(directory, 'facilities')
-        w = shapefile.Writer(shapefile.POINT)
-        for field in fields:
-            w.field(str(field), 'C', 100)
+        dir_cache = directory_cache + "/" + shp_filename
+        filename = os.path.join(dir_cache, shp_filename)
+        if not os.path.exists(dir_cache):
+            os.makedirs(dir_cache)
 
         # get from healthsites
         total = healthsites.count()
-        now = 1
-        for healthsite in healthsites:
-            values = []
-            dict = healthsite.repr_dict(clean=True)
-            for field in fields:
-                value = ""
-                if field in dict:
-                    value = dict[field]
-                elif field in dict['values']:
-                    value = dict['values'][field]
-                try:
-                    value = str(value.encode('utf8'))
-                except AttributeError:
-                    pass
-                values.append(value)
-            print "converted %d / %d" % (now, total)
-            print values
-            w.point(dict['geom'][0], dict['geom'][1])
-            w.record(*values)
-            now += 1
-        w.save(filename)
-        # zip this output
-        filename = os.path.join(settings.MEDIA_ROOT, "facilities_shapefile.zip")
-        zipf = zipfile.ZipFile(filename, 'w', zipfile.ZIP_DEFLATED)
-        zipdir(directory, zipf)
-        zipf.close()
+        print "generating shape object for " + shp_filename
+        if total > 0:
+            now = 1
+            for healthsite in healthsites:
+                values = []
+                dict = healthsite.repr_dict(clean=True)
+                for field in fields:
+                    value = ""
+                    if field in dict:
+                        value = dict[field]
+                    elif field in dict['values']:
+                        value = dict['values'][field]
+                    try:
+                        value = str(value.encode('utf8'))
+                    except AttributeError:
+                        pass
+                    values.append(value)
+                print "converted %d / %d" % (now, total)
+                shp.point(dict['geom'][0], dict['geom'][1])
+                shp.record(*values)
+                now += 1
+            shp.save(filename)
+            print "zipping"
+            # zip this output
+            if not os.path.exists(directory_media):
+                os.makedirs(directory_media)
+            filename = os.path.join(directory_media, shp_filename + "_shapefile.zip")
+            zipf = zipfile.ZipFile(filename, 'w', allowZip64=True)
+            zipdir(dir_cache, zipf)
+            zipf.close()
+            print "done"
     except Domain.DoesNotExist:
         pass
 
@@ -77,4 +82,18 @@ class Command(BaseCommand):
     help = 'generate shapefile for data in bulk'
 
     def handle(self, *args, **options):
-        insert_to_shapefile(get_heathsites_master())
+        domain = Domain.objects.get(name="Health")
+        specifications = Specification.objects.filter(domain=domain)
+
+        for specification in specifications:
+            fields.append(specification.attribute.key)
+
+        countries = Country.objects.all().order_by('name')
+        for country in countries:
+            polygons = country.polygon_geometry
+            # query for each of ATTRIBUTE
+            healthsites = get_heathsites_master().in_polygon(
+                polygons)
+            insert_to_shapefile(healthsites, country.name)  # generate shapefiles for country
+
+        insert_to_shapefile(get_heathsites_master(), 'facilities')  # generate shapefiles for all country
