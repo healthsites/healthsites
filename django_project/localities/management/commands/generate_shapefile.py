@@ -28,6 +28,15 @@ def zipdir(path, ziph):
             ziph.write(absname, arcname)
 
 
+# funtion to generate a .prj file
+def getWKT_PRJ(epsg_code):
+    import urllib
+    wkt = urllib.urlopen("http://spatialreference.org/ref/epsg/{0}/prettywkt/".format(epsg_code))
+    remove_spaces = wkt.read().replace(" ", "")
+    output = remove_spaces.replace("\n", "")
+    return output
+
+
 def insert_to_shapefile(healthsites, shp_filename):
     try:
         shp = None
@@ -65,8 +74,20 @@ def insert_to_shapefile(healthsites, shp_filename):
                 shp.record(*values)
                 now += 1
             shp.save(filename)
-            print "zipping"
+
+            # create .cpg
+            file = open(dir_cache + "/" + shp_filename + ".cpg", 'w+')
+            file.write("UTF-8")
+            file.close()
+
+            # create .prj
+            prj = open(dir_cache + "/" + shp_filename + ".prj", "w")
+            epsg = getWKT_PRJ("4326")
+            prj.write(epsg)
+            prj.close()
+
             # zip this output
+            print "zipping"
             if not os.path.exists(directory_media):
                 os.makedirs(directory_media)
             filename = os.path.join(directory_media, shp_filename + "_shapefile.zip")
