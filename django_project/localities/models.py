@@ -271,6 +271,11 @@ class Locality(UpdateMixin, ChangesetMixin):
         dict['values'] = {}
         for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact=''):
             if clean:
+                # clean if empty
+                temp = val.data.replace("|", "")
+                if len(temp) == 0:
+                    val.data = ""
+                # clean data
                 val.data = val.data.replace("|", ",")
                 val.specification.attribute.key = val.specification.attribute.key.replace("_", "-")
                 cleaned_data = val.data.replace(",", "")
@@ -300,7 +305,7 @@ class Locality(UpdateMixin, ChangesetMixin):
                     url = 'http://www.openstreetmap.org/way/' + osm_id
 
                 if url:
-                    dict[u'values']['raw_source'] = url
+                    dict[u'values']['raw-source'] = url
         return dict
 
     def is_type(self, value):

@@ -90,7 +90,7 @@ uwsgi:
 worker:
   build: docker
   hostname: worker
-  command: celery worker -A localities -l info
+  command: celery worker -A localities -l info --beat
   environment:
     - DATABASE_NAME=gis
     - DATABASE_USERNAME=docker

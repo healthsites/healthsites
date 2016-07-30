@@ -198,6 +198,10 @@
                         agencies and citizens who need access to highly curated global dataset of healthcare
                         facilities.
                     </p>
+                    <p>
+                        You can get all data from healthsite in this
+                        <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile</a>
+                    </p>
                     <h2 class="sidebar-title "><span data-speed="2500"
                                                      data-to="{{ locality_count }}">{{ locality_count }}</span>
                         healthsites listed</h2>
@@ -216,6 +220,10 @@
                     <span id="number-locality" style="margin-left: 5px; margin-right: 5px"> 0 </span>
                     healthsites
                 </div>
+                <p id="country-shapefiles" class="header" style="padding-bottom: 10px; display: none">
+                    You can get all data from healthsite in this
+                    <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile</a>
+                </p>
 
                 <div style="padding: 20px">
                     <div>
@@ -750,6 +758,8 @@
             {% endif %}
             $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
         {% elif country %}
+            $("#country-shapefiles").show();
+            $("#country-shapefiles").html('You can get all data from {{ country }} in this <a class="inner-navbar-brand" href="/media/shapefiles/{{ country }}_shapefile.zip">shapefile</a>')
             $("#title-name").html("{{ country }}");
             $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
             // creating polygon
