@@ -80,10 +80,7 @@ Prepare your database and static resources by doing this:
 virtualenv venv
 source venv/bin/activate
 cd django_project
-python manage.py migrate
+export RABBITMQ_HOST=localhost
+python manage.py migrate --settings=core.settings.dev_${USER}
 python manage.py collectstatic --noinput --settings=core.settings.dev_${USER}
 ```
-
-
-
-
