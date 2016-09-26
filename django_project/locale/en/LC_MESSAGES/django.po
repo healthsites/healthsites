@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-26 12:26+0000\n"
+"POT-Creation-Date: 2016-09-26 13:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -193,47 +193,108 @@ msgstr "Privacy Policy"
 msgid "About Healthsites"
 msgstr "About Healthsites"
 
-#: frontend/templates/about.html:40
+#: frontend/templates/about.html:15
+msgid "about_paragraph_1"
+msgstr ""
+"The Global Healthsites Mapping Project is an initiative to create an online "
+"map of every health facility in the\n"
+"world. The framework has been built for capturing, publishing and sharing "
+"critical health facility related data\n"
+"and to help make these facilities more accessible and relevant to the "
+"communities they serve. In the future we\n"
+"plan to support additional domains where it is helpful in humanitarian work."
+
+#: frontend/templates/about.html:19
+msgid "about_paragraph_2"
+msgstr ""
+"The map will record the contact details, location and resources available at "
+"every hospital, health post and\n"
+"rural healthcare clinic. No such healthsite data currently exists. We are "
+"making the data freely available to\n"
+"anyone via the Internet."
+
+#: frontend/templates/about.html:23
+msgid "about_paragraph_3"
+msgstr ""
+"By simply clicking on the map users can drill in to learn what healthcare "
+"facilities exist at any global\n"
+"location and find out what resources exist at any individual healthcare "
+"facility."
+
+#: frontend/templates/about.html:27
+msgid "about_paragraph_4"
+msgstr ""
+"The Healthsite Map will be of great value to members of the public, to "
+"health ministries and healthcare\n"
+"providers, and will be invaluable to first responders in emergency relief, "
+"disease epidemic and crisis\n"
+"situations."
+
+#: frontend/templates/about.html:30
 msgid "License"
 msgstr "License"
 
-#: frontend/templates/about.html:41
+#: frontend/templates/about.html:31
 msgid "Data:"
 msgstr "Data:"
 
-#: frontend/templates/about.html:42
+#: frontend/templates/about.html:32
 msgid "Open Database License"
 msgstr "Open Database License"
 
-#: frontend/templates/about.html:44
+#: frontend/templates/about.html:34
 msgid "Code:"
 msgstr "Code:"
 
-#: frontend/templates/about.html:45
+#: frontend/templates/about.html:35
 msgid "Free BSD License"
 msgstr "Free BSD License"
 
-#: frontend/templates/about.html:47
+#: frontend/templates/about.html:37
 msgid "Content:"
 msgstr "Content:"
 
-#: frontend/templates/about.html:48
+#: frontend/templates/about.html:38
 msgid "Attribution 4.0 International"
 msgstr "Attribution 4.0 International"
 
-#: frontend/templates/about.html:56
+#: frontend/templates/about.html:41
+msgid "about_intention"
+msgstr ""
+"Our intention is to foster wide spread usage of the data and the code that\n"
+"we provide. Please use this code and data in the interests of humanity and "
+"not\n"
+"for nefarious purposes."
+
+#: frontend/templates/about.html:44
 msgid "To share data please tweet a link to"
 msgstr "To share data please tweet a link to"
 
-#: frontend/templates/about.html:59
+#: frontend/templates/about.html:47
 msgid "Development to date"
 msgstr "Development to date"
 
-#: frontend/templates/about.html:102
+#: frontend/templates/about.html:49
+msgid "about_developed_by"
+msgstr ""
+"This site was developed by Konektaz, Kartoza and Candela-IT. Please consider "
+"joining in our\n"
+"work if you have something to contribute."
+
+#: frontend/templates/about.html:74
+msgid "about_sponsors"
+msgstr ""
+"We are seeking sponsorship to fund the ongoing development of the map. "
+"Sponsors could include Medical Industry,\n"
+"NGO communities, Donor funds, Commercial partners. Please get in contact "
+"should you be interested in supporting\n"
+"healthsites.io"
+
+#: frontend/templates/about.html:87
 msgid "Loading..."
 msgstr "Loading..."
 
-#: frontend/templates/about.html:107 frontend/templates/help.html:33
+#: frontend/templates/about.html:92 frontend/templates/help.html:33
 #: localities/templates/dataloaderform.html:73
 msgid "Close"
 msgstr "Close"
