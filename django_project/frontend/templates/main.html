@@ -16,7 +16,7 @@
                 {% else %}
                     <a href="{% url 'usersignpage' %}" class="profile-signin"><i class="mdi-action-exit-to-app"></i>
                     </a>
-                    <a href="{% url 'usersignpage' %}" class="profile-name">SIGN IN</a>
+                    <a href="{% url 'usersignpage' %}" class="profile-name">{% trans "SIGN IN"%}</a>
                 {% endif %}
             </div>
             <div class="panel-group" id="sidebar-accordion" role="tablist" aria-multiselectable="true">
@@ -41,7 +41,7 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseSocialDrawer"
                                aria-expanded="true" aria-controls="collapseSocialDrawer">
-                                <i class="mdi-social-share"></i> Share
+                                <i class="mdi-social-share"></i> {% trans "Share"%}
                             </a>
                         </h4>
                     </div>
@@ -68,7 +68,7 @@
                         <h4 class="panel-title">
                             <a data-toggle="collapse" data-parent="#sidebar-accordion" href="#collapseInfo"
                                aria-expanded="true" aria-controls="collapseInfo">
-                                <i class="mdi-action-info-outline"></i> Locality info
+                                <i class="mdi-action-info-outline"></i> {% trans "Locality info"%}
                             </a>
                         </h4>
                     </div>
@@ -114,7 +114,6 @@
             new APP();
 
             $.material.init();
-
 
             $('.sidebar-toggle').click(function () {
                 if ($('#sidebar').hasClass('active')) {

@@ -11,7 +11,7 @@
     <section class="container">
         <div class="col-md-8 col-md-offset-2">
             <div class="panel panel-info">
-                <div class="panel-heading"><h3 class="panel-title">Share healthsite data</h3></div>
+                <div class="panel-heading"><h3 class="panel-title">{% trans "Share healthsite data"%}</h3></div>
                 <div class="panel-body">
                     {% if messages %}
                         {% for message in messages %}
@@ -20,13 +20,13 @@
                                     {{ message }}
                                 </div>
                             {% else %}
-                                <p>Please use the form below to get in contact with us.</p>
-                                <p>We'd love to hear your ideas and feedback on how to make healthsites.io better!</p>
+                                <p>{% trans "Please use the form below to get in contact with us."%}</p>
+                                <p>{% trans "We'd love to hear your ideas and feedback on how to make healthsites.io better!"%}</p>
                             {% endif %}
                         {% endfor %}
                     {% else %}
-                        <p>Please use the form below to get in contact with us.</p>
-                        <p>We'd love to hear your ideas and feedback on how to make healthsites.io better!</p>
+                        <p>{% trans "Please use the form below to get in contact with us."%}</p>
+                        <p>{% trans "We'd love to hear your ideas and feedback on how to make healthsites.io better!"%}</p>
                     {% endif %}
                 </div>
             </div>
@@ -43,7 +43,7 @@
                 {% for message in messages %}
                     {% if message.tags != "success" %}
                         <div id="panel-info" class="panel panel-info">
-                            <div class="panel-heading"><h3 class="panel-title">Messages for you!</h3></div>
+                            <div class="panel-heading"><h3 class="panel-title">{% trans "Messages for you!"%}</h3></div>
                             <div class="panel-body">
                                 <div {% if message.tags %} class="text-{{ message.tags }}"{% endif %}>
                                     {{ message }}

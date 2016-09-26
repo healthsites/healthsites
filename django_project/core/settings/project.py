@@ -36,10 +36,17 @@ LANGUAGES = (
     ('af', _('Afrikaans')),
     ('id', _('Indonesian')),
     ('ko', _('Korean')),
+    ('nl', _('Nederlands')),
 )
 
 # Set storage path for the translation files
-LOCALE_PATHS = (absolute_path('locale'),)
+LOCALE_PATHS = [
+    os.path.join(os.path.abspath(os.path.dirname(__file__)), 'locale'),
+    os.path.join(BASE_DIR, 'locale'),
+    os.path.abspath(os.path.join(BASE_DIR, '..', 'locale')),
+]
+
+
 
 # Project specific javascript files to be pipelined
 # For third party libs like jquery should go in contrib.py

@@ -1,8 +1,10 @@
+{% load i18n %}
 {% load pipeline %}
 {% load static %}
+{% get_current_language as LANGUAGE_CODE %}
 <!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
 
-<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,7 +18,7 @@
             to make this data and the tools necessary to upload, manage and
             make the data freely and easily accessible.">
 
-    <title>Building a free, curated, canonical source of healthcare location data</title>
+  <title>{% trans "Building a free, curated, canonical source of healthcare location data"%}</title>
 
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
@@ -58,11 +60,11 @@
 
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                         aria-expanded="false" aria-controls="navbar"><span
-                        class="sr-only">Toggle navigation</span> <span
+                        class="sr-only">{% trans "Toggle navigation"%}</span> <span
                         class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
-                <button type="button" class="search-toggle collapsed"><span class="sr-only">Search</span><a
+                <button type="button" class="search-toggle collapsed"><span class="sr-only">{$ trans "Search"%}</span><a
                         class="navbar-search" href="/"><i class="fa fa-search"></i></a></button>
-                <a class="navbar-brand" href="/"><span class="hs-logo"></span>healthsites.io</a>
+                <a class="navbar-brand" href="/"><span class="hs-logo"></span>{% trans "healthsites.io"%}</a>
                 <a class="navbar-share closed" href="/"><img class="share" src="/static/img/share.svg" width="20"/><img
                         class="close" src="/static/img/close.svg" width="16"/></a>
 
@@ -84,45 +86,53 @@
                         <i class="fa fa-linkedin"></i>
                     </a>
                 </div>
-                <span class="tagline">A free, curated, global, canonical source of healthcare location data</span>
+                <span class="tagline">{% trans "A free, curated, global, canonical source of healthcare location data"%}</span>
             </div>
             <div id="navbar" class="collapse navbar-collapse pull-right">
                 <ul class="nav navbar-nav">
-                    <li><a href="/#about">About</a></li>
-                    <li><a href="/map">Map</a></li>
-                    <li><a href="/#country-data">Country data</a></li>
-                    <li><a href="/#lifecycle">How it works</a></li>
-                    <li><a href="/#share-data">Share data</a></li>
-                    <li><a href="/#partners">Partners</a></li>
+                    <li><a href="/#about">{% trans "About" %}</a></li>
+                    <li><a href="/map">{% trans "Map" %}</a></li>
+                    <li><a href="/#country-data">{% trans "Country data" %}</a></li>
+                    <li><a href="/#lifecycle">{% trans "How it works" %}</a></li>
+                    <li><a href="/#share-data">{% trans "Share data" %}</a></li>
+                    <li><a href="/#partners">{% trans "Partners" %}</a></li>
                     <li class="nav-search-wrap"><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
                     <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i
                             class="fa fa-comments"></i></a></li>
                 </ul>
 
-            </div>
-            <!--/.nav-collapse -->
-
         </div>
-        <div class="nav-searchbar container-fluid">
-            <form action="/map" method="POST">
-                {% csrf_token %}
-                <div class="option-group">
-                    <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                            value="healthsite" checked><span></span><label
-                            class="option"
-                            for="radio-healthsite">healthsite</label>
-                    </div>
-                    <div class="option"><span></span><input type="radio" name="option" id="radio-place"
-                                                            value="place"><span></span><label class="option"
-                                                                                              for="radio-healthsite">place</label>
-                    </div>
-                    <div class="option"><span></span><input type="radio" name="option" id="radio-what3words"
-                                                            value="what3words"><span></span><label class="option"
-                                                                                                   for="radio-what3words">what3words</label>
-                    </div>
-                </div>
-                <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit"
-                                                                                             value="search">
+        <!--/.nav-collapse -->
+
+      </div>
+      <div class="nav-searchbar container-fluid">
+        <form action="/map" method="POST">
+          {% csrf_token %}
+          <div class="option-group">
+            <div class="option">
+              <span></span>
+              <input type="radio" name="option" id="radio-healthsite" value="healthsite" checked>
+              <span></span>
+              <label class="option" for="radio-healthsite">{% trans "healthsite"%}</label>
+            </div>
+            <div class="option">
+              <span></span>
+              <input type="radio" name="option" id="radio-place" value="place">
+              <span></span>
+              <label class="option" for="radio-healthsite">{% trans "place"%}</label>
+            </div>
+            <div class="option">
+              <span></span>
+              <input type="radio" name="option" id="radio-what3words" value="what3words">
+              <span></span>
+              <label class="option" for="radio-what3words">{% trans "what3words"%}</label>
+            </div>
+          </div>
+          {% trans "search" as search_value %}
+          {% trans "search..." as search_placeholder %}
+          <input id="search-box" type="search" name="q" placeholder="{{ search_placeholder }}">
+          <input type="submit" value="{{ search_value }}">
+
             </form>
         </div>
     </nav>
@@ -134,38 +144,39 @@
     <div class="container">
         <div class="col-md-3 pad0x">
             <ul class="footer-nav-1">
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Vision" target="_blank">Vision</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Vision" target="_blank">{% trans "Vision"%}</a></li>
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Participate"
-                       target="_blank">Participate</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road
-                    map</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use">Terms of
-                    use</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites.io---ip-policy">IP policy</a>
+                       target="_blank">{% trans "Participate"%}</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">
+                   {% trans "Road map"%}</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use">
+                   {% trans "Terms of use"%}</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites.io---ip-policy">{% trans "IP policy"%}</a>
                 </li>
             </ul>
         </div>
         <div class="col-md-3 pad0x">
             <ul class="footer-nav-2">
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data</a></li>
-                <li><a href="https://github.com/healthsites/healthsites" target="_blank">Source code</a></li>
-                {#                <li><a href="/map-edit">Map edit</a></li>#}
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">Data
-                    lifecycle</a></li>
-                <li><a href="/contact">Contact</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">{% trans "Data"%}</a></li>
+                <li><a href="https://github.com/healthsites/healthsites" target="_blank">{% trans "Source code"%}</a></li>
+                <!--               <li><a href="/map-edit">{% trans "Map edit"%}</a></li> -->
+                <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">
+            {% trans "Data lifecycle"%}
+          </a></li>
+                <li><a href="/contact">{$ trans "Contact"%}</a></li>
             </ul>
         </div>
         <div class="col-md-3 pad0x">
             <ul class="footer-nav-2">
                 {#  disabled for now - see #432 #}
-                {#  <li><a href="upload-form">Upload form</a></li> #}
-                <li><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat space</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/API" target="_blank">API</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a></li>
+                 <!-- <li><a href="upload-form">{% trans "Upload form"%}</a></li> -->
+                <li><a href="https://gitter.im/healthsites/healthsites" target="_blank">{% trans "Chat space"%}</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/wiki/API" target="_blank">{% trans "API"%}</a></li>
+                <li><a href="https://github.com/healthsites/healthsites/" target="_blank">{% trans "GitHub"%}</a></li>
                 <li><a href="https://github.com/healthsites/healthsites/wiki/Memorandum-of-Understanding-and-Governance"
-                       target="_blank">MoU's and Governance</a></li>
+                       target="_blank">{% trans "MoU's and Governance"%}</a></li>
                 <li><a href="https://github.com/healthsites/healthsites/wiki/healthsites---privacy-policy"
-                       target="_blank">Privacy Policy</a></li>
+                       target="_blank">{% trans "Privacy Policy"%}</a></li>
             </ul>
         </div>
         <div class="col-md-3 right pad0x">
@@ -226,6 +237,6 @@
         js.src = "//connect.facebook.net/en_US/sdk.js";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
-</script>
+  </script>
 </body>
 </html>

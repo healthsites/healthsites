@@ -5,7 +5,7 @@ core.settings.contrib
 import os
 from .base import *  # noqa
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Extra installed apps
 INSTALLED_APPS = (

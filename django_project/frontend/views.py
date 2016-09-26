@@ -16,6 +16,8 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
+from django.utils import translation
+from django.utils.translation import ugettext_lazy as _
 from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, \
     search_locality_by_tag
 from localities.models import Country, DataLoaderPermission, Locality, Value
@@ -40,12 +42,13 @@ class MainView(TemplateView):
                     context['uploader'] = True
         else:
             context['uploader'] = False
+        translation.activate(request.LANGUAGE_CODE)
         return self.render_to_response(context)
 
 
 class ContactView(FormMessagesMixin, ContactView):
     template_name = 'envelope/contact.html'
-    form_invalid_message = 'There was an error in the contact form.'
+    form_invalid_message = _('There was an error in the contact form.')
 
     def get_form_valid_message(self):
         return u"{0} created!".format(self.object.title)
@@ -98,7 +101,7 @@ def search_place(request, place):
             result['southwest_lat'] = "%f" % southwest_lat
             result['southwest_lng'] = "%f" % southwest_lng
         except:
-            print "getting place error"
+            print (_("getting place error"))
     return result
 
 

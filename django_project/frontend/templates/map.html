@@ -1,8 +1,10 @@
 {% load pipeline %}
+{% load i18n %}
 {% load static %}
-<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}
 
-<html lang="en">
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -75,13 +77,13 @@
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
+                <span class="sr-only">{% trans "Toggle navigation"%}</span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="{% url "home" %}">
-                <span class="hs-logo"></span>healthsites.io
+                <span class="hs-logo"></span>{% trans "healthsites.io"%}
             </a>
             <a class="navbar-share closed" href="#">
                 <img class="share" src="{% static "img/share.svg" %}" width="20"/>
@@ -106,16 +108,16 @@
                     <i class="fa fa-linkedin"></i>
                 </a>
             </div>
-            <span class="tagline">Building a free, curated, canonical source of healthcare location data</span>
+            <span class="tagline">{% trans "Building a free, curated, canonical source of healthcare location data"%}</span>
         </div>
         <div id="navbar" class="collapse navbar-collapse pull-right">
             <ul class="nav navbar-nav">
-                <li><a href="/#about">About</a></li>
-                <li><a href="{% url "map" %}">Map</a></li>
-                <li><a href="/#country-data">Country data</a></li>
-                <li><a href="/#lifecycle">How it works</a></li>
-                <li><a href="/#share-data">Share data</a></li>
-                <li><a href="/#partners">Partners</a></li>
+                <li><a href="/#about">{% trans "About"%}</a></li>
+                <li><a href="{% url "map" %}">{% trans "Map"%}</a></li>
+                <li><a href="/#country-data">{% trans "Country data"%}</a></li>
+                <li><a href="/#lifecycle">{% trans "How it works"%}</a></li>
+                <li><a href="/#share-data">{% trans "Share data"%}</a></li>
+                <li><a href="/#partners">{% trans "Partners"%}</a></li>
                 <li><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
                 <li><a class="navbar-chat" href="https://gitter.im/healthsites/healthsites"><i
                         class="fa fa-comments"></i></a></li>
@@ -128,20 +130,28 @@
     <div class="nav-searchbar container-fluid">
         <form action="map" method="POST">
             <div class="option-group">
-                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite" checked><span></span><label class="option"
-                                                                                                       for="radio-healthsite">healthsite</label>
+                <div class="option">
+                  <span></span>
+                  <input type="radio" name="option" id="radio-healthsite" value="healthsite" checked>
+                  <span></span>
+                  <label class="option" for="radio-healthsite">{% trans "healthsite"%}</label>
                 </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
-                                                        value="place"><span></span><label class="option"
-                                                                                          for="radio-healthsite">place</label>
+                <div class="option">
+                  <span></span>
+                  <input type="radio" name="option" id="radio-place" value="place">
+                  <span></span>
+                  <label class="option" for="radio-healthsite">{% trans "place"%}</label>
                 </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-what3words"
-                                                        value="what3words"><span></span><label class="option"
-                                                                                               for="radio-what3words">what3words</label>
+                <div class="option"><span></span>
+                  <input type="radio" name="option" id="radio-what3words" value="what3words">
+                  <span></span>
+                  <label class="option" for="radio-what3words">{% trans "what3words"%}</label>
                 </div>
             </div>
-            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
+            {% trans "search" as search_value %}
+            {% trans "search..." as search_placeholder %}
+            <input id="search-box" type="search" name="q" placeholder="{{ search_placeholder }}">
+            <input type="submit" value="{{ search_value }}">
         </form>
     </div>
 </nav>
@@ -168,15 +178,15 @@
                     </span>
                     </div>
                     <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
-                            class="fa fa-sign-out"></i> sign out</a>
+                            class="fa fa-sign-out"></i> {$ trans "sign out"%}</a>
                 {% else %}
                     <div class="person col-xs-8 pad0x">
                 <span class="name">
-                        You are not signed in
+                        {% trans "You are not signed in"%}
                     </span>
                     </div>
                     <a id="signin-button" class="button col-xs-4 pad0x blue stroke" style="cursor: pointer"><i
-                            class="fa fa-sign-in"></i> sign in</a>
+                            class="fa fa-sign-in"></i> {% trans "sign in"%}</a>
                 {% endif %}
 
                 <div style="clear: both;"></div>
@@ -199,35 +209,35 @@
                         facilities.
                     </p>
                     <p>
-                        You can get all data from healthsite in this
-                        <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile</a>
+                        {% trans "You can get all data from healthsite in this"%}
+                        <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">{% trans "shapefile"%}</a>
                     </p>
                     <h2 class="sidebar-title "><span data-speed="2500"
                                                      data-to="{{ locality_count }}">{{ locality_count }}</span>
-                        healthsites listed</h2>
+                        {% trans "healthsites listed"%}</h2>
                 </div>
                 <div id="countries-table">
-                    <div class="block-header"><span class="col-xs-6">Country</span> <span
-                            class="col-xs-3"># of sites</span>
-                        <span class="col-xs-3">% complete</span></div>
+                    <div class="block-header"><span class="col-xs-6">{% trans "Country"%}</span> <span
+                            class="col-xs-3">{% trans "# of sites"%}</span>
+                        <span class="col-xs-3">{% trans "% complete"%}</span></div>
                     <div id="accordion-country" class="accordion">
                     </div>
                 </div>
             </div>
             <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
                 <div id="title-statistic" class="header" style="font-size: 24px; padding-bottom: 10px;">
-                    <strong id="title-name">No Title</strong> -
+                    <strong id="title-name">{% trans "No Title"%}</strong> -
                     <span id="number-locality" style="margin-left: 5px; margin-right: 5px"> 0 </span>
-                    healthsites
+                    {% trans "healthsites"%}
                 </div>
                 <p id="country-shapefiles" class="header" style="padding-bottom: 10px; display: none">
-                    You can get all data from healthsite in this
-                    <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile</a>
+                  {% trans "You can get all data from healthsite in this"%}
+                  <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">{% trans "shapefile"%}</a>
                 </p>
 
                 <div style="padding: 20px">
                     <div>
-                        <h3>Number of heathsites per type</h3>
+                        <h3>{% trans "Number of heathsites per type"%}</h3>
 
                         <div class="graph">
                             <div id="chart1"></div>
@@ -237,7 +247,7 @@
                         </div>
                     </div>
                     <div>
-                        <h3>Completeness of attributes</h3>
+                        <h3>{% trans "Completeness of attributes"%}</h3>
 
                         <div class="graph">
                             <div id="piechart"></div>
@@ -246,7 +256,7 @@
                         </div>
                     </div>
                     <div>
-                        <h3>Latest updates</h3>
+                        <h3>{% trans "Latest updates"%}</h3>
 
                         <div id="updates" class="graph updates">
                             <div class="entry">-</div>
@@ -256,16 +266,17 @@
             </div>
             <div id="locality-info" class="details" style="display: none">
                 <div class="header">
-                    <h1><span id="locality-name">No Name</span>
+                    <h1><span id="locality-name">{% trans "No Name"%}</span>
                         {% if user.is_authenticated %}
-                            <span id="report-flag" title="Report this healthsite as duplication"
-                                  onclick="toogle_popup()">R</span>
+                            {% trans "Report this healthsite as duplication" as report_duplicate %}
+                            <span id="report-flag" title="{{ report_duplicate }}"
+                                  onclick="toogle_popup()">{% trans "R"%}</span>
                         {% endif %}
                     </h1>
                     <input type="text" id="locality-name-input" name="name"
                            placeholder="Locality name" style="display: none; width: 100%"/>
 
-                    <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
+                    <p class="sub" id="locality-nature-of-facility">{% trans "first referral hospital"%}</p>
 
                     <p style="margin-top: 5px">
                         <select id="locality-nature-of-facility-input" name="nature_of_facility" style="display: none">
@@ -275,7 +286,7 @@
                 <div class="info">
                     <div class="line">
                         <div id="locality-master">
-                            <div id="locality-master-indicator" class="master">MASTER</div>
+                            <div id="locality-master-indicator" class="master">{% trans "MASTER"%}</div>
                         </div>
                     </div>
                     <div id="line-updates" class="line updates">
@@ -333,7 +344,7 @@
 
                             <p>
                                 <i class="fa fa-phone"></i>
-                                <span id="locality-phone" class="call">0141 636 6116</span>
+                                <span id="locality-phone" class="call">{% trans "0141 636 6116"%}</span>
                                 <span id="locality-phone-input" style="display: none">+
                                     <input type="number"
                                            id="locality-phone-input-int"
@@ -346,23 +357,26 @@
 
                             <p id="locality-operating-hours-section">
                                 <i class="fa fa-clock-o"></i>
-                                <span id="locality-operating-hours" class="call">define operation</span>
+                                <span id="locality-operating-hours" class="call">{% trans "define operation"%}</span>
                             </p>
 
                             <div id="locality-operating-hours-input"
                                  style="display: none;">
                                 <div style="border: 1px solid black; padding: 10px;">
                                     <div>
-                                        <strong>OPERATING HOURS : </strong><span onclick="shortcutDefiningHour('24/7')"
-                                                                                 style="cursor: pointer; margin-left: 10px;margin-right: 10px"><a>24/7</a></span><span
-                                            onclick="shortcutDefiningHour('24/5')"
-                                            style="cursor: pointer; margin-right: 10px"><a>24/5</a></span>
+                                        <strong>{% trans "OPERATING HOURS:"%} </strong>
+                                        <span onclick="shortcutDefiningHour('24/7')" style="cursor: pointer; margin-left: 10px;margin-right: 10px">
+                                          <a>{% trans "24/7"%}</a>
+                                        </span>
+                                        <span onclick="shortcutDefiningHour('24/5')" style="cursor: pointer; margin-right: 10px">
+                                          <a>{% trans "24/5"%}</a>
+                                        </span>
                                     </div>
                                     <hr>
                                     <table id="locality-operating-hours-input-table" style="width:100%"></table>
                                     <hr>
                                     <div>
-                                        <strong>RESULT :</strong><br>
+                                        <strong>{% trans "RESULT:"%}"</strong><br>
                                         <span id="locality-operating-hours-input-result"></span>
                                     </div>
                                 </div>
@@ -381,7 +395,7 @@
                         </div>
                         <div class="data">
                             <div class="scope-of-service">
-                                <h3>scope of service</h3>
+                                <h3>{% trans "scope of service"%}</h3>
 
                                 <div id="locality-scope-of-service">
                                 </div>
@@ -390,7 +404,7 @@
                                 </div>
                             </div>
                             <div class="ancillary">
-                                <h3>ancillary services</h3>
+                                <h3>{% trans "ancillary services"%}</h3>
 
                                 <div id="locality-ancillary-service">
                                 </div>
@@ -399,7 +413,7 @@
                                 </div>
                             </div>
                             <div class="activities">
-                                <h3>activities</h3>
+                                <h3>{% trans "activities"%}</h3>
 
                                 <div id="locality-activities">
                                 </div>
@@ -420,12 +434,10 @@
                                 <input type="number"
                                        id="locality-inpatient-service-full-input"
                                        min="0"
-                                       style="width: 50px"/>
-                                full
-                                time beds,
+                                       style="width: 50px"/>{% trans "full time beds"%}
                                 <input type="number" id="locality-inpatient-service-part-input" min="0"
-                                       style="width: 50px"/>
-                                part time beds</p>
+                                       style="width: 50px"/>{% trans "part time beds"%}
+                            </p>
                         </div>
                     </div>
                     <div class="line note">
@@ -433,7 +445,8 @@
                             <i class="fa fa-sticky-note"></i>
                         </div>
                         <div class="data" id="locality-notes">
-                            <p><strong>Note: </strong><span id="locality-notes-text"> Outpatient consultation and in-patient hospitalization</span>
+                            <p><strong>{% trans "Note:"%} </strong>
+                              <span id="locality-notes-text"> {% trans "Outpatient consultation and in-patient hospitalization"%}</span>
                             </p>
                         </div>
                         <div class="data" id="locality-notes-input"
@@ -452,11 +465,11 @@
                                        id="locality-staff-doctor-input"
                                        min="0"
                                        style="width: 50px"/>
-                                full time doctors,
+                                {% trans "full time doctors"%}
                                 <input type="number" id="locality-staff-nurse-input"
                                        min="0"
                                        style="width: 50px"/>
-                                full time nurses</p>
+                                {% trans "full time nurses"%}</p>
                         </div>
                     </div>
                     <div class="line ownership">
@@ -464,7 +477,7 @@
                             <i class="fa fa-briefcase"></i>
                         </div>
                         <div class="data">
-                            <p><strong>Ownership:</strong>
+                            <p><strong>{% trans "Ownership:"%}</strong>
                                 <span id="locality-ownership"></span>
                                 <select id="locality-ownership-input" name="ownership"
                                         style="display: none">
@@ -482,8 +495,8 @@
                                        style="margin-bottom: 10px;"
                                        onkeyup="changeTag($(this).val())"/>
                                 <i id="tag-input-error-warning"
-                                   style="margin-left: 10px; color: #f44a52; display: none">tag should be
-                                    more than 2 letter</i>
+                                   style="margin-left: 10px; color: #f44a52; display: none">
+                                   {% trans "tag should be more than 2 letter"%}</i>
                             </div>
                         </div>
                     </div>
@@ -492,8 +505,8 @@
                             <i class="fa fa-circle"></i>
                         </div>
                         <div class="data">
-                            <p id="others-add" onclick="addOthers()" style="display: none; cursor: pointer"><b>add new
-                                information</b></p>
+                            <p id="others-add" onclick="addOthers()" style="display: none; cursor: pointer">
+                              <b>{% trans "add new information"%}</b></p>
 
                             <div id="others-data">
                             </div>
@@ -506,36 +519,36 @@
             <div class="buttons col-md-4 col-sm-12 col-xs-12">
                 <div class="button-wrapper col-xs-4">
                     <a id="twitter_share_map" class="button share stroke blue">
-                        <i class="fa fa-twitter"></i> share
+                        <i class="fa fa-twitter"></i> {% trans "share"%}
                     </a>
                 </div>
                 <div class="button-wrapper col-xs-4" id="edit-button">
                     <a class="button edit stroke blue"
                        style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> edit
+                            class="fa fa-pencil"></i> {% trans "edit"%}
                     </a>
                 </div>
                 <div class="button-wrapper col-xs-4" id="save-button" style="display: none">
                     <a class="button edit stroke blue"
                        style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> save
+                            class="fa fa-pencil"></i> {% trans "save"%}
                     </a>
                 </div>
                 <div class="button-wrapper col-xs-4" id="create-button" style="display: none">
                     <a class="button edit stroke blue"
                        style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> create
+                            class="fa fa-pencil"></i> {% trans "create"%}
                     </a>
                 </div>
                 <div class="button-wrapper col-xs-4" id="add-button">
                     <a class="button add" style="cursor: pointer">
-                        <i class="fa fa-plus"></i> add new
+                        <i class="fa fa-plus"></i> {% trans "add new"%}
                     </a>
                 </div>
                 <div class="button-wrapper col-xs-4" id="cancel-button" style="display: none">
                     <a class="button edit stroke blue"
                        style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> cancel
+                            class="fa fa-pencil"></i> {% trans "cancel"%}
                     </a>
                 </div>
             </div>
@@ -544,18 +557,18 @@
             <div id="map">
             </div>
             <div id="report-popup" style="display: none; opacity: 0.0">
-                Please enter uuid of it's master or click marker of master
+                {% trans "Please enter uuid of it's master or click marker of master"%}
                 <input type="text" id="report-popup-text"
                        placeholder="master's uuid"/>
                 <div style="width: 100%; margin-top: 20px">
                     <div class="col-sm-6 button-left">
                         <div id="report-button" class="button" style="cursor: pointer">
-                            report
+                            {% trans "report"%}
                         </div>
                     </div>
                     <div class="col-sm-6 button-right">
                         <div id="cancel-report-button" class="button" style="cursor: pointer">
-                            cancel
+                            {% trans "cancel"%}
                         </div>
                     </div>
                 </div>
