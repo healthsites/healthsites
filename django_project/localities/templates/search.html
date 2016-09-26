@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
-
+{% load i18n %}
 {% block header %}
 
 {% endblock header %}
 
-{% block title %}Healthsites{% endblock %}
+{% block title %}{% trans "Healthsites"%}{% endblock %}
 
 {% block content %}
 
-    <h1 id="title">Search</h1>
+    <h1 id="title">{% trans "Search"%}</h1>
 
     <form action="" method="post">
         {% csrf_token %}

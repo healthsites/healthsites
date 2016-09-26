@@ -1,4 +1,7 @@
-<html xmlns="http://www.w3.org/1999/html">
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script>
@@ -46,7 +49,7 @@
 <body>
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h4 class="modal-title">Healthsites - Data Loader</h4>
+    <h4 class="modal-title">{% trans "Healthsites - Data Loader"%}</h4>
 </div>
 <div class="modal-body">
 {#    {% load bootstrap_tags %}#}
@@ -55,9 +58,10 @@
         {% csrf_token %}
         {{ form.as_p}}
         <br>
+        {% trans "Submit" as submit}
         <button type="button" class="btn btn-default"
-                data-dismiss="modal">Cancel</button>
-        <input type="submit" class="btn btn-primary" value="Submit" />
+                data-dismiss="modal">{% trans "Cancel"%}</button>
+        <input type="submit" class="btn btn-primary" value="{{ submit }}" />
     </form>
     <div id="result" hidden>
         <p id="result_message"></p>
@@ -66,7 +70,7 @@
 
 </div><!-- /model-body -->
 <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_button" style="display: none;">Close</button>
+    <button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_button" style="display: none;">{% trans "Close"%}</button>
 </div><!-- /modal-footer -->
 </body>
 </html>

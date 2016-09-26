@@ -13,14 +13,17 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <html itemscope itemtype="https://schema.org/Organization">
-    <meta itemprop="name" content="healthsites.io">
-    <meta itemprop="description" content="A free, curated, global, canonical source of healthcare location data">
+    {% trans "site_name" as site_name%}
+    <meta itemprop="name" content="{{ site_name }}">
+    {% trans "site_description" as site_description%}
+    <meta itemprop="description" content="{{ site_description }}">
     <meta itemprop="image" content="https://staging.healthsites.io/static/img/healthsites-gp.png">
     <meta property="og:title" content="healthsites.io"/>
     <meta property="og:image" content="https://staging.healthsites.io/static/img/healthsites-fb.png"/>
-    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data"/>
+    {% trans "site_tagline" as site_tagline%}
+    <meta property="og:description" content="{{ site_tagline }}"/>
 
-    <title>Healthsites.io</title>
+    <title>{% trans "site_title"%}</title>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
@@ -108,7 +111,7 @@
                     <i class="fa fa-linkedin"></i>
                 </a>
             </div>
-            <span class="tagline">{% trans "Building a free, curated, canonical source of healthcare location data"%}</span>
+            <span class="tagline">{% trans "site_tagline"%}</span>
         </div>
         <div id="navbar" class="collapse navbar-collapse pull-right">
             <ul class="nav navbar-nav">

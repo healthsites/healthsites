@@ -10,14 +10,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {# The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags #}
-    <meta itemprop="name" content="healthsites.io">
-    <meta itemprop="description" content="A free, curated, global, canonical source of healthcare location data">
+    {% trans "site_name" as site_name%}
+    <meta itemprop="name" content="{{ site_name }}">
+    {% trans "site_description" as site_description%}
+    <meta itemprop="description" content="{{ site_description }}">
     <meta itemprop="image" content="https://staging.healthsites.io/static/img/healthsites-gp.png">
     <meta property="og:title" content="healthsites.io"/>
     <meta property="og:image" content="https://staging.healthsites.io/static/img/healthsites-fb.png"/>
-    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data"/>
+    {% trans "site_tagline" as site_tagline%}
+    <meta property="og:description" content="{{ site_tagline }}"/>
 
-    <title>{% trans "Building a free, curated, canonical source of healthcare location data"%}</title>
+    <title>{% trans "site_title"%}</title>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" rel="stylesheet" type="text/css"
           media="screen, projection"/>
@@ -61,7 +64,7 @@
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
                     aria-expanded="false" aria-controls="navbar"><span class="sr-only">{% trans "Toggle navigation"%}</span> <span
                     class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
-            <button type="button" class="search-toggle collapsed"><span class="sr-only">{$ trans "Search"%}</span><a
+            <button type="button" class="search-toggle collapsed"><span class="sr-only">{% trans "Search"%}</span><a
                     class="navbar-search" href="#"><i class="fa fa-search"></i></a></button>
             <a class="navbar-brand" href="#"><span class="hs-logo"></span>{% trans "healthsites.io"%}</a>
             <a class="navbar-share closed" href="#"><img class="share" src="static/img/share.svg" width="20"/><img
@@ -85,7 +88,7 @@
                     <i class="fa fa-linkedin"></i>
                 </a>
             </div>
-            <span class="tagline" itemprop="description">{% trans "A free, curated, global, canonical source of healthcare location data"%}</span>
+            <span class="tagline" itemprop="description">{% trans "site_tagline"%}</span>
         </div>
         <div id="navbar" class="collapse navbar-collapse pull-right">
             <ul class="nav navbar-nav">
@@ -168,12 +171,7 @@
                                                 onerror="this.onerror=null; this.src='image.png'">
                 </div>
                 <div class="col-md-10 pad0x">
-                    When a natural disaster or disease outbreak occurs there is a rush to establish accurate health care
-                    location data that can be used to support people on the ground. This has been demonstrated by events
-                    such as the Haiti earthquake and the Ebola epidemic in West Africa. As a result valuable time is
-                    wasted establishing accurate and accessible baseline data.<br/>
-                    Healthsites.io establishes this data and the tools necessary to upload, manage and make the data
-                    easily accessible.
+                    {% trans "about_healthsites_io"%}
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
@@ -181,19 +179,16 @@
                                                 onerror="this.onerror=null; this.src='image.png'">
                 </div>
                 <div class="col-md-8 pad0x">
-                    <strong>Global scope</strong><br/>
-                    The Global Healthsites Mapping Project is an initiative to create an online map of every health
-                    facility in the world and make the details of each location easily accessible.
+                    <strong>{% trans "Global scope"%}</strong><br/>
+                    {% trans "about_global_scope"%}
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
                 <div class="icon col-md-4"><img src="{% static "img/open-data.svg" %}"
                                                 onerror="this.onerror=null; this.src='image.png'"></div>
                 <div class="col-md-8 pad0x">
-                    <strong>Open data collaboration</strong><br/>
-                    Through collaborations with users, trusted partners and OpenStreepMap we will capture and validate
-                    the location and contact details of every facility and make this data freely available under an Open
-                    Data License (ODBL)'
+                    <strong>{% trans "Open data collaboration"%}</strong><br/>
+                    {% trans "about_open_data_collaboration"%}
                 </div>
             </div>
             <div style="clear: both"></div>
@@ -201,19 +196,16 @@
                 <div class="icon col-md-4"><img src="{% static "img/accessible.svg" %}"
                                                 onerror="this.onerror=null; this.src='image.png'"></div>
                 <div class="col-md-8 pad0x">
-                    <strong>Accessible</strong><br/>
-                    We will make the data accessible over the Internet through an API and other formats such as GeoJSON,
-                    Shape files, KML, CSV
+                    <strong>{% trans "Accessible"%}</strong><br/>
+                    {% trans "about_accessible"%}
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
                 <div class="icon col-md-4"><img src="{% static "img/location.svg" %}"
                                                 onerror="this.onerror=null; this.src='image.png'"></div>
                 <div class="col-md-8 pad0x">
-                    <strong>Focus on health care location data</strong><br/>
-                    Our design philosophy is the long term curation and validation of health care location data. The
-                    healthsites.io map will enable users to discover what healthcare facilities exist at any global
-                    location and the associated services and resources.
+                    <strong>{% trans "Focus on health care location data"%}</strong><br/>
+                    {% trans "about_focus"%}
                 </div>
             </div>
         </div>
@@ -229,8 +221,8 @@
                 <span class="col-md-12 text">{% trans "Each healthsite is stored as a geometry object in the database"%}</span>
                 <span class="col-md-12 links"><a
                         href="https://github.com/healthsites/healthsites/wiki/Healthsite-attributes" target="_blank">
-                    {% trans "Healthsites attributes"%}</a> <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-data-model"
-                                      target="_blank">{% trans "Data model"%}</a></span>
+                    {% trans "data_attributes"%}</a> <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-data-model"
+                                      target="_blank">{% trans "data_model"%}</a></span>
             </div>
         </div>
         <div class="center col-md-3 pad0x">
@@ -254,10 +246,9 @@
         <div class="center col-md-3 pad0x">
             <div class="content">
                 <div class="icon-holder"><i class="fa fa-comments"></i></div>
-                <h3 class="col-md-12">Chat live</h3>
-                <span class="col-md-12 text">We've established a chatroom where we'll do our best to respond and share project knowledge.</span>
-                <span class="col-md-12 links"><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat
-                    space</a></span></div>
+                <h3 class="col-md-12">{% trans "chat_live"%}</h3>
+                <span class="col-md-12 text">{% trans "chat_description"%}</span>
+                <span class="col-md-12 links"><a href="https://gitter.im/healthsites/healthsites" target="_blank">{% trans "chat_join"%}</a></span></div>
         </div>
     </div>
 </section>

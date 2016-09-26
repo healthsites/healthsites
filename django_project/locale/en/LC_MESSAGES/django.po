@@ -1,0 +1,667 @@
+# healthsite.io translation.
+# Copyright (C) 2016 healthsites.io
+# This file is distributed under the same license as the healthsites.io open source project.
+# Milo van der Linden <milo@dogodigi.net>, 2016.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-09-26 12:26+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: core/base_templates/404.html:20
+msgid "Error 404"
+msgstr "Error 404"
+
+#: core/base_templates/404.html:22
+msgid "Page not found"
+msgstr "Page not found"
+
+#: core/base_templates/404.html:24
+msgid "We're sorry, but the requested page could not be found."
+msgstr "We're sorry, but the requested page could not be found."
+
+#: core/base_templates/404.html:26
+msgid "Go to homepage"
+msgstr "Go to homepage"
+
+#: core/base_templates/base.html:13 frontend/templates/index.html:13
+#: frontend/templates/map.html:16
+msgid "site_name"
+msgstr "healthsites.io"
+
+#: core/base_templates/base.html:15 frontend/templates/index.html:15
+#: frontend/templates/map.html:18
+msgid "site_description"
+msgstr ""
+"When a natural disaster or disease outbreak occurs there is a rush to\n"
+"establish accurate health care location data that can be used to support\n"
+"people on the ground. The goal of Healthsites.io is to establish a free,\n"
+"curated, canonical source of healthcare location data for the world, and\n"
+"to make this data and the tools necessary to upload, manage and\n"
+"make the data freely and easily accessible."
+
+#: core/base_templates/base.html:18 frontend/templates/index.html:23
+#: frontend/templates/map.html:26
+msgid "site_title"
+msgstr ""
+"Building a free, curated, global, canonical source of healthcare location "
+"data"
+
+#: core/base_templates/base.html:60 frontend/templates/index.html:65
+#: frontend/templates/map.html:83
+msgid "Toggle navigation"
+msgstr "Toggle navigation"
+
+#: core/base_templates/base.html:64 frontend/templates/index.html:69
+#: frontend/templates/map.html:89
+msgid "healthsites.io"
+msgstr "healthsites.io"
+
+#: core/base_templates/base.html:86 frontend/templates/index.html:20
+#: frontend/templates/index.html.py:91 frontend/templates/map.html:23
+#: frontend/templates/map.html.py:114
+msgid "site_tagline"
+msgstr "A free, curated, global, canonical source of healthcare location data"
+
+#: core/base_templates/base.html:90 frontend/templates/index.html:95
+#: frontend/templates/map.html:118
+msgid "About"
+msgstr "About"
+
+#: core/base_templates/base.html:91 frontend/templates/index.html:96
+#: frontend/templates/map.html:119
+msgid "Map"
+msgstr "Map"
+
+#: core/base_templates/base.html:92 frontend/templates/index.html:97
+#: frontend/templates/map.html:120
+msgid "Country data"
+msgstr "Country data"
+
+#: core/base_templates/base.html:93 frontend/templates/index.html:98
+#: frontend/templates/map.html:121
+msgid "How it works"
+msgstr "How it works"
+
+#: core/base_templates/base.html:94 frontend/templates/index.html:99
+#: frontend/templates/map.html:122
+msgid "Share data"
+msgstr "Share data"
+
+#: core/base_templates/base.html:95 frontend/templates/index.html:100
+#: frontend/templates/index.html.py:334 frontend/templates/map.html:123
+msgid "Partners"
+msgstr "Partners"
+
+#: core/base_templates/base.html:113 frontend/templates/index.html:115
+#: frontend/templates/map.html:140
+msgid "healthsite"
+msgstr "healthsite"
+
+#: core/base_templates/base.html:119 frontend/templates/index.html:119
+#: frontend/templates/map.html:146
+msgid "place"
+msgstr "place"
+
+#: core/base_templates/base.html:125 frontend/templates/index.html:123
+#: frontend/templates/map.html:151
+msgid "what3words"
+msgstr "what3words"
+
+#: core/base_templates/base.html:128 frontend/templates/index.html:126
+#: frontend/templates/map.html:154
+msgid "search"
+msgstr "search"
+
+#: core/base_templates/base.html:129 frontend/templates/index.html:127
+#: frontend/templates/map.html:155
+msgid "search..."
+msgstr "search..."
+
+#: core/base_templates/base.html:144 frontend/templates/index.html:349
+msgid "Vision"
+msgstr "Vision"
+
+#: core/base_templates/base.html:146 frontend/templates/index.html:351
+msgid "Participate"
+msgstr "Participate"
+
+#: core/base_templates/base.html:148 frontend/templates/index.html:353
+msgid "Road map"
+msgstr "Road map"
+
+#: core/base_templates/base.html:150 frontend/templates/index.html:355
+msgid "Terms of use"
+msgstr "Terms of use"
+
+#: core/base_templates/base.html:151 frontend/templates/index.html:356
+msgid "IP policy"
+msgstr "IP policy"
+
+#: core/base_templates/base.html:157 frontend/templates/index.html:362
+msgid "Data"
+msgstr "Data"
+
+#: core/base_templates/base.html:158 frontend/templates/index.html:363
+msgid "Source code"
+msgstr "Source code"
+
+#: core/base_templates/base.html:159 frontend/templates/index.html:364
+msgid "Map edit"
+msgstr "Map edit"
+
+#: core/base_templates/base.html:161 frontend/templates/index.html:366
+msgid "Data lifecycle"
+msgstr "Data lifecycle"
+
+#: core/base_templates/base.html:169 frontend/templates/index.html:374
+msgid "Upload form"
+msgstr "Upload form"
+
+#: core/base_templates/base.html:170 frontend/templates/index.html:375
+msgid "Chat space"
+msgstr "Chat space"
+
+#: core/base_templates/base.html:171 frontend/templates/index.html:376
+msgid "API"
+msgstr "API"
+
+#: core/base_templates/base.html:172 frontend/templates/index.html:241
+#: frontend/templates/index.html.py:377
+msgid "GitHub"
+msgstr "Github"
+
+#: core/base_templates/base.html:174 frontend/templates/index.html:379
+msgid "MoU's and Governance"
+msgstr "MoU's and Governance"
+
+#: core/base_templates/base.html:176 frontend/templates/index.html:381
+#: frontend/templates/index.html.py:428
+msgid "Privacy Policy"
+msgstr "Privacy Policy"
+
+#: frontend/templates/about.html:11 frontend/templates/help.html:11
+msgid "About Healthsites"
+msgstr "About Healthsites"
+
+#: frontend/templates/about.html:40
+msgid "License"
+msgstr "License"
+
+#: frontend/templates/about.html:41
+msgid "Data:"
+msgstr "Data:"
+
+#: frontend/templates/about.html:42
+msgid "Open Database License"
+msgstr "Open Database License"
+
+#: frontend/templates/about.html:44
+msgid "Code:"
+msgstr "Code:"
+
+#: frontend/templates/about.html:45
+msgid "Free BSD License"
+msgstr "Free BSD License"
+
+#: frontend/templates/about.html:47
+msgid "Content:"
+msgstr "Content:"
+
+#: frontend/templates/about.html:48
+msgid "Attribution 4.0 International"
+msgstr "Attribution 4.0 International"
+
+#: frontend/templates/about.html:56
+msgid "To share data please tweet a link to"
+msgstr "To share data please tweet a link to"
+
+#: frontend/templates/about.html:59
+msgid "Development to date"
+msgstr "Development to date"
+
+#: frontend/templates/about.html:102
+msgid "Loading..."
+msgstr "Loading..."
+
+#: frontend/templates/about.html:107 frontend/templates/help.html:33
+#: localities/templates/dataloaderform.html:73
+msgid "Close"
+msgstr "Close"
+
+#: frontend/templates/envelope/contact.html:14
+#: frontend/templates/index.html:231
+msgid "Share healthsite data"
+msgstr "Share healthsite data"
+
+#: frontend/templates/envelope/contact.html:23
+#: frontend/templates/envelope/contact.html:28
+msgid "Please use the form below to get in contact with us."
+msgstr "Please use the form below to get in contact with us."
+
+#: frontend/templates/envelope/contact.html:24
+#: frontend/templates/envelope/contact.html:29
+msgid ""
+"We'd love to hear your ideas and feedback on how to make healthsites.io "
+"better!"
+msgstr ""
+"We'd love to hear your ideas and feedback on how to make healthsites.io "
+"better!"
+
+#: frontend/templates/envelope/contact.html:46
+msgid "Messages for you!"
+msgstr "Messages for you!"
+
+#: frontend/templates/help.html:10
+msgid "×"
+msgstr "×"
+
+#: frontend/templates/help.html:15
+msgid "Help preface goes here"
+msgstr "Help preface goes here"
+
+#: frontend/templates/help.html:29
+msgid "comments powered by Disqus."
+msgstr "comments powered by Disqus."
+
+#: frontend/templates/index.html:67 localities/templates/search.html:11
+msgid "Search"
+msgstr "Search"
+
+#: frontend/templates/index.html:137
+msgid "healthsites added"
+msgstr "healthsites added"
+
+#: frontend/templates/index.html:141
+msgid "edit the map"
+msgstr "edit the map"
+
+#: frontend/templates/index.html:145
+msgid "upload data"
+msgstr "upload data"
+
+#: frontend/templates/index.html:147
+msgid "how it works"
+msgstr "how it works"
+
+#: frontend/templates/index.html:167
+msgid "About healthsites.io"
+msgstr "About healthsites.io"
+
+#: frontend/templates/index.html:174
+msgid "about_healthsites_io"
+msgstr ""
+"When a natural disaster or disease outbreak occurs there is a rush to "
+"establish accurate health care\n"
+"location data that can be used to support people on the ground. This has "
+"been demonstrated by events\n"
+"such as the Haiti earthquake and the Ebola epidemic in West Africa. As a "
+"result valuable time is\n"
+"wasted establishing accurate and accessible baseline data.\n"
+"Healthsites.io establishes this data and the tools necessary to upload, "
+"manage and make the data\n"
+"easily accessible."
+
+#: frontend/templates/index.html:182
+msgid "Global scope"
+msgstr "Global scope"
+
+#: frontend/templates/index.html:183
+msgid "about_global_scope"
+msgstr ""
+"The Global Healthsites Mapping Project is an initiative to create an online "
+"map of every health\n"
+"facility in the world and make the details of each location easily "
+"accessible."
+
+#: frontend/templates/index.html:190
+msgid "Open data collaboration"
+msgstr "Open data collaboration"
+
+#: frontend/templates/index.html:191
+msgid "about_open_data_collaboration"
+msgstr ""
+"Through collaborations with users, trusted partners and OpenStreepMap we "
+"will capture and validate\n"
+"the location and contact details of every facility and make this data freely "
+"available under an Open\n"
+"Data License (ODBL)"
+
+#: frontend/templates/index.html:199
+msgid "Accessible"
+msgstr "Accessible"
+
+#: frontend/templates/index.html:200
+msgid "about_accessible"
+msgstr ""
+"We will make the data accessible over the Internet through an API and other "
+"formats such as GeoJSON,\n"
+"Shape files, KML, CSV"
+
+#: frontend/templates/index.html:207
+msgid "Focus on health care location data"
+msgstr "Focus on health care location data"
+
+#: frontend/templates/index.html:208
+msgid "about_focus"
+msgstr ""
+"Our design philosophy is the long term curation and validation of health "
+"care location data. The\n"
+"healthsites.io map will enable users to discover what healthcare facilities "
+"exist at any global\n"
+"location and the associated services and resources."
+
+#: frontend/templates/index.html:220
+#, fuzzy
+#| msgid "data_model"
+msgid "Data model"
+msgstr "Model"
+
+#: frontend/templates/index.html:221
+msgid "Each healthsite is stored as a geometry object in the database"
+msgstr "Each healthsite is stored as a geometry object in the database"
+
+#: frontend/templates/index.html:224
+msgid "data_attributes"
+msgstr "Attributes"
+
+#: frontend/templates/index.html:225
+msgid "data_model"
+msgstr "Model"
+
+#: frontend/templates/index.html:232
+msgid "Please contact us should you wish to share data and we will assist you."
+msgstr ""
+"Please contact us should you wish to share data and we will assist you."
+
+#: frontend/templates/index.html:234
+msgid "Contact us"
+msgstr "Contact us"
+
+#: frontend/templates/index.html:239
+msgid "Developers"
+msgstr "Developers"
+
+#: frontend/templates/index.html:240
+msgid ""
+"We welcome new contributions to this project - see our github page for "
+"details."
+msgstr ""
+"We welcome new contributions to this project - see our github page for "
+"details."
+
+#: frontend/templates/index.html:243
+msgid "Road Map"
+msgstr "Road Map"
+
+#: frontend/templates/index.html:249
+msgid "chat_live"
+msgstr "Live chat"
+
+#: frontend/templates/index.html:250
+msgid "chat_description"
+msgstr ""
+"We've established a chatroom where we'll do our best to respond and share "
+"project knowledge."
+
+#: frontend/templates/index.html:251
+msgid "chat_join"
+msgstr "Join"
+
+#: frontend/templates/index.html:269
+msgid "World"
+msgstr "World"
+
+#: frontend/templates/index.html:272 frontend/templates/map.html:234
+msgid "healthsites"
+msgstr "healthsites"
+
+#: frontend/templates/index.html:275 frontend/templates/map.html:243
+msgid "Number of heathsites per type"
+msgstr "Number of heathsites per type"
+
+#: frontend/templates/index.html:285 frontend/templates/map.html:253
+msgid "Completeness of attributes"
+msgstr "Completeness of attributes"
+
+#: frontend/templates/index.html:294 frontend/templates/map.html:262
+msgid "Latest updates"
+msgstr "Latest updates"
+
+#: frontend/templates/index.html:302
+msgid "view previous updates"
+msgstr "view previous updates"
+
+#: frontend/templates/index.html:304
+msgid "view next updates"
+msgstr "view next updates"
+
+#: frontend/templates/index.html:312
+msgid "Healthsites data lifecycle"
+msgstr "Healthsites data lifecycle"
+
+#: frontend/templates/index.html:368
+msgid "Contact"
+msgstr "Contact"
+
+#: frontend/templates/index.html:425
+msgid "We use cookies to track usage and preferences."
+msgstr "We use cookies to track usage and preferences."
+
+#: frontend/templates/index.html:426
+msgid "I Understand"
+msgstr "I Understand"
+
+#: frontend/templates/index.html:427
+msgid "Disable Cookies"
+msgstr "Disable Cookies"
+
+#: frontend/templates/main.html:19
+msgid "SIGN IN"
+msgstr "SIGN IN"
+
+#: frontend/templates/main.html:44
+msgid "Share"
+msgstr "Share"
+
+#: frontend/templates/main.html:71
+msgid "Locality info"
+msgstr "Locality info"
+
+#: frontend/templates/map.html:188
+msgid "You are not signed in"
+msgstr "You are not signed in"
+
+#: frontend/templates/map.html:192
+msgid "sign in"
+msgstr "sign in"
+
+#: frontend/templates/map.html:215 frontend/templates/map.html.py:237
+msgid "You can get all data from healthsite in this"
+msgstr "You can get all data from healthsite in this"
+
+#: frontend/templates/map.html:216 frontend/templates/map.html.py:238
+msgid "shapefile"
+msgstr "shapefile"
+
+#: frontend/templates/map.html:220
+msgid "healthsites listed"
+msgstr "healthsites listed"
+
+#: frontend/templates/map.html:223
+msgid "Country"
+msgstr "Country"
+
+#: frontend/templates/map.html:224
+msgid "# of sites"
+msgstr "# of sites"
+
+#: frontend/templates/map.html:225
+#, python-format
+msgid "%% complete"
+msgstr "%% complete"
+
+#: frontend/templates/map.html:232
+msgid "No Title"
+msgstr "No Title"
+
+#: frontend/templates/map.html:272
+msgid "No Name"
+msgstr "No Name"
+
+#: frontend/templates/map.html:274
+msgid "Report this healthsite as duplication"
+msgstr "Report this healthsite as duplication"
+
+#: frontend/templates/map.html:276
+msgid "R"
+msgstr "R"
+
+#: frontend/templates/map.html:282
+msgid "first referral hospital"
+msgstr "first referral hospital"
+
+#: frontend/templates/map.html:292
+msgid "MASTER"
+msgstr "MASTER"
+
+#: frontend/templates/map.html:350
+msgid "0141 636 6116"
+msgstr "0141 636 6116"
+
+#: frontend/templates/map.html:363
+msgid "define operation"
+msgstr "define operation"
+
+#: frontend/templates/map.html:370
+msgid "OPERATING HOURS:"
+msgstr "OPERATING HOURS:"
+
+#: frontend/templates/map.html:372
+msgid "24/7"
+msgstr "24/7"
+
+#: frontend/templates/map.html:375
+msgid "24/5"
+msgstr "24/5"
+
+#: frontend/templates/map.html:382
+msgid "RESULT:"
+msgstr "RESULT:"
+
+#: frontend/templates/map.html:401
+msgid "scope of service"
+msgstr "scope of service"
+
+#: frontend/templates/map.html:410
+msgid "ancillary services"
+msgstr "ancillary services"
+
+#: frontend/templates/map.html:419
+msgid "activities"
+msgstr "activities"
+
+#: frontend/templates/map.html:440
+msgid "full time beds"
+msgstr "full time beds"
+
+#: frontend/templates/map.html:442
+msgid "part time beds"
+msgstr "part time beds"
+
+#: frontend/templates/map.html:451
+msgid "Note:"
+msgstr "Note:"
+
+#: frontend/templates/map.html:452
+msgid "Outpatient consultation and in-patient hospitalization"
+msgstr "Outpatient consultation and in-patient hospitalization"
+
+#: frontend/templates/map.html:471
+msgid "full time doctors"
+msgstr "full time doctors"
+
+#: frontend/templates/map.html:475
+msgid "full time nurses"
+msgstr "full time nurses"
+
+#: frontend/templates/map.html:483
+msgid "Ownership:"
+msgstr "Ownership:"
+
+#: frontend/templates/map.html:502
+msgid "tag should be more than 2 letter"
+msgstr "tag should be more than 2 letter"
+
+#: frontend/templates/map.html:512
+msgid "add new information"
+msgstr "add new information"
+
+#: frontend/templates/map.html:525
+msgid "share"
+msgstr "share"
+
+#: frontend/templates/map.html:531
+msgid "edit"
+msgstr "edit"
+
+#: frontend/templates/map.html:537
+msgid "save"
+msgstr "save"
+
+#: frontend/templates/map.html:543
+msgid "create"
+msgstr "create"
+
+#: frontend/templates/map.html:548
+msgid "add new"
+msgstr "add new"
+
+#: frontend/templates/map.html:554 frontend/templates/map.html.py:574
+msgid "cancel"
+msgstr "cancel"
+
+#: frontend/templates/map.html:563
+msgid "Please enter uuid of it's master or click marker of master"
+msgstr "Please enter uuid of it's master or click marker of master"
+
+#: frontend/templates/map.html:569
+msgid "report"
+msgstr "report"
+
+#: frontend/views.py:51
+msgid "There was an error in the contact form."
+msgstr "There was an error in the contact form."
+
+#: frontend/views.py:104
+msgid "getting place error"
+msgstr "getting place error"
+
+#: localities/templates/dataloaderform.html:52
+msgid "Healthsites - Data Loader"
+msgstr "Healthsites - Data Loader"
+
+#: localities/templates/dataloaderform.html:63
+msgid "Cancel"
+msgstr "Cancel"
+
+#: localities/templates/search.html:7
+msgid "Healthsites"
+msgstr "Healthsites"
+
+#: localities/templates/updateform.html:5
+msgid "Filled attributes"
+msgstr "Filled attributes"
+
+#: localities/templates/updateform.html:6
+msgid "Empty attributes"
+msgstr "Empty attributes"
