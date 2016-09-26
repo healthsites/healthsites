@@ -84,3 +84,12 @@ export RABBITMQ_HOST=localhost
 python manage.py migrate --settings=core.settings.dev_${USER}
 python manage.py collectstatic --noinput --settings=core.settings.dev_${USER}
 ```
+
+### Translation
+Translation is done on [Transifex](https://www.transifex.com/healthsitesio/healthsites/)
+
+We invite new translators to join.
+When translation is complete, or when you want to test it:
+```
+tx pull -a
+```
