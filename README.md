@@ -77,7 +77,7 @@ that.
 Prepare your database and static resources by doing this:
 
 ```
-virtualenv venv
+cd healthsites
 source venv/bin/activate
 cd django_project
 export RABBITMQ_HOST=localhost
@@ -85,11 +85,36 @@ python manage.py migrate --settings=core.settings.dev_${USER}
 python manage.py collectstatic --noinput --settings=core.settings.dev_${USER}
 ```
 
-### Translation
-Translation is done on [Transifex](https://www.transifex.com/healthsitesio/healthsites/)
+You can now start a development server
 
-We invite new translators to join.
-When translation is complete, or when you want to test it:
 ```
+python manage.py runserver --settings=core.settings.dev_${USER}
+```
+
+And visit the page at http://localhost:8000
+
+### Translation
+We invite new translators to join. Translation is done on
+[Transifex](https://www.transifex.com/healthsitesio/healthsites/).
+To join, make sure you have a file called `~/.transifexrc`
+(in your home directory on a linux workstation) that holds your
+credentials for transifex. The transifex client is created with `pip install`
+
+```
+# .transifexrc
+[https://www.transifex.com]
+hostname = https://www.transifex.com
+password = yourpassword
+token =
+username = username@mailaddress.com
+```
+
+You can then pull translations using
+
+```
+cd healthsites
+source venv/bin/activate
+cd django_project
+export RABBITMQ_HOST=localhost
 tx pull -a
 ```
