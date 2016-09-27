@@ -5,11 +5,12 @@ function mapcount() {
     var v_width = $(window).width();
     var v_height = $(window).height();
     var s_height = $('.nav-searchbar').height();
+    var h_height;
+    var c_height;
     if ($('.nav-searchbar').is(":visible")) {
-        var h_height = $('.masthead').height() + s_height;
-    }
-    else {
-        var h_height = $('.masthead').height();
+        h_height = $('.masthead').height() + s_height;
+    } else {
+        h_height = $('.masthead').height();
     }
     var s_width = $('.location-info').width();
     var r_height = v_height - h_height;
@@ -31,7 +32,7 @@ function mapcount() {
     }
     else {
         if ($('.select-country').length > 0) {
-            var c_height = $('.country-data').css('height');
+            c_height = $('.country-data').css('height');
         }
         $('.location-info').css('margin-top', h_height);
         $('.map-page #map').css('height', v_height - h_height);
@@ -50,7 +51,8 @@ function mapcount() {
 }
 
 function policyshow() {
-    $('body').prepend('<div id="policy" class="fixed"><p>healthsites.io cannot guarantee the validity of the information found here <a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use" target="_blank">Terms of use</a> <a href="#" class="accept">Accept</a></p></div>');
+    $('body').prepend('<div id="policy" class="fixed"><p>' + i18n_cannot_guarantee + ' <a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use" target="_blank">' +
+      i18n_terms_of_use + '</a> <a href="#" class="accept">' + i18n_accept + '</a></p></div>');
     $('body').addClass('policy-enabled');
     $('.accept').click(function () {
         $('#policy').slideUp(300);
@@ -102,7 +104,7 @@ function updateButton() {
     var activeindex = $(activeChild).attr('id').split("-")[1];
     $(".prev").removeClass("opacity-7");
     $(".next").removeClass("opacity-7");
-    if (activeindex == 0) {
+    if (activeindex === 0) {
         $(".prev").addClass("opacity-7");
     }
     if (activeindex + 1 >= childs.length) {
