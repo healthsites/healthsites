@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-26 13:41+0000\n"
+"POT-Creation-Date: 2016-09-27 12:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,6 +140,7 @@ msgid "Road map"
 msgstr "Road map"
 
 #: core/base_templates/base.html:150 frontend/templates/index.html:355
+#: frontend/templates/index.html.py:430
 msgid "Terms of use"
 msgstr "Terms of use"
 
@@ -525,6 +526,15 @@ msgstr "I Understand"
 #: frontend/templates/index.html:427
 msgid "Disable Cookies"
 msgstr "Disable Cookies"
+
+#: frontend/templates/index.html:429
+msgid ""
+"healthsites.io cannot guarantee the validity of the information found here"
+msgstr "healthsites.io cannot guarantee the validity of the information found here"
+
+#: frontend/templates/index.html:431
+msgid "Accept"
+msgstr Accept""
 
 #: frontend/templates/main.html:19
 msgid "SIGN IN"
