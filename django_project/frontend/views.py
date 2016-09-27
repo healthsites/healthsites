@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import json
-
-LOG = logging.getLogger(__name__)
-
 import googlemaps
 
 from braces.views import FormMessagesMixin
@@ -18,10 +14,14 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
-from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, \
+from localities.utils import get_country_statistic, \
+    get_heathsites_master, \
+    search_locality_by_spec_data, \
     search_locality_by_tag
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from social_users.utils import get_profile
+
+LOG = logging.getLogger(__name__)
 
 
 class MainView(TemplateView):
@@ -35,7 +35,8 @@ class MainView(TemplateView):
             if request.user.is_staff:
                 context['uploader'] = True
             else:
-                permission = DataLoaderPermission.objects.filter(uploader=request.user)
+                permission = DataLoaderPermission.objects.filter(
+                    uploader=request.user)
                 if len(permission) <= 0:
                     context['uploader'] = False
                 else:
@@ -83,7 +84,8 @@ def search_place(request, place):
     # getting country's polygon
     result = {}
     result['locality_count'] = get_heathsites_master().count()
-    result['countries'] = Country.objects.order_by('name').values('name').distinct()
+    result['countries'] = Country.objects.order_by(
+        'name').values('name').distinct()
     # geonames
     if place:
         google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
@@ -113,78 +115,96 @@ def map(request):
         request.user = get_profile(user)
 
     if request.method == 'POST':
-        search_query = request.POST.get('q')
-        option = request.POST.get('option')
-        if option == 'place':
-            map_url = reverse('map')
-            return HttpResponseRedirect(
-                map_url + "?place=%s" % search_query)
-        elif option == 'what3words':
-            locality_values = Value.objects.filter(
-                specification__attribute__key='what3words').filter(
-                data=search_query)
-            if locality_values:
-                locality_value = locality_values[0]
-            else:
-                return render_to_response(
-                    'map.html',
-                    context_instance=RequestContext(request)
-                )
-            locality_uuid = locality_value.locality.uuid
+        return post(request)
+    else:
+        return get(request)
+
+
+def post(request):
+    search_query = request.POST.get('q')
+    option = request.POST.get('option')
+    if option == 'place':
+        map_url = reverse('map')
+        return HttpResponseRedirect(
+            map_url + "?place=%s" % search_query)
+    elif option == 'what3words':
+        locality_values = Value.objects.filter(
+            specification__attribute__key='what3words').filter(
+            data=search_query)
+        if locality_values:
+            locality_value = locality_values[0]
+        else:
+            return render_to_response(
+                'map.html',
+                context_instance=RequestContext(request)
+            )
+        locality_uuid = locality_value.locality.uuid
+        map_url = reverse('map')
+        return HttpResponseRedirect(
+            map_url + "#!/locality/%s" % locality_uuid)
+    elif option == 'healthsite':
+        localities = Locality.objects.filter(
+            name=search_query)
+        if len(localities) > 0:
+            locality = localities[0]
+            locality_uuid = locality.uuid
             map_url = reverse('map')
             return HttpResponseRedirect(
                 map_url + "#!/locality/%s" % locality_uuid)
-        elif option == 'healthsite':
-            localities = Locality.objects.filter(
-                name=search_query)
-            if len(localities) > 0:
-                locality = localities[0]
-                locality_uuid = locality.uuid
-                map_url = reverse('map')
-                return HttpResponseRedirect(
-                    map_url + "#!/locality/%s" % locality_uuid)
-            else:
-                return render_to_response(
-                    'map.html',
-                    context_instance=RequestContext(request)
-                )
-    else:
-        tag = request.GET.get('tag')
-        country = request.GET.get('country')
-        place = request.GET.get('place')
-        attribute = request.GET.get('attribute')
-        result = {}
-        if tag:
-            result = search_locality_by_tag(tag)
-            result['tag'] = tag
-        elif country:
-            result = get_country_statistic(country)
-            result['country'] = country
-            result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
-        elif place:
-            result = search_place(request, place)
-        elif attribute:
-            uuid = request.GET.get('uuid')
-            result = search_locality_by_spec_data("attribute", attribute, uuid)
-            result['attribute'] = {'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],
-                                   'location': result['location']}
-        elif len(request.GET) == 0:
-            result = search_place(request, place)
         else:
-            uuid = request.GET.get('uuid')
-            for item in request.GET:
-                if item != "uuid":
-                    spec = item
-                    data = request.GET.get(item)
-                    result = search_locality_by_spec_data(spec, data, uuid)
-                    result['spec'] = {'spec': spec, 'data': data, 'uuid': uuid, 'name': result['locality_name'],
-                                      'location': result['location']}
+            return render_to_response(
+                'map.html',
+                context_instance=RequestContext(request)
+            )
 
-        if 'new_geom' in request.session:
-            result["new_geom"] = request.session['new_geom']
-            del request.session['new_geom']
-        return render_to_response(
-            'map.html',
-            result,
-            context_instance=RequestContext(request)
-        )
+
+def get(request):
+    tag = request.GET.get('tag')
+    country = request.GET.get('country')
+    place = request.GET.get('place')
+    attribute = request.GET.get('attribute')
+    result = {}
+    if tag:
+        result = search_locality_by_tag(tag)
+        result['tag'] = tag
+    elif country:
+        result = get_country_statistic(country)
+        result['country'] = country
+        result['polygon'] = Country.objects.get(
+                name__iexact=country).polygon_geometry.geojson
+    elif place:
+        result = search_place(request, place)
+    elif attribute:
+        uuid = request.GET.get('uuid')
+        result = search_locality_by_spec_data("attribute", attribute, uuid)
+        result['attribute'] = {
+            'attribute': attribute,
+            'uuid': uuid,
+            'name': result['locality_name'],
+            'location': result['location']
+        }
+    elif len(request.GET) == 0:
+        result = search_place(request, place)
+    else:
+        uuid = request.GET.get('uuid')
+        for item in request.GET:
+            if item != "uuid":
+                spec = item
+                data = request.GET.get(item)
+                result = search_locality_by_spec_data(spec, data, uuid)
+                result['spec'] = {
+                    'spec': spec,
+                    'data': data,
+                    'uuid': uuid,
+                    'name': result['locality_name'],
+                    'location': result['location']
+                }
+
+    if 'new_geom' in request.session:
+        result["new_geom"] = request.session['new_geom']
+        del request.session['new_geom']
+    return render_to_response(
+        'map.html',
+        result,
+        context_instance=RequestContext(request)
+    )
