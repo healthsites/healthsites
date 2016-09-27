@@ -16,7 +16,7 @@ You can visit a running instance of healthsites at [healthsites.io](http://healt
 
 These badges reflect the current status of our development branch:
 
-Tests status: [![Build Status](https://api.travis-ci.org/healthsites/healthsites.svg)](https://api.travis-ci.org/healthsites/healthsites.svg)
+Tests status: [![Build Status](https://api.travis-ci.org/healthsites/healthsites.svg)](https://travis-ci.org/healthsites/healthsites)
 
 Coverage status: [![Coverage Status](https://coveralls.io/repos/healthsites/healthsites/badge.png?branch=develop)](https://coveralls.io/r/healthsites/healthsites?branch=develop)
 
