@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 
-LOG = logging.getLogger(__name__)
-
 from django.contrib.sites.models import Site
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.db.models.signals import pre_delete
+from localities.models import DataLoaderPermission
+
+LOG = logging.getLogger(__name__)
 
 
 class Profile(models.Model):
@@ -25,9 +26,18 @@ class Organisation(models.Model):
     """
 
     name = models.CharField(blank=False, max_length=64)
-    site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, default=None)
+    site = models.ForeignKey(
+        Site,
+        on_delete=models.CASCADE,
+        null=True,
+        default=None
+    )
     contact = models.CharField(default="", blank=True, max_length=64)
-    trusted_users = models.ManyToManyField('TrustedUser', through='OrganisationSupported', blank=True)
+    trusted_users = models.ManyToManyField(
+        'TrustedUser',
+        through='OrganisationSupported',
+        blank=True
+    )
 
     def clean_website(self):
         if "http" in self.site.domain:
@@ -46,8 +56,11 @@ class TrustedUser(models.Model):
 
     user = models.OneToOneField(
         User, default=1, unique=True)
-    organisations_supported = models.ManyToManyField('Organisation', through=Organisation.trusted_users.through,
-                                                     blank=True)
+    organisations_supported = models.ManyToManyField(
+        'Organisation',
+        through=Organisation.trusted_users.through,
+        blank=True
+    )
 
 
 class OrganisationSupported(models.Model):
@@ -63,7 +76,5 @@ class OrganisationSupported(models.Model):
 def trusted_user_deleted(sender, instance, **kwargs):
     DataLoaderPermission.objects.filter(uploader=instance.user).delete()
 
-
-from localities.models import DataLoaderPermission
 
 pre_delete.connect(trusted_user_deleted, sender=TrustedUser)
