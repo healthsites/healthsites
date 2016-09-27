@@ -78,7 +78,9 @@ $(document).ready(function () {
         var match = jQuery(this).attr('href').match(/#\S+/);
         if (match) {
             console.log(match);
-            ga('send', 'pageview', location.pathname + match[0]);
+            if (typeof ga !== "undefined") {
+              ga('send', 'pageview', location.pathname + match[0]);
+            }
         }
     });
-})
+});

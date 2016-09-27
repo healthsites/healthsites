@@ -4,15 +4,12 @@
 {% get_current_language as LANGUAGE_CODE %}
 
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}">
+<html lang="{{ LANGUAGE_CODE }}" itemscope itemtype="https://schema.org/Organization">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
-    <html itemscope itemtype="https://schema.org/Organization">
     {% trans "site_name" as site_name%}
     <meta itemprop="name" content="{{ site_name }}">
     {% trans "site_description" as site_description%}
@@ -65,6 +62,13 @@
 
     </head>
     <script>
+        var i18n_we_use_cookies = '{% trans "We use cookies to track usage and preferences."%}';
+        var i18n_i_understand = '{% trans "I Understand"%}';
+        var i18n_disable_cookies = '{% trans "Disable Cookies"%}';
+        var i18n_privacy_policy = '{% trans "Privacy Policy"%}';
+        var i18n_cannot_guarantee = '{% trans "healthsites.io cannot guarantee the validity of the information found here"%}';
+        var i18n_terms_of_use = '{% trans "Terms of use"%}';
+        var i18n_accept = '{% trans "Accept"%}';
         var isLoggedIn = false;
         var isUserTrusted = false;
         {% if user.is_authenticated %}

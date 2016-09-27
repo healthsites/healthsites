@@ -77,7 +77,7 @@ function gettingData(country) {
             if (data.completeness) {
                 updatePieChart(data.completeness.basic, data.completeness.partial, data.completeness.complete);
             }
-            if (data.last_update.length > 0) {
+            if (data.last_update && data.last_update.length > 0) {
                 $("#updates-wrapper").html("");
                 for (var i = 0; i < data.last_update.length; i++) {
                     var page = parseInt(i / 5);
