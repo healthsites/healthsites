@@ -19,6 +19,7 @@ from ._csv_unicode import UnicodeDictReader
 from django.utils.dateparse import parse_datetime
 from django.db import IntegrityError
 
+
 class CSVImporter:
     """
     CSV based importer
@@ -228,6 +229,7 @@ class CSVImporter:
                 date_created = values['date_created']
                 try:
                     if date_created:
+                        loc.changeset = Changeset.objects.create(social_user=self.user)
                         loc.changeset.created = parse_datetime(date_created)
                         loc.changeset.save()
                 except IntegrityError:
