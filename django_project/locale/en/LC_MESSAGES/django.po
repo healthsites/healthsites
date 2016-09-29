@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-27 12:20+0000\n"
+"POT-Creation-Date: 2016-09-29 09:38+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,29 +17,29 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: core/base_templates/404.html:20
+#: core/base_templates/404.html:10 core/base_templates/404.html.py:21
 msgid "Error 404"
 msgstr "Error 404"
 
-#: core/base_templates/404.html:22
+#: core/base_templates/404.html:23
 msgid "Page not found"
 msgstr "Page not found"
 
-#: core/base_templates/404.html:24
+#: core/base_templates/404.html:25
 msgid "We're sorry, but the requested page could not be found."
 msgstr "We're sorry, but the requested page could not be found."
 
-#: core/base_templates/404.html:26
+#: core/base_templates/404.html:27
 msgid "Go to homepage"
 msgstr "Go to homepage"
 
-#: core/base_templates/base.html:13 frontend/templates/index.html:13
-#: frontend/templates/map.html:16
+#: core/base_templates/base.html:11 frontend/templates/index.html:13
+#: frontend/templates/map.html:13
 msgid "site_name"
 msgstr "healthsites.io"
 
-#: core/base_templates/base.html:15 frontend/templates/index.html:15
-#: frontend/templates/map.html:18
+#: core/base_templates/base.html:13 frontend/templates/index.html:15
+#: frontend/templates/map.html:15
 msgid "site_description"
 msgstr ""
 "When a natural disaster or disease outbreak occurs there is a rush to\n"
@@ -49,144 +49,144 @@ msgstr ""
 "to make this data and the tools necessary to upload, manage and\n"
 "make the data freely and easily accessible."
 
-#: core/base_templates/base.html:18 frontend/templates/index.html:23
-#: frontend/templates/map.html:26
+#: core/base_templates/base.html:16 frontend/templates/index.html:23
+#: frontend/templates/map.html:23
 msgid "site_title"
 msgstr ""
 "Building a free, curated, global, canonical source of healthcare location "
 "data"
 
-#: core/base_templates/base.html:60 frontend/templates/index.html:65
-#: frontend/templates/map.html:83
+#: core/base_templates/base.html:58 frontend/templates/index.html:65
+#: frontend/templates/map.html:87
 msgid "Toggle navigation"
 msgstr "Toggle navigation"
 
-#: core/base_templates/base.html:64 frontend/templates/index.html:69
-#: frontend/templates/map.html:89
+#: core/base_templates/base.html:62 frontend/templates/index.html:69
+#: frontend/templates/map.html:93
 msgid "healthsites.io"
 msgstr "healthsites.io"
 
-#: core/base_templates/base.html:86 frontend/templates/index.html:20
-#: frontend/templates/index.html.py:91 frontend/templates/map.html:23
-#: frontend/templates/map.html.py:114
+#: core/base_templates/base.html:84 frontend/templates/index.html:20
+#: frontend/templates/index.html.py:91 frontend/templates/map.html:20
+#: frontend/templates/map.html.py:118
 msgid "site_tagline"
 msgstr "A free, curated, global, canonical source of healthcare location data"
 
-#: core/base_templates/base.html:90 frontend/templates/index.html:95
-#: frontend/templates/map.html:118
+#: core/base_templates/base.html:88 frontend/templates/index.html:95
+#: frontend/templates/map.html:122
 msgid "About"
 msgstr "About"
 
-#: core/base_templates/base.html:91 frontend/templates/index.html:96
-#: frontend/templates/map.html:119
+#: core/base_templates/base.html:89 frontend/templates/index.html:96
+#: frontend/templates/map.html:123
 msgid "Map"
 msgstr "Map"
 
-#: core/base_templates/base.html:92 frontend/templates/index.html:97
-#: frontend/templates/map.html:120
+#: core/base_templates/base.html:90 frontend/templates/index.html:97
+#: frontend/templates/map.html:124
 msgid "Country data"
 msgstr "Country data"
 
-#: core/base_templates/base.html:93 frontend/templates/index.html:98
-#: frontend/templates/map.html:121
+#: core/base_templates/base.html:91 frontend/templates/index.html:98
+#: frontend/templates/map.html:125
 msgid "How it works"
 msgstr "How it works"
 
-#: core/base_templates/base.html:94 frontend/templates/index.html:99
-#: frontend/templates/map.html:122
+#: core/base_templates/base.html:92 frontend/templates/index.html:99
+#: frontend/templates/map.html:126
 msgid "Share data"
 msgstr "Share data"
 
-#: core/base_templates/base.html:95 frontend/templates/index.html:100
-#: frontend/templates/index.html.py:334 frontend/templates/map.html:123
+#: core/base_templates/base.html:93 frontend/templates/index.html:100
+#: frontend/templates/index.html.py:334 frontend/templates/map.html:127
 msgid "Partners"
 msgstr "Partners"
 
-#: core/base_templates/base.html:113 frontend/templates/index.html:115
-#: frontend/templates/map.html:140
+#: core/base_templates/base.html:111 frontend/templates/index.html:115
+#: frontend/templates/map.html:144
 msgid "healthsite"
 msgstr "healthsite"
 
-#: core/base_templates/base.html:119 frontend/templates/index.html:119
-#: frontend/templates/map.html:146
+#: core/base_templates/base.html:117 frontend/templates/index.html:119
+#: frontend/templates/map.html:150
 msgid "place"
 msgstr "place"
 
-#: core/base_templates/base.html:125 frontend/templates/index.html:123
-#: frontend/templates/map.html:151
+#: core/base_templates/base.html:123 frontend/templates/index.html:123
+#: frontend/templates/map.html:155
 msgid "what3words"
 msgstr "what3words"
 
-#: core/base_templates/base.html:128 frontend/templates/index.html:126
-#: frontend/templates/map.html:154
+#: core/base_templates/base.html:126 frontend/templates/index.html:126
+#: frontend/templates/map.html:158
 msgid "search"
 msgstr "search"
 
-#: core/base_templates/base.html:129 frontend/templates/index.html:127
-#: frontend/templates/map.html:155
+#: core/base_templates/base.html:127 frontend/templates/index.html:127
+#: frontend/templates/map.html:159
 msgid "search..."
 msgstr "search..."
 
-#: core/base_templates/base.html:144 frontend/templates/index.html:349
+#: core/base_templates/base.html:142 frontend/templates/index.html:349
 msgid "Vision"
 msgstr "Vision"
 
-#: core/base_templates/base.html:146 frontend/templates/index.html:351
+#: core/base_templates/base.html:144 frontend/templates/index.html:351
 msgid "Participate"
 msgstr "Participate"
 
-#: core/base_templates/base.html:148 frontend/templates/index.html:353
+#: core/base_templates/base.html:146 frontend/templates/index.html:353
 msgid "Road map"
 msgstr "Road map"
 
-#: core/base_templates/base.html:150 frontend/templates/index.html:355
-#: frontend/templates/index.html.py:430
+#: core/base_templates/base.html:148 frontend/templates/index.html:355
+#: frontend/templates/index.html.py:430 frontend/templates/map.html:70
 msgid "Terms of use"
 msgstr "Terms of use"
 
-#: core/base_templates/base.html:151 frontend/templates/index.html:356
+#: core/base_templates/base.html:149 frontend/templates/index.html:356
 msgid "IP policy"
 msgstr "IP policy"
 
-#: core/base_templates/base.html:157 frontend/templates/index.html:362
+#: core/base_templates/base.html:155 frontend/templates/index.html:362
 msgid "Data"
 msgstr "Data"
 
-#: core/base_templates/base.html:158 frontend/templates/index.html:363
+#: core/base_templates/base.html:156 frontend/templates/index.html:363
 msgid "Source code"
 msgstr "Source code"
 
-#: core/base_templates/base.html:159 frontend/templates/index.html:364
+#: core/base_templates/base.html:157 frontend/templates/index.html:364
 msgid "Map edit"
 msgstr "Map edit"
 
-#: core/base_templates/base.html:161 frontend/templates/index.html:366
+#: core/base_templates/base.html:159 frontend/templates/index.html:366
 msgid "Data lifecycle"
 msgstr "Data lifecycle"
 
-#: core/base_templates/base.html:169 frontend/templates/index.html:374
+#: core/base_templates/base.html:167 frontend/templates/index.html:374
 msgid "Upload form"
 msgstr "Upload form"
 
-#: core/base_templates/base.html:170 frontend/templates/index.html:375
+#: core/base_templates/base.html:168 frontend/templates/index.html:375
 msgid "Chat space"
 msgstr "Chat space"
 
-#: core/base_templates/base.html:171 frontend/templates/index.html:376
+#: core/base_templates/base.html:169 frontend/templates/index.html:376
 msgid "API"
 msgstr "API"
 
-#: core/base_templates/base.html:172 frontend/templates/index.html:241
+#: core/base_templates/base.html:170 frontend/templates/index.html:241
 #: frontend/templates/index.html.py:377
 msgid "GitHub"
 msgstr "Github"
 
-#: core/base_templates/base.html:174 frontend/templates/index.html:379
+#: core/base_templates/base.html:172 frontend/templates/index.html:379
 msgid "MoU's and Governance"
 msgstr "MoU's and Governance"
 
-#: core/base_templates/base.html:176 frontend/templates/index.html:381
-#: frontend/templates/index.html.py:428
+#: core/base_templates/base.html:174 frontend/templates/index.html:381
+#: frontend/templates/index.html.py:428 frontend/templates/map.html:68
 msgid "Privacy Policy"
 msgstr "Privacy Policy"
 
@@ -483,19 +483,27 @@ msgstr "Join"
 msgid "World"
 msgstr "World"
 
-#: frontend/templates/index.html:272 frontend/templates/map.html:234
+msgid "map_intro_text"
+msgstr ""
+"Browse the map, search or use the crosshair to view\n"
+"healthsites close to your location. We invite you to help establish accurate health care location data.\n"
+"We aim to provide a single point of reference for healthcare workers, aid agencies, government\n"
+"agencies and citizens who need access to highly curated global dataset of healthcare\n"
+"facilities. You can also download all the healthcare locations as shapefile."
+
+#: frontend/templates/index.html:272 frontend/templates/map.html:238
 msgid "healthsites"
 msgstr "healthsites"
 
-#: frontend/templates/index.html:275 frontend/templates/map.html:243
+#: frontend/templates/index.html:275 frontend/templates/map.html:247
 msgid "Number of heathsites per type"
 msgstr "Number of heathsites per type"
 
-#: frontend/templates/index.html:285 frontend/templates/map.html:253
+#: frontend/templates/index.html:285 frontend/templates/map.html:257
 msgid "Completeness of attributes"
 msgstr "Completeness of attributes"
 
-#: frontend/templates/index.html:294 frontend/templates/map.html:262
+#: frontend/templates/index.html:294 frontend/templates/map.html:266
 msgid "Latest updates"
 msgstr "Latest updates"
 
@@ -515,26 +523,27 @@ msgstr "Healthsites data lifecycle"
 msgid "Contact"
 msgstr "Contact"
 
-#: frontend/templates/index.html:425
+#: frontend/templates/index.html:425 frontend/templates/map.html:65
 msgid "We use cookies to track usage and preferences."
 msgstr "We use cookies to track usage and preferences."
 
-#: frontend/templates/index.html:426
+#: frontend/templates/index.html:426 frontend/templates/map.html:66
 msgid "I Understand"
 msgstr "I Understand"
 
-#: frontend/templates/index.html:427
+#: frontend/templates/index.html:427 frontend/templates/map.html:67
 msgid "Disable Cookies"
 msgstr "Disable Cookies"
 
-#: frontend/templates/index.html:429
+#: frontend/templates/index.html:429 frontend/templates/map.html:69
 msgid ""
 "healthsites.io cannot guarantee the validity of the information found here"
-msgstr "healthsites.io cannot guarantee the validity of the information found here"
+msgstr ""
+"healthsites.io cannot guarantee the validity of the information found here"
 
-#: frontend/templates/index.html:431
+#: frontend/templates/index.html:431 frontend/templates/map.html:71
 msgid "Accept"
-msgstr Accept""
+msgstr "Accept"
 
 #: frontend/templates/main.html:19
 msgid "SIGN IN"
@@ -548,172 +557,172 @@ msgstr "Share"
 msgid "Locality info"
 msgstr "Locality info"
 
-#: frontend/templates/map.html:188
+#: frontend/templates/map.html:192
 msgid "You are not signed in"
 msgstr "You are not signed in"
 
-#: frontend/templates/map.html:192
+#: frontend/templates/map.html:196
 msgid "sign in"
 msgstr "sign in"
 
-#: frontend/templates/map.html:215 frontend/templates/map.html.py:237
+#: frontend/templates/map.html:219 frontend/templates/map.html.py:241
 msgid "You can get all data from healthsite in this"
 msgstr "You can get all data from healthsite in this"
 
-#: frontend/templates/map.html:216 frontend/templates/map.html.py:238
+#: frontend/templates/map.html:220 frontend/templates/map.html.py:242
 msgid "shapefile"
 msgstr "shapefile"
 
-#: frontend/templates/map.html:220
+#: frontend/templates/map.html:224
 msgid "healthsites listed"
 msgstr "healthsites listed"
 
-#: frontend/templates/map.html:223
+#: frontend/templates/map.html:227
 msgid "Country"
 msgstr "Country"
 
-#: frontend/templates/map.html:224
+#: frontend/templates/map.html:228
 msgid "# of sites"
 msgstr "# of sites"
 
-#: frontend/templates/map.html:225
+#: frontend/templates/map.html:229
 #, python-format
 msgid "%% complete"
 msgstr "%% complete"
 
-#: frontend/templates/map.html:232
+#: frontend/templates/map.html:236
 msgid "No Title"
 msgstr "No Title"
 
-#: frontend/templates/map.html:272
+#: frontend/templates/map.html:276
 msgid "No Name"
 msgstr "No Name"
 
-#: frontend/templates/map.html:274
+#: frontend/templates/map.html:278
 msgid "Report this healthsite as duplication"
 msgstr "Report this healthsite as duplication"
 
-#: frontend/templates/map.html:276
+#: frontend/templates/map.html:280
 msgid "R"
 msgstr "R"
 
-#: frontend/templates/map.html:282
+#: frontend/templates/map.html:286
 msgid "first referral hospital"
 msgstr "first referral hospital"
 
-#: frontend/templates/map.html:292
+#: frontend/templates/map.html:296
 msgid "MASTER"
 msgstr "MASTER"
 
-#: frontend/templates/map.html:350
+#: frontend/templates/map.html:354
 msgid "0141 636 6116"
 msgstr "0141 636 6116"
 
-#: frontend/templates/map.html:363
+#: frontend/templates/map.html:367
 msgid "define operation"
 msgstr "define operation"
 
-#: frontend/templates/map.html:370
+#: frontend/templates/map.html:374
 msgid "OPERATING HOURS:"
 msgstr "OPERATING HOURS:"
 
-#: frontend/templates/map.html:372
+#: frontend/templates/map.html:376
 msgid "24/7"
 msgstr "24/7"
 
-#: frontend/templates/map.html:375
+#: frontend/templates/map.html:379
 msgid "24/5"
 msgstr "24/5"
 
-#: frontend/templates/map.html:382
+#: frontend/templates/map.html:386
 msgid "RESULT:"
 msgstr "RESULT:"
 
-#: frontend/templates/map.html:401
+#: frontend/templates/map.html:405
 msgid "scope of service"
 msgstr "scope of service"
 
-#: frontend/templates/map.html:410
+#: frontend/templates/map.html:414
 msgid "ancillary services"
 msgstr "ancillary services"
 
-#: frontend/templates/map.html:419
+#: frontend/templates/map.html:423
 msgid "activities"
 msgstr "activities"
 
-#: frontend/templates/map.html:440
+#: frontend/templates/map.html:444
 msgid "full time beds"
 msgstr "full time beds"
 
-#: frontend/templates/map.html:442
+#: frontend/templates/map.html:446
 msgid "part time beds"
 msgstr "part time beds"
 
-#: frontend/templates/map.html:451
+#: frontend/templates/map.html:455
 msgid "Note:"
 msgstr "Note:"
 
-#: frontend/templates/map.html:452
+#: frontend/templates/map.html:456
 msgid "Outpatient consultation and in-patient hospitalization"
 msgstr "Outpatient consultation and in-patient hospitalization"
 
-#: frontend/templates/map.html:471
+#: frontend/templates/map.html:475
 msgid "full time doctors"
 msgstr "full time doctors"
 
-#: frontend/templates/map.html:475
+#: frontend/templates/map.html:479
 msgid "full time nurses"
 msgstr "full time nurses"
 
-#: frontend/templates/map.html:483
+#: frontend/templates/map.html:487
 msgid "Ownership:"
 msgstr "Ownership:"
 
-#: frontend/templates/map.html:502
+#: frontend/templates/map.html:506
 msgid "tag should be more than 2 letter"
 msgstr "tag should be more than 2 letter"
 
-#: frontend/templates/map.html:512
+#: frontend/templates/map.html:516
 msgid "add new information"
 msgstr "add new information"
 
-#: frontend/templates/map.html:525
+#: frontend/templates/map.html:529
 msgid "share"
 msgstr "share"
 
-#: frontend/templates/map.html:531
+#: frontend/templates/map.html:535
 msgid "edit"
 msgstr "edit"
 
-#: frontend/templates/map.html:537
+#: frontend/templates/map.html:541
 msgid "save"
 msgstr "save"
 
-#: frontend/templates/map.html:543
+#: frontend/templates/map.html:547
 msgid "create"
 msgstr "create"
 
-#: frontend/templates/map.html:548
+#: frontend/templates/map.html:552
 msgid "add new"
 msgstr "add new"
 
-#: frontend/templates/map.html:554 frontend/templates/map.html.py:574
+#: frontend/templates/map.html:558 frontend/templates/map.html.py:578
 msgid "cancel"
 msgstr "cancel"
 
-#: frontend/templates/map.html:563
+#: frontend/templates/map.html:567
 msgid "Please enter uuid of it's master or click marker of master"
 msgstr "Please enter uuid of it's master or click marker of master"
 
-#: frontend/templates/map.html:569
+#: frontend/templates/map.html:573
 msgid "report"
 msgstr "report"
 
-#: frontend/views.py:51
+#: frontend/views.py:52
 msgid "There was an error in the contact form."
 msgstr "There was an error in the contact form."
 
-#: frontend/views.py:104
+#: frontend/views.py:106
 msgid "getting place error"
 msgstr "getting place error"
 

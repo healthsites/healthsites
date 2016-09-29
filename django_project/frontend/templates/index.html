@@ -67,8 +67,10 @@
             <button type="button" class="search-toggle collapsed"><span class="sr-only">{% trans "Search"%}</span><a
                     class="navbar-search" href="#"><i class="fa fa-search"></i></a></button>
             <a class="navbar-brand" href="#"><span class="hs-logo"></span>{% trans "healthsites.io"%}</a>
-            <a class="navbar-share closed" href="#"><img class="share" src="static/img/share.svg" width="20"/><img
-                    class="close" src="static/img/close.svg" width="16"/></a>
+            <a class="navbar-share closed" href="#">
+              <i class="fa fa-share-alt share" aria-hidden="true"></i>
+              <i class="fa fa-close close" aria-hidden="true"></i>
+            </a>
 
             <div class="hidden" id="site-social">
                 <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
@@ -137,14 +139,20 @@
                 {% trans "healthsites added"%}</h2>
 
             <div class="cta col-md-12 clearfix pad0x">
-                <div class="col-xs-6 hide-mobile pad0x"><a href="/map"
-                                                           class="col-xs-11 button white pad0x">{% trans "edit the map"%}
-                    </a></div>
+                <div class="col-xs-6 hide-mobile pad0x">
+                  <a href="/map" class="col-xs-11 button white pad0x">
+                    {% trans "edit the map"%}
+                  </a>
+                </div>
                 <div class="col-xs-6 pad0x">
                     {% if uploader %}
-                        <a href="/upload-form" class="col-xs-11 button stroke pad0x" target="_blank">{% trans "upload data"%}</a>
+                        <a href="/upload-form" class="col-xs-11 button stroke pad0x" target="_blank">
+                          {% trans "upload data"%}
+                        </a>
                     {% else %}
-                        <a href="#lifecycle" class="col-xs-11 button stroke pad0x">{% trans "how it works"%}</a>
+                        <a href="#lifecycle" class="col-xs-11 button stroke pad0x">
+                          {% trans "how it works"%}
+                        </a>
                     {% endif %}
                 </div>
             </div>
@@ -167,16 +175,16 @@
             <h2>{% trans "About healthsites.io"%}</h2>
 
             <div class="hazard block">
-                <div class="icon col-md-2"><img src="{% static "img/hazard.svg" %}"
-                                                onerror="this.onerror=null; this.src='image.png'">
+                <div class="icon col-md-2">
+                  <i class="fa fa-ambulance" style="color:#f44a52;font-size:4em;" aria-hidden="true"></i>
                 </div>
                 <div class="col-md-10 pad0x">
                     {% trans "about_healthsites_io"%}
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
-                <div class="icon col-md-4"><img src="{% static "img/globe.svg" %}"
-                                                onerror="this.onerror=null; this.src='image.png'">
+                <div class="icon col-md-4">
+                  <i class="fa fa-globe" style="color:#f44a52;font-size:4em;" aria-hidden="true"></i>
                 </div>
                 <div class="col-md-8 pad0x">
                     <strong>{% trans "Global scope"%}</strong><br/>
@@ -184,8 +192,9 @@
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
-                <div class="icon col-md-4"><img src="{% static "img/open-data.svg" %}"
-                                                onerror="this.onerror=null; this.src='image.png'"></div>
+                <div class="icon col-md-4">
+                  <i class="fa fa-refresh" style="color:#f44a52;font-size:4em;" aria-hidden="true"></i>
+                </div>
                 <div class="col-md-8 pad0x">
                     <strong>{% trans "Open data collaboration"%}</strong><br/>
                     {% trans "about_open_data_collaboration"%}
@@ -193,16 +202,18 @@
             </div>
             <div style="clear: both"></div>
             <div class="col-md-6 pad0x block">
-                <div class="icon col-md-4"><img src="{% static "img/accessible.svg" %}"
-                                                onerror="this.onerror=null; this.src='image.png'"></div>
+                <div class="icon col-md-4">
+                  <i class="fa fa-cloud-download" style="color:#f44a52;font-size:4em;" aria-hidden="true"></i>
+                </div>
                 <div class="col-md-8 pad0x">
                     <strong>{% trans "Accessible"%}</strong><br/>
                     {% trans "about_accessible"%}
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
-                <div class="icon col-md-4"><img src="{% static "img/location.svg" %}"
-                                                onerror="this.onerror=null; this.src='image.png'"></div>
+                <div class="icon col-md-4">
+                  <i class="fa fa-hospital-o" style="color:#f44a52;font-size:4em;" aria-hidden="true"></i>
+                </div>
                 <div class="col-md-8 pad0x">
                     <strong>{% trans "Focus on health care location data"%}</strong><br/>
                     {% trans "about_focus"%}
@@ -216,7 +227,7 @@
     <div class="container-fluid pad0x">
         <div class="center col-md-3 pad0x">
             <div class="content">
-                <div class="icon-holder"><i class="fa fa-cog"></i></div>
+                <div class="icon-holder"><i class="fa fa-database"></i></div>
                 <h3 class="col-md-12">{% trans "Data model"%}</h3>
                 <span class="col-md-12 text">{% trans "Each healthsite is stored as a geometry object in the database"%}</span>
                 <span class="col-md-12 links"><a
@@ -227,7 +238,7 @@
         </div>
         <div class="center col-md-3 pad0x">
             <div class="content">
-                <div class="icon-holder"><i class="fa fa-map-marker"></i></div>
+                <div class="icon-holder"><i class="fa fa-support"></i></div>
                 <h3 class="col-md-12">{% trans "Share healthsite data"%}</h3>
                 <span class="col-md-12 text">{% trans "Please contact us should you wish to share data and we will assist you."%} </span>
                 <span class="col-md-12 links">{# disabled for now - see #432 <a href="/upload-form">Upload form</a>#} <a
@@ -298,10 +309,15 @@
                         <div class="entry">-</div>
                     </div>
                 </div>
-                <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)"><
-                   {% trans "view previous updates"%}</a>
-                    <a class="next opacity-7" onclick="changePage(this)">
-                       {% trans "view next updates"%} ></a></div>
+                <div class="nav-updates">
+                  <a class="prev opacity-7" onclick="changePage(this)">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    {% trans "view previous updates"%}</a>
+                  <a class="next opacity-7" onclick="changePage(this)">
+                    {% trans "view next updates"%}
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                  </a>
+                </div>
             </div>
         </div>
     </div>

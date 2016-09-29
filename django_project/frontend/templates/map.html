@@ -128,6 +128,8 @@
                 <li><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
                 <li><a class="navbar-chat" href="https://gitter.im/healthsites/healthsites"><i
                         class="fa fa-comments"></i></a></li>
+                <li><a id="geolocate" class="navbar-chat"><i
+                        class="fa fa-crosshairs"></i></a></li>
             </ul>
         </div>
         <!--/.nav-collapse -->
@@ -198,27 +200,12 @@
 
                 <div style="clear: both;"></div>
             </div>
-            <div id="icons-nav">
-                Browse the map, <a class="search" href="#">search</a> or use <a id="geolocate" class="a-button">geolocate
-                me</a> to view
-                healthsites close to your location.
-            </div><!-- #icons-nav -->
             <div id="locality-default" style="display: none">
                 <div style="padding: 20px;">
                     <p>
-                        <span class="inner-navbar-brand">healthsites.io</span> invites you to help establish accurate
-                        health
-                        care location data.
+                      {% trans "map_intro_text"%}
                     </p>
-                    <p>
-                        We aim to provide a single point of reference for healthcare workers, aid agencies, government
-                        agencies and citizens who need access to highly curated global dataset of healthcare
-                        facilities.
-                    </p>
-                    <p>
-                        {% trans "You can get all data from healthsite in this"%}
-                        <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">{% trans "shapefile"%}</a>
-                    </p>
+
                     <h2 class="sidebar-title "><span data-speed="2500"
                                                      data-to="{{ locality_count }}">{{ locality_count }}</span>
                         {% trans "healthsites listed"%}</h2>
@@ -524,35 +511,40 @@
                 </div>
             </div>
             <div class="buttons col-md-4 col-sm-12 col-xs-12">
-                <div class="button-wrapper col-xs-4">
+                <div class="button-wrapper col-xs-3">
                     <a id="twitter_share_map" class="button share stroke blue">
                         <i class="fa fa-twitter"></i> {% trans "share"%}
                     </a>
                 </div>
-                <div class="button-wrapper col-xs-4" id="edit-button">
+                <div class="button-wrapper col-xs-3">
+                    <a href="/media/shapefiles/facilities_shapefile.zip" class="button edit blue stroke">
+                      <i class="fa fa-download"></i> {% trans "download"%}
+                    </a>
+                </div>
+                <div class="button-wrapper col-xs-3" id="edit-button">
                     <a class="button edit stroke blue"
                        style="cursor: pointer"><i
                             class="fa fa-pencil"></i> {% trans "edit"%}
                     </a>
                 </div>
-                <div class="button-wrapper col-xs-4" id="save-button" style="display: none">
+                <div class="button-wrapper col-xs-3" id="save-button" style="display: none">
                     <a class="button edit stroke blue"
                        style="cursor: pointer"><i
                             class="fa fa-pencil"></i> {% trans "save"%}
                     </a>
                 </div>
-                <div class="button-wrapper col-xs-4" id="create-button" style="display: none">
+                <div class="button-wrapper col-xs-3" id="create-button" style="display: none">
                     <a class="button edit stroke blue"
                        style="cursor: pointer"><i
                             class="fa fa-pencil"></i> {% trans "create"%}
                     </a>
                 </div>
-                <div class="button-wrapper col-xs-4" id="add-button">
+                <div class="button-wrapper col-xs-3" id="add-button">
                     <a class="button add" style="cursor: pointer">
-                        <i class="fa fa-plus"></i> {% trans "add new"%}
+                        <i class="fa fa-plus"></i> {% trans "add"%}
                     </a>
                 </div>
-                <div class="button-wrapper col-xs-4" id="cancel-button" style="display: none">
+                <div class="button-wrapper col-xs-3" id="cancel-button" style="display: none">
                     <a class="button edit stroke blue"
                        style="cursor: pointer"><i
                             class="fa fa-pencil"></i> {% trans "cancel"%}

@@ -2,8 +2,8 @@
 host = https://www.transifex.com
 
 [healthsites.djangopo_1]
-source_file = settings/core/locale/en/LC_MESSAGES/django.po
-file_filter = settings/core/locale/<lang>/LC_MESSAGES/django.po
+source_file = core/settings/locale/en/LC_MESSAGES/django.po
+file_filter = core/settings/locale/<lang>/LC_MESSAGES/django.po
 source_lang = en
 type = PO
 
