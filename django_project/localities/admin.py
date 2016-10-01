@@ -12,7 +12,6 @@ from .models import (
     Specification,
     SynonymLocalities,
     UnconfirmedSynonym,
-    Value,
 )
 from .forms import DomainModelForm
 
@@ -55,7 +54,13 @@ admin.site.register(Specification, SpecificationMA)
 
 class DataUpdateAdmin(admin.ModelAdmin):
     list_display = (
-        'organisation_name', 'author', 'data_loader_mode', 'date_time_uploaded', 'applied', 'date_time_applied')
+        'organisation_name',
+        'author',
+        'data_loader_mode',
+        'date_time_uploaded',
+        'applied',
+        'date_time_applied',
+    )
 
     def has_add_permission(self, request):
         return False
@@ -66,7 +71,9 @@ admin.site.register(DataLoader, DataUpdateAdmin)
 
 class DataLoaderPermissionAdmin(admin.ModelAdmin):
     list_display = (
-        'uploader', 'accepted_csv',)
+        'uploader',
+        'accepted_csv',
+    )
 
 
 admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
@@ -74,8 +81,21 @@ admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
 
 class LocalityAdmin(admin.ModelAdmin):
     list_display = (
-        'upstream_id', 'locality_uuid', 'name', 'locality_location', 'is_master',)
-    readonly_fields = ('upstream_id', 'locality_uuid', 'source', 'name', 'core_field', 'locality_location', 'is_master')
+        'upstream_id',
+        'locality_uuid',
+        'name',
+        'locality_location',
+        'is_master',
+    )
+    readonly_fields = (
+        'upstream_id',
+        'locality_uuid',
+        'source',
+        'name',
+        'core_field',
+        'locality_location',
+        'is_master',
+    )
     fieldsets = (
         ('Masterization', {
             'fields': (

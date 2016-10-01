@@ -1,11 +1,11 @@
 # coding=utf-8
+from django.core.management.base import BaseCommand
+from localities.models import Locality
+
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '19/04/16'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
-
-from django.core.management.base import BaseCommand
-from localities.models import Locality, Value
 
 
 class Command(BaseCommand):

@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
-from optparse import make_option
-
-from django.core.management.base import BaseCommand
-
-from localities.models import Country, Locality
 import os
 import json
+from django.core.management.base import BaseCommand
+from localities.models import Country
 from django.conf import settings
 from localities.utils import get_statistic
 from django.core.serializers.json import DjangoJSONEncoder
@@ -35,7 +32,7 @@ class Command(BaseCommand):
             file.write(result)  # python will convert \n to os.linesep
             file.close()  # you can omit in most cases as the destructor will call it
             print "world cache is finished"
-        except Exception as ex:
+        except Exception:
             print "skip world"
 
         for country in countries:

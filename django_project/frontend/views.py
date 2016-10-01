@@ -171,7 +171,7 @@ def get(request):
         result = get_country_statistic(country)
         result['country'] = country
         result['polygon'] = Country.objects.get(
-                name__iexact=country).polygon_geometry.geojson
+            name__iexact=country).polygon_geometry.geojson
     elif place:
         result = search_place(request, place)
     elif attribute:

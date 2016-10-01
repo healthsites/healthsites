@@ -3,10 +3,6 @@ import googlemaps
 import json
 import logging
 import os
-
-LOG = logging.getLogger(__name__)
-
-# register signals
 from .forms import DataLoaderForm
 from .map_clustering import cluster
 from .models import Locality, Domain, Changeset, Value, Attribute, Specification
@@ -39,8 +35,12 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         raise Http404 exception
         """
 
-        if not (all(param in request.GET for param in [
-            'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid'])):
+        if not (
+            all(
+                param in request.GET for param in [
+                    'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid']
+            )
+        ):
             raise Http404
 
         try:
@@ -84,7 +84,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 return HttpResponse(
                     cached_data, content_type='application/json', status=200
                 )
-            except IOError as e:
+            except:
                 localities = get_heathsites_master().in_bbox(parse_bbox('-180,-90,180,90'))
                 object_list = cluster(localities, zoom, *iconsize)
 
@@ -117,7 +117,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                             return HttpResponse(
                                 cached_data, content_type='application/json', status=200
                             )
-                        except IOError as e:
+                        except:
                             polygon = country.polygon_geometry
                             localities = get_heathsites_master().in_polygon(polygon)
                             object_list = cluster(localities, zoom, *iconsize)
@@ -179,10 +179,10 @@ class LocalityInfo(JSONResponseMixin, DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if kwargs.has_key('changes'):
-            obj_repr = get_locality_detail(self.object, kwargs['changes']);
+        if 'changes' in kwargs:
+            obj_repr = get_locality_detail(self.object, kwargs['changes'])
         else:
-            obj_repr = get_locality_detail(self.object, None);
+            obj_repr = get_locality_detail(self.object, None)
         return self.render_json_response(obj_repr)
 
 
@@ -290,7 +290,7 @@ def load_data(request):
         form = DataLoaderForm(request.POST, files=request.FILES,
                               user=request.user)
         if form.is_valid():
-            data_loader = form.save(True)
+            form.save(True)
             # load_data_task.delay(data_loader.pk)
 
             response = {}
@@ -331,7 +331,6 @@ def search_locality_by_name(request):
                 place = query.split(",", 1)[1].strip()
                 query = query.split(",", 1)[0].strip()
                 if len(place) > 2:
-                    with_place = True
                     google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
                     gmaps = googlemaps.Client(key=google_maps_api_key)
                     try:
@@ -404,7 +403,7 @@ def search_cities_by_name(request):
                     for type in types:
                         if type in geocode["types"]:
                             result.append(geocode['description'])
-                            break;
+                            break
         except Exception as e:
             print e
         result = json.dumps(result)
@@ -456,7 +455,7 @@ def get_locality_update(request):
             output.append({"last_update": last_update['changeset__created'],
                            "uploader": last_update['changeset__social_user__username'],
                            "nickname": last_update['nickname'],
-                           "changeset_id": last_update['changeset']});
+                           "changeset_id": last_update['changeset']})
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')

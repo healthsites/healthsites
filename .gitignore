@@ -1,6 +1,19 @@
 # project specifc
+
 django_project/core/settings/secret.py
 django_project/cache
+
+# Ignore all locales except English
+
+django_project/locale/*
+!django_project/locale/en
+
+# Ignore all dev files except...
+
+django_project/core/settings/dev_*
+!django_project/core/settings/dev_docker.py
+!django_project/core/settings/dev_travis.py
+!django_project/core/settings/dev_dodobas.py
 xmlrunner
 
 # Byte-compiled / optimized / DLL files

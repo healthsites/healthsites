@@ -89,9 +89,11 @@ class TestViews(TestCase):
             domain=dom, changeset=chgset
         )
 
-        resp = self.client.get(reverse(
-            'locality-info', kwargs={
-                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+        resp = self.client.get(
+            reverse(
+                'locality-info',
+                kwargs={
+                    'uuid': '93b7e8c4621a4597938dfd3d27659162'
                 }
             )
         )
@@ -108,11 +110,14 @@ class TestViews(TestCase):
         )
 
     def test_localitiesUpdate_form_get_no_user(self):
-        resp = self.client.get(reverse(
-            'locality-update', kwargs={
-                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+        resp = self.client.get(
+            reverse(
+                'locality-update',
+                kwargs={
+                    'uuid': '93b7e8c4621a4597938dfd3d27659162'
                 }
-        ))
+            )
+        )
 
         self.assertEqual(resp.status_code, 403)
 
@@ -180,10 +185,16 @@ class TestViews(TestCase):
 
         self.client.login(username='test', password='test')
         resp = self.client.post(
-            reverse('locality-update', kwargs={
-                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+            reverse(
+                'locality-update',
+                kwargs={
+                    'uuid': '93b7e8c4621a4597938dfd3d27659162'
                 }
-            ), {'test': 'new_osm', 'lon': 10, 'lat': 35}
+            ), {
+                'test': 'new_osm',
+                'lon': 10,
+                'lat': 35
+            }
         )
 
         self.assertEqual(resp.status_code, 200)
@@ -216,9 +227,10 @@ class TestViews(TestCase):
         self.assertEqual(loc.version, org_loc_version + 1)
 
         # test values version, should CHANGE
-        self.assertFalse(any([
-            True for idx, val in enumerate(loc.value_set.all())
-            if val.version == org_value_versions[idx]
+        self.assertFalse(
+            any([
+                True for idx, val in enumerate(loc.value_set.all())
+                if val.version == org_value_versions[idx]
             ])
         )
 
@@ -368,12 +380,18 @@ class TestViews(TestCase):
         ]
 
         self.client.login(username='test', password='test')
-        resp = self.client.post(reverse(
-            'locality-update', kwargs={
-                'uuid': '93b7e8c4621a4597938dfd3d27659162'
-            }), {
-            'test': 'new_test_osm', 'other_test': 'other_osm', 'lon': 16,
-            'lat': 45
+        resp = self.client.post(
+            reverse(
+                'locality-update',
+                kwargs={
+                    'uuid': '93b7e8c4621a4597938dfd3d27659162'
+                }
+            ),
+            {
+                'test': 'new_test_osm',
+                'other_test': 'other_osm',
+                'lon': 16,
+                'lat': 45
             }
         )
 
@@ -423,11 +441,15 @@ class TestViews(TestCase):
         )
 
         self.client.login(username='test', password='test')
-        resp = self.client.post(reverse(
-            'locality-update', kwargs={
-                'uuid': '93b7e8c4621a4597938dfd3d27659162'
+        resp = self.client.post(
+            reverse(
+                'locality-update',
+                kwargs={
+                    'uuid': '93b7e8c4621a4597938dfd3d27659162'
                 }
-            ), {'test': 'new_osm'}
+            ), {
+                'test': 'new_osm'
+            }
         )
 
         self.assertEqual(resp.status_code, 200)

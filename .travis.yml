@@ -28,7 +28,7 @@ before_script:
   - cd django_project
 
 script:
-  - flake8
+  - flake8 --max-line-length=400 --ignore F405,C901
   - coverage run manage.py test
 
 after_success:

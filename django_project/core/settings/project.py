@@ -8,9 +8,8 @@ repository!
 
 import os  # noqa
 from django.utils.translation import ugettext_lazy as _
-from .utils import absolute_path
 from .contrib import *  # noqa
-from .secret import *  # secret
+from .secret import *  # noqa
 
 # Project apps
 INSTALLED_APPS += (
@@ -45,7 +44,6 @@ LOCALE_PATHS = [
     os.path.join(BASE_DIR, 'locale'),
     os.path.abspath(os.path.join(BASE_DIR, '..', 'locale')),
 ]
-
 
 
 # Project specific javascript files to be pipelined
@@ -124,6 +122,5 @@ CLUSTER_CACHE_DIR = 'cache'
 CLUSTER_CACHE_MAX_ZOOM = 5
 
 # WHAT3WORDS API
-WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'
-
-from .celery_setting import *
+WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position' + \
+    '?key=%s&lang=en&position=%s,%s'

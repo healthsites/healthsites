@@ -1,9 +1,9 @@
+from .models import Locality, SynonymLocalities, UnconfirmedSynonym
+
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '11/05/16'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
-
-from .models import Locality, SynonymLocalities, UnconfirmedSynonym
 
 
 def report_locality_as_unconfirmed_synonym(locality_id, master_id):

@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from django.http import HttpResponse
 from frontend.views import search_place
 from localities.models import Country, Locality
 from localities.utils import parse_bbox, get_heathsites_master
 from .api_view import ApiView
 from ..serializer.locality_serializer import json_serializer, geojson_serializer
+
+__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
+__date__ = '10/06/16'
+__license__ = "GPL"
+__copyright__ = 'kartoza.com'
 
 
 class LocalitySearchApiView(ApiView):
@@ -22,7 +22,7 @@ class LocalitySearchApiView(ApiView):
         healthsites = get_heathsites_master().in_polygon(polygon)
 
         output = []
-        index = 1;
+        index = 1
         for healthsite in healthsites:
             if healthsite.is_type(facility_type):
                 if self.format == 'geojson':
@@ -36,7 +36,7 @@ class LocalitySearchApiView(ApiView):
 
     def get(self, request, *args, **kwargs):
         super(LocalitySearchApiView, self).get(request)
-        if not 'name' in request.GET or not 'search_type' in request.GET:
+        if 'name' not in request.GET or 'search_type' not in request.GET:
             return HttpResponse(
                 self.formating_response({'error': "parameter is not enough"}),
                 content_type='application/json')
@@ -57,8 +57,10 @@ class LocalitySearchApiView(ApiView):
                 # if country is not found
                 output = search_place(request, place_name)
                 output['countries'] = ""
-                bbox = output["southwest_lng"] + "," + output["southwest_lat"] + "," + output["northeast_lng"] + "," + \
-                       output["northeast_lat"]
+                bbox = output["southwest_lng"] + "," + \
+                    output["southwest_lat"] + "," + \
+                    output["northeast_lng"] + "," + \
+                    output["northeast_lat"]
                 try:
                     polygon = parse_bbox(bbox)
                 except ValueError:

@@ -1,14 +1,14 @@
+import json
+import dicttoxml
+
+from django.views.generic import View
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponseRedirect
+
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/06/16'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
-
-from django.views.generic import View
-import json
-import dicttoxml
-
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponseRedirect
 
 
 class ApiView(View):
@@ -20,7 +20,7 @@ class ApiView(View):
         if request.method == 'GET':
             if 'format' in request.GET:
                 self.format = request.GET['format']
-                if not self.format in self.formats:
+                if self.format not in self.formats:
                     self.format = 'json'
 
     def formating_response(self, response):

@@ -2,8 +2,6 @@
 import logging
 import json
 
-LOG = logging.getLogger(__name__)
-
 from braces.views import LoginRequiredMixin
 from core.utilities import extract_time
 from datetime import datetime
@@ -19,6 +17,8 @@ from localities.utils import extract_updates, get_update_detail
 from social_users.models import Profile
 from social_users.utils import get_profile
 
+LOG = logging.getLogger(__name__)
+
 
 class UserProfilePage(LoginRequiredMixin, TemplateView):
     template_name = 'social_users/profilepage.html'
@@ -27,7 +27,7 @@ class UserProfilePage(LoginRequiredMixin, TemplateView):
         context = super(UserProfilePage, self).get_context_data(*args, **kwargs)
         context['auths'] = [
             auth.provider for auth in self.request.user.social_auth.all()
-            ]
+        ]
         return context
 
 
@@ -56,19 +56,11 @@ class LogoutUser(View):
         return HttpResponseRedirect('/')
 
 
-def save_profile(backend, user, response, *args, **kwargs):
-    url = None
-    if backend.name == 'facebook':
-        url = "http://graph.facebook.com/%s/picture?type=large" % response['id']
-    if backend.name == 'twitter':
-        url = response.get('profile_image_url', '').replace('_normal', '')
-    if backend.name == 'google-oauth2':
-        url = response['image'].get('url')
+def getUser(user, **kwargs):
     # get old user
     if kwargs['is_new']:
         if 'username' in kwargs['details']:
-            new_username = kwargs['details']['username']
-            new_username = new_username.replace(" ", "")
+            new_username = kwargs['details']['username'].replace(" ", "")
             if user.username != new_username:
                 try:
                     old_username = user.username
@@ -76,12 +68,27 @@ def save_profile(backend, user, response, *args, **kwargs):
                     User.objects.get(username=old_username).delete()
                 except User.DoesNotExist:
                     pass
-    try:
-        profile = Profile.objects.get(user=user)
-    except Profile.DoesNotExist:
-        profile = Profile(user=user)
+
+            try:
+                return Profile.objects.get(user=user)
+            except Profile.DoesNotExist:
+                return Profile(user=user)
+
+
+def save_profile(backend, user, response, *args, **kwargs):
+    url = None
+    if backend.name == 'facebook':
+        url = "http://graph.facebook.com/%s/picture?type=large" % response['id']
+    elif backend.name == 'twitter':
+        url = response.get('profile_image_url', '').replace('_normal', '')
+    elif backend.name == 'google-oauth2':
+        url = response['image'].get('url')
+
+    profile = getUser(user, kwargs)
+
     if url:
         profile.profile_picture = url
+
     profile.save()
     return {'user': user}
 

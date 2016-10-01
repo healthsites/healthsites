@@ -1,9 +1,4 @@
 # coding=utf-8
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '15/07/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from django.core.management.base import BaseCommand
 import os
 import shapefile
@@ -11,6 +6,12 @@ import zipfile
 from django.conf import settings
 from localities.models import Domain, Specification, Country
 from localities.utils import get_heathsites_master
+
+__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
+__date__ = '15/07/16'
+__license__ = "GPL"
+__copyright__ = 'kartoza.com'
+
 
 directory_cache = settings.CLUSTER_CACHE_DIR + "/shapefiles"
 directory_media = settings.MEDIA_ROOT + "/shapefiles"
@@ -37,18 +38,61 @@ def getWKT_PRJ(epsg_code):
     return output
 
 
+def get_cache(shp_filename):
+    dir_cache = directory_cache + "/" + shp_filename
+    if not os.path.exists(dir_cache):
+        os.makedirs(dir_cache)
+    return dir_cache
+
+
+def create_shapefile(shp_filename):
+    shp = None
+    shp = shapefile.Writer(shapefile.POINT)
+    for field in fields:
+        shp.field(str(field), 'C', 100)
+    return shp
+
+
+def write_shapefile(shp_filename):
+    # write world cache
+    dir_cache = get_cache(shp_filename)
+    filename = os.path.join(dir_cache, shp_filename)
+    if not os.path.exists(dir_cache):
+        os.makedirs(dir_cache)
+    return filename
+
+
+def write_shapefile_extras(shp_filename):
+    dir_cache = get_cache(shp_filename)
+    # create .cpg
+    file = open(dir_cache + "/" + shp_filename + ".cpg", 'w+')
+    file.write("UTF-8")
+    file.close()
+
+    # create .prj
+    prj = open(dir_cache + "/" + shp_filename + ".prj", "w")
+    epsg = getWKT_PRJ("4326")
+    prj.write(epsg)
+    prj.close()
+
+
+def zip_shapefile(shp_filename):
+    # zip this output
+    print "zipping"
+    dir_cache = get_cache(shp_filename)
+    if not os.path.exists(directory_media):
+        os.makedirs(directory_media)
+    filename = os.path.join(directory_media, shp_filename + "_shapefile.zip")
+    zipf = zipfile.ZipFile(filename, 'w', allowZip64=True)
+    zipdir(dir_cache, zipf)
+    zipf.close()
+    print "done"
+
+
 def insert_to_shapefile(healthsites, shp_filename):
     try:
-        shp = None
-        shp = shapefile.Writer(shapefile.POINT)
-        for field in fields:
-            shp.field(str(field), 'C', 100)
-
-        # write world cache
-        dir_cache = directory_cache + "/" + shp_filename
-        filename = os.path.join(dir_cache, shp_filename)
-        if not os.path.exists(dir_cache):
-            os.makedirs(dir_cache)
+        shp = create_shapefile()
+        filename = write_shapefile(shp_filename)
 
         # get from healthsites
         total = healthsites.count()
@@ -75,27 +119,9 @@ def insert_to_shapefile(healthsites, shp_filename):
                 now += 1
             shp.save(filename)
 
-            # create .cpg
-            file = open(dir_cache + "/" + shp_filename + ".cpg", 'w+')
-            file.write("UTF-8")
-            file.close()
-
-            # create .prj
-            prj = open(dir_cache + "/" + shp_filename + ".prj", "w")
-            epsg = getWKT_PRJ("4326")
-            prj.write(epsg)
-            prj.close()
-
-            # zip this output
-            print "zipping"
-            if not os.path.exists(directory_media):
-                os.makedirs(directory_media)
-            filename = os.path.join(directory_media, shp_filename + "_shapefile.zip")
-            zipf = zipfile.ZipFile(filename, 'w', allowZip64=True)
-            zipdir(dir_cache, zipf)
-            zipf.close()
-            print "done"
-    except Domain.DoesNotExist:
+            write_shapefile_extras(shp_filename)
+            zip_shapefile(shp_filename)
+    except:
         pass
 
 

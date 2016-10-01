@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
+import math
 
 LOG = logging.getLogger(__name__)
-
-import math
-from localities.models import Value
 
 
 def within_bbox(bbox, geomx, geomy):

@@ -7,6 +7,7 @@ from .models import (
     TrustedUser,
     Organisation
 )
+from social.apps.django_app.default.models import UserSocialAuth
 
 
 class ProfileAdmin(admin.ModelAdmin):
@@ -27,8 +28,9 @@ class TrustedUserAdmin(admin.ModelAdmin):
     inlines = (OrganisationInline,)
 
     def list_organisation_supported(self, obj):
-        return ", ".join(['<span><a href="/admin/social_users/organisation/%s">%s</a></span>' % (p.id, p.name) for p in
-                          obj.organisations_supported.all()])
+        return ", ".join([
+            '<span><a href="/admin/social_users/organisation/%s">%s</a></span>' % (p.id, p.name) for p in obj.organisations_supported.all()]
+        )
 
     list_organisation_supported.allow_tags = True
 
@@ -48,9 +50,6 @@ class OrganisationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Organisation, OrganisationAdmin)
-
-from social.apps.django_app.default.models import UserSocialAuth
-from social_users.models import Profile, TrustedUser
 
 
 class UserProfileInline(admin.TabularInline):

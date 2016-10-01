@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
-
-LOG = logging.getLogger(__name__)
-
 import django.forms as forms
 from django.forms import models
 
 from .models import Domain, DataLoader
 from .utils import render_fragment
 from social_users.models import Organisation
+
+LOG = logging.getLogger(__name__)
 
 
 class DomainModelForm(forms.ModelForm):
@@ -134,7 +133,7 @@ class DataLoaderForm(models.ModelForm):
 
         if self.user.is_staff:
             self.fields['organisations'] = forms.ChoiceField(
-            choices=[(org.id, org.name) for org in Organisation.objects.all().order_by('name')])
+                choices=[(org.id, org.name) for org in Organisation.objects.all().order_by('name')])
         else:
             self.fields['organisations'] = forms.ChoiceField(
                 choices=[(org.id, org.name) for org in Organisation.objects.filter(trusted_users__user=self.user).order_by('name')])

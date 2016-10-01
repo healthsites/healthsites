@@ -1,13 +1,13 @@
 # coding=utf-8
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '30/03/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from django.core.management.base import BaseCommand
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from localities.models import Country
+
+__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
+__date__ = '30/03/16'
+__license__ = "GPL"
+__copyright__ = 'kartoza.com'
 
 
 class Command(BaseCommand):
@@ -21,7 +21,6 @@ class Command(BaseCommand):
         for feature in layer:
             country_name = feature['NAME'].value
             country_name = country_name.encode('utf-8')
-            country_name_output = country_name
             # -------------------------------------------------
             # CORRECTING THE NAME
             # -------------------------------------------------
@@ -81,5 +80,5 @@ class Command(BaseCommand):
                     geometry = geometry.geojson
                 country = Country(name=country_name)
                 country.polygon_geometry = geometry
-            if not country_name in self.non_countries:
+            if country_name not in self.non_countries:
                 country.save()

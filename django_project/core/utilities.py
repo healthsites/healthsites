@@ -1,10 +1,9 @@
+import time
+
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '25/02/16'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
-
-import time
-from localities.models import Locality, Value
 
 
 def extract_time(json):

@@ -167,5 +167,5 @@ MESSAGE_TAGS = {
     messages.INFO: 'info',
     messages.SUCCESS: 'success',
     messages.WARNING: 'warning',
-    messages.ERROR: 'danger' # 'error' by default
+    messages.ERROR: 'danger'  # 'error' by default
 }

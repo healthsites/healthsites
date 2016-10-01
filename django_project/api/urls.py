@@ -10,10 +10,34 @@ from .views.locality_search import LocalitySearchApiView
 
 urlpatterns = patterns(
     '',
-    url(r'^v1/healthsites/facilities', FacilitiesApiView.as_view(), name='api_facilities'),
-    url(r'^v1/healthsites/search', LocalitySearchApiView.as_view(), name='api_search_localities'),
-    url(r'^v1/healthsites/facility/details', LocalityDetailApiView.as_view(), name='api_locality_detail'),
-    url(r'^v1/healthsites/facility/synonyms', LocalitySynonymApiView.as_view(), name='api_locality_synonyms'),
-    url(r'^v1/healthsites/facility/add', LocalityCreateApiView.as_view(), name='api_search_localities'),
-    url(r'^v1', Docs.as_view(), name='docs'),
+    url(
+        r'^v1/healthsites/facilities',
+        FacilitiesApiView.as_view(),
+        name='api_facilities'
+    ),
+    url(
+        r'^v1/healthsites/search',
+        LocalitySearchApiView.as_view(),
+        name='api_search_localities'
+    ),
+    url(
+        r'^v1/healthsites/facility/details',
+        LocalityDetailApiView.as_view(),
+        name='api_locality_detail'
+    ),
+    url(
+        r'^v1/healthsites/facility/synonyms',
+        LocalitySynonymApiView.as_view(),
+        name='api_locality_synonyms'
+    ),
+    url(
+        r'^v1/healthsites/facility/add',
+        LocalityCreateApiView.as_view(),
+        name='api_search_localities'
+    ),
+    url(
+        r'^v1',
+        Docs.as_view(),
+        name='docs'
+    ),
 )

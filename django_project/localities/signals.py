@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
 
-LOG = logging.getLogger(__name__)
-
-from django.contrib.auth.models import User
 from django.dispatch import receiver, Signal
 from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
-
 from .models import (
-    Changeset,
     Domain,
     DomainArchive,
     Attribute,
@@ -22,6 +17,8 @@ from .models import (
     Value,
     ValueArchive
 )
+
+LOG = logging.getLogger(__name__)
 
 # define custom signals
 SIG_locality_values_updated = Signal()

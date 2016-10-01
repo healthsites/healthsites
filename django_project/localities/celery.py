@@ -1,6 +1,8 @@
 # coding=utf-8
 """Docstring for this file."""
 from __future__ import absolute_import
+from celery import Celery
+from django.conf import settings
 
 __author__ = 'ismailsunni'
 __project_name = 'healthsites'
@@ -9,10 +11,6 @@ __date__ = '8/27/15'
 __copyright__ = 'imajimatika@gmail.com'
 __doc__ = ''
 
-
-from celery import Celery
-
-from django.conf import settings
 
 app = Celery('localities')
 

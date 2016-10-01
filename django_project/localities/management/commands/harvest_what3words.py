@@ -1,13 +1,12 @@
+# -*- coding: utf-8 -*-
+from django.core.management.base import BaseCommand
+from django.contrib.auth.models import User
+from localities.models import Attribute, Domain, Changeset, Locality, Specification, Value
+
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/05/16'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
-# -*- coding: utf-8 -*-
-import json
-import requests
-from django.core.management.base import BaseCommand
-from django.contrib.auth.models import User
-from localities.models import Attribute, Domain, Changeset, Locality, Specification, Value
 
 
 class Command(BaseCommand):

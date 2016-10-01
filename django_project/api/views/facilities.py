@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from django.core.paginator import EmptyPage, Paginator
 from django.http import HttpResponse
 from localities.utils import parse_bbox, get_heathsites_master
 from ..serializer.locality_serializer import json_serializer, geojson_serializer
 from .api_view import ApiView
+
+__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
+__date__ = '10/06/16'
+__license__ = "GPL"
+__copyright__ = 'kartoza.com'
 
 
 class FacilitiesApiView(ApiView):

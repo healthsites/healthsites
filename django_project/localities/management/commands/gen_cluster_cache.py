@@ -6,7 +6,7 @@ import json
 import os
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from localities.models import Locality, Country
+from localities.models import Country
 from localities.map_clustering import cluster
 from localities.utils import parse_bbox, get_heathsites_master
 

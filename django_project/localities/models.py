@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
-
-LOG = logging.getLogger(__name__)
-
 import itertools
-import json
-import requests
+import signals  # noqa
 
 from .querysets import PassThroughGeoManager, LocalitiesQuerySet
 from datetime import datetime
@@ -17,10 +13,15 @@ from django.contrib.sites.models import Site
 from django.db.models.signals import post_save, pre_delete
 from django.utils import timezone
 from django.utils.text import slugify
-
 from model_utils import FieldTracker
 from pg_fts.fields import TSVectorField
 from .variables import attributes_availables
+from masterization import downgrade_master_as_synonyms
+from .tasks import load_data_task
+from utils import get_what_3_words
+from django.core.exceptions import ValidationError
+
+LOG = logging.getLogger(__name__)
 
 
 class ChangesetMixin(models.Model):
@@ -202,7 +203,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             # try to match key from changed items with a key from attr_map
             attr_list = [
                 attr for attr in attrs if attr['attribute__key'] == key
-                ]
+            ]
 
             if attr_list:
                 # get specification id for specific key
@@ -313,7 +314,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             try:
                 self.value_set.filter(specification__attribute__key='type').get(data=value)
                 return True
-            except Exception as e:
+            except:
                 return False
         return True
 
@@ -355,7 +356,6 @@ class Locality(UpdateMixin, ChangesetMixin):
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
     def update_what3words(self, user, changeset):
-        from utils import get_what_3_words
         what3words = get_what_3_words(self.geom)
         if what3words != "":
             self.set_values({'what3words': what3words}, user, changeset)
@@ -539,11 +539,6 @@ class LocalityIndex(models.Model):
     ))
 
 
-# register signals
-import signals  # noqa
-from .tasks import load_data_task
-
-
 class DataLoader(models.Model):
     """
     """
@@ -702,8 +697,6 @@ class Country(Boundary):
 Country._meta.get_field('name').verbose_name = 'Country name'
 Country._meta.get_field('name').help_text = 'The name of the country.'
 
-from django.core.exceptions import ValidationError
-
 
 def validate_file_extension(value):
     if value.file.content_type != 'text/csv':
@@ -769,9 +762,6 @@ class SynonymLocalities(models.Model):
         ordering = ["locality", "synonym"]
         verbose_name = "Synonyms"
         verbose_name_plural = "Synonyms"
-
-
-from masterization import downgrade_master_as_synonyms
 
 
 def update_others_synonyms(sender, instance, **kwargs):

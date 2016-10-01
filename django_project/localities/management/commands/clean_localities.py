@@ -1,11 +1,11 @@
 # coding=utf-8
+from django.core.management.base import BaseCommand
+from localities.models import Locality, Value
+
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '19/04/16'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
-
-from django.core.management.base import BaseCommand
-from localities.models import Locality, Value
 
 
 class Command(BaseCommand):
@@ -28,7 +28,7 @@ class Command(BaseCommand):
         for locality in incorrect_localities:
             dict = locality.repr_dict()
             upstream = locality.upstream_id.encode('utf-8')
-            if not "raw_source" in dict["values"]:
+            if "raw_source" not in dict["values"]:
                 incorrect_localities_count += 1
                 locality.delete()
             print upstream + " : " + locality.uuid.encode('utf-8')

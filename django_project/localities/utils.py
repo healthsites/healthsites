@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '18/03/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 import requests
 import json
 import os
@@ -19,10 +14,17 @@ from localities.models import Attribute, Changeset, Country, Domain, Locality, L
     SynonymLocalities, UnconfirmedSynonym, User, Value, ValueArchive
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
 from social_users.utils import get_profile
+from requests import Timeout, ConnectionError
+from django.template import Template, Context
+from django.contrib.gis.geos import Polygon
+
+__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
+__date__ = '18/03/16'
+__license__ = "GPL"
+__copyright__ = 'kartoza.com'
 
 
 def get_what_3_words(geom):
-    from requests import Timeout, ConnectionError
     try:
         what3words_api_key = settings.WHAT3WORDS_API_KEY
         api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, geom.y, geom.x)
@@ -92,7 +94,7 @@ def get_country_statistic(query):
                 file = open(filename, 'r')
                 data = file.read()
                 output = json.loads(data)
-            except IOError as e:
+            except:
                 try:
                     # query for each of ATTRIBUTE
                     healthsites = get_heathsites_master().in_polygon(
@@ -103,7 +105,7 @@ def get_country_statistic(query):
                     file.write(output)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
                     output = json.loads(output)
-                except Exception as e:
+                except:
                     pass
         else:
             # get cache
@@ -115,7 +117,7 @@ def get_country_statistic(query):
                 file = open(filename, 'r')
                 data = file.read()
                 output = json.loads(data)
-            except IOError as e:
+            except:
                 try:
                     # query for each of attribute
                     healthsites = get_heathsites_master()
@@ -125,7 +127,7 @@ def get_country_statistic(query):
                     file.write(output)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
                     output = json.loads(output)
-                except Exception as e:
+                except:
                     pass
 
     except Country.DoesNotExist:
@@ -239,12 +241,14 @@ def get_locality_detail(locality, changes):
         updates = []
         last_updates = locality_updates(locality.id, datetime.now())
         for last_update in last_updates:
-            updates.append({"last_update": last_update['changeset__created'],
-                            "uploader": last_update['changeset__social_user__username'],
-                            "nickname": last_update['nickname'],
-                            "changeset_id": last_update['changeset']});
+            updates.append({
+                "last_update": last_update['changeset__created'],
+                "uploader": last_update['changeset__social_user__username'],
+                "nickname": last_update['nickname'],
+                "changeset_id": last_update['changeset']
+            })
         obj_repr.update({'updates': updates})
-    except Exception as e:
+    except:
         pass
 
     # FOR HISTORY
@@ -287,7 +291,7 @@ def locality_create(request):
         if request.user.is_authenticated():
             json_request = get_json_from_request(request)
             # checking mandatory
-            if json_request['is_valid'] == True:
+            if json_request['is_valid']:
                 tmp_changeset = Changeset.objects.create(
                     social_user=request.user
                 )
@@ -330,7 +334,7 @@ def locality_edit(request):
         if request.user.is_authenticated():
             json_request = get_json_from_request(request)
             # checking mandatory
-            if json_request['is_valid'] == True:
+            if json_request['is_valid']:
                 locality = Locality.objects.get(uuid=json_request['uuid'])
                 old_geom = [locality.geom.x, locality.geom.y]
 
@@ -384,10 +388,19 @@ def get_statistic(healthsites):
     partial = healthsites.filter(completeness__gt=30).filter(completeness__lt=100).count()
     basic = healthsites.filter(completeness__lte=30).count()
 
-    output = {"numbers": {"hospital": hospital_number, "medical_clinic": medical_clinic_number
-        , "orthopaedic_clinic": orthopaedic_clinic_number},
-              "completeness": {"complete": complete, "partial": partial, "basic": basic},
-              "localities": healthsites_number}
+    output = {
+        "numbers": {
+            "hospital": hospital_number,
+            "medical_clinic": medical_clinic_number,
+            "orthopaedic_clinic": orthopaedic_clinic_number
+        },
+        "completeness": {
+            "complete": complete,
+            "partial": partial,
+            "basic": basic
+        },
+        "localities": healthsites_number
+    }
     # updates
     histories = localities_updates(healthsites)
     output["last_update"] = extract_updates(histories)
@@ -515,10 +528,6 @@ def search_locality_by_tag(query):
         return output
     except Value.DoesNotExist:
         return []
-
-
-from django.template import Template, Context
-from django.contrib.gis.geos import Polygon
 
 
 def render_fragment(template, context):
