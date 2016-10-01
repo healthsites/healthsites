@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-10-01 11:36+0000\n"
+"POT-Creation-Date: 2016-10-01 11:54+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -490,6 +490,7 @@ msgid "Completeness of attributes"
 msgstr "Completeness of attributes"
 
 #: frontend/templates/index.html:305 frontend/templates/map.html:253
+#: social_users/templates/social_users/profile.html:84
 msgid "Latest updates"
 msgstr "Latest updates"
 
@@ -744,6 +745,26 @@ msgstr "Filled attributes"
 #: localities/templates/updateform.html:6
 msgid "Empty attributes"
 msgstr "Empty attributes"
+
+#: social_users/templates/social_users/profile.html:37
+msgid "trusted user"
+msgstr "trusted user"
+
+#: social_users/templates/social_users/profile.html:50
+msgid "organisation"
+msgstr "organisation"
+
+#: social_users/templates/social_users/profile.html:66
+msgid "organisations supported"
+msgstr "organisations supported"
+
+#: social_users/templates/social_users/profile.html:94
+msgid "view previous"
+msgstr "view previous"
+
+#: social_users/templates/social_users/profile.html:97
+msgid "view next"
+msgstr "view next"
 
 #: social_users/templates/social_users/profilepage.html:9
 msgid "Profile"

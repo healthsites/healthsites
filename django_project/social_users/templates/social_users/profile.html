@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load pipeline %}
 {% load static %}
 
@@ -33,7 +34,7 @@
             </div>
             {% if user.is_trusted_user %}
                 <div class="status">
-                    <span>trusted user</span>
+                    <span>{% trans "trusted user"%}</span>
                 </div>
             {% endif %}
             <div class="name">
@@ -46,7 +47,7 @@
             </div>
             {% if user.is_trusted_user %}
                 <div class="name">
-                    <strong>organisation :</strong>
+                    <strong>{% trans "organisation"%}:</strong>
                     <span id="organization-list">
                     {% if user.organisations %}
                         {% for org in user.organisations %}
@@ -62,7 +63,7 @@
                     </span>
                 </div>
                 <div class="name">
-                    <strong>organisations supported :</strong>
+                    <strong>{% trans "organisations supported"%}:</strong>
                     <span id="organization-list">
                     {% if user.organisations_supported %}
                         {% for org in user.organisations_supported %}
@@ -80,16 +81,22 @@
             {% endif %}
         </div>
         <div class="col-sm-8 profile-graphs">
-            <h3>Latest updates</h3>
+            <h3>{% trans "Latest updates"%}</h3>
 
             <div id="updates-wrapper">
                 <div id="updates-99" class="graph updates">
                     <div class="entry">-</div>
                 </div>
             </div>
-            <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< view previous</a>
-                <a class="next opacity-7" onclick="changePage(this)">view
-                    next ></a></div>
+            <div class="nav-updates">
+              <a class="prev opacity-7" onclick="changePage(this)">
+                <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                {% trans "view previous"%}</a>
+              </a>
+              <a class="next opacity-7" onclick="changePage(this)">
+                {% trans "view next"%}
+                <i class="fa fa-arrow-right" aria-hidden="true"></i>
+              </a></div>
         </div>
     </section>
 {% endblock content %}
