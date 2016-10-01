@@ -1,82 +1,94 @@
 {% extends 'base.html' %}
-
+{% load i18n %}
 {% block title %}Healthsites{% endblock %}
 
 {% block content %}
 <div class="container">
     <div class="row">
         <div class="col-md-12">
-            <h2>Profile page</h2>
-            <h4>3rd party connectors:</h4>
+            <h2>{% trans "Profile"%}</h2>
+            <h4>{% trans "Social accounts"%}</h4>
             <div class="row" style="margin-bottom: 10px; line-height: 60px;">
               <div class="col-md-1">
-                OSM
+                {% trans "OSM"%}
               </div>
               <div class="col-md-1 text-center">
                 {% if 'openstreetmap' in auths %}
                 <span class="text-success glyphicon glyphicon-ok"></span>
                 {% else %}
-                  <a href="{% url 'social:begin' 'openstreetmap' %}" class="btn btn-primary">Connect</a>
+                  <a href="{% url 'social:begin' 'openstreetmap' %}" class="btn btn-primary">
+                    {% trans "Connect"%}
+                  </a>
                 {% endif %}
               </div>
             </div>
             <div class="row" style="margin-bottom: 10px; line-height: 60px;">
               <div class="col-md-1">
-                Github
+                {% trans "Github"%}
               </div>
               <div class="col-md-1 text-center">
                 {% if 'github' in auths %}
                 <span class="text-success glyphicon glyphicon-ok"></span>
                 {% else %}
-                  <a href="{% url 'social:begin' 'github' %}" class="btn btn-primary">Connect</a>
+                  <a href="{% url 'social:begin' 'github' %}" class="btn btn-primary">
+                    {% trans "Connect"%}
+                  </a>
                 {% endif %}
               </div>
             </div>
             <div class="row" style="margin-bottom: 10px; line-height: 60px;">
               <div class="col-md-1">
-                Twitter
+                {% trans "Twitter"%}
               </div>
               <div class="col-md-1 text-center">
                 {% if 'twitter' in auths %}
                 <span class="text-success glyphicon glyphicon-ok"></span>
                 {% else %}
-                  <a href="{% url 'social:begin' 'twitter' %}" class="btn btn-xs btn-primary">Connect</a>
+                  <a href="{% url 'social:begin' 'twitter' %}" class="btn btn-xs btn-primary">
+                    {% trans "Connect"%}
+                  </a>
                 {% endif %}
               </div>
             </div>
             <div class="row" style="margin-bottom: 10px; line-height: 60px;">
               <div class="col-md-1">
-                Google
+                {% trans "Google"%}
               </div>
               <div class="col-md-1 text-center">
                 {% if 'google-oauth2' in auths %}
                 <span class="text-success glyphicon glyphicon-ok"></span>
                 {% else %}
-                  <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-xs btn-primary">Connect</a>
+                  <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-xs btn-primary">
+                    {% trans "Connect"%}
+                  </a>
                 {% endif %}
               </div>
             </div>
             <div class="row" style="margin-bottom: 10px; line-height: 60px;">
               <div class="col-md-1">
-                Facebook
+                {% trans "Facebook"%}
               </div>
               <div class="col-md-1 text-center">
                 {% if 'facebook' in auths %}
                 <span class="text-success glyphicon glyphicon-ok"></span>
                 {% else %}
-                  <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-xs btn-primary">Connect</a>
+                  <a href="{% url 'social:begin' 'facebook' %}" class="btn btn-xs btn-primary">
+                    {% trans "Connect"%}
+                  </a>
                 {% endif %}
               </div>
             </div>
             <div class="row" style="margin-bottom: 10px; line-height: 60px;">
               <div class="col-md-1">
-                LinkedIn
+                {% trans "LinkedIn"%}
               </div>
               <div class="col-md-1 text-center">
                 {% if 'linkedin-oauth2' in auths %}
                 <span class="text-success glyphicon glyphicon-ok"></span>
                 {% else %}
-                  <a href="{% url 'social:begin' 'linkedin-oauth2' %}" class="btn btn-xs btn-primary">Connect</a>
+                  <a href="{% url 'social:begin' 'linkedin-oauth2' %}" class="btn btn-xs btn-primary">
+                    {% trans "Connect"%}
+                  </a>
                 {% endif %}
               </div>
             </div>

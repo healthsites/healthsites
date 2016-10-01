@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load i18n %}
 {% block title %}Healthsites{% endblock %}
 {% block content %}
     {% if user.is_authenticated %}
@@ -11,22 +11,21 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <h2>Sign in</h2>
-                    <h4>Please sign in with one of your existing third party accounts.</h4>
-
-                    <p class="text-warning"><span class="label label-warning">Important!</span> If you have already
-                        connected a 3rd party service, first login using that service and then add more authorisation
-                        options on profile page</p>
+                    <h2>{% trans "sign_in"%}</h2>
+                    <h4>{% trans "Please sign in with one of your existing third party accounts."%}</h4>
+                    <p class="text-warning"><span class="label label-warning">{% trans "Important!"%}</span>
+                        {% trans "signin_warning"%}
+                    </p>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12 social">
-{#                    <a href="{% url 'social:begin' 'openstreetmap' %}?next=/map" class="btn btn-primary">OSM</a>#}
-{#                    <a href="{% url 'social:begin' 'github' %}?next=/map" class="btn btn-primary">Github</a>#}
-                    <a href="{% url 'social:begin' 'twitter' %}?next=/map" class="btn btn-primary">Twitter</a>
-{#                    <a href="{% url 'social:begin' 'google-oauth2' %}?next=/map" class="btn btn-primary">Google</a>#}
-                    <a href="{% url 'social:begin' 'facebook' %}?next=/map" class="btn btn-primary">Facebook</a>
-{#                    <a href="{% url 'social:begin' 'linkedin-oauth2' %}?next=/map" class="btn btn-primary">LinkedIn</a>#}
+                  <a href="{% url 'social:begin' 'twitter' %}?next=/map" class="btn btn-primary">{% trans "Twitter"%}</a>
+                  <a href="{% url 'social:begin' 'facebook' %}?next=/map" class="btn btn-primary">{% trans "Facebook"%}</a>
+                  <!--<a href="{% url 'social:begin' 'openstreetmap' %}?next=/map" class="btn btn-primary">{% trans "OSM"%}</a>-->
+                  <!--<a href="{% url 'social:begin' 'github' %}?next=/map" class="btn btn-primary">{% trans "Github"%}</a>-->
+                  <!--<a href="{% url 'social:begin' 'google-oauth2' %}?next=/map" class="btn btn-primary">{% trans "Google"%}</a>-->
+                  <!--<a href="{% url 'social:begin' 'linkedin-oauth2' %}?next=/map" class="btn btn-primary">{% trans "LinkedIn"%}</a>-->
                 </div>
             </div>
         </div>
