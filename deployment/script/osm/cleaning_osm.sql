@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS merge;
+﻿DROP TABLE IF EXISTS merge;
 CREATE TABLE merge AS
 --SELECT
 --	wkb_geometry AS geom, 'n' || osm_id AS osm_id, osm_timestamp, amenity, name, other_tags
@@ -45,3 +45,9 @@ SELECT
 	) AS address,
 	'OpenStreetMap' AS data_source
 FROM merge;
+
+CREATE TABLE fusion_hs AS
+SELECT * FROM cleaning WHERE osm_id NOT IN (SELECT SUBSTRING(upstream_id from 15) FROM localities_locality);
+
+COPY fusion_hs TO '/backups/osm_import_16-10-2016.csv' WITH NULL AS '' DELIMITER ',';
+COPY fusion_hs TO '/backups/osm_import_16-10-2016.csv' WITH NULL AS '' CSV HEADER DELIMITER ',';
