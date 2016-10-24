@@ -76,7 +76,7 @@ def extract(key, value, osm, continent, output):
 
 def remove_pbf(pbf_file):
     print 'Remove %s' % pbf_file
-    #call('rm %s' % pbf_file, shell=True)
+    call('rm %s' % pbf_file, shell=True)
 
 
 def merge(to_be_merged, continent):
