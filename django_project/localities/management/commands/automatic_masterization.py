@@ -20,6 +20,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         candidates = UnconfirmedSynonym.objects.all()
+        print "candidates %d" % len(candidates)
+        time.sleep(10)
         strong_candidates = []
         for candidate in candidates:
             score = 0
@@ -46,7 +48,7 @@ class Command(BaseCommand):
                         print "%s = %f%%" % (key, ratio * 100)
 
                         if master_is_osm and key == 'raw-source' and ratio == 1:
-                            score += 50
+                            score += 100
                         else:
                             if not key in self.weight:
                                 score += ratio * self.weight['default']
