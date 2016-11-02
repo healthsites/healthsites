@@ -16,6 +16,8 @@ from .models import Locality, Domain, Changeset
 from .exceptions import LocalityImportError
 
 from ._csv_unicode import UnicodeDictReader
+from django.utils.dateparse import parse_datetime
+from django.db import IntegrityError
 
 
 class CSVImporter:
@@ -187,6 +189,10 @@ class CSVImporter:
                 site = Site(name=row_data_source, domain=row_data_source_url)
                 site.save()
 
+        row_date_created = self._read_attr(
+            row_data, self.attr_map['date_created']
+        )
+
         self.parsed_data.update({
             gen_upstream_id: {
                 'uuid': row_uuid,
@@ -194,6 +200,7 @@ class CSVImporter:
                 'geom': tmp_geom,
                 'name': row_name,
                 'source': row_data_source,
+                'date_created': row_date_created,
                 'values': {
                     key: self._read_attr(row_data, row_val)
                     for key, row_val in self.attr_map['attributes'].iteritems()
@@ -218,6 +225,16 @@ class CSVImporter:
             if _created:
 
                 loc.changeset = tmp_changeset
+                # change date created
+                date_created = values['date_created']
+                try:
+                    if date_created:
+                        loc.changeset = Changeset.objects.create(social_user=self.user)
+                        loc.changeset.created = parse_datetime(date_created)
+                        loc.changeset.save()
+                except IntegrityError:
+                    pass
+
                 loc.domain = self.domain
                 loc.uuid = row_uuid or uuid.uuid4().hex  # gen new uuid if None
                 loc.upstream_id = gen_upstream_id
@@ -242,6 +259,15 @@ class CSVImporter:
 
                 # apply mode
                 loc.changeset = tmp_changeset
+                # change date created
+                date_created = values['date_created']
+                try:
+                    if date_created:
+                        loc.changeset.created = parse_datetime(date_created)
+                        loc.changeset.save()
+                except IntegrityError:
+                    pass
+
                 loc.geom = Point(*values['geom'])
                 loc.name = values['name']
                 loc.source = values['source']

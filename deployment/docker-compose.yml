@@ -31,7 +31,7 @@ nginx:
   restart: on-failure:5
 
 smtp:
-  # Note you cannot scale if you use conteiner_name
+  # Note you cannot scale if you use container_name
   container_name: healthsites-smtp
   image: catatnight/postfix
   hostname: postfix
@@ -42,7 +42,7 @@ smtp:
   restart: on-failure:5
 
 db:
-  # Note you cannot scale if you use conteiner_name
+  # Note you cannot scale if you use container_name
   container_name: healthsites-db
   image: kartoza/postgis:9.4-2.1
   volumes:
@@ -52,6 +52,9 @@ db:
     - USERNAME=docker
     - PASS=docker
   restart: on-failure:5
+  # To log into postgis from the host, using localhost 5432
+  # ports:
+  #  - "5432:5432"
 
 rabbitmq:
   image: library/rabbitmq
@@ -62,7 +65,7 @@ rabbitmq:
       - RABBITMQ_NODENAME=rabbit
 
 uwsgi:
-  # Note you cannot scale if you use conteiner_name
+  # Note you cannot scale if you use container_name
   container_name: healthsites-uwsgi
   build: docker
   hostname: uwsgi
@@ -113,7 +116,7 @@ worker:
   restart: on-failure:5
 
 dbbackups:
-  # Note you cannot scale if you use conteiner_name
+  # Note you cannot scale if you use container_name
   container_name: healthsites-db-backups
   image: kartoza/pg-backup:9.4
   hostname: pg-backups
@@ -136,7 +139,7 @@ dbbackups:
 
 # This is normally the main entry point for a production server
 web:
-  # Note you cannot scale if you use conteiner_name
+  # Note you cannot scale if you use container_name
   container_name: healthsites-web
   image: nginx
   hostname: nginx
@@ -156,7 +159,7 @@ web:
 # Run with --no-deps to run attached to the services
 # from produ environment if wanted
 devweb:
-  # Note you cannot scale if you use conteiner_name
+  # Note you cannot scale if you use container_name
   container_name: healthsites-dev-web
   build: docker
   dockerfile: Dockerfile-dev
