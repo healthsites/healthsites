@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         candidates = UnconfirmedSynonym.objects.all()
-        print "candidates %d" % len(candidates)
+        num_candidates = len(candidates)
         time.sleep(10)
         strong_candidates = []
         for candidate in candidates:
@@ -66,6 +66,10 @@ class Command(BaseCommand):
             print "score %f" % score
 
         time.sleep(10)
+        print "candidates %d" % num_candidates
         print "have %d strong duplicate candidates" % len(strong_candidates)
-        for unconfirmed_id in strong_candidates:
-            promote_unconfirmed_synonym(unconfirmed_id)
+        try:
+            for unconfirmed_id in strong_candidates:
+                promote_unconfirmed_synonym(unconfirmed_id)
+        except Exception as e:
+            print e
