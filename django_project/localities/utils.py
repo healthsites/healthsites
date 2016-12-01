@@ -134,7 +134,7 @@ def get_country_statistic(query):
 
 
 def get_heathsites_master():
-    return Locality.objects.filter(is_master=True)
+    return Locality.objects.filter(is_master=True).order_by('name')
 
 
 def get_json_from_request(request):
