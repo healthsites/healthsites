@@ -5,6 +5,8 @@ import json
 LOG = logging.getLogger(__name__)
 
 import googlemaps
+import os
+from hurry.filesize import size
 
 from braces.views import FormMessagesMixin
 from envelope.views import ContactView
@@ -18,6 +20,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, \
     search_locality_by_tag
+from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from social_users.utils import get_profile
 
@@ -151,6 +154,7 @@ def map(request):
         place = request.GET.get('place')
         attribute = request.GET.get('attribute')
         result = {}
+
         if tag:
             result = search_locality_by_tag(tag)
             result['tag'] = tag
@@ -158,6 +162,10 @@ def map(request):
             result = get_country_statistic(country)
             result['country'] = country
             result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
+            result['shapefile_size'] = 0
+            filename = os.path.join(directory_media, country + "_shapefile.zip")
+            if (os.path.isfile(filename)):
+                result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
         elif place:
             result = search_place(request, place)
         elif attribute:
@@ -167,6 +175,11 @@ def map(request):
                                    'location': result['location']}
         elif len(request.GET) == 0:
             result = search_place(request, place)
+            # get facilities shapefile size
+            result['shapefile_size'] = 0
+            filename = os.path.join(directory_media, "facilities_shapefile.zip")
+            if (os.path.isfile(filename)):
+                result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
         else:
             uuid = request.GET.get('uuid')
             for item in request.GET:
