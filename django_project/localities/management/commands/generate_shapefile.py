@@ -7,6 +7,7 @@ __copyright__ = 'kartoza.com'
 from django.core.management.base import BaseCommand
 import os
 import shapefile
+import shutil
 import zipfile
 from django.conf import settings
 from localities.models import Domain, Specification, Country
@@ -45,8 +46,10 @@ def insert_to_shapefile(healthsites, shp_filename):
             shp.field(str(field), 'C', 100)
 
         # write world cache
-        dir_cache = directory_cache + "/" + shp_filename
-        filename = os.path.join(dir_cache, shp_filename)
+        dir_cache = os.path.join(directory_cache, shp_filename)
+        shapefile_output = os.path.join(dir_cache, shp_filename)
+
+        shutil.rmtree(dir_cache)
         if not os.path.exists(dir_cache):
             os.makedirs(dir_cache)
 
@@ -73,7 +76,7 @@ def insert_to_shapefile(healthsites, shp_filename):
                 shp.point(dict['geom'][0], dict['geom'][1])
                 shp.record(*values)
                 now += 1
-            shp.save(filename)
+            shp.save(shapefile_output)
 
             # create .cpg
             file = open(dir_cache + "/" + shp_filename + ".cpg", 'w+')
@@ -81,7 +84,7 @@ def insert_to_shapefile(healthsites, shp_filename):
             file.close()
 
             # create .prj
-            prj = open(dir_cache + "/" + shp_filename + ".prj", "w")
+            prj = open(dir_cache + "/" + shp_filename + ".prj", "w+")
             epsg = getWKT_PRJ("4326")
             prj.write(epsg)
             prj.close()
@@ -91,6 +94,8 @@ def insert_to_shapefile(healthsites, shp_filename):
             if not os.path.exists(directory_media):
                 os.makedirs(directory_media)
             filename = os.path.join(directory_media, shp_filename + "_shapefile.zip")
+            os.remove(filename)
+
             zipf = zipfile.ZipFile(filename, 'w', allowZip64=True)
             zipdir(dir_cache, zipf)
             zipf.close()
