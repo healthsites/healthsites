@@ -251,6 +251,23 @@ dbsync:
 	-@ssh hs1-production "cd /home/web/healthsites/deployment; make dbbackup"
 	@rsync -av --progress hs1-production:/home/web/healthsites/deployment/backups/ backups
 
+get-ssl-certificates:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Get ssl certificates from Lets Encrypt."
+	@echo "------------------------------------------------------------------"
+	$(shell) ./letsencrypt.sh
+
+add-cron-letsencrypt:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Add renewal script into crontab to run every even months"
+	@echo "------------------------------------------------------------------"
+	@crontab -l > cronfile
+	@echo "0 0 01 */2 * $(shell pwd)/./renew-letsencrypt.sh $(shell pwd) >> $(shell pwd)/renew-letsencrypt.log 2>&1" >> cronfile
+	@sudo crontab cronfile
+	@rm cronfile
+
 # ----------------------------------------------------------------------------
 #    DEVELOPMENT C O M M A N D S
 # --no-deps will attach to prod deps if running
