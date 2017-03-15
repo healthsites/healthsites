@@ -31,7 +31,7 @@ class MainView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
-        context['locality_count'] = get_heathsites_master().count()
+        context['locality_count'] = get_country_statistic("")['localities']
         if request.user.is_authenticated():
             if request.user.is_staff:
                 context['uploader'] = True

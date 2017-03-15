@@ -205,6 +205,7 @@ admin.site.register(UnconfirmedSynonym, UnconfirmedSynonymAdmin)
 class CountryAdmin(ChangesetMixin, admin.ModelAdmin):
     fields = ('name',)
     ordering = ('name',)
+    search_fields = ('name',)
 
 
 admin.site.register(Country, CountryAdmin)

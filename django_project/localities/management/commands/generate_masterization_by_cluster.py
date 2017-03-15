@@ -45,5 +45,5 @@ class Command(BaseCommand):
                 print loc_cluster['localities']
                 for potential_master in loc_cluster['localities']:
                     for potential_synonym in loc_cluster['localities']:
-                        if potential_master != potential_synonym:
-                            report_locality_as_unconfirmed_synonym(potential_synonym.id, potential_master.id)
+                        if potential_synonym['id'] != potential_master['id']:
+                            report_locality_as_unconfirmed_synonym(potential_synonym['id'], potential_master['id'])

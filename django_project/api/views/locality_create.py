@@ -10,7 +10,12 @@ from django.views.generic import View
 
 
 class LocalityCreateApiView(View):
+    """ API for creating locality."""
+
     def _parse_request_params(self, request):
+        """ Parse request
+        :param request: request
+        """
         if not (all(param in request.GET for param in ['geom'])):
             raise Http404
         return request.GET['geom']
