@@ -119,50 +119,16 @@ def load_data_task(self, data_loader_pk):
 
 @app.task(bind=True)
 def regenerate_cache(self, changeset_pk, locality_pk):
-    # Put here to avoid circular import
-    from .models import Changeset
-    from .models import Locality
-    from localities.models import Country
-    import os
-    import json
-    from django.conf import settings
-    from localities.utils import get_statistic
-    from django.core.serializers.json import DjangoJSONEncoder
+    from django.core import management
+    from localities.models import Changeset, Country, Locality
 
     try:
-        changeset = Changeset.objects.get(pk=changeset_pk)
         locality = Locality.objects.get(pk=locality_pk)
-        country = Country.objects.filter(polygon_geometry__contains=locality.geom)
-
-        # write world cache
-        filename = os.path.join(
-            settings.CLUSTER_CACHE_DIR,
-            'world_statistic')
-        healthsites = Locality.objects.all()
-        output = get_statistic(healthsites)
-        result = json.dumps(output, cls=DjangoJSONEncoder)
-        file = open(filename, 'w')
-        file.write(result)  # python will convert \n to os.linesep
-        file.close()  # you can omit in most cases as the destructor will call it
-
-        # getting country's polygon
-        if len(country):
-            country = country[0]
-            polygons = country.polygon_geometry
-
-            # write country cache
-            filename = os.path.join(
-                settings.CLUSTER_CACHE_DIR,
-                country.name + '_statistic'
-            )
-            healthsites = Locality.objects.in_polygon(
-                polygons)
-            output = get_statistic(healthsites)
-            result = json.dumps(output, cls=DjangoJSONEncoder)
-            file = open(filename, 'w')
-            file.write(result)  # python will convert \n to os.linesep
-            file.close()  # you can omit in most cases as the destructor will call it
-
+        countries = Country.objects.filter(polygon_geometry__contains=locality.geom)
+        management.call_command(
+            'generate_countries_cache', countries=','.join(
+                [country.name for country in countries])
+        )
     except Changeset.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=5, max_retries=10)
     except Locality.DoesNotExist as exc:
@@ -176,8 +142,11 @@ def regenerate_cache_cluster(self):
     from django.core.management import call_command
     call_command('gen_cluster_cache', 48, 46)
 
+
 from django.core import management
 from celery import shared_task
+
+
 @shared_task(name='localities.tasks.generate_shapefile')
 def generate_shapefile():
     management.call_command('generate_shapefile')

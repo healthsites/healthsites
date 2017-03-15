@@ -13,11 +13,24 @@ from localities.utils import get_heathsites_master
 
 
 class Command(BaseCommand):
+    """ Command for generate country cache.
+    """
     help = 'Import Localities from CSV file'
 
-    def handle(self, *args, **options):
+    def add_arguments(self, parser):
+        # Named (optional) arguments
+        parser.add_argument(
+            '--countries',
+            dest='countries',
+            help='Country name list with comma separator',
+        )
 
-        countries = Country.objects.all()
+    def handle(self, *args, **options):
+        if options['countries']:
+            countries = [countries_name for countries_name in options['countries'].split(',')]
+            countries = Country.objects.filter(name__in=countries)
+        else:
+            countries = Country.objects.all()
 
         # check the folder
         if not os.path.exists(settings.CLUSTER_CACHE_DIR):

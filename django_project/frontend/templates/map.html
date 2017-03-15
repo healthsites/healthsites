@@ -199,8 +199,8 @@
                         facilities.
                     </p>
                     <p>
-                        You can get all data from healthsite in this
-                        <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile</a>
+                        Download all healthsite data in this
+                        <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile ({{ shapefile_size }})</a>
                     </p>
                     <h2 class="sidebar-title "><span data-speed="2500"
                                                      data-to="{{ locality_count }}">{{ locality_count }}</span>
@@ -221,7 +221,7 @@
                     healthsites
                 </div>
                 <p id="country-shapefiles" class="header" style="padding-bottom: 10px; display: none">
-                    You can get all data from healthsite in this
+                    Download all healthsite data in this
                     <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile</a>
                 </p>
 
@@ -759,7 +759,7 @@
             $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
         {% elif country %}
             $("#country-shapefiles").show();
-            $("#country-shapefiles").html('You can get all data from {{ country }} in this <a class="inner-navbar-brand" href="/media/shapefiles/{{ country }}_shapefile.zip">shapefile</a>')
+            $("#country-shapefiles").html('Download all healthsite data from {{ country }} in this <a class="inner-navbar-brand" href="/media/shapefiles/{{ country }}_shapefile.zip">shapefile ({{ shapefile_size }})</a>')
             $("#title-name").html("{{ country }}");
             $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
             // creating polygon

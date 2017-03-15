@@ -5,10 +5,10 @@ __copyright__ = 'kartoza.com'
 
 
 def json_serializer(locality):
-    """
-    serialize locality with clean json format
+    """ Serialize locality with clean json format
     """
     dict = locality.repr_dict(clean=True)
+
     for key in dict['values'].keys():
         dict[key] = dict['values'][key]
     dict.pop("values", None)
@@ -16,13 +16,15 @@ def json_serializer(locality):
 
 
 def geojson_serializer(locality):
+    """ Serialize locality with clean geojson format
     """
-    serialize locality with clean json format
-    """
+
     dict = locality.repr_dict(clean=True)
+
     for key in dict['values'].keys():
         dict[key] = dict['values'][key]
     dict.pop("values", None)
+
     geojson = {
         "type": "Feature",
         "geometry": {

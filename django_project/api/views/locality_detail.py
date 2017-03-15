@@ -11,29 +11,30 @@ from ..serializer.locality_serializer import json_serializer, geojson_serializer
 
 
 class LocalityDetailApiView(ApiView):
-    """
-    An API view class for retrieving facility detail
+    """ An API view class for retrieving facility detail
     """
 
     def get(self, request, *args, **kwargs):
-        super(LocalityDetailApiView, self).get(request)
-        if not 'uuid' in request.GET:
-            return HttpResponse(
-                self.formating_response({'error': "parameter is not enough"}),
-                content_type='application/json')
+        validation = self.extract_request(request)
+        if validation:
+            return self.api_response(
+                {'error': validation}
+            )
+
+        # check uuid for this
+        if 'uuid' not in request.GET:
+            return self.api_response(
+                {'error': "parameter is not enough"}
+            )
+
         uuid = request.GET['uuid']
-
         try:
-            locality = Locality.objects.get(uuid=uuid)
+            facilities = Locality.objects.get(uuid=uuid)
         except Locality.DoesNotExist:
-            return HttpResponse(self.formating_response({'error': "facility isn't found"}),
-                                content_type='application/json')
+            return self.api_response(
+                {'error': "facility isn't found"}
+            )
 
-        if self.format == 'geojson':
-            locality = [geojson_serializer(locality)]
-        else:
-            locality = json_serializer(locality)
+        facilities = self.query_to_json([facilities], self.format)
 
-        return HttpResponse(
-            self.formating_response(locality),
-            content_type='application/json')
+        return self.api_response(facilities[0])

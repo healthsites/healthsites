@@ -3,41 +3,59 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '10/06/16'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
-from django.http import HttpResponse
-from frontend.views import search_place
-from localities.models import Country, Locality, SynonymLocalities
-from localities.utils import parse_bbox
-from .api_view import ApiView
-from ..serializer.locality_serializer import json_serializer, geojson_serializer
+
+from localities.models import Locality, SynonymLocalities
+
+from api.serializer.locality_serializer import (
+    geojson_serializer,
+    json_serializer
+)
+from api.views.api_view import ApiView
 
 
 class LocalitySynonymApiView(ApiView):
-    """
-    An API vuew class for retrieving facilities by search
-    search it by place name of by facility name
-    """
+    """ Retrieve synonym of a facility"""
+
+    def synonyms_to_json(self, synonyms, format):
+        """ Format synonym to json
+        :param query: query that will be formatted
+        :type query: Queryset
+
+        :param format: format type
+        :type format: str
+
+        :return: json based on format
+        :rtype: dict
+        """
+        output = []
+        for synonym in synonyms:
+            if format == 'geojson':
+                output.append(geojson_serializer(synonym.synonym))
+            else:
+                output.append(json_serializer(synonym.synonym))
+        return output
 
     def get(self, request, *args, **kwargs):
-        super(LocalitySynonymApiView, self).get(request)
-        if not 'uuid' in request.GET:
-            return HttpResponse(
-                self.formating_response({'error': "parameter is not enough"}),
-                content_type='application/json')
-        uuid = request.GET['uuid']
+        validation = self.extract_request(request)
+        if validation:
+            return self.api_response(
+                {'error': validation}
+            )
 
+        # check uuid for this
+        if 'uuid' not in request.GET:
+            return self.api_response(
+                {'error': "parameter is not enough"}
+            )
+
+        uuid = request.GET['uuid']
         try:
             locality = Locality.objects.get(uuid=uuid)
         except Locality.DoesNotExist:
-            return HttpResponse(self.formating_response({'error': "facility isn't found"}),
-                                content_type='application/json')
+            return self.api_response(
+                {'error': "facility isn't found"}
+            )
 
         synonyms = SynonymLocalities.objects.filter(locality=locality)
-        facilities_dict = []
-        for synonym in synonyms:
-            if self.format == 'geojson':
-                facilities_dict.append(geojson_serializer(synonym.synonym))
-            else:
-                facilities_dict.append(json_serializer(synonym.synonym))
-        return HttpResponse(
-            self.formating_response(facilities_dict),
-            content_type='application/json')
+        facilities = self.synonyms_to_json(synonyms, self.format)
+        return self.api_response(facilities)
