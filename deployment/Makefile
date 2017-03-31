@@ -274,3 +274,15 @@ build-devweb: db
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) build devweb
 
+
+# ----------
+# Letsencrypt
+# ----------
+
+renew-letsencrypt:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Renew letsencrypt"
+	@echo "------------------------------------------------------------------"
+	@docker-compose -p $(PROJECT_ID) run uwsgi certbot renew --dry-run
+

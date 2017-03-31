@@ -84,6 +84,8 @@ uwsgi:
     - ./media:/home/web/media
     - ./reports:/home/web/reports
     - ./logs:/var/log/
+    - /etc/letsencrypt:/etc/letsencrypt
+    - ./webroot-path:/var/www/webroot
   links:
     - smtp:smtp
     - db:db
@@ -149,6 +151,8 @@ web:
     - ./static:/home/web/static:ro
     - ./media:/home/web/media:ro
     - ./logs:/var/log/nginx
+    - /etc/letsencrypt:/etc/letsencrypt
+    - ./webroot-path:/var/www/webroot
   links:
     - uwsgi:uwsgi
   ports:
