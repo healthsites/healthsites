@@ -98,6 +98,8 @@ class ApiView(View):
             output = dicttoxml.dicttoxml(context)
 
         elif self.format == 'geojson':
+            if not isinstance(context, list):
+                context = [context]
             output = json.dumps(
                 {"type": "FeatureCollection", "features": context},
                 cls=DjangoJSONEncoder)
@@ -128,4 +130,3 @@ class Docs(View):
     def get(self, request, *args, **kwargs):
         return HttpResponseRedirect(
             'https://github.com/healthsites/healthsites/wiki/API')
-
