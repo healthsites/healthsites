@@ -25,6 +25,12 @@ RUN apt-get update -y; apt-get -y --force-yes install yui-compressor
 # Open port 49360 as we will be running our uwsgi socket on that
 EXPOSE 49360
 
+ADD sources.list /etc/apt/sources.list.d/
+RUN apt-get update -y
+RUN apt-get install vim -y
+RUN apt-get install certbot -t jessie-backports -y
+ADD rpl-1.5.5.egg-info /usr/lib/pymodules/python2.7/
+
 # You could put --protocol=http as a parameter (to test it directly)
 # when running e.g. docker run konektaz/healthsites --protocol=http
 # or any other wsgi parameters and they will be tagged on to the
