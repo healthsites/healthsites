@@ -32,6 +32,8 @@ class LocalitySearchApiView(ApiView):
 
         if self.page:
             facilities = self.get_query_by_page(facilities, self.page)
+        else:
+            facilities = facilities[:100]
         return facilities
 
     def get(self, request, *args, **kwargs):
