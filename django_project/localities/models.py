@@ -291,7 +291,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             pass
 
         # exclusive for open street map
-        if "openstreetmap" in self.upstream_id:
+        if "openstreetmap" in self.upstream_id.lower():
             osm_whole_id = self.upstream_id.split(u"¶")
             if len(osm_whole_id) > 0:
                 osm_whole_id = osm_whole_id[1]
@@ -305,7 +305,7 @@ class Locality(UpdateMixin, ChangesetMixin):
                     url = 'http://www.openstreetmap.org/way/' + osm_id
 
                 if url:
-                    dict[u'values']['raw-source'] = url
+                    dict['source_url'] = url
         return dict
 
     def is_type(self, value):
