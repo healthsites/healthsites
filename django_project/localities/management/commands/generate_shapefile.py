@@ -132,6 +132,5 @@ class Command(BaseCommand):
             healthsites = get_heathsites_master().in_polygon(
                 polygons)
             insert_to_shapefile(healthsites, fields, country.name)  # generate shapefiles for country
-            break
 
         insert_to_shapefile(get_heathsites_master(), fields, 'facilities')  # generate shapefiles for all country
