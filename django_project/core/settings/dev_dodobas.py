@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 from .dev import *  # noqa
+from os.path import abspath, dirname, join, pardir
+
+PROJECT_PATH = abspath(join(dirname(__file__), pardir, pardir))
+MEDIA_ROOT = join(PROJECT_PATH, 'media')
+STATIC_ROOT = join(PROJECT_PATH, 'static')
 
 INSTALLED_APPS += (
     'django_extensions',

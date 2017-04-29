@@ -42,45 +42,44 @@ First checkout out the source tree:
 git clone git://github.com/healthsites/healthsites.git
 ```
 
-### Install dependencies
+Second, go to the source directory:
 
 ```
-sudo apt-get install python-psycopg2 python-virtualenv
+cd django_project
 ```
 
-```
-cd healthsites
-virtualenv venv
-source venv/bin/activate
-pip install -r REQUIREMENTS-dev.txt
-nodeenv -p --node=0.10.31
-npm -g install yuglify
-```
-
-### Create your dev profile
-
-
+### Install
 
 ```
-cd django_project/core/settings
-cp dev_dodobas.py dev_${USER}.py
+make install
 ```
 
-Now edit dev_<your username> setting your database connection details as
-needed. We assume you have created a postgres (with postgis extentions)
-database somewhere that you can use for your development work. See
+### Edit the DATABASE section of your Django settings: `dev_${USER}.py`:
+
+```
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'healthsites_dev',
+        'USER': '<your-database-username>',
+        'PASSWORD': '<your-password>',
+        'HOST': 'localhost',
+        # Set to empty string for default.
+        'PORT': '5432',
+    }
+}
+```
+
+We assume you have created a postgres database (with postgis extentions) that you can use for your development work. See
 [http://postgis.net/install/](http://postgis.net/install/) for details on doing
 that.
 
-### Running collect and migrate static
-
-Prepare your database and static resources by doing this:
+### Running migrate and collect static
 
 ```
-virtualenv venv
-source venv/bin/activate
-cd django_project
-export RABBITMQ_HOST=localhost
-python manage.py migrate --settings=core.settings.dev_${USER}
-python manage.py collectstatic --noinput --settings=core.settings.dev_${USER}
+make migrate
+```
+
+```
+make collectstatic
 ```
