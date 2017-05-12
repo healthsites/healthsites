@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
 from django.views.generic import View
