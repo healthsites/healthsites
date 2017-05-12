@@ -1,28 +1,24 @@
 # -*- coding: utf-8 -*-
-import logging
-
 import itertools
-
-from .querysets import PassThroughGeoManager, LocalitiesQuerySet
+import logging
 from datetime import datetime
+
+from pg_fts.fields import TSVectorField
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.gis.db import models
 from django.contrib.sites.models import Site
+from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save, pre_delete
 from django.utils import timezone
 from django.utils.text import slugify
 
 from model_utils import FieldTracker
-from pg_fts.fields import TSVectorField
-from .variables import attributes_availables
-# register signals
-import signals  # noqa
-from .tasks import load_data_task
-from django.core.exceptions import ValidationError
-from masterization import downgrade_master_as_synonyms
 
+from .querysets import LocalitiesQuerySet, PassThroughGeoManager
+from .variables import attributes_availables
 
 LOG = logging.getLogger(__name__)
 
@@ -667,6 +663,7 @@ class DataLoader(models.Model):
 # method for updating
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
+        from .tasks import load_data_task
         load_data_task.delay(instance.pk)
 
 
@@ -788,9 +785,13 @@ class SynonymLocalities(models.Model):
 
 
 def update_others_synonyms(sender, instance, **kwargs):
+    from .masterization import downgrade_master_as_synonyms
     new_synonym = instance.synonym
     new_master = instance.locality
     downgrade_master_as_synonyms(new_synonym.id, new_master.id)
 
 
 post_save.connect(update_others_synonyms, sender=SynonymLocalities)
+
+# register signals
+from . import signals  # noqa  # isort:skip

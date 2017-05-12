@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-import logging
 import json
-
-from braces.views import LoginRequiredMixin
-from core.utilities import extract_time
+import logging
 from datetime import datetime
+
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
@@ -12,11 +10,14 @@ from django.db.models import Count, Max, Min
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView, View
+
+from braces.views import LoginRequiredMixin
+
+from core.utilities import extract_time
 from localities.models import Locality, LocalityArchive
 from localities.utils import extract_updates, get_update_detail
 from social_users.models import Profile
 from social_users.utils import get_profile
-
 
 LOG = logging.getLogger(__name__)
 

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from localities.models import Locality
+
 from .api_view import ApiView
 
 

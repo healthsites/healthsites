@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User, Group
-from django.contrib import admin
-from .models import (
-    Organisation
-)
-
 from social.apps.django_app.default.models import UserSocialAuth
+
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import Group, User
+
 from social_users.models import Profile, TrustedUser
+
+from .models import Organisation
 
 
 class ProfileAdmin(admin.ModelAdmin):

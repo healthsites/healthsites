@@ -4,17 +4,15 @@ __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
 import json
+
 import dicttoxml
 
-from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import EmptyPage, Paginator
 from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View
 
-from api.serializer.locality_serializer import (
-    geojson_serializer,
-    json_serializer
-)
+from api.serializer.locality_serializer import geojson_serializer, json_serializer
 
 
 class ApiView(View):

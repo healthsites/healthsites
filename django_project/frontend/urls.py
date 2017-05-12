@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import patterns, url
-from .views import MainView, AboutView, HelpView, AttributionsView
 from envelope.views import ContactView
+
+from django.conf.urls import patterns, url
+
 from braces.views import FormMessagesMixin
+
+from .views import AboutView, AttributionsView, HelpView, MainView
 
 
 class MessagesContactView(FormMessagesMixin, ContactView):

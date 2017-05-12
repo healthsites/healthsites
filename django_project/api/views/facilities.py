@@ -4,8 +4,8 @@ __date__ = '10/06/16'
 __license__ = "GPL"
 __copyright__ = 'kartoza.com'
 
-from localities.utils import parse_bbox, get_heathsites_master
 from api.views.api_view import ApiView
+from localities.utils import get_heathsites_master, parse_bbox
 
 
 class FacilitiesApiView(ApiView):

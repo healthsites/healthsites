@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
-from .views import (
-    LocalitiesLayer,
-    LocalityInfo,
-    LocalityReportDuplicate,
-    DataLoaderView,
-)
+
+from .views import DataLoaderView, LocalitiesLayer, LocalityInfo, LocalityReportDuplicate
 
 urlpatterns = patterns(
     '',

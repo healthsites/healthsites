@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-from django.core.management.base import BaseCommand
 import os
-import shapefile
 import shutil
 import zipfile
+
+import shapefile
+
 from django.conf import settings
-from localities.models import Domain, Specification, Country
+from django.core.management.base import BaseCommand
+
+from localities.models import Country, Domain, Specification
 from localities.utils import get_heathsites_master
 
 directory_cache = settings.CLUSTER_CACHE_DIR + "/shapefiles"

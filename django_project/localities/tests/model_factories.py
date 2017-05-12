@@ -1,14 +1,7 @@
 # -*- coding: utf-8 -*-
 import factory
 
-from ..models import (
-    Domain,
-    Locality,
-    Value,
-    Attribute,
-    Specification,
-    Changeset
-)
+from ..models import Attribute, Changeset, Domain, Locality, Specification, Value
 
 
 class DomainF(factory.django.DjangoModelFactory):

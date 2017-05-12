@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
+import json
+import os
 from optparse import make_option
 
-import json
-
-import os
-from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from localities.models import Country
+from django.core.management.base import BaseCommand, CommandError
+
 from localities.map_clustering import cluster
-from localities.utils import parse_bbox, get_heathsites_master
+from localities.models import Country
+from localities.utils import get_heathsites_master, parse_bbox
 
 
 class Command(BaseCommand):

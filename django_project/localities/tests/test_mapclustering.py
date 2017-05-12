@@ -1,17 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-
-from .model_factories import LocalityF
-
-from ..map_clustering import (
-    within_bbox,
-    cluster,
-    overlapping_area,
-    update_minbbox
-)
-
+from ..map_clustering import cluster, overlapping_area, update_minbbox, within_bbox
 from ..models import Locality
+from .model_factories import LocalityF
 
 
 class TestMapClustering(TestCase):

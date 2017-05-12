@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from django.core.management.base import BaseCommand
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import MultiPolygon, Polygon
+from django.core.management.base import BaseCommand
+
 from localities.models import Country
 
 

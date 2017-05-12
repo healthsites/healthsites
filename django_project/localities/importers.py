@@ -1,22 +1,17 @@
 # -*- coding: utf-8 -*-
-import logging
-
-import uuid
 import json
+import logging
+import uuid
 
+from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point, Polygon
 from django.contrib.sites.models import Site
-from django.db import transaction
-from django.contrib.auth import get_user_model
-
-from .models import Locality, Domain, Changeset
-
-from .exceptions import LocalityImportError
+from django.db import IntegrityError, transaction
+from django.utils.dateparse import parse_datetime
 
 from ._csv_unicode import UnicodeDictReader
-from django.utils.dateparse import parse_datetime
-from django.db import IntegrityError
-
+from .exceptions import LocalityImportError
+from .models import Changeset, Domain, Locality
 
 LOG = logging.getLogger(__name__)
 

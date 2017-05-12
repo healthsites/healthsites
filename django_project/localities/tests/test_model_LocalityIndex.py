@@ -1,18 +1,11 @@
 # -*- coding: utf-8 -*-
 from unittest import skip
 
-from django.test import TestCase
 from django.db import connection
-
-from .model_factories import (
-    DomainF,
-    AttributeF,
-    SpecificationF,
-    LocalityF,
-    ValueF
-)
+from django.test import TestCase
 
 from ..models import LocalityIndex
+from .model_factories import AttributeF, DomainF, LocalityF, SpecificationF, ValueF
 
 
 class TestModelLocalityIndex(TestCase):

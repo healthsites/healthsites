@@ -1,19 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+
 from masterization import promote_unconfirmed_synonym, reject_unconfirmed_synonym
-from .models import (
-    Attribute,
-    Changeset,
-    Country,
-    DataLoader,
-    DataLoaderPermission,
-    Domain,
-    Locality,
-    Specification,
-    SynonymLocalities,
-    UnconfirmedSynonym,
-)
+
 from .forms import DomainModelForm
+from .models import (
+    Attribute, Changeset, Country, DataLoader, DataLoaderPermission,
+    Domain, Locality, Specification, SynonymLocalities, UnconfirmedSynonym
+)
 
 
 class ChangesetMixin():

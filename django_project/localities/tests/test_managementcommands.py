@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 from unittest import skip
 
-from django.test import TestCase
 from django.core.management import call_command
 from django.core.management.base import CommandError
-
-from .model_factories import AttributeF, DomainSpecification3AF
+from django.test import TestCase
 
 from ..models import Locality, Value
+from .model_factories import AttributeF, DomainSpecification3AF
 
 
 class TestManagementCommands(TestCase):

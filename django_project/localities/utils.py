@@ -1,24 +1,26 @@
 # -*- coding: utf-8 -*-
 
-import requests
 import json
 import os
 import uuid
-from core.utilities import extract_time
 from datetime import datetime
+
+import requests
+
 from django.conf import settings
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, Polygon
 from django.contrib.gis.measure import D
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Max, Min
+from django.template import Context, Template
+
+from core.utilities import extract_time
 from localities.models import (
     Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification,
     SynonymLocalities, UnconfirmedSynonym, User, Value, ValueArchive
 )
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
 from social_users.utils import get_profile
-from django.template import Template, Context
-from django.contrib.gis.geos import Polygon
 
 
 def get_what_3_words(geom):

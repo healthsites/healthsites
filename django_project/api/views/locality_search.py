@@ -2,7 +2,7 @@
 from api.views.api_view import ApiView
 from frontend.views import search_place
 from localities.models import Country, Locality, Value
-from localities.utils import parse_bbox, get_heathsites_master
+from localities.utils import get_heathsites_master, parse_bbox
 
 
 class LocalitySearchApiView(ApiView):

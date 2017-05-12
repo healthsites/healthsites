@@ -1,28 +1,29 @@
 # -*- coding: utf-8 -*-
 import logging
+import os
 
 import googlemaps
-import os
+from envelope.views import ContactView
 from hurry.filesize import size
 
-from braces.views import FormMessagesMixin
-from envelope.views import ContactView
-from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from localities.utils import (
-    get_country_statistic, get_heathsites_master, search_locality_by_spec_data,
-    search_locality_by_tag
-)
+
+from braces.views import FormMessagesMixin
+
 from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
+from localities.utils import (
+    get_country_statistic, get_heathsites_master,
+    search_locality_by_spec_data, search_locality_by_tag
+)
 from social_users.utils import get_profile
-
 
 LOG = logging.getLogger(__name__)
 

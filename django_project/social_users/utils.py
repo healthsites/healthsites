@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from .models import Profile
 from social_users.models import TrustedUser
+
+from .models import Profile
 
 
 def get_profile(user):

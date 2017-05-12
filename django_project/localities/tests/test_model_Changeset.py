@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-from .model_factories import ChangesetF
-
 from ..models import Changeset
+from .model_factories import ChangesetF
 
 
 class TestModelChangeset(TestCase):
