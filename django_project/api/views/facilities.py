@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from api.views.api_view import ApiView
 from localities.utils import get_heathsites_master, parse_bbox
 

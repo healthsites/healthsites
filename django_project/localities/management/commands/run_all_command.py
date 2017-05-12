@@ -1,7 +1,3 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '01/04/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
 # -*- coding: utf-8 -*-
 from django.core.management import call_command
 from django.core.management.base import BaseCommand

@@ -1,13 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-__author__ = 'Christian Christelis <christian@kartoza.com>'
-__project_name = 'watchkeeper'
-__date__ = '8/05/15'
-__copyright__ = 'kartoza.com'
-__doc__ = ''
-
-
 from django.db import models, migrations
 
 from django.contrib.gis.gdal import DataSource

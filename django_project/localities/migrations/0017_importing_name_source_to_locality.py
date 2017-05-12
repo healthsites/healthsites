@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '07/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from django.db import migrations
 
 
