@@ -6,10 +6,9 @@ Adjust these values as needed but don't commit passwords etc. to any public
 repository!
 """
 
-import os  # noqa
 from django.utils.translation import ugettext_lazy as _
 from .contrib import *  # noqa
-from .secret import *  # secret
+from .secret import *  # NOQA
 
 # Project apps
 INSTALLED_APPS += (
@@ -38,7 +37,7 @@ LANGUAGES = (
 )
 
 # Set storage path for the translation files
-LOCALE_PATHS = (ABS_PATH('locale'),)
+LOCALE_PATHS = ABS_PATH('locale')
 
 # Project specific javascript files to be pipelined
 # For third party libs like jquery should go in contrib.py

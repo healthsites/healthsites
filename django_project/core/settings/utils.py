@@ -1,5 +1,3 @@
-# coding=utf-8
-
 """Helpers for settings."""
 import os
 
@@ -37,6 +35,7 @@ def ensure_secret_key_file():
             f.write("SECRET_KEY = " + repr(secret_key) + "\n")
             f.write("DISQUS_WEBSITE_SHORTNAME = "
                     + repr(disqus_shortname) + "\n")
+
 
 # Import the secret key
 ensure_secret_key_file()

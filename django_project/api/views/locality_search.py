@@ -1,9 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
 from api.views.api_view import ApiView
 from frontend.views import search_place
 from localities.models import Country, Locality, Value
@@ -36,14 +31,14 @@ class LocalitySearchApiView(ApiView):
             facilities = facilities[:100]
         return facilities
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):  # NOQA
         validation = self.extract_request(request)
         if validation:
             return self.api_response(
                 {'error': validation}
             )
 
-        if not 'name' in request.GET or not 'search_type' in request.GET:
+        if 'name' not in request.GET or 'search_type' not in request.GET:
             return self.api_response(
                 {'error': "parameter is not enough"}
             )
@@ -70,10 +65,10 @@ class LocalitySearchApiView(ApiView):
                 # if country is not found
                 output = search_place(request, place_name)
                 output['countries'] = ""
-                bbox = output["southwest_lng"] + "," + \
-                       output["southwest_lat"] + "," + \
-                       output["northeast_lng"] + "," + \
-                       output["northeast_lat"]
+                bbox = (
+                    output["southwest_lng"] + "," + output["southwest_lat"] + "," +
+                    output["northeast_lng"] + "," + output["northeast_lat"]
+                )
                 try:
                     polygon = parse_bbox(bbox)
                 except ValueError:

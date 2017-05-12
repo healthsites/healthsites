@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import datetime
 from unittest import skip
 
-import pytz
 from django.test import TestCase
 
 from django.db import IntegrityError

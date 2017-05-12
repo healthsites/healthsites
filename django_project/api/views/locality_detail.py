@@ -1,13 +1,7 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
 
-from django.http import HttpResponse
 from localities.models import Locality
 from .api_view import ApiView
-from ..serializer.locality_serializer import json_serializer, geojson_serializer
 
 
 class LocalityDetailApiView(ApiView):

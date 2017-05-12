@@ -32,7 +32,9 @@ class FacilitiesApiView(ApiView):
             if not page:
                 page = 1
 
-            facilities = self.get_query_by_page(get_heathsites_master().in_polygon(polygon), page)
+            facilities = self.get_query_by_page(
+                get_heathsites_master().in_polygon(polygon), page
+            )
             facilities = self.query_to_json(facilities, self.format)
             return self.api_response(facilities)
 

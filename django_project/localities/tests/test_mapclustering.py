@@ -75,16 +75,23 @@ class TestMapClustering(TestCase):
 
         dict_cluster = cluster(queryset, 3, 40, 40)
 
-        self.assertListEqual(
-            dict_cluster, [
-            {'count': 5, 'uuid': u'93b7e8c4621a4597938dfd3d27659160', 'localities': [],
-            'geom': (0.0, 0.0), 'bbox': (-10.546875, -10.546875, 10.546875, 10.546875),
-            'minbbox': [0.0, 0.0, 0.0, 0.0], 'name': u''},
-            {'count': 3, 'uuid': u'93b7e8c4621a4597938dfd3d27659166', 'localities': [],
+        self.assertListEqual(dict_cluster, [
+            {
+                'count': 5, 'uuid': u'93b7e8c4621a4597938dfd3d27659160', 'localities': [],
+                'geom': (0.0, 0.0), 'bbox': (-10.546875, -10.546875, 10.546875, 10.546875),
+                'minbbox': [0.0, 0.0, 0.0, 0.0], 'name': u''
+            },
+            {
+                'count': 3, 'uuid': u'93b7e8c4621a4597938dfd3d27659166', 'localities': [],
                 'geom': (28.0, 28.0), 'bbox': (
                     18.687662106566005, 18.687662106566005, 37.31233789343399, 37.31233789343399
-                ), 'minbbox': [28.0, 28.0, 32.0, 32.0], 'name': u''}, {'count': 1,
-            'uuid': u'93b7e8c4621a4597938dfd3d27659169', 'localities': [], 'geom': (45.0, 45.0),
-            'bbox': (37.54223316717313, 37.54223316717313, 52.45776683282687, 52.45776683282687),
-            'minbbox': (45.0, 45.0, 45.0, 45.0), 'name': u''}]
-        )
+                ), 'minbbox': [28.0, 28.0, 32.0, 32.0], 'name': u''
+            },
+            {
+                'count': 1,
+                'uuid': u'93b7e8c4621a4597938dfd3d27659169', 'localities': [],
+                'geom': (45.0, 45.0), 'bbox': (
+                    37.54223316717313, 37.54223316717313, 52.45776683282687, 52.45776683282687
+                ), 'minbbox': (45.0, 45.0, 45.0, 45.0), 'name': u''
+            }
+        ])
