@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-
 import math
 
 LOG = logging.getLogger(__name__)

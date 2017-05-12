@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase
 from django.contrib.gis.geos import Point
-
-from .model_factories import LocalityF, DomainF
+from django.test import TestCase
 
 from ..models import LocalityArchive
+from .model_factories import DomainF, LocalityF
 
 
 class TestModelLocalityArchive(TestCase):

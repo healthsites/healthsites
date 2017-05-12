@@ -5,8 +5,8 @@ from .views.api_view import Docs
 from .views.facilities import FacilitiesApiView
 from .views.locality_create import LocalityCreateApiView
 from .views.locality_detail import LocalityDetailApiView
-from .views.locality_synonym import LocalitySynonymApiView
 from .views.locality_search import LocalitySearchApiView
+from .views.locality_synonym import LocalitySynonymApiView
 
 urlpatterns = patterns(
     '',

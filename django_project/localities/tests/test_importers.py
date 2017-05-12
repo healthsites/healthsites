@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 from unittest import skip
+
 from django.test import TestCase
 
 from social_users.tests.model_factories import UserF
-from .model_factories import (
-    AttributeF,
-    LocalityF,
-    DomainSpecification2AF,
-    DomainSpecification3AF
-)
 
+from ..exceptions import LocalityImportError
 from ..importers import CSVImporter
 from ..models import Locality, Value
-from ..exceptions import LocalityImportError
+from .model_factories import (
+    AttributeF, DomainSpecification2AF, DomainSpecification3AF, LocalityF
+)
 
 
 class TestImporters(TestCase):

@@ -4,8 +4,9 @@ core.settings.base
 """
 # Django settings for projecta project.
 
-from .utils import ABS_PATH
 from django.contrib.messages import constants as messages
+
+from .utils import ABS_PATH
 
 ADMINS = (
     ('Tim Sutton', 'tim@kartoza.com'),
@@ -81,7 +82,7 @@ STATICFILES_FINDERS = (
 
 # import SECRET_KEY into current namespace
 # noinspection PyUnresolvedReferences
-from .secret import SECRET_KEY  # noqa
+from .secret import SECRET_KEY  # noqa # isort:skip
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

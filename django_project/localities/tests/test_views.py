@@ -2,22 +2,16 @@
 import datetime
 from unittest import skip
 
-from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
+from django.test import Client, TestCase
 
 from social_users.tests.model_factories import UserF
 
-from .model_factories import (
-    LocalityF,
-    LocalityValue1F,
-    LocalityValue2F,
-    AttributeF,
-    DomainSpecification1AF,
-    DomainSpecification2AF,
-    ChangesetF
-)
-
 from ..models import Locality
+from .model_factories import (
+    AttributeF, ChangesetF, DomainSpecification1AF,
+    DomainSpecification2AF, LocalityF, LocalityValue1F, LocalityValue2F
+)
 
 
 class TestViews(TestCase):

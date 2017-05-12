@@ -1,24 +1,16 @@
 # -*- coding: utf-8 -*-
 from unittest import skip
 
-from django.test import TestCase
-
 from django.db import IntegrityError
+from django.test import TestCase
 
 from social_users.tests.model_factories import UserF
 
-from .model_factories import (
-    LocalityF,
-    LocalityValue1F,
-    LocalityValue4F,
-    AttributeF,
-    DomainSpecification1AF,
-    DomainSpecification2AF,
-    DomainSpecification4AF,
-    ChangesetF
-)
-
 from ..models import Locality
+from .model_factories import (
+    AttributeF, ChangesetF, DomainSpecification1AF, DomainSpecification2AF,
+    DomainSpecification4AF, LocalityF, LocalityValue1F, LocalityValue4F
+)
 
 
 class TestModelLocality(TestCase):

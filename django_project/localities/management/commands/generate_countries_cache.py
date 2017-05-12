@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
+import json
+import os
+
+from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.core.serializers.json import DjangoJSONEncoder
 
 from localities.models import Country
-import os
-import json
-from django.conf import settings
-from localities.utils import get_statistic
-from django.core.serializers.json import DjangoJSONEncoder
-from localities.utils import get_heathsites_master
+from localities.utils import get_heathsites_master, get_statistic
 
 
 class Command(BaseCommand):

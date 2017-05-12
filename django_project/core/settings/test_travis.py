@@ -1,7 +1,6 @@
 
 __author__ = 'rischan'
 
-# -*- coding: utf-8 -*-
 from .test import *  # noqa
 
 DATABASES = {

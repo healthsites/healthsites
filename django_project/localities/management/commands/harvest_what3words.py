@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from localities.models import Attribute, Domain, Changeset, Locality, Specification, Value
+from django.core.management.base import BaseCommand
+
+from localities.models import Attribute, Changeset, Domain, Locality, Specification, Value
 
 
 class Command(BaseCommand):

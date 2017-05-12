@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-import factory
 import datetime
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import Group, Permission, User
+
+import factory
 from social.apps.django_app.default.models import UserSocialAuth
+
+from django.contrib.auth.models import Group, Permission, User
+from django.contrib.contenttypes.models import ContentType
 
 
 class ContentTypeF(factory.django.DjangoModelFactory):

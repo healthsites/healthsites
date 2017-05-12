@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from unittest import skip
 
-from django.test import TestCase, Client
 from django.core.urlresolvers import reverse
-from .model_factories import UserSocialAuthF, UserF
+from django.test import Client, TestCase
+
+from .model_factories import UserF, UserSocialAuthF
 
 
 class TestViews(TestCase):

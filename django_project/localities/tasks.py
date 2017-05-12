@@ -1,18 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-
 from datetime import datetime
 
+from django.core import management
 from django.core.mail import send_mail
 
-from celery.utils.log import get_task_logger
-from .celery import app
-
-from .importers import CSVImporter
-from django.core import management
 from celery import shared_task
+from celery.utils.log import get_task_logger
 
+from .celery import app
+from .importers import CSVImporter
 
 logger = get_task_logger(__name__)
 

@@ -2,9 +2,10 @@
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
-from localities.models import Locality
+
 from localities.map_clustering import cluster
 from localities.masterization import report_locality_as_unconfirmed_synonym
+from localities.models import Locality
 
 
 class Command(BaseCommand):

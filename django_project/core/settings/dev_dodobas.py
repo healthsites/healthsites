@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from .dev import *  # noqa
-
 from os.path import abspath, dirname, join, pardir
+
+from .dev import *  # noqa
 
 PROJECT_PATH = abspath(join(dirname(__file__), pardir, pardir))
 MEDIA_ROOT = join(PROJECT_PATH, 'media')

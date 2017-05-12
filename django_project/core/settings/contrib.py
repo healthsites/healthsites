@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
-from .base import *  # NOQA
 
+from .base import *  # NOQA
 
 # Extra installed apps
 INSTALLED_APPS = (

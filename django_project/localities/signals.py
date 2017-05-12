@@ -1,23 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 
-
-from django.dispatch import receiver, Signal
-from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_save
+from django.dispatch import Signal, receiver
 
 from .models import (
-    Domain,
-    DomainArchive,
-    Attribute,
-    AttributeArchive,
-    Specification,
-    SpecificationArchive,
-    Locality,
-    LocalityArchive,
-    LocalityIndex,
-    Value,
-    ValueArchive
+    Attribute, AttributeArchive, Domain, DomainArchive, Locality, LocalityArchive,
+    LocalityIndex, Specification, SpecificationArchive, Value, ValueArchive
 )
 
 LOG = logging.getLogger(__name__)

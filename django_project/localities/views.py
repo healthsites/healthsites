@@ -1,26 +1,29 @@
 # -*- coding: utf-8 -*-
-import googlemaps
 import json
 import logging
 import os
+from datetime import datetime
+
+import googlemaps
+
+from django.conf import settings
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import Http404, HttpResponse
+from django.views.generic import DetailView, FormView, ListView, View
+
+from braces.views import JSONResponseMixin, LoginRequiredMixin
+
+from localities.models import Country, DataLoaderPermission
+from masterization import report_locality_as_unconfirmed_synonym
 
 # register signals
 from .forms import DataLoaderForm
 from .map_clustering import cluster
-from .models import Locality, Domain, Changeset, Value, Attribute, Specification
+from .models import Attribute, Changeset, Domain, Locality, Specification, Value
 from .utils import (
-    parse_bbox, get_country_statistic, get_heathsites_master, get_locality_detail,
-    locality_create, locality_edit, locality_updates, get_locality_by_spec_data
+    get_country_statistic, get_heathsites_master, get_locality_by_spec_data,
+    get_locality_detail, locality_create, locality_edit, locality_updates, parse_bbox
 )
-
-from braces.views import JSONResponseMixin, LoginRequiredMixin
-from datetime import datetime
-from django.conf import settings
-from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse, Http404
-from django.views.generic import DetailView, ListView, FormView, View
-from localities.models import Country, DataLoaderPermission
-from masterization import report_locality_as_unconfirmed_synonym
 
 LOG = logging.getLogger(__name__)
 
