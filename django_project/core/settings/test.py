@@ -1,30 +1,21 @@
-
 from .project import *  # noqa
 
-# http://hustoknow.blogspot.com/2011/02/setting-up-django-nose-on-hudson.html
-INSTALLED_APPS += (
-    'django_nose',  # don't remove this comma
-)
-
+# Use default Django test runner
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
-
-NOSE_ARGS = (
-    '--with-coverage',
-    '--cover-erase',
-    '--cover-html',
-    '--cover-html-dir=xmlrunner/html',
-    '--cover-inclusive',
-    # '--cover-package=django_app',
-    '--nocapture',
-    '--nologcapture'
-)
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 # change this to a proper location
 EMAIL_FILE_PATH = '/tmp/'
 
+# Disable caching for testing
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}
 
+# Do not log anything during testing
 LOGGING = {
     # internal dictConfig version - DON'T CHANGE
     'version': 1,
@@ -40,3 +31,5 @@ LOGGING = {
         'handlers': ['nullhandler'],
     }
 }
+
+CLUSTER_CACHE_DIR = '/tmp/cache'

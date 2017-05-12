@@ -121,6 +121,11 @@ def get_country_statistic(query):
                     healthsites = get_heathsites_master()
                     output = get_statistic(healthsites)
                     output = json.dumps(output, cls=DjangoJSONEncoder)
+
+                    # check the folder
+                    if not os.path.exists(settings.CLUSTER_CACHE_DIR):
+                        os.makedirs(settings.CLUSTER_CACHE_DIR)
+
                     file = open(filename, 'w')
                     file.write(output)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it

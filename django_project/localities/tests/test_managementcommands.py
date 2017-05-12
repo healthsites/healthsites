@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from unittest import skip
+
 from django.test import TestCase
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -9,6 +11,7 @@ from ..models import Locality, Value
 
 
 class TestManagementCommands(TestCase):
+    @skip('skip')
     def test_import_csv(self):
 
         attr1 = AttributeF.create(key='name')

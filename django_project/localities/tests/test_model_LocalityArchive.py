@@ -12,7 +12,7 @@ class TestModelLocalityArchive(TestCase):
         self.assertListEqual(
             [fld.name for fld in LocalityArchive._meta.fields], [
                 u'id', 'changeset', 'version', 'content_type', 'object_id',
-                'domain_id', 'uuid', 'upstream_id', 'geom'
+                'domain_id', 'uuid', 'upstream_id', 'geom', 'name', 'source'
             ]
         )
 

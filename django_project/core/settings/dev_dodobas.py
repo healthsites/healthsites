@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 from .dev import *  # noqa
 
-INSTALLED_APPS += (
-    'django_extensions',
-)
+from os.path import abspath, dirname, join, pardir
+
+PROJECT_PATH = abspath(join(dirname(__file__), pardir, pardir))
+MEDIA_ROOT = join(PROJECT_PATH, 'media')
+STATIC_ROOT = join(PROJECT_PATH, 'static')
+
+CLUSTER_CACHE_DIR = '/tmp/cache'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'healthsites_dev',
+        'NAME': 'hs_dev',
         'USER': '',
         'PASSWORD': '',
-        'HOST': 'localhost',
+        'HOST': '10.0.0.3',
         # Set to empty string for default.
-        'PORT': '',
+        'PORT': '5433',
     }
 }
 
@@ -54,7 +58,7 @@ LOGGING = {
         },
         # example app logger
         'localities': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'handlers': ['console'],
             # propagate is True by default, which proppagates logs upstream
             'propagate': False

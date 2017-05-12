@@ -8,7 +8,6 @@ repository!
 
 import os  # noqa
 from django.utils.translation import ugettext_lazy as _
-from .utils import absolute_path
 from .contrib import *  # noqa
 from .secret import *  # secret
 
@@ -39,7 +38,7 @@ LANGUAGES = (
 )
 
 # Set storage path for the translation files
-LOCALE_PATHS = (absolute_path('locale'),)
+LOCALE_PATHS = (ABS_PATH('locale'),)
 
 # Project specific javascript files to be pipelined
 # For third party libs like jquery should go in contrib.py
