@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '18/03/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
 
 import requests
 import json
@@ -15,10 +11,14 @@ from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Max, Min
-from localities.models import Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification, \
+from localities.models import (
+    Attribute, Changeset, Country, Domain, Locality, LocalityArchive, Specification,
     SynonymLocalities, UnconfirmedSynonym, User, Value, ValueArchive
+)
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
 from social_users.utils import get_profile
+from django.template import Template, Context
+from django.contrib.gis.geos import Polygon
 
 
 def get_what_3_words(geom):
@@ -92,7 +92,7 @@ def get_country_statistic(query):
                 file = open(filename, 'r')
                 data = file.read()
                 output = json.loads(data)
-            except IOError as e:
+            except IOError:
                 try:
                     # query for each of ATTRIBUTE
                     healthsites = get_heathsites_master().in_polygon(
@@ -103,7 +103,7 @@ def get_country_statistic(query):
                     file.write(output)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
                     output = json.loads(output)
-                except Exception as e:
+                except Exception:
                     pass
         else:
             # get cache
@@ -115,7 +115,7 @@ def get_country_statistic(query):
                 file = open(filename, 'r')
                 data = file.read()
                 output = json.loads(data)
-            except IOError as e:
+            except IOError:
                 try:
                     # query for each of attribute
                     healthsites = get_heathsites_master()
@@ -130,7 +130,7 @@ def get_country_statistic(query):
                     file.write(output)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
                     output = json.loads(output)
-                except Exception as e:
+                except Exception:
                     pass
 
     except Country.DoesNotExist:
@@ -247,9 +247,9 @@ def get_locality_detail(locality, changes):
             updates.append({"last_update": last_update['changeset__created'],
                             "uploader": last_update['changeset__social_user__username'],
                             "nickname": last_update['nickname'],
-                            "changeset_id": last_update['changeset']});
+                            "changeset_id": last_update['changeset']})
         obj_repr.update({'updates': updates})
-    except Exception as e:
+    except Exception:
         pass
 
     # FOR HISTORY
@@ -266,7 +266,9 @@ def get_locality_detail(locality, changes):
 
         # check archive
         try:
-            localityArchives = LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
+            localityArchives = (
+                LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
+            )
             for archive in localityArchives:
                 obj_repr['geom'] = (archive.geom.x, archive.geom.y)
                 obj_repr['history'] = True
@@ -274,7 +276,9 @@ def get_locality_detail(locality, changes):
             pass
 
         try:
-            localityArchives = ValueArchive.objects.filter(changeset=changes).filter(locality_id=locality.id)
+            localityArchives = (
+                ValueArchive.objects.filter(changeset=changes).filter(locality_id=locality.id)
+            )
             for archive in localityArchives:
                 try:
                     specification = Specification.objects.get(id=archive.specification_id)
@@ -292,7 +296,7 @@ def locality_create(request):
         if request.user.is_authenticated():
             json_request = get_json_from_request(request)
             # checking mandatory
-            if json_request['is_valid'] == True:
+            if json_request['is_valid'] is True:
                 tmp_changeset = Changeset.objects.create(
                     social_user=request.user
                 )
@@ -335,7 +339,7 @@ def locality_edit(request):
         if request.user.is_authenticated():
             json_request = get_json_from_request(request)
             # checking mandatory
-            if json_request['is_valid'] == True:
+            if json_request['is_valid'] is True:
                 locality = Locality.objects.get(uuid=json_request['uuid'])
                 old_geom = [locality.geom.x, locality.geom.y]
 
@@ -358,7 +362,10 @@ def locality_edit(request):
                     regenerate_cache_cluster.delay()
                 regenerate_cache.delay(tmp_changeset.id, locality.pk)
 
-                return {"success": json_request['is_valid'], "uuid": json_request['uuid'], "reason": ""}
+                return {
+                    "success": json_request['is_valid'], "uuid": json_request['uuid'],
+                    "reason": ""
+                }
             else:
                 return {"success": json_request['is_valid'],
                         "reason": json_request['invalid_key'] + " can not be empty"}
@@ -389,10 +396,15 @@ def get_statistic(healthsites):
     partial = healthsites.filter(completeness__gt=30).filter(completeness__lt=100).count()
     basic = healthsites.filter(completeness__lte=30).count()
 
-    output = {"numbers": {"hospital": hospital_number, "medical_clinic": medical_clinic_number
-        , "orthopaedic_clinic": orthopaedic_clinic_number},
-              "completeness": {"complete": complete, "partial": partial, "basic": basic},
-              "localities": healthsites_number}
+    output = {
+        "numbers": {
+            "hospital": hospital_number,
+            "medical_clinic": medical_clinic_number,
+            "orthopaedic_clinic": orthopaedic_clinic_number
+        },
+        "completeness": {"complete": complete, "partial": partial, "basic": basic},
+        "localities": healthsites_number
+    }
     # updates
     histories = localities_updates(healthsites)
     output["last_update"] = extract_updates(histories)
@@ -413,21 +425,27 @@ def localities_updates(locality_ids):
         '-changeset__created').values(
         'changeset', 'object_id').annotate(
         id=Min('id')).values('id')
-    updates_temp = LocalityArchive.objects.filter(object_id__in=locality_ids).filter(
-        id__in=ids).order_by(
-        '-changeset__created').values(
-        'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-        edit_count=Count('changeset'), locality_id=Max('object_id'))
+    updates_temp = (
+        LocalityArchive.objects
+        .filter(object_id__in=locality_ids)
+        .filter(id__in=ids)
+        .order_by('-changeset__created')
+        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))
+    )
     changesets = []
     for update in updates_temp:
         changesets.append(update['changeset'])
         updates.append(get_update_detail(update))
 
     # get from locality if not in Locality Archive yet
-    updates_temp = locality_ids.exclude(changeset__in=changesets).order_by(
-        '-changeset__created').values(
-        'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-        edit_count=Count('changeset'), locality_id=Max('id'))[:15]
+    updates_temp = (
+        locality_ids
+        .exclude(changeset__in=changesets)
+        .order_by('-changeset__created')
+        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:15]
+    )
     for update in updates_temp:
         updates.append(get_update_detail(update))
 
@@ -512,18 +530,17 @@ def search_locality_by_spec_data(spec, data, uuid):
 
 def search_locality_by_tag(query):
     try:
-        localities = Value.objects.filter(
-            specification__attribute__key='tags').filter(data__icontains="|" + query + "|").values('locality')
+        localities = (
+            Value.objects
+            .filter(specification__attribute__key='tags')
+            .filter(data__icontains="|" + query + "|").values('locality')
+        )
         localities = get_heathsites_master().filter(id__in=localities)
         output = json.dumps(get_statistic(localities), cls=DjangoJSONEncoder)
         output = json.loads(output)
         return output
     except Value.DoesNotExist:
         return []
-
-
-from django.template import Template, Context
-from django.contrib.gis.geos import Polygon
 
 
 def render_fragment(template, context):

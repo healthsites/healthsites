@@ -35,7 +35,7 @@ class ApiView(View):
         """
         if 'format' in request.GET:
             self.format = request.GET['format']
-            if not self.format in self._FORMATS:
+            if self.format not in self._FORMATS:
                 self.format = 'json'
 
         # check page in request

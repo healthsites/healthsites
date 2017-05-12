@@ -1,9 +1,4 @@
-# coding=utf-8
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '15/07/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
+# -*- coding: utf-8 -*-
 from django.core.management.base import BaseCommand
 import os
 import shapefile
@@ -131,6 +126,8 @@ class Command(BaseCommand):
             # query for each of ATTRIBUTE
             healthsites = get_heathsites_master().in_polygon(
                 polygons)
-            insert_to_shapefile(healthsites, fields, country.name)  # generate shapefiles for country
+            # generate shapefiles for country
+            insert_to_shapefile(healthsites, fields, country.name)
 
-        insert_to_shapefile(get_heathsites_master(), fields, 'facilities')  # generate shapefiles for all country
+        # generate shapefiles for all country
+        insert_to_shapefile(get_heathsites_master(), fields, 'facilities')

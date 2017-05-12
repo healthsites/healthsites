@@ -1,11 +1,7 @@
-# coding=utf-8
-"""
-core.settings.contrib
-"""
+# -*- coding: utf-8 -*-
 import os
-from .base import *  # noqa
+from .base import *  # NOQA
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Extra installed apps
 INSTALLED_APPS = (

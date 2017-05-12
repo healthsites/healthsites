@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-LOG = logging.getLogger(__name__)
-
 import itertools
-import json
-import requests
 
 from .querysets import PassThroughGeoManager, LocalitiesQuerySet
 from datetime import datetime
@@ -21,6 +17,14 @@ from django.utils.text import slugify
 from model_utils import FieldTracker
 from pg_fts.fields import TSVectorField
 from .variables import attributes_availables
+# register signals
+import signals  # noqa
+from .tasks import load_data_task
+from django.core.exceptions import ValidationError
+from masterization import downgrade_master_as_synonyms
+
+
+LOG = logging.getLogger(__name__)
 
 
 class ChangesetMixin(models.Model):
@@ -189,7 +193,9 @@ class Locality(UpdateMixin, ChangesetMixin):
         Once all of values are set, 'SIG_locality_values_updated' signal will
         be triggered to update FullTextSearch index for this Locality
         """
-        special_key = ['scope_of_service', "ancillary_services", "activities", "inpatient_service", "staff"]
+        special_key = [
+            'scope_of_service', "ancillary_services", "activities", "inpatient_service", "staff"
+        ]
         attrs = self._get_attr_map()
 
         tmp_changeset = changeset
@@ -202,7 +208,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             # try to match key from changed items with a key from attr_map
             attr_list = [
                 attr for attr in attrs if attr['attribute__key'] == key
-                ]
+            ]
 
             if attr_list:
                 # get specification id for specific key
@@ -269,7 +275,12 @@ class Locality(UpdateMixin, ChangesetMixin):
         }
 
         dict['values'] = {}
-        for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact=''):
+
+        data_query = (
+            self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact='')
+        )
+
+        for val in data_query:
             if clean:
                 # clean if empty
                 temp = val.data.replace("|", "")
@@ -277,7 +288,9 @@ class Locality(UpdateMixin, ChangesetMixin):
                     val.data = ""
                 # clean data
                 val.data = val.data.replace("|", ",")
-                val.specification.attribute.key = val.specification.attribute.key.replace("_", "-")
+                val.specification.attribute.key = (
+                    val.specification.attribute.key.replace("_", "-")
+                )
                 cleaned_data = val.data.replace(",", "")
                 if len(cleaned_data) > 0:
                     dict['values'][val.specification.attribute.key] = val.data
@@ -313,7 +326,7 @@ class Locality(UpdateMixin, ChangesetMixin):
             try:
                 self.value_set.filter(specification__attribute__key='type').get(data=value)
                 return True
-            except Exception as e:
+            except Exception:
                 return False
         return True
 
@@ -323,7 +336,9 @@ class Locality(UpdateMixin, ChangesetMixin):
         specific_attr = attributes_availables['hospital']
         for key in attributes_availables.keys():
             try:
-                self.value_set.filter(specification__attribute__key='type').get(data__icontains=key)
+                self.value_set.filter(specification__attribute__key='type').get(
+                    data__icontains=key
+                )
                 specific_attr = attributes_availables[key]
             except Value.DoesNotExist:
                 continue
@@ -539,11 +554,6 @@ class LocalityIndex(models.Model):
     ))
 
 
-# register signals
-import signals  # noqa
-from .tasks import load_data_task
-
-
 class DataLoader(models.Model):
     """
     """
@@ -702,8 +712,6 @@ class Country(Boundary):
 Country._meta.get_field('name').verbose_name = 'Country name'
 Country._meta.get_field('name').help_text = 'The name of the country.'
 
-from django.core.exceptions import ValidationError
-
 
 def validate_file_extension(value):
     if value.file.content_type != 'text/csv':
@@ -752,8 +760,12 @@ pre_delete.connect(data_loader_deleted, sender=DataLoaderPermission)
 
 
 class UnconfirmedSynonym(models.Model):
-    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym')
-    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym')
+    synonym = models.ForeignKey(
+        Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym'
+    )
+    locality = models.ForeignKey(
+        Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym'
+    )
 
     class Meta:
         ordering = ["locality", "synonym"]
@@ -762,16 +774,17 @@ class UnconfirmedSynonym(models.Model):
 
 
 class SynonymLocalities(models.Model):
-    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='synonym_of_locality')
-    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_synonym')
+    synonym = models.ForeignKey(
+        Locality, on_delete=models.CASCADE, related_name='synonym_of_locality'
+    )
+    locality = models.ForeignKey(
+        Locality, on_delete=models.CASCADE, related_name='master_of_synonym'
+    )
 
     class Meta:
         ordering = ["locality", "synonym"]
         verbose_name = "Synonyms"
         verbose_name_plural = "Synonyms"
-
-
-from masterization import downgrade_master_as_synonyms
 
 
 def update_others_synonyms(sender, instance, **kwargs):

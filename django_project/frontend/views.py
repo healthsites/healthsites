@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import json
-
-LOG = logging.getLogger(__name__)
 
 import googlemaps
 import os
@@ -18,11 +15,16 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, \
+from localities.utils import (
+    get_country_statistic, get_heathsites_master, search_locality_by_spec_data,
     search_locality_by_tag
+)
 from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from social_users.utils import get_profile
+
+
+LOG = logging.getLogger(__name__)
 
 
 class MainView(TemplateView):
@@ -161,7 +163,9 @@ def map(request):
         elif country:
             result = get_country_statistic(country)
             result['country'] = country
-            result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
+            result['polygon'] = (
+                Country.objects.get(name__iexact=country).polygon_geometry.geojson
+            )
             result['shapefile_size'] = 0
             filename = os.path.join(directory_media, country + "_shapefile.zip")
             if (os.path.isfile(filename)):
@@ -171,8 +175,10 @@ def map(request):
         elif attribute:
             uuid = request.GET.get('uuid')
             result = search_locality_by_spec_data("attribute", attribute, uuid)
-            result['attribute'] = {'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],
-                                   'location': result['location']}
+            result['attribute'] = {
+                'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],
+                'location': result['location']
+            }
         elif len(request.GET) == 0:
             result = search_place(request, place)
             # get facilities shapefile size
@@ -187,8 +193,10 @@ def map(request):
                     spec = item
                     data = request.GET.get(item)
                     result = search_locality_by_spec_data(spec, data, uuid)
-                    result['spec'] = {'spec': spec, 'data': data, 'uuid': uuid, 'name': result['locality_name'],
-                                      'location': result['location']}
+                    result['spec'] = {
+                        'spec': spec, 'data': data, 'uuid': uuid,
+                        'name': result['locality_name'], 'location': result['location']
+                    }
 
         if 'new_geom' in request.session:
             result["new_geom"] = request.session['new_geom']

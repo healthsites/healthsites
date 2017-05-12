@@ -101,9 +101,8 @@ class TestViews(TestCase):
         resp = self.client.get(reverse(
             'locality-info', kwargs={
                 'uuid': '93b7e8c4621a4597938dfd3d27659162'
-                }
-            )
-        )
+            }
+        ))
 
         self.assertEqual(resp.status_code, 200)
 
@@ -115,7 +114,7 @@ class TestViews(TestCase):
         resp = self.client.get(reverse(
             'locality-update', kwargs={
                 'uuid': '93b7e8c4621a4597938dfd3d27659162'
-                }
+            }
         ))
 
         self.assertEqual(resp.status_code, 403)
@@ -188,7 +187,7 @@ class TestViews(TestCase):
         resp = self.client.post(
             reverse('locality-update', kwargs={
                 'uuid': '93b7e8c4621a4597938dfd3d27659162'
-                }
+            }
             ), {'test': 'new_osm', 'lon': 10, 'lat': 35}
         )
 
@@ -225,8 +224,7 @@ class TestViews(TestCase):
         self.assertFalse(any([
             True for idx, val in enumerate(loc.value_set.all())
             if val.version == org_value_versions[idx]
-            ])
-        )
+        ]))
 
     @skip('skip')
     def test_localitiesUpdate_form_post_no_data_update(self):
@@ -383,8 +381,7 @@ class TestViews(TestCase):
             }), {
             'test': 'new_test_osm', 'other_test': 'other_osm', 'lon': 16,
             'lat': 45
-            }
-        )
+        })
 
         self.assertEqual(resp.status_code, 200)
 
@@ -436,9 +433,8 @@ class TestViews(TestCase):
         resp = self.client.post(reverse(
             'locality-update', kwargs={
                 'uuid': '93b7e8c4621a4597938dfd3d27659162'
-                }
-            ), {'test': 'new_osm'}
-        )
+            }
+        ), {'test': 'new_osm'})
 
         self.assertEqual(resp.status_code, 200)
 

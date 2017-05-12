@@ -1,13 +1,6 @@
-# coding=utf-8
-"""Docstring for this file."""
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-__author__ = 'ismailsunni'
-__project_name = 'healthsites'
-__filename = 'tasks'
-__date__ = '8/27/15'
-__copyright__ = 'imajimatika@gmail.com'
-__doc__ = ''
 
 from datetime import datetime
 
@@ -16,9 +9,12 @@ from django.core.mail import send_mail
 from celery.utils.log import get_task_logger
 from .celery import app
 
-logger = get_task_logger(__name__)
-
 from .importers import CSVImporter
+from django.core import management
+from celery import shared_task
+
+
+logger = get_task_logger(__name__)
 
 
 def send_email(data_loader, report, additional_email=[]):
@@ -141,10 +137,6 @@ def regenerate_cache(self, changeset_pk, locality_pk):
 def regenerate_cache_cluster(self):
     from django.core.management import call_command
     call_command('gen_cluster_cache', 48, 46)
-
-
-from django.core import management
-from celery import shared_task
 
 
 @shared_task(name='localities.tasks.generate_shapefile')
