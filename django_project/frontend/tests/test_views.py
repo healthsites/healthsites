@@ -17,8 +17,13 @@ class TestViews(TestCase):
 
         self.assertListEqual(
             [tmpl.name for tmpl in resp.templates], [
-                'main.html', u'base.html', u'pipeline/css.html',
-                u'pipeline/js.html', u'pipeline/js.html'
+                'index.html', u'pipeline/css.html', u'pipeline/css.html', u'pipeline/css.html',
+                u'pipeline/css.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html'
             ]
         )
 
@@ -34,8 +39,13 @@ class TestViews(TestCase):
         self.assertTrue(resp.content.find('GoogleAnalyticsObject') == -1)
         self.assertListEqual(
             [tmpl.name for tmpl in resp.templates], [
-                'main.html', u'base.html', u'pipeline/css.html',
-                u'pipeline/js.html', u'pipeline/js.html'
+                'index.html', u'pipeline/css.html', u'pipeline/css.html', u'pipeline/css.html',
+                u'pipeline/css.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html'
             ]
         )
 
