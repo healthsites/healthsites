@@ -1,4 +1,5 @@
 django-nose
+django-extensions
 coverage
 pep8>=1.5.7,<1.6
 pylint
