@@ -291,7 +291,8 @@ class Locality(UpdateMixin, ChangesetMixin):
             pass
 
         # exclusive for open street map
-        if "openstreetmap" in self.upstream_id.lower():
+        # if "openstreetmap" in self.upstream_id.lower():
+        if self.upstream_id is not None and "openstreetmap" in self.upstream_id.lower():
             osm_whole_id = self.upstream_id.split(u"¶")
             if len(osm_whole_id) > 0:
                 osm_whole_id = osm_whole_id[1]
