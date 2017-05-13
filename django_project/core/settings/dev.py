@@ -1,4 +1,4 @@
-from .project import *  # noqa
+from .project import *  # NOQA
 
 # Set debug to True for development
 DEBUG = True

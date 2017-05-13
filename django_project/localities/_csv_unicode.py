@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import csv
 import codecs
 import cStringIO
+import csv
 
 
 class UTF8Recoder:
@@ -16,7 +16,7 @@ class UTF8Recoder:
         return self
 
     def next(self):
-        return self.reader.next().encode("utf-8")
+        return self.reader.next().encode('utf-8')
 
 
 class UnicodeDictReader:
@@ -25,14 +25,14 @@ class UnicodeDictReader:
     which is encoded in the given encoding.
     """
 
-    def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
+    def __init__(self, f, dialect=csv.excel, encoding='utf-8', **kwds):
         f = UTF8Recoder(f, encoding)
         self.reader = csv.reader(f, dialect=dialect, **kwds)
         self.header = self.reader.next()
 
     def next(self):
         row = self.reader.next()
-        vals = [unicode(s, "utf-8") for s in row]
+        vals = [unicode(s, 'utf-8') for s in row]
         return dict((self.header[x], vals[x]) for x in range(len(self.header)))
 
     def __iter__(self):
@@ -46,7 +46,7 @@ class UnicodeDictWriter:
     """
 
     def __init__(
-            self, f, fieldnames, dialect=csv.excel, encoding="utf-8", **kwds):
+            self, f, fieldnames, dialect=csv.excel, encoding='utf-8', **kwds):
         # Redirect output to a queue
         self.fieldnames = fieldnames
         self.queue = cStringIO.StringIO()
@@ -58,10 +58,10 @@ class UnicodeDictWriter:
         self.writer.writerow(self.fieldnames)
 
     def writerow(self, row):
-        self.writer.writerow([row[x].encode("utf-8") for x in self.fieldnames])
+        self.writer.writerow([row[x].encode('utf-8') for x in self.fieldnames])
         # Fetch UTF-8 output from the queue ...
         data = self.queue.getvalue()
-        data = data.decode("utf-8")
+        data = data.decode('utf-8')
         # ... and reencode it into the target encoding
         data = self.encoder.encode(data)
         # write to the target stream
