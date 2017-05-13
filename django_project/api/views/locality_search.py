@@ -91,6 +91,10 @@ class LocalitySearchApiView(ApiView):
 
         elif search_type == "facility":
             facilities = Locality.objects.filter(name__icontains=place_name)
+            if self.page:
+                facilities = self.get_query_by_page(facilities, self.page)
+            else:
+                facilities = facilities[:100]
             facilities = self.query_to_json(facilities, self.format)
             return self.api_response(facilities)
         else:
