@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
+import math
 
 LOG = logging.getLogger(__name__)
-
-import math
-from localities.models import Value
 
 
 def within_bbox(bbox, geomx, geomy):
@@ -72,7 +70,9 @@ def cluster(query_set, zoom, pix_x, pix_y, localities_is_needed=False):
 
     cluster_points = []
 
-    localites = query_set.get_lnglat().values('id', 'name', 'uuid', 'lnglat', 'changeset__created')
+    localites = query_set.get_lnglat().values(
+        'id', 'name', 'uuid', 'lnglat', 'changeset__created'
+    )
     number = localites.count()
     index = 1
     for locality in localites.iterator():

@@ -1,20 +1,13 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+
 from masterization import promote_unconfirmed_synonym, reject_unconfirmed_synonym
-from .models import (
-    Attribute,
-    Changeset,
-    Country,
-    DataLoader,
-    DataLoaderPermission,
-    Domain,
-    Locality,
-    Specification,
-    SynonymLocalities,
-    UnconfirmedSynonym,
-    Value,
-)
+
 from .forms import DomainModelForm
+from .models import (
+    Attribute, Changeset, Country, DataLoader, DataLoaderPermission,
+    Domain, Locality, Specification, SynonymLocalities, UnconfirmedSynonym
+)
 
 
 class ChangesetMixin():
@@ -55,7 +48,9 @@ admin.site.register(Specification, SpecificationMA)
 
 class DataUpdateAdmin(admin.ModelAdmin):
     list_display = (
-        'organisation_name', 'author', 'data_loader_mode', 'date_time_uploaded', 'applied', 'date_time_applied')
+        'organisation_name', 'author', 'data_loader_mode', 'date_time_uploaded', 'applied',
+        'date_time_applied'
+    )
 
     def has_add_permission(self, request):
         return False
@@ -75,7 +70,10 @@ admin.site.register(DataLoaderPermission, DataLoaderPermissionAdmin)
 class LocalityAdmin(admin.ModelAdmin):
     list_display = (
         'upstream_id', 'locality_uuid', 'name', 'locality_location', 'is_master',)
-    readonly_fields = ('upstream_id', 'locality_uuid', 'source', 'name', 'core_field', 'locality_location', 'is_master')
+    readonly_fields = (
+        'upstream_id', 'locality_uuid', 'source', 'name', 'core_field', 'locality_location',
+        'is_master'
+    )
     fieldsets = (
         ('Masterization', {
             'fields': (
@@ -110,12 +108,15 @@ class LocalityAdmin(admin.ModelAdmin):
                     value = dict['values'][key]
                     value = value.replace("|", ",")
                     show = True
-                    if key == "defining_hours" and len(value.replace("-", "").replace(",", "")) == 0:
+                    test_value = value.replace("-", "").replace(",", "")
+                    if key == "defining_hours" and len(test_value) == 0:
                         show = False
                     elif len(value.replace(",", "")) == 0:
                         show = False
                     if show:
-                        row = "<b>%s</b> : <a>%s</a></br>" % (key.replace("_", " "), dict['values'][key])
+                        row = "<b>%s</b> : <a>%s</a></br>" % (
+                            key.replace("_", " "), dict['values'][key]
+                        )
                         output += row
 
         return output
@@ -142,12 +143,20 @@ class SynonymLocalitiesAdmin(admin.ModelAdmin):
     )
 
     def master(self, obj):
-        return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
-            obj.locality.id, obj.locality.name, obj.locality.uuid, obj.locality.uuid)
+        return (
+            '<a href="/admin/localities/locality/%s">%s</a> '
+            '(<a href="/map#!/locality/%s">%s</a>)' % (
+                obj.locality.id, obj.locality.name, obj.locality.uuid, obj.locality.uuid
+            )
+        )
 
     def the_synonym(self, obj):
-        return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
-            obj.synonym.id, obj.synonym.name, obj.synonym.uuid, obj.synonym.uuid)
+        return (
+            '<a href="/admin/localities/locality/%s">%s</a> '
+            '(<a href="/map#!/locality/%s">%s</a>)' % (
+                obj.synonym.id, obj.synonym.name, obj.synonym.uuid, obj.synonym.uuid
+            )
+        )
 
     master.short_description = 'Master'
     master.admin_order_field = 'locality__uuid'
@@ -183,12 +192,20 @@ class UnconfirmedSynonymAdmin(admin.ModelAdmin):
     actions = [promote_potential_synonyms, reject_potential_synonyms]
 
     def master(self, obj):
-        return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
-            obj.locality.id, obj.locality.name, obj.locality.uuid, obj.locality.uuid)
+        return (
+            '<a href="/admin/localities/locality/%s">%s</a> '
+            '(<a href="/map#!/locality/%s">%s</a>)' % (
+                obj.locality.id, obj.locality.name, obj.locality.uuid, obj.locality.uuid
+            )
+        )
 
     def potential_synonym(self, obj):
-        return '<a href="/admin/localities/locality/%s">%s</a> (<a href="/map#!/locality/%s">%s</a>)' % (
-            obj.synonym.id, obj.synonym.name, obj.synonym.uuid, obj.synonym.uuid)
+        return (
+            '<a href="/admin/localities/locality/%s">%s</a> '
+            '(<a href="/map#!/locality/%s">%s</a>)' % (
+                obj.synonym.id, obj.synonym.name, obj.synonym.uuid, obj.synonym.uuid
+            )
+        )
 
     master.short_description = 'Master'
     master.admin_order_field = 'locality__uuid'

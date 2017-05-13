@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-from .model_factories import SpecificationF, DomainF, AttributeF
-
 from ..models import SpecificationArchive
+from .model_factories import AttributeF, DomainF, SpecificationF
 
 
 class TestModelSpecificationArchive(TestCase):

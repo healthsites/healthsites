@@ -1,23 +1,19 @@
 # -*- coding: utf-8 -*-
-import logging
-
-LOG = logging.getLogger(__name__)
-
-import uuid
 import json
+import logging
+import uuid
 
+from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import Point, Polygon
 from django.contrib.sites.models import Site
-from django.db import transaction
-from django.contrib.auth import get_user_model
-
-from .models import Locality, Domain, Changeset
-
-from .exceptions import LocalityImportError
+from django.db import IntegrityError, transaction
+from django.utils.dateparse import parse_datetime
 
 from ._csv_unicode import UnicodeDictReader
-from django.utils.dateparse import parse_datetime
-from django.db import IntegrityError
+from .exceptions import LocalityImportError
+from .models import Changeset, Domain, Locality
+
+LOG = logging.getLogger(__name__)
 
 
 class CSVImporter:
@@ -205,7 +201,7 @@ class CSVImporter:
                     key: self._read_attr(row_data, row_val)
                     for key, row_val in self.attr_map['attributes'].iteritems()
                     if self._read_attr(row_data, row_val) not in (None, '')
-                    }
+                }
             }
         })
 
@@ -297,7 +293,9 @@ class CSVImporter:
                     merged_value.update(new_value)
                     loc.set_values(merged_value, social_user=self.user, changeset=tmp_changeset)
                 else:
-                    loc.set_values(values['values'], social_user=self.user, changeset=tmp_changeset)
+                    loc.set_values(
+                        values['values'], social_user=self.user, changeset=tmp_changeset
+                    )
 
                 self.report['modified'] += 1
 

@@ -1,12 +1,9 @@
-# coding=utf-8
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '30/03/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
+# -*- coding: utf-8 -*-
 
-from django.core.management.base import BaseCommand
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import MultiPolygon, Polygon
+from django.core.management.base import BaseCommand
+
 from localities.models import Country
 
 
@@ -21,21 +18,29 @@ class Command(BaseCommand):
         for feature in layer:
             country_name = feature['NAME'].value
             country_name = country_name.encode('utf-8')
-            country_name_output = country_name
+
             # -------------------------------------------------
             # CORRECTING THE NAME
             # -------------------------------------------------
             country_name = country_name.replace(" (Petrel Is.)", "")
             country_name = country_name.replace("Barb.", "Barbuda")
             country_name = country_name.replace("Br.", "British")
-            country_name = country_name.replace("Central African Rep.", "Central African Republic")
+            country_name = country_name.replace(
+                "Central African Rep.", "Central African Republic"
+            )
             country_name = country_name.replace("Curaçao", "Curacao")
             country_name = country_name.replace("Côte d'Ivoire", "Ivory Coast")
-            country_name = country_name.replace("Cyprus U.N. Buffer Zone", "United Nations Buffer Zone in Cyprus")
-            country_name = country_name.replace("Dem. Rep. Congo", "Democratic Republic of the Congo")
+            country_name = country_name.replace(
+                "Cyprus U.N. Buffer Zone", "United Nations Buffer Zone in Cyprus"
+            )
+            country_name = country_name.replace(
+                "Dem. Rep. Congo", "Democratic Republic of the Congo"
+            )
             country_name = country_name.replace("Dem. Rep. Korea", "North Korea")
             country_name = country_name.replace("Eq.", "Equatorial")
-            country_name = country_name.replace("Fr. S. Antarctic Lands", "French Southern and Antarctic Lands")
+            country_name = country_name.replace(
+                "Fr. S. Antarctic Lands", "French Southern and Antarctic Lands"
+            )
             country_name = country_name.replace("Fr.", "French")
             country_name = country_name.replace("Geo.", "Georgia")
             country_name = country_name.replace("Gren.", "the Grenadines")
@@ -81,5 +86,5 @@ class Command(BaseCommand):
                     geometry = geometry.geojson
                 country = Country(name=country_name)
                 country.polygon_geometry = geometry
-            if not country_name in self.non_countries:
+            if country_name not in self.non_countries:
                 country.save()

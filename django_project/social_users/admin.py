@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.models import User, Group
+from social.apps.django_app.default.models import UserSocialAuth
+
 from django.contrib import admin
-from .models import (
-    Profile,
-    TrustedUser,
-    Organisation
-)
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.models import Group, User
+
+from social_users.models import Profile, TrustedUser
+
+from .models import Organisation
 
 
 class ProfileAdmin(admin.ModelAdmin):
@@ -27,8 +28,10 @@ class TrustedUserAdmin(admin.ModelAdmin):
     inlines = (OrganisationInline,)
 
     def list_organisation_supported(self, obj):
-        return ", ".join(['<span><a href="/admin/social_users/organisation/%s">%s</a></span>' % (p.id, p.name) for p in
-                          obj.organisations_supported.all()])
+        template_format = '<span><a href="/admin/social_users/organisation/%s">%s</a></span>'
+        return ", ".join(
+            [template_format % (p.id, p.name) for p in obj.organisations_supported.all()]
+        )
 
     list_organisation_supported.allow_tags = True
 
@@ -40,17 +43,15 @@ class OrganisationAdmin(admin.ModelAdmin):
     list_display = ('name', 'site', 'contact', 'list_trusted_user')
 
     def list_trusted_user(self, obj):
+        template_format = '<span><a href="/admin/social_users/trusteduser/%s">%s</a></span>'
         return ", ".join(
-            ['<span><a href="/admin/social_users/trusteduser/%s">%s</a></span>' % (p.user.id, p.user.username) for p in
-             obj.trusted_users.all()])
+            [template_format % (p.user.id, p.user.username) for p in obj.trusted_users.all()]
+        )
 
     list_trusted_user.allow_tags = True
 
 
 admin.site.register(Organisation, OrganisationAdmin)
-
-from social.apps.django_app.default.models import UserSocialAuth
-from social_users.models import Profile, TrustedUser
 
 
 class UserProfileInline(admin.TabularInline):
@@ -77,11 +78,17 @@ class TrustedUserInline(admin.TabularInline):
     extra = 0
 
     def is_trusted(self, obj):
-        return '<a href="/admin/social_users/trusteduser/%s"><img src="/static/admin/img/icon-yes.gif" alt="True"></a>' % obj.id
+        template_format = (
+            '<a href="/admin/social_users/trusteduser/%s">'
+            '<img src="/static/admin/img/icon-yes.gif" alt="True"></a>'
+        )
+        return template_format % obj.id
 
     def list_organisations(self, obj):
-        return ", ".join(['<span><a href="/admin/social_users/organization/%s">%s</a></span>' % (p.id, p.name) for p in
-                          obj.organisations_supported.all()])
+        template_format = '<span><a href="/admin/social_users/organization/%s">%s</a></span>'
+        return ", ".join(
+            [template_format % (p.id, p.name) for p in obj.organisations_supported.all()]
+        )
 
     is_trusted.allow_tags = True
     list_organisations.allow_tags = True
@@ -94,24 +101,31 @@ class UserAdmin(BaseUserAdmin):
 
     def provider(self, obj):
         try:
-            return ", ".join(
-                ['<span><a href="/admin/default/usersocialauth/%s">%s</a></span>' % (p.id, p.provider) for p in
-                 UserSocialAuth.objects.filter(user=obj)])
+            template_format = '<span><a href="/admin/default/usersocialauth/%s">%s</a></span>'
+            return ", ".join([
+                template_format % (p.id, p.provider)
+                for p in UserSocialAuth.objects.filter(user=obj)
+            ])
         except UserSocialAuth.DoesNotExist:
             return ""
 
     def profile_picture(self, obj):
         try:
-            return ", ".join(
-                ['<span><a href="%s">%s</a></span>' % (p.profile_picture, p.profile_picture) for p in
-                 Profile.objects.filter(user=obj)])
+            return ", ".join([
+                '<span><a href="%s">%s</a></span>' % (p.profile_picture, p.profile_picture)
+                for p in Profile.objects.filter(user=obj)
+            ])
         except UserSocialAuth.DoesNotExist:
             return ""
 
     def is_trusted(self, obj):
         try:
             detail = TrustedUser.objects.get(user=obj)
-            return '<a href="/admin/social_users/trusteduser/%s"><img src="/static/admin/img/icon-yes.gif" alt="True"></a>' % detail.id
+            template_format = (
+                '<a href="/admin/social_users/trusteduser/%s">'
+                '<img src="/static/admin/img/icon-yes.gif" alt="True"></a>'
+            )
+            return template_format % detail.id
         except TrustedUser.DoesNotExist:
             return '<img src="/static/admin/img/icon-no.gif" alt="False">'
 

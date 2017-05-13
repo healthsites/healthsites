@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-from ..utils import render_fragment, parse_bbox
+from ..utils import parse_bbox, render_fragment
 
 
 class TestUtils(TestCase):

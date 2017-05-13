@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from optparse import make_option
 
-from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
-from localities.models import Locality
+
 from localities.map_clustering import cluster
 from localities.masterization import report_locality_as_unconfirmed_synonym
+from localities.models import Locality
 
 
 class Command(BaseCommand):
@@ -37,7 +37,7 @@ class Command(BaseCommand):
         localities = Locality.objects.all()
         loc_clusters = cluster(localities, self.MAX_ZOOM, icon_size[0], icon_size[1], True)
         number = len(loc_clusters)
-        index = 1;
+        index = 1
         for loc_cluster in loc_clusters:
             print "%s/%s count : %s" % (index, number, loc_cluster['count'])
             index += 1
@@ -46,4 +46,6 @@ class Command(BaseCommand):
                 for potential_master in loc_cluster['localities']:
                     for potential_synonym in loc_cluster['localities']:
                         if potential_synonym['id'] != potential_master['id']:
-                            report_locality_as_unconfirmed_synonym(potential_synonym['id'], potential_master['id'])
+                            report_locality_as_unconfirmed_synonym(
+                                potential_synonym['id'], potential_master['id']
+                            )

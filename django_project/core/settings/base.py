@@ -4,8 +4,9 @@ core.settings.base
 """
 # Django settings for projecta project.
 
-from .utils import absolute_path
 from django.contrib.messages import constants as messages
+
+from .utils import ABS_PATH
 
 ADMINS = (
     ('Tim Sutton', 'tim@kartoza.com'),
@@ -44,7 +45,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = '/home/web/media'
+MEDIA_ROOT = ABS_PATH('media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -57,7 +58,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = '/home/web/static'
+STATIC_ROOT = ABS_PATH('static')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -68,7 +69,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    absolute_path('core', 'base_static'),
+    ABS_PATH('core', 'base_static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -81,7 +82,7 @@ STATICFILES_FINDERS = (
 
 # import SECRET_KEY into current namespace
 # noinspection PyUnresolvedReferences
-from .secret import SECRET_KEY  # noqa
+from .secret import SECRET_KEY  # noqa # isort:skip
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -118,7 +119,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 TEMPLATE_DIRS = (
     # project level templates
-    absolute_path('core', 'base_templates'),
+    ABS_PATH('core', 'base_templates'),
 )
 
 INSTALLED_APPS = (
@@ -167,5 +168,5 @@ MESSAGE_TAGS = {
     messages.INFO: 'info',
     messages.SUCCESS: 'success',
     messages.WARNING: 'warning',
-    messages.ERROR: 'danger' # 'error' by default
+    messages.ERROR: 'danger'  # 'error' by default
 }

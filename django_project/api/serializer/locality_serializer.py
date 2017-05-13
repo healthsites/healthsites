@@ -1,7 +1,4 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
+# -*- coding: utf-8 -*-
 
 
 def json_serializer(locality):

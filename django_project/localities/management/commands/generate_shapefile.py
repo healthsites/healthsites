@@ -1,16 +1,14 @@
-# coding=utf-8
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '15/07/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
-from django.core.management.base import BaseCommand
+# -*- coding: utf-8 -*-
 import os
-import shapefile
 import shutil
 import zipfile
+
+import shapefile
+
 from django.conf import settings
-from localities.models import Domain, Specification, Country
+from django.core.management.base import BaseCommand
+
+from localities.models import Country, Domain, Specification
 from localities.utils import get_heathsites_master
 
 directory_cache = settings.CLUSTER_CACHE_DIR + "/shapefiles"
@@ -131,6 +129,8 @@ class Command(BaseCommand):
             # query for each of ATTRIBUTE
             healthsites = get_heathsites_master().in_polygon(
                 polygons)
-            insert_to_shapefile(healthsites, fields, country.name)  # generate shapefiles for country
+            # generate shapefiles for country
+            insert_to_shapefile(healthsites, fields, country.name)
 
-        insert_to_shapefile(get_heathsites_master(), fields, 'facilities')  # generate shapefiles for all country
+        # generate shapefiles for all country
+        insert_to_shapefile(get_heathsites_master(), fields, 'facilities')

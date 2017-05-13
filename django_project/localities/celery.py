@@ -1,18 +1,10 @@
-# coding=utf-8
-"""Docstring for this file."""
+# -*- coding: utf-8 -*-
+
 from __future__ import absolute_import
 
-__author__ = 'ismailsunni'
-__project_name = 'healthsites'
-__filename = 'celery.py'
-__date__ = '8/27/15'
-__copyright__ = 'imajimatika@gmail.com'
-__doc__ = ''
-
+from django.conf import settings
 
 from celery import Celery
-
-from django.conf import settings
 
 app = Celery('localities')
 

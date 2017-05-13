@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import csv
 import codecs
 import cStringIO
+import csv
 
 
 class UTF8Recoder:

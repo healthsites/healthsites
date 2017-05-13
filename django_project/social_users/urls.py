@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import patterns, include, url
-from .views import UserSigninPage, UserProfilePage, LogoutUser, ProfilePage
+from django.conf.urls import include, patterns, url
+
+from .views import LogoutUser, ProfilePage, UserProfilePage, UserSigninPage
 
 urlpatterns = patterns(
     '',
