@@ -18,7 +18,7 @@ These badges reflect the current status of our development branch:
 
 Tests status: [![Build Status](https://api.travis-ci.org/healthsites/healthsites.svg)](https://api.travis-ci.org/healthsites/healthsites.svg)
 
-Coverage status: [![Coverage Status](https://coveralls.io/repos/healthsites/healthsites/badge.png?branch=develop)](https://coveralls.io/r/healthsites/healthsites?branch=develop)
+Coverage status: [![Coverage Status](https://coveralls.io/repos/github/healthsites/healthsites/badge.svg?branch=develop)](https://coveralls.io/github/healthsites/healthsites?branch=develop)
 
 Development status: [![Stories in Ready](https://badge.waffle.io/healthsites/healthsites.svg?label=ready&title=Ready)](http://waffle.io/healthsites/healthsites) [![Stories in Ready](https://badge.waffle.io/healthsites/healthsites.svg?label=In%20Progress&title=In%20Progress)](http://waffle.io/healthsites/healthsites)
 
