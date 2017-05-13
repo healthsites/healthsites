@@ -117,6 +117,9 @@ def get_country_statistic(query):
                 output = json.loads(data)
             except IOError as e:
                 try:
+                    if not os.path.exists(settings.CLUSTER_CACHE_DIR):
+                        os.makedirs(settings.CLUSTER_CACHE_DIR)
+
                     # query for each of attribute
                     healthsites = get_heathsites_master()
                     output = get_statistic(healthsites)
@@ -127,6 +130,7 @@ def get_country_statistic(query):
                     output = json.loads(output)
                 except Exception as e:
                     pass
+
 
     except Country.DoesNotExist:
         output = ""
