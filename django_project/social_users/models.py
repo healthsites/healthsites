@@ -18,7 +18,7 @@ class Profile(models.Model):
 
     user = models.OneToOneField(
         User, default=1)
-    profile_picture = models.CharField(default="", max_length=150, blank=True)
+    profile_picture = models.CharField(default='', max_length=150, blank=True)
 
 
 class Organisation(models.Model):
@@ -28,16 +28,16 @@ class Organisation(models.Model):
 
     name = models.CharField(blank=False, max_length=64)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, default=None)
-    contact = models.CharField(default="", blank=True, max_length=64)
+    contact = models.CharField(default='', blank=True, max_length=64)
     trusted_users = models.ManyToManyField(
         'TrustedUser', through='OrganisationSupported', blank=True
     )
 
     def clean_website(self):
-        if "http" in self.site.domain:
+        if 'http' in self.site.domain:
             return self.site.domain
         else:
-            return "http://" + self.site.domain
+            return 'http://' + self.site.domain
 
     def __unicode__(self):
         return u'%s' % (self.name)

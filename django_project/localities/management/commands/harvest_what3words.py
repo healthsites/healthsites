@@ -13,10 +13,10 @@ class Command(BaseCommand):
         # get user that responsibility to change this
         user = None
         try:
-            user = User.objects.get(username="sharehealthdata")
+            user = User.objects.get(username='sharehealthdata')
         except User.DoesNotExist:
             try:
-                user = User.objects.get(username="admin")
+                user = User.objects.get(username='admin')
             except User.DoesNotExist:
                 pass
         # check attributes of what3word
@@ -36,7 +36,7 @@ class Command(BaseCommand):
                     locality=locality)
                 print value.locality, value.data
             except Value.DoesNotExist:
-                print "%d / %d" % (index, numbers)
+                print '%d / %d' % (index, numbers)
                 locality.update_what3words(user, changeset)
                 index += 1
 
@@ -51,7 +51,7 @@ class Command(BaseCommand):
             attribute.key = 'what3words'
             attribute.changeset = tmp_changeset
             attribute.save()
-            domain = Domain.objects.get(name="Health")
+            domain = Domain.objects.get(name='Health')
             specification = Specification()
             specification.domain = domain
             specification.attribute = attribute

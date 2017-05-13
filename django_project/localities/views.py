@@ -104,7 +104,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             localities = get_heathsites_master().in_bbox(bbox)
             exception = False
             try:
-                if geoname != "":
+                if geoname != '':
                     # getting country's polygon
                     country = Country.objects.get(
                         name__iexact=geoname)
@@ -140,22 +140,22 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 else:
                     raise Country.DoesNotExist
             except Country.DoesNotExist:
-                if geoname != "" and geoname != "undefined":
+                if geoname != '' and geoname != 'undefined':
                     exception = True
                 else:
                     # searching by tag
-                    if tag != "" and tag != "undefined":
+                    if tag != '' and tag != 'undefined':
                         localities = (
                             Value.objects
                             .filter(specification__attribute__key='tags')
-                            .filter(data__icontains="|" + tag + "|")
+                            .filter(data__icontains='|' + tag + '|')
                             .values('locality')
                         )
                         localities = Locality.objects.filter(id__in=localities)
                     else:
                         # serching by value
-                        if (spec != "" and spec != "undefined" and data != "" and
-                                data != "undefined"):
+                        if (spec != '' and spec != 'undefined' and data != '' and
+                                data != 'undefined'):
                             localities = get_locality_by_spec_data(spec, data, uuid)
                             localities = Locality.objects.filter(id__in=localities)
 
@@ -199,11 +199,11 @@ class LocalityInfo(JSONResponseMixin, DetailView):
 
 def get_json_from_request(request):
     # special request:
-    special_request = ["long", "lat", "csrfmiddlewaretoken", "uuid"]
+    special_request = ['long', 'lat', 'csrfmiddlewaretoken', 'uuid']
 
     mstring = []
     json = {}
-    for key in request.POST.iterkeys():  # "for key in request.GET" works too.
+    for key in request.POST.iterkeys():  # 'for key in request.GET' works too.
         # Add filtering logic here.
         valuelist = request.POST.getlist(key)
         mstring.extend(['%s=%s' % (key, val) for val in valuelist])
@@ -222,7 +222,7 @@ def get_json_from_request(request):
                 attribute.key = req[0]
                 attribute.changeset = tmp_changeset
                 attribute.save()
-                domain = Domain.objects.get(name="Health")
+                domain = Domain.objects.get(name='Health')
                 specification = Specification()
                 specification.domain = domain
                 specification.attribute = attribute
@@ -232,16 +232,16 @@ def get_json_from_request(request):
     # check mandatory
     is_valid = True
 
-    if not json['lat'] or json['lat'] == "":
+    if not json['lat'] or json['lat'] == '':
         is_valid = False
-        json['invalid_key'] = "latitude"
+        json['invalid_key'] = 'latitude'
 
-    if not json['long'] or json['long'] == "":
+    if not json['long'] or json['long'] == '':
         is_valid = False
-        json['invalid_key'] = "longitude"
+        json['invalid_key'] = 'longitude'
 
     if is_valid:
-        domain = Domain.objects.get(name="Health")
+        domain = Domain.objects.get(name='Health')
         attributes = Specification.objects.filter(domain=domain).filter(required=True)
         for attribute in attributes:
             try:
@@ -250,7 +250,7 @@ def get_json_from_request(request):
                     json['invalid_key'] = attribute.attribute.key
                     break
             except:
-                print "except"
+                print 'except'
 
     json['is_valid'] = is_valid
     return json
@@ -276,18 +276,18 @@ class DataLoaderView(LoginRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
         permission = DataLoaderPermission.objects.filter(uploader=request.user)
         if len(permission) <= 0 and not request.user.is_staff:
-            raise Http404("Can not access this page")
+            raise Http404('Can not access this page')
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         permission = DataLoaderPermission.objects.filter(uploader=request.user)
         if len(permission) <= 0 and not request.user.is_staff:
-            raise Http404("Can not access this page")
+            raise Http404('Can not access this page')
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        """This method is what injects forms with their keyword
-            arguments."""
+        '''This method is what injects forms with their keyword
+            arguments.'''
         # grab the current set of form #kwargs
         kwargs = super(DataLoaderView, self).get_form_kwargs()
         # Update the kwargs with the user_id
@@ -338,9 +338,9 @@ def search_locality_by_name(request):
 
         try:
             healthsites = get_heathsites_master()
-            if "," in query:
-                place = query.split(",", 1)[1].strip()
-                query = query.split(",", 1)[0].strip()
+            if ',' in query:
+                place = query.split(',', 1)[1].strip()
+                query = query.split(',', 1)[0].strip()
                 if len(place) > 2:
                     # with_place = True
                     google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
@@ -348,7 +348,7 @@ def search_locality_by_name(request):
                     try:
                         geocode_result = gmaps.geocode(place)[0]
                         viewport = geocode_result['geometry']['viewport']
-                        polygon = parse_bbox("%s,%s,%s,%s" % (
+                        polygon = parse_bbox('%s,%s,%s,%s' % (
                             viewport['southwest']['lng'], viewport['southwest']['lat'],
                             viewport['northeast']['lng'], viewport['northeast']['lat']))
                         healthsites = healthsites.in_polygon(
@@ -403,17 +403,17 @@ def search_cities_by_name(request):
     if request.method == 'GET':
         result = []
         try:
-            types = ["political"]
+            types = ['political']
             query = request.GET.get('q')
             google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
             gmaps = googlemaps.Client(key=google_maps_api_key)
-            geocodes = gmaps.places_autocomplete(query, type="political")
+            geocodes = gmaps.places_autocomplete(query, type='political')
 
             result = []
             for geocode in geocodes:
                 if query.lower() in geocode['description'].lower():
                     for type in types:
-                        if type in geocode["types"]:
+                        if type in geocode['types']:
                             result.append(geocode['description'])
                             break
         except Exception as e:
@@ -429,7 +429,7 @@ def search_locality_by_country(request):
         try:
             output['polygon'] = Country.objects.get(name__iexact=query).polygon_geometry.geojson
         except Country.DoesNotExist:
-            print "empty"
+            print 'empty'
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')
@@ -458,16 +458,16 @@ def get_locality_update(request):
     if request.method == 'GET':
         date = request.GET.get('date')
         uuid = request.GET.get('uuid')
-        if date == "":
+        if date == '':
             date = datetime.now()
         locality = Locality.objects.get(uuid=uuid)
         last_updates = locality_updates(locality.id, date)
         output = []
         for last_update in last_updates:
-            output.append({"last_update": last_update['changeset__created'],
-                           "uploader": last_update['changeset__social_user__username'],
-                           "nickname": last_update['nickname'],
-                           "changeset_id": last_update['changeset']})
+            output.append({'last_update': last_update['changeset__created'],
+                           'uploader': last_update['changeset__social_user__username'],
+                           'nickname': last_update['nickname'],
+                           'changeset_id': last_update['changeset']})
         result = json.dumps(output, cls=DjangoJSONEncoder)
 
     return HttpResponse(result, content_type='application/json')
@@ -477,12 +477,12 @@ class LocalityReportDuplicate(JSONResponseMixin, View):
     def post(self, request, *args, **kwargs):
         if 'master' not in request.POST:
             result = json.dumps(
-                {'error': "master uuid parameter isn't provided"}, cls=DjangoJSONEncoder
+                {'error': 'master uuid parameter isn\'t provided'}, cls=DjangoJSONEncoder
             )
             return HttpResponse(result, content_type='application/json')
         if 'synonym' not in request.POST:
             result = json.dumps(
-                {'error': "synonym uuid parameter isn't provided"}, cls=DjangoJSONEncoder
+                {'error': 'synonym uuid parameter isn\'t provided'}, cls=DjangoJSONEncoder
             )
             return HttpResponse(result, content_type='application/json')
 
@@ -490,19 +490,19 @@ class LocalityReportDuplicate(JSONResponseMixin, View):
         try:
             master = Locality.objects.get(uuid=master)
         except Locality.DoesNotExist:
-            result = json.dumps({'error': "master is not found"}, cls=DjangoJSONEncoder)
+            result = json.dumps({'error': 'master is not found'}, cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
 
         synonym = request.POST['synonym']
         try:
             synonym = Locality.objects.get(uuid=synonym)
         except Locality.DoesNotExist:
-            result = json.dumps({'error': "synonym is not found"}, cls=DjangoJSONEncoder)
+            result = json.dumps({'error': 'synonym is not found'}, cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
 
         if synonym == master:
             result = json.dumps(
-                {'error': "cannot report duplication to itself"}, cls=DjangoJSONEncoder
+                {'error': 'cannot report duplication to itself'}, cls=DjangoJSONEncoder
             )
             return HttpResponse(result, content_type='application/json')
         try:
@@ -510,8 +510,8 @@ class LocalityReportDuplicate(JSONResponseMixin, View):
         except Locality.DoesNotExist:
             result = json.dumps({
                 'success': (
-                    "Your duplicate report has been submitted. It will be reviewed by our data "
-                    "management team."
+                    'Your duplicate report has been submitted. It will be reviewed by our data '
+                    'management team.'
                 )},
                 cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
@@ -519,13 +519,13 @@ class LocalityReportDuplicate(JSONResponseMixin, View):
         if result:
             result = json.dumps({
                 'success': (
-                    "Your duplicate report has been submitted. It will be reviewed by our data "
-                    "management team."
+                    'Your duplicate report has been submitted. It will be reviewed by our data '
+                    'management team.'
                 )},
                 cls=DjangoJSONEncoder)
             return HttpResponse(result, content_type='application/json')
         else:
             result = json.dumps(
-                {'error': "this locality is already alias of this record"}, cls=DjangoJSONEncoder
+                {'error': 'this locality is already alias of this record'}, cls=DjangoJSONEncoder
             )
             return HttpResponse(result, content_type='application/json')

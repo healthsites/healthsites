@@ -77,7 +77,7 @@ def cluster(query_set, zoom, pix_x, pix_y, localities_is_needed=False):
     index = 1
     for locality in localites.iterator():
         if localities_is_needed:
-            print "%s/%s" % (index, number)
+            print '%s/%s' % (index, number)
         index += 1
         geomx, geomy = map(float, locality['lnglat'].split(','))
 

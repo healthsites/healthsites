@@ -33,12 +33,12 @@ def get_what_3_words(geom):
         response = response.replace(' ', '').replace('\n', '')
         response = response.replace('}{', '},{')
         data = json.loads(response)
-        if "words" in data:
+        if 'words' in data:
             what3words = '.'.join(data['words'])
             return what3words
-        return ""
+        return ''
     except (Timeout, ConnectionError):
-        return ""
+        return ''
 
 
 def extract_updates(updates):
@@ -46,8 +46,8 @@ def extract_updates(updates):
     last_updates = []
     histories = updates
     for update in histories:
-        update['locality_uuid'] = ""
-        update['locality'] = ""
+        update['locality_uuid'] = ''
+        update['locality'] = ''
         if update['edit_count'] == 1:
             # get the locality to show in web
             try:
@@ -55,8 +55,8 @@ def extract_updates(updates):
                 update['locality_uuid'] = locality.uuid
                 update['locality'] = locality.name
             except Locality.DoesNotExist:
-                update['locality_uuid'] = "unknown"
-                update['locality'] = "unknown"
+                update['locality_uuid'] = 'unknown'
+                update['locality'] = 'unknown'
 
         if 'version' in update:
             if update['version'] == 1:
@@ -66,20 +66,20 @@ def extract_updates(updates):
         else:
             update['mode'] = 1
 
-        last_updates.append({"author": update['changeset__social_user__username'],
-                             "author_nickname": update['nickname'],
-                             "date_applied": update['changeset__created'],
-                             "mode": update['mode'],
-                             "locality": update['locality'],
-                             "locality_uuid": update['locality_uuid'],
-                             "data_count": update['edit_count']})
+        last_updates.append({'author': update['changeset__social_user__username'],
+                             'author_nickname': update['nickname'],
+                             'date_applied': update['changeset__created'],
+                             'mode': update['mode'],
+                             'locality': update['locality'],
+                             'locality_uuid': update['locality_uuid'],
+                             'data_count': update['edit_count']})
     return last_updates
 
 
 def get_country_statistic(query):
-    output = ""
+    output = ''
     try:
-        if query != "":
+        if query != '':
             # getting country's polygon
             country = Country.objects.get(
                 name__iexact=query)
@@ -135,7 +135,7 @@ def get_country_statistic(query):
                     pass
 
     except Country.DoesNotExist:
-        output = ""
+        output = ''
     return output
 
 
@@ -145,11 +145,11 @@ def get_heathsites_master():
 
 def get_json_from_request(request):
     # special request:
-    special_request = ["name", "source", "long", "lat", "csrfmiddlewaretoken", "uuid"]
+    special_request = ['name', 'source', 'long', 'lat', 'csrfmiddlewaretoken', 'uuid']
 
     mstring = []
     json = {}
-    for key in request.POST.iterkeys():  # "for key in request.GET" works too.
+    for key in request.POST.iterkeys():  # 'for key in request.GET' works too.
         # Add filtering logic here.
         valuelist = request.POST.getlist(key)
         mstring.extend(['%s=%s' % (key, val) for val in valuelist])
@@ -168,7 +168,7 @@ def get_json_from_request(request):
                 attribute.key = req[0]
                 attribute.changeset = tmp_changeset
                 attribute.save()
-                domain = Domain.objects.get(name="Health")
+                domain = Domain.objects.get(name='Health')
                 specification = Specification()
                 specification.domain = domain
                 specification.attribute = attribute
@@ -177,20 +177,20 @@ def get_json_from_request(request):
 
     # check mandatory
     is_valid = True
-    if not json['name'] or json['name'] == "":
+    if not json['name'] or json['name'] == '':
         is_valid = False
-        json['invalid_key'] = "name"
+        json['invalid_key'] = 'name'
 
-    if not json['lat'] or json['lat'] == "":
+    if not json['lat'] or json['lat'] == '':
         is_valid = False
-        json['invalid_key'] = "latitude"
+        json['invalid_key'] = 'latitude'
 
-    if not json['long'] or json['long'] == "":
+    if not json['long'] or json['long'] == '':
         is_valid = False
-        json['invalid_key'] = "longitude"
+        json['invalid_key'] = 'longitude'
 
     if is_valid:
-        domain = Domain.objects.get(name="Health")
+        domain = Domain.objects.get(name='Health')
         attributes = Specification.objects.filter(domain=domain).filter(required=True)
         for attribute in attributes:
             try:
@@ -245,10 +245,10 @@ def get_locality_detail(locality, changes):
         updates = []
         last_updates = locality_updates(locality.id, datetime.now())
         for last_update in last_updates:
-            updates.append({"last_update": last_update['changeset__created'],
-                            "uploader": last_update['changeset__social_user__username'],
-                            "nickname": last_update['nickname'],
-                            "changeset_id": last_update['changeset']})
+            updates.append({'last_update': last_update['changeset__created'],
+                            'uploader': last_update['changeset__social_user__username'],
+                            'nickname': last_update['nickname'],
+                            'changeset_id': last_update['changeset']})
         obj_repr.update({'updates': updates})
     except Exception:
         pass
@@ -306,7 +306,7 @@ def locality_create(request):
 
                 loc = Locality()
                 loc.changeset = tmp_changeset
-                loc.domain = Domain.objects.get(name="Health")
+                loc.domain = Domain.objects.get(name='Health')
                 loc.uuid = tmp_uuid
 
                 # generate unique upstream_id
@@ -325,14 +325,14 @@ def locality_create(request):
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
                 regenerate_cache_cluster.delay()
 
-                return {"success": json_request['is_valid'], "uuid": tmp_uuid, "reason": ""}
+                return {'success': json_request['is_valid'], 'uuid': tmp_uuid, 'reason': ''}
             else:
-                return {"success": json_request['is_valid'],
-                        "reason": json_request['invalid_key'] + " can not be empty"}
+                return {'success': json_request['is_valid'],
+                        'reason': json_request['invalid_key'] + ' can not be empty'}
         else:
-            return {"success": False, "reason": "Not Login Yet"}
+            return {'success': False, 'reason': 'Not Login Yet'}
 
-    return {"success": False, "reason": "There is error occured"}
+    return {'success': False, 'reason': 'There is error occured'}
 
 
 def locality_edit(request):
@@ -364,15 +364,15 @@ def locality_edit(request):
                 regenerate_cache.delay(tmp_changeset.id, locality.pk)
 
                 return {
-                    "success": json_request['is_valid'], "uuid": json_request['uuid'],
-                    "reason": ""
+                    'success': json_request['is_valid'], 'uuid': json_request['uuid'],
+                    'reason': ''
                 }
             else:
-                return {"success": json_request['is_valid'],
-                        "reason": json_request['invalid_key'] + " can not be empty"}
+                return {'success': json_request['is_valid'],
+                        'reason': json_request['invalid_key'] + ' can not be empty'}
         else:
-            return {"success": False, "reason": "Not Login Yet"}
-    return {"success": False, "reason": "There is error occured"}
+            return {'success': False, 'reason': 'Not Login Yet'}
+    return {'success': False, 'reason': 'There is error occured'}
 
 
 def get_statistic(healthsites):
@@ -398,17 +398,17 @@ def get_statistic(healthsites):
     basic = healthsites.filter(completeness__lte=30).count()
 
     output = {
-        "numbers": {
-            "hospital": hospital_number,
-            "medical_clinic": medical_clinic_number,
-            "orthopaedic_clinic": orthopaedic_clinic_number
+        'numbers': {
+            'hospital': hospital_number,
+            'medical_clinic': medical_clinic_number,
+            'orthopaedic_clinic': orthopaedic_clinic_number
         },
-        "completeness": {"complete": complete, "partial": partial, "basic": basic},
-        "localities": healthsites_number
+        'completeness': {'complete': complete, 'partial': partial, 'basic': basic},
+        'localities': healthsites_number
     }
     # updates
     histories = localities_updates(healthsites)
-    output["last_update"] = extract_updates(histories)
+    output['last_update'] = extract_updates(histories)
     return output
 
 
@@ -489,7 +489,7 @@ def get_locality_by_spec_data(spec, data, uuid):
         localities = get_heathsites_master()
 
     try:
-        if spec == "attribute":
+        if spec == 'attribute':
             if uuid:
                 localities = Value.objects.filter(
                     data__icontains=data).filter(locality__in=localities).values('locality')[:5]
@@ -514,14 +514,14 @@ def get_locality_by_spec_data(spec, data, uuid):
 def search_locality_by_spec_data(spec, data, uuid):
     localities = get_locality_by_spec_data(spec, data, uuid)
     output = get_statistic(localities)
-    output['locality_name'] = ""
+    output['locality_name'] = ''
     output['location'] = 0.0
     if uuid:
         try:
             locality = Locality.objects.get(uuid=uuid)
             locality_name = locality.name
             output['locality_name'] = locality_name
-            output['location'] = {'x': "%f" % locality.geom.x, 'y': "%f" % locality.geom.y}
+            output['location'] = {'x': '%f' % locality.geom.x, 'y': '%f' % locality.geom.y}
         except Locality.DoesNotExist:
             pass
     output = json.dumps(output, cls=DjangoJSONEncoder)
@@ -534,7 +534,7 @@ def search_locality_by_tag(query):
         localities = (
             Value.objects
             .filter(specification__attribute__key='tags')
-            .filter(data__icontains="|" + query + "|").values('locality')
+            .filter(data__icontains='|' + query + '|').values('locality')
         )
         localities = get_heathsites_master().filter(id__in=localities)
         output = json.dumps(get_statistic(localities), cls=DjangoJSONEncoder)
@@ -545,9 +545,9 @@ def search_locality_by_tag(query):
 
 
 def render_fragment(template, context):
-    """
+    '''
     Render a template fragment using provided context
-    """
+    '''
 
     t = Template(template)
     c = Context(context)
@@ -555,11 +555,11 @@ def render_fragment(template, context):
 
 
 def parse_bbox(bbox):
-    """
+    '''
     Convert a textual bbox to a GEOS polygon object
 
     This function assumes that any raised exceptions will be handled upstream
-    """
+    '''
 
     tmp_bbox = map(float, bbox.split(','))
 

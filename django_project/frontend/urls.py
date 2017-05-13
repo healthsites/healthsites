@@ -9,9 +9,9 @@ from .views import AboutView, AttributionsView, HelpView, MainView
 
 
 class MessagesContactView(FormMessagesMixin, ContactView):
-    form_invalid_message = "There was en error in the contact form."
-    form_valid_message = "Thank you for your message."
-    template_name = "envelope/contact.html"
+    form_invalid_message = 'There was en error in the contact form.'
+    form_valid_message = 'Thank you for your message.'
+    template_name = 'envelope/contact.html'
 
 
 urlpatterns = patterns(

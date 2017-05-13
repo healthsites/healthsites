@@ -39,7 +39,7 @@ class Command(BaseCommand):
         number = len(loc_clusters)
         index = 1
         for loc_cluster in loc_clusters:
-            print "%s/%s count : %s" % (index, number, loc_cluster['count'])
+            print '%s/%s count : %s' % (index, number, loc_cluster['count'])
             index += 1
             if loc_cluster['count'] > 1:
                 print loc_cluster['localities']

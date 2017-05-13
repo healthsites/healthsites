@@ -36,12 +36,12 @@ class FacilitiesApiView(ApiView):
         elif 'page' in request.GET:
             if not self.page:
                 return self.api_response(
-                    {'error': "page is wrong type"}
+                    {'error': 'page is wrong type'}
                 )
             facilities = self.get_query_by_page(get_heathsites_master(), self.page)
             facilities = self.query_to_json(facilities, self.format)
             return self.api_response(facilities)
         else:
             return self.api_response(
-                {'error': "need parameter"}
+                {'error': 'need parameter'}
             )

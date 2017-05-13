@@ -39,11 +39,11 @@ class ApiView(View):
                 page = request.GET.get('page')
                 self.page = int(page)
                 if self.page == 0:
-                    return "page less than 1"
+                    return 'page less than 1'
             except ValueError:
-                return "page is not a number"
+                return 'page is not a number'
 
-        return ""
+        return ''
 
     def get_query_by_page(self, query, page=1):
         """ Get query by page request
@@ -96,13 +96,14 @@ class ApiView(View):
             if not isinstance(context, list):
                 context = [context]
             output = json.dumps(
-                {"type": "FeatureCollection", "features": context},
-                cls=DjangoJSONEncoder)
+                {'type': 'FeatureCollection', 'features': context},
+                cls=DjangoJSONEncoder
+            )
 
         else:
             output = json.dumps(context, cls=DjangoJSONEncoder)
 
-        output.replace("|", ",")
+        output.replace('|', ',')
         return output
 
     def api_response(self, context):

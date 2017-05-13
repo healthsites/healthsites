@@ -11,7 +11,7 @@ class Command(BaseCommand):
         loc_count = Locality.objects.all().count()
         index = 1
         for locality in Locality.objects.all():
-            print "%d / %d" % (index, loc_count)
+            print '%d / %d' % (index, loc_count)
             locality.completeness = locality.calculate_completeness()
             locality.save()
             index += 1

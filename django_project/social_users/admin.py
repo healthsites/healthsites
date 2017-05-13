@@ -29,7 +29,7 @@ class TrustedUserAdmin(admin.ModelAdmin):
 
     def list_organisation_supported(self, obj):
         template_format = '<span><a href="/admin/social_users/organisation/%s">%s</a></span>'
-        return ", ".join(
+        return ', '.join(
             [template_format % (p.id, p.name) for p in obj.organisations_supported.all()]
         )
 
@@ -44,7 +44,7 @@ class OrganisationAdmin(admin.ModelAdmin):
 
     def list_trusted_user(self, obj):
         template_format = '<span><a href="/admin/social_users/trusteduser/%s">%s</a></span>'
-        return ", ".join(
+        return ', '.join(
             [template_format % (p.user.id, p.user.username) for p in obj.trusted_users.all()]
         )
 
@@ -86,7 +86,7 @@ class TrustedUserInline(admin.TabularInline):
 
     def list_organisations(self, obj):
         template_format = '<span><a href="/admin/social_users/organization/%s">%s</a></span>'
-        return ", ".join(
+        return ', '.join(
             [template_format % (p.id, p.name) for p in obj.organisations_supported.all()]
         )
 
@@ -102,21 +102,21 @@ class UserAdmin(BaseUserAdmin):
     def provider(self, obj):
         try:
             template_format = '<span><a href="/admin/default/usersocialauth/%s">%s</a></span>'
-            return ", ".join([
+            return ', '.join([
                 template_format % (p.id, p.provider)
                 for p in UserSocialAuth.objects.filter(user=obj)
             ])
         except UserSocialAuth.DoesNotExist:
-            return ""
+            return ''
 
     def profile_picture(self, obj):
         try:
-            return ", ".join([
+            return ', '.join([
                 '<span><a href="%s">%s</a></span>' % (p.profile_picture, p.profile_picture)
                 for p in Profile.objects.filter(user=obj)
             ])
         except UserSocialAuth.DoesNotExist:
-            return ""
+            return ''
 
     def is_trusted(self, obj):
         try:

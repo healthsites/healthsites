@@ -9,7 +9,7 @@ from localities.models import Country
 
 class Command(BaseCommand):
     help = 'Import Localities from CSV file'
-    non_countries = ["Scarborough Reef"]
+    non_countries = ['Scarborough Reef']
 
     def handle(self, *args, **options):
         Country.objects.all().delete()
@@ -22,43 +22,43 @@ class Command(BaseCommand):
             # -------------------------------------------------
             # CORRECTING THE NAME
             # -------------------------------------------------
-            country_name = country_name.replace(" (Petrel Is.)", "")
-            country_name = country_name.replace("Barb.", "Barbuda")
-            country_name = country_name.replace("Br.", "British")
+            country_name = country_name.replace(' (Petrel Is.)', '')
+            country_name = country_name.replace('Barb.', 'Barbuda')
+            country_name = country_name.replace('Br.', 'British')
             country_name = country_name.replace(
-                "Central African Rep.", "Central African Republic"
+                'Central African Rep.', 'Central African Republic'
             )
-            country_name = country_name.replace("Curaçao", "Curacao")
-            country_name = country_name.replace("Côte d'Ivoire", "Ivory Coast")
+            country_name = country_name.replace('Curaçao', 'Curacao')
+            country_name = country_name.replace('Côte d\'Ivoire', 'Ivory Coast')
             country_name = country_name.replace(
-                "Cyprus U.N. Buffer Zone", "United Nations Buffer Zone in Cyprus"
+                'Cyprus U.N. Buffer Zone', 'United Nations Buffer Zone in Cyprus'
             )
             country_name = country_name.replace(
-                "Dem. Rep. Congo", "Democratic Republic of the Congo"
+                'Dem. Rep. Congo', 'Democratic Republic of the Congo'
             )
-            country_name = country_name.replace("Dem. Rep. Korea", "North Korea")
-            country_name = country_name.replace("Eq.", "Equatorial")
+            country_name = country_name.replace('Dem. Rep. Korea', 'North Korea')
+            country_name = country_name.replace('Eq.', 'Equatorial')
             country_name = country_name.replace(
-                "Fr. S. Antarctic Lands", "French Southern and Antarctic Lands"
+                'Fr. S. Antarctic Lands', 'French Southern and Antarctic Lands'
             )
-            country_name = country_name.replace("Fr.", "French")
-            country_name = country_name.replace("Geo.", "Georgia")
-            country_name = country_name.replace("Gren.", "the Grenadines")
-            country_name = country_name.replace("Herz.", "Herzegovina")
-            country_name = country_name.replace("I.", "Islands")
-            country_name = country_name.replace("Is.", "Islands")
-            country_name = country_name.replace("N.", "Northern")
-            country_name = country_name.replace("Rep.", "Republic")
-            country_name = country_name.replace("U.S.", "United States")
-            country_name = country_name.replace("S.", "South")
-            country_name = country_name.replace("Sandw.", "Sandwich")
-            country_name = country_name.replace("São Tomé and Principe", "Sao Tome and Principe")
-            country_name = country_name.replace("St-Barthélemy", "Saint Barthelemy")
-            country_name = country_name.replace("St.", "Saint")
-            country_name = country_name.replace("St-", "Saint ")
-            country_name = country_name.replace("Ter.", "Territory")
-            country_name = country_name.replace("Vin.", "Vincent")
-            country_name = country_name.replace("W.", "Western")
+            country_name = country_name.replace('Fr.', 'French')
+            country_name = country_name.replace('Geo.', 'Georgia')
+            country_name = country_name.replace('Gren.', 'the Grenadines')
+            country_name = country_name.replace('Herz.', 'Herzegovina')
+            country_name = country_name.replace('I.', 'Islands')
+            country_name = country_name.replace('Is.', 'Islands')
+            country_name = country_name.replace('N.', 'Northern')
+            country_name = country_name.replace('Rep.', 'Republic')
+            country_name = country_name.replace('U.S.', 'United States')
+            country_name = country_name.replace('S.', 'South')
+            country_name = country_name.replace('Sandw.', 'Sandwich')
+            country_name = country_name.replace('São Tomé and Principe', 'Sao Tome and Principe')
+            country_name = country_name.replace('St-Barthélemy', 'Saint Barthelemy')
+            country_name = country_name.replace('St.', 'Saint')
+            country_name = country_name.replace('St-', 'Saint ')
+            country_name = country_name.replace('Ter.', 'Territory')
+            country_name = country_name.replace('Vin.', 'Vincent')
+            country_name = country_name.replace('W.', 'Western')
 
             country_name = country_name.strip()
             # -------------------------------------------------

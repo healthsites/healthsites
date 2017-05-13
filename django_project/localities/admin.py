@@ -100,22 +100,22 @@ class LocalityAdmin(admin.ModelAdmin):
         return '(%s , %s)' % (obj.geom.x, obj.geom.y)
 
     def core_field(self, obj):
-        output = ""
+        output = ''
         if obj:
             dict = obj.repr_dict()
-            if "values" in dict:
-                for key in sorted(dict["values"].keys()):
+            if 'values' in dict:
+                for key in sorted(dict['values'].keys()):
                     value = dict['values'][key]
-                    value = value.replace("|", ",")
+                    value = value.replace('|', ',')
                     show = True
-                    test_value = value.replace("-", "").replace(",", "")
-                    if key == "defining_hours" and len(test_value) == 0:
+                    test_value = value.replace('-', '').replace(',', '')
+                    if key == 'defining_hours' and len(test_value) == 0:
                         show = False
-                    elif len(value.replace(",", "")) == 0:
+                    elif len(value.replace(',', '')) == 0:
                         show = False
                     if show:
-                        row = "<b>%s</b> : <a>%s</a></br>" % (
-                            key.replace("_", " "), dict['values'][key]
+                        row = '<b>%s</b> : <a>%s</a></br>' % (
+                            key.replace('_', ' '), dict['values'][key]
                         )
                         output += row
 
@@ -210,8 +210,8 @@ class UnconfirmedSynonymAdmin(admin.ModelAdmin):
     master.short_description = 'Master'
     master.admin_order_field = 'locality__uuid'
     potential_synonym.admin_order_field = 'synonyms__uuid'
-    promote_potential_synonyms.short_description = "Promote selected localities as synonyms"
-    reject_potential_synonyms.short_description = "Reject selected localities as synonyms"
+    promote_potential_synonyms.short_description = 'Promote selected localities as synonyms'
+    reject_potential_synonyms.short_description = 'Reject selected localities as synonyms'
     master.allow_tags = True
     potential_synonym.allow_tags = True
 

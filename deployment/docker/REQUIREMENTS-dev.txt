@@ -1,13 +1,10 @@
-django-nose
 coverage
-pep8>=1.5.7,<1.6
 pylint
 flake8
+flake8-quotes
 factory_boy
 autopep8
 isort
-
-django-devserver
 
 # documentation
 Sphinx

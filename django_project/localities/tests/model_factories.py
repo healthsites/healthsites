@@ -5,7 +5,7 @@ from ..models import Attribute, Changeset, Domain, Locality, Specification, Valu
 
 
 class DomainF(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "domain_{}".format(n))
+    name = factory.Sequence(lambda n: 'domain_{}'.format(n))
     description = ''
     template_fragment = ''
     changeset = factory.SubFactory(
@@ -18,7 +18,7 @@ class DomainF(factory.django.DjangoModelFactory):
 
 
 class AttributeF(factory.django.DjangoModelFactory):
-    key = factory.Sequence(lambda n: "attribute_{}".format(n))
+    key = factory.Sequence(lambda n: 'attribute_{}'.format(n))
     description = ''
     changeset = factory.SubFactory(
         'localities.tests.model_factories.ChangesetF'
@@ -31,8 +31,8 @@ class AttributeF(factory.django.DjangoModelFactory):
 
 class LocalityF(factory.django.DjangoModelFactory):
     domain = factory.SubFactory('localities.tests.model_factories.DomainF')
-    uuid = factory.Sequence(lambda n: "uuid_{}".format(n))
-    upstream_id = factory.Sequence(lambda n: "upstream_id_{}".format(n))
+    uuid = factory.Sequence(lambda n: 'uuid_{}'.format(n))
+    upstream_id = factory.Sequence(lambda n: 'upstream_id_{}'.format(n))
     geom = 'POINT (0 0)'
     changeset = factory.SubFactory(
         'localities.tests.model_factories.ChangesetF'

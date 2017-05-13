@@ -25,7 +25,7 @@ from django.core.wsgi import get_wsgi_application  # NOQA
 # if running multiple sites in the same mod_wsgi process. To fix this, use
 # mod_wsgi daemon mode with each site in its own daemon process, or use
 # os.environ["DJANGO_SETTINGS_MODULE"] = "healthsites.settings"
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings.prod")
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.prod')
 
 application = get_wsgi_application()
 

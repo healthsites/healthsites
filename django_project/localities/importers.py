@@ -245,7 +245,7 @@ class CSVImporter:
                 # save values for Locality
                 # get what3word
                 what3words = get_what_3_words(loc.geom)
-                if what3words != "":
+                if what3words != '':
                     values['values']['what3words'] = what3words
                 loc.set_values(values['values'], social_user=self.user, changeset=tmp_changeset)
 

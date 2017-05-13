@@ -33,17 +33,17 @@ class Command(BaseCommand):
         for locality in incorrect_localities:
             dict = locality.repr_dict()
             upstream = locality.upstream_id.encode('utf-8')
-            if "raw_source" not in dict["values"]:
+            if 'raw_source' not in dict['values']:
                 incorrect_localities_count += 1
                 locality.delete()
-            print upstream + " : " + locality.uuid.encode('utf-8')
+            print upstream + ' : ' + locality.uuid.encode('utf-8')
 
         # get correct locality to be reported
         correct_localities = Locality.objects.filter(id__in=localities_with_raw_data)
-        print "--------------------------------------------"
-        print "CORRECT LOCALITIES : %d " % correct_localities.count()
-        print "--------------------------------------------"
-        print "INCORRECT LOCALITIES : %d " % incorrect_localities.count()
-        print "--------------------------------------------"
-        print "INCORRECT LOCALITIES THAT DELETED : %d " % incorrect_localities_count
-        print "--------------------------------------------"
+        print '--------------------------------------------'
+        print 'CORRECT LOCALITIES : %d ' % correct_localities.count()
+        print '--------------------------------------------'
+        print 'INCORRECT LOCALITIES : %d ' % incorrect_localities.count()
+        print '--------------------------------------------'
+        print 'INCORRECT LOCALITIES THAT DELETED : %d ' % incorrect_localities_count
+        print '--------------------------------------------'

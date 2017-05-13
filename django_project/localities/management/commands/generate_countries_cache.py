@@ -11,8 +11,8 @@ from localities.utils import get_heathsites_master, get_statistic
 
 
 class Command(BaseCommand):
-    """ Command for generate country cache.
-    """
+    ''' Command for generate country cache.
+    '''
     help = 'Import Localities from CSV file'
 
     def add_arguments(self, parser):
@@ -45,9 +45,9 @@ class Command(BaseCommand):
             file = open(filename, 'w')
             file.write(result)  # python will convert \n to os.linesep
             file.close()  # you can omit in most cases as the destructor will call it
-            print "world cache is finished"
+            print 'world cache is finished'
         except Exception:
-            print "skip world"
+            print 'skip world'
 
         for country in countries:
             try:
@@ -65,7 +65,7 @@ class Command(BaseCommand):
                 file = open(filename, 'w')
                 file.write(result)  # python will convert \n to os.linesep
                 file.close()  # you can omit in most cases as the destructor will call it
-                print country.name + " cache is finished"
+                print country.name + ' cache is finished'
             except Exception as e:
                 print e
-                print "skip"
+                print 'skip'

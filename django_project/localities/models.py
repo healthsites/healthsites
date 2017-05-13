@@ -190,7 +190,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         be triggered to update FullTextSearch index for this Locality
         """
         special_key = [
-            'scope_of_service', "ancillary_services", "activities", "inpatient_service", "staff"
+            'scope_of_service', 'ancillary_services', 'activities', 'inpatient_service', 'staff'
         ]
         attrs = self._get_attr_map()
 
@@ -199,8 +199,8 @@ class Locality(UpdateMixin, ChangesetMixin):
         changed_values = []
         for key, data in changed_data.iteritems():
             if key in special_key:
-                data = data.replace(",", "|")
-                data = data.replace("| ", "|")
+                data = data.replace(',', '|')
+                data = data.replace('| ', '|')
             # try to match key from changed items with a key from attr_map
             attr_list = [
                 attr for attr in attrs if attr['attribute__key'] == key
@@ -279,15 +279,15 @@ class Locality(UpdateMixin, ChangesetMixin):
         for val in data_query:
             if clean:
                 # clean if empty
-                temp = val.data.replace("|", "")
+                temp = val.data.replace('|', '')
                 if len(temp) == 0:
-                    val.data = ""
+                    val.data = ''
                 # clean data
-                val.data = val.data.replace("|", ",")
+                val.data = val.data.replace('|', ',')
                 val.specification.attribute.key = (
-                    val.specification.attribute.key.replace("_", "-")
+                    val.specification.attribute.key.replace('_', '-')
                 )
-                cleaned_data = val.data.replace(",", "")
+                cleaned_data = val.data.replace(',', '')
                 if len(cleaned_data) > 0:
                     dict['values'][val.specification.attribute.key] = val.data
             else:
@@ -300,8 +300,8 @@ class Locality(UpdateMixin, ChangesetMixin):
             pass
 
         # exclusive for open street map
-        if self.upstream_id is not None and "openstreetmap" in self.upstream_id.lower():
-            osm_whole_id = self.upstream_id.split(u"¶")
+        if self.upstream_id is not None and 'openstreetmap' in self.upstream_id.lower():
+            osm_whole_id = self.upstream_id.split(u'¶')
             if len(osm_whole_id) > 0:
                 osm_whole_id = osm_whole_id[1]
                 identifier = osm_whole_id[0]
@@ -318,7 +318,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         return dict
 
     def is_type(self, value):
-        if value != "":
+        if value != '':
             try:
                 self.value_set.filter(specification__attribute__key='type').get(data=value)
                 return True
@@ -346,7 +346,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         for attr in global_attr + specific_attr:
             if attr in values:
                 data = values[attr]
-                if len(data.replace("-", "").replace("|", "").strip()) != 0:
+                if len(data.replace('-', '').replace('|', '').strip()) != 0:
                     counted_value += 1
 
         return (counted_value + 0.0) / (max_value + 0.0) * 100
@@ -368,7 +368,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     def update_what3words(self, user, changeset):
         from utils import get_what_3_words
         what3words = get_what_3_words(self.geom)
-        if what3words != "":
+        if what3words != '':
             self.set_values({'what3words': what3words}, user, changeset)
 
     def get_synonyms(self):
@@ -601,7 +601,7 @@ class DataLoader(models.Model):
 
     data_loader_mode = models.IntegerField(
         choices=DATA_LOADER_MODE_CHOICES,
-        verbose_name="Data Loader Mode",
+        verbose_name='Data Loader Mode',
         help_text='The mode of the data loader.',
         blank=False,
         null=False
@@ -634,7 +634,7 @@ class DataLoader(models.Model):
 
     separator = models.IntegerField(
         choices=SEPARATOR_CHOICES,
-        verbose_name="Separator Character",
+        verbose_name='Separator Character',
         help_text='Separator character.',
         null=False,
         default=COMMA_CODE
@@ -740,7 +740,7 @@ class DataLoaderPermission(models.Model):
     )
 
     def __str__(self):
-        return "%s : %s" % (self.accepted_csv, self.uploader)
+        return '%s : %s' % (self.accepted_csv, self.uploader)
 
 
 def data_loader_deleted(sender, instance, **kwargs):
@@ -765,9 +765,9 @@ class UnconfirmedSynonym(models.Model):
     )
 
     class Meta:
-        ordering = ["locality", "synonym"]
-        verbose_name = "Potential Synonym"
-        verbose_name_plural = "Potential Synonyms"
+        ordering = ['locality', 'synonym']
+        verbose_name = 'Potential Synonym'
+        verbose_name_plural = 'Potential Synonyms'
 
 
 class SynonymLocalities(models.Model):
@@ -779,9 +779,9 @@ class SynonymLocalities(models.Model):
     )
 
     class Meta:
-        ordering = ["locality", "synonym"]
-        verbose_name = "Synonyms"
-        verbose_name_plural = "Synonyms"
+        ordering = ['locality', 'synonym']
+        verbose_name = 'Synonyms'
+        verbose_name_plural = 'Synonyms'
 
 
 def update_others_synonyms(sender, instance, **kwargs):

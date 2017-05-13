@@ -34,7 +34,7 @@ def send_email(data_loader, report, additional_email=[]):
 
     email_message += report + '\n\n'
 
-    email_message += "You receive this email because you are the admin of Healthsites.io"
+    email_message += 'You receive this email because you are the admin of Healthsites.io'
 
     send_mail(
         subject='Healthsites Data Loader Report',
@@ -103,9 +103,9 @@ def load_data_task(self, data_loader_pk):
             call_command('generate_countries_cache')
             regenerate_cache_cluster()
         except DataLoaderPermission.DoesNotExist:
-            print "file is not authenticated"
-            logger.info("file is not authenticated")
-            send_email(data_loader, "file is not authenticated", [data_loader.author.email])
+            print 'file is not authenticated'
+            logger.info('file is not authenticated')
+            send_email(data_loader, 'file is not authenticated', [data_loader.author.email])
 
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)
