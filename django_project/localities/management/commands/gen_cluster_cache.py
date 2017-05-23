@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
+import json
+import os
 from optparse import make_option
 
-import json
-
-import os
-from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from localities.models import Locality, Country
+from django.core.management.base import BaseCommand, CommandError
+
 from localities.map_clustering import cluster
-from localities.utils import parse_bbox, get_heathsites_master
+from localities.models import Country
+from localities.utils import get_heathsites_master, parse_bbox
 
 
 class Command(BaseCommand):
@@ -65,7 +65,9 @@ class Command(BaseCommand):
             for zoom in range(settings.CLUSTER_CACHE_MAX_ZOOM + 1):
                 filename = os.path.join(
                     settings.CLUSTER_CACHE_DIR,
-                    '{}_{}_{}_localities_{}.json'.format(zoom, icon_size[0], icon_size[1], country.name)
+                    '{}_{}_{}_localities_{}.json'.format(
+                        zoom, icon_size[0], icon_size[1], country.name
+                    )
                 )
 
                 object_list = cluster(localities, zoom, *icon_size)

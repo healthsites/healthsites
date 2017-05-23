@@ -1,20 +1,15 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
+# -*- coding: utf-8 -*-
 
 import json
+
 import dicttoxml
 
-from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import EmptyPage, Paginator
 from django.core.serializers.json import DjangoJSONEncoder
+from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic import View
 
-from api.serializer.locality_serializer import (
-    geojson_serializer,
-    json_serializer
-)
+from api.serializer.locality_serializer import geojson_serializer, json_serializer
 
 
 class ApiView(View):
@@ -35,7 +30,7 @@ class ApiView(View):
         """
         if 'format' in request.GET:
             self.format = request.GET['format']
-            if not self.format in self._FORMATS:
+            if self.format not in self._FORMATS:
                 self.format = 'json'
 
         # check page in request
@@ -44,11 +39,11 @@ class ApiView(View):
                 page = request.GET.get('page')
                 self.page = int(page)
                 if self.page == 0:
-                    return "page less than 1"
+                    return 'page less than 1'
             except ValueError:
-                return "page is not a number"
+                return 'page is not a number'
 
-        return ""
+        return ''
 
     def get_query_by_page(self, query, page=1):
         """ Get query by page request
@@ -101,13 +96,14 @@ class ApiView(View):
             if not isinstance(context, list):
                 context = [context]
             output = json.dumps(
-                {"type": "FeatureCollection", "features": context},
-                cls=DjangoJSONEncoder)
+                {'type': 'FeatureCollection', 'features': context},
+                cls=DjangoJSONEncoder
+            )
 
         else:
             output = json.dumps(context, cls=DjangoJSONEncoder)
 
-        output.replace("|", ",")
+        output.replace('|', ',')
         return output
 
     def api_response(self, context):

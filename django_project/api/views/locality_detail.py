@@ -1,13 +1,8 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
 
-from django.http import HttpResponse
 from localities.models import Locality
+
 from .api_view import ApiView
-from ..serializer.locality_serializer import json_serializer, geojson_serializer
 
 
 class LocalityDetailApiView(ApiView):
@@ -24,7 +19,7 @@ class LocalityDetailApiView(ApiView):
         # check uuid for this
         if 'uuid' not in request.GET:
             return self.api_response(
-                {'error': "parameter is not enough"}
+                {'error': 'parameter is not enough'}
             )
 
         uuid = request.GET['uuid']
@@ -32,7 +27,7 @@ class LocalityDetailApiView(ApiView):
             facilities = Locality.objects.get(uuid=uuid)
         except Locality.DoesNotExist:
             return self.api_response(
-                {'error': "facility isn't found"}
+                {'error': 'facility isn\'t found'}
             )
 
         facilities = self.query_to_json([facilities], self.format)

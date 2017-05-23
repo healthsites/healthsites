@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.db import IntegrityError
 from django.test import TestCase
 
-from django.db import IntegrityError
-
-from .model_factories import AttributeF, DomainSpecification1AF
-
 from ..models import Attribute
+from .model_factories import AttributeF, DomainSpecification1AF
 
 
 class TestModelAttribute(TestCase):
