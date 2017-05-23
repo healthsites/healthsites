@@ -15,7 +15,7 @@ DATABASES = {
         'NAME': 'hs_dev',
         'USER': '',
         'PASSWORD': '',
-        'HOST': '10.0.0.3',
+        'HOST': 'postgresql',
         # Set to empty string for default.
         'PORT': '5433',
     }
