@@ -2,6 +2,7 @@ coverage
 pylint
 flake8
 flake8-quotes
+flake8-isort
 factory_boy
 autopep8
 isort
