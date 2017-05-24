@@ -1,10 +1,6 @@
-
-"""Configuration for production server"""
-import os
+# -*- coding: utf-8 -*-
 
 from .prod import *  # noqa
-
-print os.environ
 
 DEBUG = TEMPLATE_DEBUG = False
 

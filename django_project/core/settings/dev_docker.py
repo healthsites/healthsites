@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Settings for when running under docker in development mode."""
-import os
 
 from .dev import *  # noqa
-
-print os.environ
 
 DATABASES = {
     'default': {

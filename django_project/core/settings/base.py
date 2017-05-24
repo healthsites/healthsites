@@ -1,11 +1,4 @@
-# coding=utf-8
-"""
-core.settings.base
-"""
-# Django settings for projecta project.
-
-from django.contrib.messages import constants as messages
-
+# -*- coding: utf-8 -*-
 from .utils import ABS_PATH
 
 ADMINS = (
@@ -160,13 +153,4 @@ LOGGING = {
             'propagate': True,
         },
     }
-}
-
-# Override djangos default message tags as recommended by envelope
-MESSAGE_TAGS = {
-    messages.DEBUG: 'debug',
-    messages.INFO: 'info',
-    messages.SUCCESS: 'success',
-    messages.WARNING: 'warning',
-    messages.ERROR: 'danger'  # 'error' by default
 }
