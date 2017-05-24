@@ -3,11 +3,6 @@ import os
 
 from .base import *  # NOQA
 
-# Extra installed apps
-INSTALLED_APPS = (
-                     # 'grappelli',
-                 ) + INSTALLED_APPS
-
 INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',  # enable Raven plugin
     'social.apps.django_app.default',
