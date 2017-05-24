@@ -1,4 +1,4 @@
-"""Helpers for settings."""
+# -*- coding: utf-8 -*-
 import os
 
 # Absolute filesystem path to the Django project directory:

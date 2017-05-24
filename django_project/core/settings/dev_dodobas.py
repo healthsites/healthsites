@@ -7,8 +7,6 @@ PROJECT_PATH = abspath(join(dirname(__file__), pardir, pardir))
 MEDIA_ROOT = join(PROJECT_PATH, 'media')
 STATIC_ROOT = join(PROJECT_PATH, 'static')
 
-CLUSTER_CACHE_DIR = '/tmp/cache'
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',

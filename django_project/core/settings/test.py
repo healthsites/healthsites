@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .project import *  # noqa
 
 # Use default Django test runner
