@@ -58,13 +58,3 @@ class TestViews(TestCase):
                 'about.html'
             ]
         )
-
-    def test_help_view(self):
-        resp = self.client.get(reverse('help'))
-
-        self.assertEqual(resp.status_code, 200)
-        self.assertListEqual(
-            [tmpl.name for tmpl in resp.templates], [
-                'help.html'
-            ]
-        )

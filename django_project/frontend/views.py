@@ -49,12 +49,10 @@ class MainView(TemplateView):
         return self.render_to_response(context)
 
 
-class ContactView(FormMessagesMixin, ContactView):
+class MessagesContactView(FormMessagesMixin, ContactView):
+    form_invalid_message = 'There was en error in the contact form.'
+    form_valid_message = 'Thank you for your message.'
     template_name = 'envelope/contact.html'
-    form_invalid_message = 'There was an error in the contact form.'
-
-    def get_form_valid_message(self):
-        return u'{0} created!'.format(self.object.title)
 
 
 class MapView(TemplateView):
@@ -72,10 +70,6 @@ class MapView(TemplateView):
 
 class AboutView(TemplateView):
     template_name = 'about.html'
-
-
-class HelpView(TemplateView):
-    template_name = 'help.html'
 
 
 class AttributionsView(TemplateView):
