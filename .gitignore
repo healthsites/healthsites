@@ -89,3 +89,5 @@ deployment/media
 *~
 *.orig
 scrap.txt
+celerybeat-schedule
+
