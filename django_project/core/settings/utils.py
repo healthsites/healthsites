@@ -28,14 +28,10 @@ def ensure_secret_key_file():
     if not os.path.exists(secret_path):
         from django.utils.crypto import get_random_string
         secret_key = get_random_string(
-            50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
-        disqus_shortname = get_random_string(
-            50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)')
+            50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+        )
         with open(secret_path, 'w') as f:
             f.write("SECRET_KEY = " + repr(secret_key) + "\n")
-            f.write("DISQUS_WEBSITE_SHORTNAME = "
-                    + repr(disqus_shortname) + "\n")
-
 
 # Import the secret key
 ensure_secret_key_file()

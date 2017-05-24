@@ -63,7 +63,6 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 # ]
 
 
-
 DEFAULT_FILE_STORAGE = (
     'django_hashedfilenamestorage.storage.HashedFilenameFileSystemStorage'
 )
