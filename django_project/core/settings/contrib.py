@@ -1,16 +1,8 @@
-# coding=utf-8
-"""
-core.settings.contrib
-"""
-import os
-from .base import *  # noqa
+# -*- coding: utf-8 -*-
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+from django.contrib.messages import constants as messages
 
-# Extra installed apps
-INSTALLED_APPS = (
-                     # 'grappelli',
-                 ) + INSTALLED_APPS
+from .base import *  # NOQA
 
 INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',  # enable Raven plugin
@@ -18,16 +10,12 @@ INSTALLED_APPS += (
     'pg_fts',
     'django_forms_bootstrap',
     'celery',
+    'django_hashedfilenamestorage',
+    'envelope',
+    'pipeline',
 )
 
-STOP_WORDS = (
-    'a', 'an', 'and', 'if', 'is', 'the', 'in', 'i', 'you', 'other',
-    'this', 'that'
-)
-
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
-
-# Added for userena
+# Added for python-social-auth
 AUTHENTICATION_BACKENDS = (
     'social.backends.open_id.OpenIdAuth',
     'social.backends.yahoo.YahooOpenId',
@@ -74,35 +62,10 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 #     },
 # ]
 
-ANONYMOUS_USER_ID = -1
-AUTH_PROFILE_MODULE = 'accounts.Profile'
-LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
-LOGIN_URL = '/accounts/signin/'
-LOGOUT_URL = '/accounts/signout/'
-
-# Easy-thumbnails options
-THUMBNAIL_SUBDIR = 'thumbnails'
-THUMBNAIL_ALIASES = {
-    '': {
-        'entry': {'size': (50, 50), 'crop': True},
-        'medium-entry': {'size': (100, 100), 'crop': True},
-        'large-entry': {'size': (400, 300), 'crop': True},
-        'thumb300x200': {'size': (300, 200), 'crop': True},
-    },
-}
-
-# Pipeline related settings
-
-INSTALLED_APPS += (
-    'pipeline',)
-
-MIDDLEWARE_CLASSES += (
-    # For rosetta localisation
-    'django.middleware.locale.LocaleMiddleware',
-)
 
 DEFAULT_FILE_STORAGE = (
-    'django_hashedfilenamestorage.storage.HashedFilenameFileSystemStorage')
+    'django_hashedfilenamestorage.storage.HashedFilenameFileSystemStorage'
+)
 
 # use underscore template function
 PIPELINE_TEMPLATE_FUNC = '_.template'
@@ -124,20 +87,100 @@ PIPELINE_JS = {
     },
 }
 
+# Project specific javascript files to be pipelined
+# For third party libs like jquery should go in contrib.py
+# Maybe we can split these between project-home and project-map
+PIPELINE_JS['home'] = {
+    'source_filenames': (
+        'js/index-page.js',
+    ),
+    'output_filename': 'js/home.js',
+}
+PIPELINE_JS['map.js'] = {
+    'source_filenames': (
+        'js/map-page.js',
+    ),
+    'output_filename': 'js/map.js.js',
+}
+
+PIPELINE_JS['project'] = {
+    'source_filenames': (
+        'js/utilities.js',
+        'js/custom-functions.js',
+        'js/cookie-bar.js',
+        'js/custom-jquery.js',
+        'js/csrf-ajax.js',
+        'js/nav-bar.js',
+        'js/google-analytics.js',
+    ),
+    'output_filename': 'js/project.js',
+}
+PIPELINE_JS['map'] = {
+    'source_filenames': (
+        'js/cluster-layer.js',
+        'js/locality-sidebar.js',
+        'js/map-functionality.js',
+        'js/_app.js',
+    ),
+    'output_filename': 'js/map.js',
+}
+
 PIPELINE_CSS = {}
+
+# Contributed / third party css for pipeline compression
+# For hand rolled css for this app, use project.py
+PIPELINE_CSS['project'] = {
+    'source_filenames': (
+        'css/site.css',
+        'css/profile.css',
+        'css/jquery.cookiebar.css'
+    ),
+    'output_filename': 'css/project.css',
+    'extra_context': {
+        'media': 'screen, projection',
+    },
+}
+
+PIPELINE_CSS['map'] = {
+    'source_filenames': (
+        'css/map.css',
+    ),
+    'output_filename': 'css/map.css',
+    'extra_context': {
+        'media': 'screen, projection',
+    },
+}
+PIPELINE_CSS['home'] = {
+    'source_filenames': (
+        'css/home.css',
+    ),
+    'output_filename': 'css/home.css',
+    'extra_context': {
+        'media': 'screen, projection',
+    },
+}
 
 # These get enabled in prod.py
 PIPELINE_ENABLED = False
 PIPELINE_CSS_COMPRESSOR = None
 PIPELINE_JS_COMPRESSOR = None
 
-BROKER_URL = 'amqp://guest:guest@%s:5672//' % os.environ['RABBITMQ_HOST']
-
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
 
 # Django envelop for contact forms
 DEFAULT_FROM_EMAIL = 'enquiry@healthsites.io'
 ENVELOPE_EMAIL_RECIPIENTS = ['info@healthsites.io']
 ENVELOPE_SUBJECT_INTRO = '[HEALTHSITES.IO CONTACT REQUEST] '
+
+
+# Override Django default message tags as recommended by envelope
+MESSAGE_TAGS = {
+    messages.DEBUG: 'debug',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger'  # 'error' by default
+}
+
+
+# WHAT3WORDS API
+WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'

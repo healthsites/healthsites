@@ -1,17 +1,14 @@
-django-nose
 coverage
-pep8>=1.5.7,<1.6
 pylint
 flake8
+flake8-quotes
+flake8-isort
 factory_boy
-
-django-devserver
+autopep8
+isort
 
 # documentation
 Sphinx
 
 # pdb plus plus
 pdbpp
-
-# hizashi-utils
-# hizashi-utils

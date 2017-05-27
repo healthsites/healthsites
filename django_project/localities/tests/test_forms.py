@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
+from ..forms import DomainForm, DomainModelForm, LocalityForm
 from .model_factories import (
-    LocalityValue1F,
-    AttributeF,
-    LocalityF,
-    DomainSpecification2AF,
-    DomainSpecification1AF
+    AttributeF, DomainSpecification1AF, DomainSpecification2AF, LocalityF, LocalityValue1F
 )
-
-from ..forms import LocalityForm, DomainForm, DomainModelForm
 
 
 class TestLocalityForms(TestCase):

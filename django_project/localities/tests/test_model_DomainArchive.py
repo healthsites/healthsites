@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-from .model_factories import DomainF
-
 from ..models import DomainArchive
+from .model_factories import DomainF
 
 
 class TestModelDomainArchive(TestCase):

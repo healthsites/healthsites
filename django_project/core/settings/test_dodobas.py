@@ -7,8 +7,8 @@ DATABASES = {
         'NAME': 'healthsites_dev',
         'USER': '',
         'PASSWORD': '',
-        'HOST': 'localhost',
+        'HOST': 'postgresql',
         # Set to empty string for default.
-        'PORT': '',
+        'PORT': '5433',
     }
 }
