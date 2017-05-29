@@ -7,6 +7,7 @@ from pg_fts.fields import TSVectorField
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from social_users.models import TrustedUser
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.gis.db import models
 from django.contrib.sites.models import Site
@@ -730,13 +731,10 @@ class DataLoaderPermission(models.Model):
     )
 
     uploader = models.ForeignKey(
-        User,
+        TrustedUser,
         verbose_name='Uploader',
         help_text='The user who propose the data loader.',
         null=False,
-        limit_choices_to={
-            'id__in': get_trusted_user,
-        }
     )
 
     def __str__(self):
