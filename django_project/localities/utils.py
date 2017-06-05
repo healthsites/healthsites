@@ -20,7 +20,7 @@ from localities.models import (
     SynonymLocalities, UnconfirmedSynonym, User, Value, ValueArchive
 )
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
-from social_users.utils import get_profile
+from social_users.utils import get_profile, get_update_detail
 
 
 def get_what_3_words(geom):
@@ -322,6 +322,7 @@ def locality_create(request):
                 loc.set_values(json_request, request.user, tmp_changeset)
 
                 loc.update_what3words(request.user, tmp_changeset)
+
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
                 regenerate_cache_cluster.delay()
 
@@ -410,13 +411,6 @@ def get_statistic(healthsites):
     histories = localities_updates(healthsites)
     output['last_update'] = extract_updates(histories)
     return output
-
-
-def get_update_detail(update):
-    profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
-    update['nickname'] = profile.screen_name
-    update['changeset__created'] = update['changeset__created']
-    return update
 
 
 def localities_updates(locality_ids):
