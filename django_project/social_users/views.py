@@ -6,18 +6,15 @@ from datetime import datetime
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Count, Max, Min
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView, View
 
 from braces.views import LoginRequiredMixin
 
-from core.utilities import extract_time
-from localities.models import Locality, LocalityArchive
-from localities.utils import extract_updates, get_update_detail
+from localities.utils import extract_updates
 from social_users.models import Profile
-from social_users.utils import get_profile
+from social_users.utils import get_profile, user_updates
 
 LOG = logging.getLogger(__name__)
 
@@ -88,46 +85,9 @@ def save_profile(backend, user, response, *args, **kwargs):
     return {'user': user}
 
 
-def user_updates(user, date):
-    updates = []
-    # from locality archive
-    ids = (
-        LocalityArchive.objects
-        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-        .order_by('-changeset__created')
-        .values('changeset', 'object_id')
-        .annotate(id=Min('id')).values('id')
-    )
-    updates_temp = (
-        LocalityArchive.objects
-        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-        .filter(id__in=ids)
-        .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-        .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
-    )
-    changesets = []
-    for update in updates_temp:
-        changesets.append(update['changeset'])
-        updates.append(get_update_detail(update))
+class GetUserUpdates(View):
 
-    # get from locality if not in Locality Archive yet
-    updates_temp = (
-        Locality.objects
-        .filter(changeset__social_user=user).exclude(changeset__in=changesets)
-        .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-        .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
-    )
-    for update in updates_temp:
-        updates.append(get_update_detail(update))
-
-    updates.sort(key=extract_time, reverse=True)
-    return updates[:10]
-
-
-def get_user_updates(request):
-    if request.method == 'GET':
+    def get(self, request):
         date = request.GET.get('date')
         user = request.GET.get('user')
         if not date:
@@ -139,4 +99,4 @@ def get_user_updates(request):
         result['last_update'] = updates
         result = json.dumps(result, cls=DjangoJSONEncoder)
 
-    return HttpResponse(result, content_type='application/json')
+        return HttpResponse(result, content_type='application/json')
