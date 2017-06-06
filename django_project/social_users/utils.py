@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.models import User
-from django.db.models import Count, Max, Min
 
-from core.utilities import extract_time
-from localities.models import Locality, LocalityArchive
 from social_users.models import TrustedUser
 
 from .models import Profile
@@ -57,48 +53,3 @@ def get_profile(user):
     except Exception:
         pass
     return user
-
-
-def user_updates(user, date):
-    updates = []
-    # from locality archive
-    ids = (
-        LocalityArchive.objects
-        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-        .order_by('-changeset__created')
-        .values('changeset', 'object_id')
-        .annotate(id=Min('id')).values('id')
-    )
-    updates_temp = (
-        LocalityArchive.objects
-        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-        .filter(id__in=ids)
-        .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-        .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
-    )
-    changesets = []
-    for update in updates_temp:
-        changesets.append(update['changeset'])
-        updates.append(get_update_detail(update))
-
-    # get from locality if not in Locality Archive yet
-    updates_temp = (
-        Locality.objects
-        .filter(changeset__social_user=user).exclude(changeset__in=changesets)
-        .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-        .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
-    )
-    for update in updates_temp:
-        updates.append(get_update_detail(update))
-
-    updates.sort(key=extract_time, reverse=True)
-    return updates[:10]
-
-
-def get_update_detail(update):
-    profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
-    update['nickname'] = profile.screen_name
-    update['changeset__created'] = update['changeset__created']
-    return update

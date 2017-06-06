@@ -7,13 +7,16 @@ from datetime import datetime
 import googlemaps
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, FormView, ListView, View
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 
 from localities.models import Country, DataLoaderPermission
+from localities.utils import extract_updates, user_updates
 from masterization import report_locality_as_unconfirmed_synonym
 
 # register signals
@@ -530,3 +533,20 @@ class LocalityReportDuplicate(JSONResponseMixin, View):
                 {'error': 'this locality is already alias of this record'}, cls=DjangoJSONEncoder
             )
             return HttpResponse(result, content_type='application/json')
+
+
+class GetUserUpdates(View):
+
+    def get(self, request):
+        date = request.GET.get('date')
+        user = request.GET.get('user')
+        if not date:
+            date = datetime.now()
+        user = get_object_or_404(User, username=user)
+        last_updates = user_updates(user, date)
+        updates = extract_updates(last_updates)
+        result = {}
+        result['last_update'] = updates
+        result = json.dumps(result, cls=DjangoJSONEncoder)
+
+        return HttpResponse(result, content_type='application/json')

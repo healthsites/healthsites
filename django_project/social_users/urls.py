@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import include, patterns, url
 
-from .views import GetUserUpdates, LogoutUser, ProfilePage, UserProfilePage, UserSigninPage
+from .views import LogoutUser, ProfilePage, UserProfilePage, UserSigninPage
 
 urlpatterns = patterns(
     '',
@@ -13,7 +13,4 @@ urlpatterns = patterns(
         name='profile'
     ),
     url(r'^logout/$', LogoutUser.as_view(), name='logout_user'),
-    url(
-        r'^user/updates/$', GetUserUpdates.as_view(), name='user-updates'
-    ),
 )
