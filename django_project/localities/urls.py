@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url
 
-from .views import DataLoaderView, LocalitiesLayer, LocalityInfo, LocalityReportDuplicate
+from .views import (
+    DataLoaderView, GetUserUpdates, LocalitiesLayer, LocalityInfo, LocalityReportDuplicate
+)
 
 urlpatterns = patterns(
     '',
@@ -77,5 +79,8 @@ urlpatterns = patterns(
         r'^report$',
         LocalityReportDuplicate.as_view(),
         name='api_locality_synonyms'
+    ),
+    url(
+        r'^user/updates/$', GetUserUpdates.as_view(), name='user-updates'
     ),
 )
