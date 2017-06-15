@@ -16,8 +16,7 @@ class Profile(models.Model):
     Extention of User
     """
 
-    user = models.OneToOneField(
-        User, default=1)
+    user = models.OneToOneField(User, default=1)
     profile_picture = models.CharField(default='', max_length=150, blank=True)
 
 

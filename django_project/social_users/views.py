@@ -18,7 +18,7 @@ class UserProfilePage(LoginRequiredMixin, TemplateView):
     template_name = 'social_users/profilepage.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(UserProfilePage, self).get_context_data(*args, **kwargs)
+        context = super(UserProfilePage, self).get_context_data(**kwargs)
         context['auths'] = [
             auth.provider for auth in self.request.user.social_auth.all()
         ]
@@ -35,7 +35,7 @@ class ProfilePage(TemplateView):
 
         user = get_object_or_404(User, username=kwargs['username'])
         user = get_profile(user)
-        context = super(ProfilePage, self).get_context_data(*args, **kwargs)
+        context = super(ProfilePage, self).get_context_data(**kwargs)
         context['user'] = user
         return context
 

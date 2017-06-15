@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from unittest import skip
 
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase
@@ -26,13 +25,12 @@ class TestViews(TestCase):
             ]
         )
 
-    @skip('skip')
     def test_profile_view(self):
         user = UserF(username='test1', password='test1')
         UserSocialAuthF.create(
             provider='openstreetmap',
             uid='2418849',
-            extra_data='{"access_token":"qwertqwert"}',
+            extra_data={'access_token': 'qwertqwert'},
             user=user
         )
 
@@ -44,13 +42,16 @@ class TestViews(TestCase):
         self.assertListEqual(
             [tmpl.name for tmpl in resp.templates], [
                 'social_users/profilepage.html', u'base.html',
-                u'pipeline/css.html', u'pipeline/js.html', u'pipeline/js.html'
+                u'pipeline/css.html', u'pipeline/css.html', u'pipeline/css.html',
+                u'pipeline/css.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html'
             ]
         )
 
-    @skip('skip')
     def test_profile_view_no_user(self):
         resp = self.client.get(reverse('userprofilepage'))
+
         self.assertRedirects(
             resp, '/signin/?next=/profile/',
             status_code=302, target_status_code=200
@@ -63,4 +64,27 @@ class TestViews(TestCase):
 
         self.assertRedirects(
             resp, '/', status_code=302, target_status_code=200
+        )
+
+    def test_profile_page(self):
+        user = UserF(username='test1', password='test1')
+
+        self.client.login(username='test1', password='test1')
+
+        resp = self.client.get(reverse('profile', kwargs={'username': user.username}))
+
+        self.assertEqual(resp.status_code, 200)
+
+        context_user = resp.context['user']
+
+        self.assertEqual(user.username, context_user.username)
+
+        self.assertListEqual(
+            [tmpl.name for tmpl in resp.templates], [
+                'social_users/profile.html', u'base.html',
+                u'pipeline/css.html', u'pipeline/css.html', u'pipeline/css.html',
+                u'pipeline/css.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
+                u'pipeline/js.html', u'pipeline/js.html'
+            ]
         )

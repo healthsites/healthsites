@@ -37,7 +37,7 @@ CLUSTER_CACHE_MAX_ZOOM = 5
 
 # authentication settings
 ANONYMOUS_USER_ID = -1
-AUTH_PROFILE_MODULE = 'accounts.Profile'
-LOGIN_REDIRECT_URL = '/accounts/%(username)s/'
-LOGIN_URL = '/accounts/signin/'
-LOGOUT_URL = '/accounts/signout/'
+# AUTH_USER_MODULE = 'social_users.Profile'
+LOGIN_REDIRECT_URL = '/profile/%(username)s/'
+LOGIN_URL = '/signin/'
+LOGOUT_URL = '/logout/'
