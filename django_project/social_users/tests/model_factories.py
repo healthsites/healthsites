@@ -6,6 +6,10 @@ from social.apps.django_app.default.models import UserSocialAuth
 
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
+from django.utils.timezone import now
+
+from ..models import Organisation, OrganisationSupported, Profile, TrustedUser
 
 
 class ContentTypeF(factory.django.DjangoModelFactory):
@@ -65,6 +69,14 @@ class UserF(factory.django.DjangoModelFactory):
         model = User
 
 
+class SiteF(factory.django.DjangoModelFactory):
+    domain = 'http://healthsites.io'
+    name = 'Healthsites'
+
+    class Meta:
+        model = Site
+
+
 class UserSocialAuthF(factory.django.DjangoModelFactory):
     user = factory.SubFactory('social_users.tests.model_factories.UserF')
     provider = factory.Sequence(lambda n: 'provider%s' % n)
@@ -73,3 +85,46 @@ class UserSocialAuthF(factory.django.DjangoModelFactory):
 
     class Meta:
         model = UserSocialAuth
+
+
+class ProfileF(factory.django.DjangoModelFactory):
+    user = factory.SubFactory('social_users.tests.model_factories.UserF')
+    profile_picture = ''
+
+    class Meta:
+        model = Profile
+
+
+class TrustedUserF(factory.django.DjangoModelFactory):
+    user = factory.SubFactory('social_users.tests.model_factories.UserF')
+
+    class Meta:
+        model = TrustedUser
+
+
+class OrganisationF(factory.django.DjangoModelFactory):
+    name = ''
+    site = factory.SubFactory('social_users.tests.model_factories.SiteF')
+    contact = ''
+
+    class Meta:
+        model = Organisation
+
+
+class OrganisationSupportedF(factory.django.DjangoModelFactory):
+    organisation = factory.SubFactory('social_users.tests.model_factories.OrganisationF')
+    user = factory.SubFactory('social_users.tests.model_factories.TrustedUserF')
+    is_staff = False
+    date_added = factory.LazyFunction(now)
+
+    class Meta:
+        model = OrganisationSupported
+
+
+class UserWith2OrganisationSupportedF(TrustedUserF):
+    orgsupported1 = factory.RelatedFactory(
+        'social_users.tests.model_factories.OrganisationSupportedF', 'user'
+    )
+    orgsupported2 = factory.RelatedFactory(
+        'social_users.tests.model_factories.OrganisationSupportedF', 'user'
+    )
