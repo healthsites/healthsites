@@ -24,15 +24,16 @@ def get_profile(user):
 
         supported_organisations = (
             trusted_user.organisations_supported
-            .all()
+            .all().select_related('site')
             .filter(organisationsupported__is_staff=True)
         )
 
         user.organisations = [
-            {'name': org.name, 'website': org.clean_website()} for org in supported_organisations
+            {'name': org.name, 'website': clean_website(org.site.domain)}
+            for org in supported_organisations
         ]
         user.organisations_supported = [
-            {'name': org.name, 'website': org.clean_website()}
+            {'name': org.name, 'website': clean_website(org.site.domain)}
             for org in trusted_user.organisations_supported.all().filter(
                 organisationsupported__is_staff=False)
         ]
@@ -53,3 +54,10 @@ def get_profile(user):
     except Exception:
         pass
     return user
+
+
+def clean_website(site_domain):
+    if 'http' in site_domain:
+        return site_domain
+    else:
+        return 'http://{}'.format(site_domain)

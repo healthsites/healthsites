@@ -2,7 +2,7 @@
 
 from django.test import Client, TestCase
 
-from ..utils import get_profile
+from ..utils import clean_website, get_profile
 from .model_factories import (
     OrganisationF, ProfileF, UserF, UserSocialAuthF, UserWith2OrganisationSupportedF
 )
@@ -82,3 +82,13 @@ class TestViews(TestCase):
             profile.organisations_supported[0],
             {'name': org2.name, 'website': 'http://healthsites.io'}
         )
+
+    def test_clean_website_contains_http(self):
+        site_domain = 'http://healthsites.io'
+
+        self.assertEqual(clean_website(site_domain), 'http://healthsites.io')
+
+    def test_clean_website_without_http(self):
+        site_domain = 'healthsites.io'
+
+        self.assertEqual(clean_website(site_domain), 'http://healthsites.io')

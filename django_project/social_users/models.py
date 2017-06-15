@@ -32,12 +32,6 @@ class Organisation(models.Model):
         'TrustedUser', through='OrganisationSupported', blank=True
     )
 
-    def clean_website(self):
-        if 'http' in self.site.domain:
-            return self.site.domain
-        else:
-            return 'http://' + self.site.domain
-
     def __unicode__(self):
         return u'%s' % (self.name)
 
