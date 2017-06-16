@@ -6,6 +6,7 @@ flake8-isort
 factory_boy
 autopep8
 isort
+mock
 
 # documentation
 Sphinx

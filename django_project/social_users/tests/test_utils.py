@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.test import Client, TestCase
+from django.test import TestCase
 
 from ..utils import clean_website, get_profile
 from .model_factories import (
@@ -8,10 +8,7 @@ from .model_factories import (
 )
 
 
-class TestViews(TestCase):
-    def setUp(self):
-        self.client = Client()
-
+class TestUtils(TestCase):
     def test_userprofile_does_not_exist(self):
         user = UserF(username='test1', password='test1')
 
