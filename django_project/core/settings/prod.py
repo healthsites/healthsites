@@ -89,3 +89,7 @@ if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
             },
         },
     }
+
+# production settings, webserver expects media files in these folders
+STATIC_ROOT = '/home/web/static'
+MEDIA_ROOT = '/home/web/media'
