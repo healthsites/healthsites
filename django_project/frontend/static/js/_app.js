@@ -82,7 +82,7 @@ window.APP = (function () {
             $('.facebook-hs-share').on('click', function (evt) {
                 FB.ui({
                     method: 'share',
-                    href: 'http://healthsites.io/'
+                    href: 'https://healthsites.io/'
                 }, function (response) {
                 });
             });
