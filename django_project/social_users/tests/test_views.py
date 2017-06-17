@@ -75,7 +75,12 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
+        self.assertTrue('user' in resp.context)
+
         context_user = resp.context['user']
+
+        self.assertTrue(hasattr(context_user, 'social'))
+        self.assertTrue(hasattr(context_user, 'screen_name'))
 
         self.assertEqual(user.username, context_user.username)
 

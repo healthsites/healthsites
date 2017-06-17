@@ -75,7 +75,7 @@ STATICFILES_FINDERS = (
 
 # import SECRET_KEY into current namespace
 # noinspection PyUnresolvedReferences
-from .secret import SECRET_KEY  # noqa # isort:skip
+from .secret import *  # noqa # isort:skip
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
