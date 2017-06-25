@@ -5,8 +5,6 @@ import os
 import uuid
 from datetime import datetime
 
-import requests
-
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.gis.geos import Point, Polygon
@@ -22,24 +20,6 @@ from localities.models import (
 )
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
 from social_users.utils import get_profile
-
-
-def get_what_3_words(geom):
-    from requests import Timeout, ConnectionError
-    try:
-        what3words_api_key = settings.WHAT3WORDS_API_KEY
-        api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, geom.y, geom.x)
-        request = requests.get(api_url, stream=True)
-        response = ''.join([line for line in request.iter_lines()])
-        response = response.replace(' ', '').replace('\n', '')
-        response = response.replace('}{', '},{')
-        data = json.loads(response)
-        if 'words' in data:
-            what3words = '.'.join(data['words'])
-            return what3words
-        return ''
-    except (Timeout, ConnectionError):
-        return ''
 
 
 def extract_updates(updates):
@@ -322,8 +302,6 @@ def locality_create(request):
                 #  ------------------------------------------------------
                 loc.set_values(json_request, request.user, tmp_changeset)
 
-                loc.update_what3words(request.user, tmp_changeset)
-
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
                 regenerate_cache_cluster.delay()
 
@@ -361,7 +339,6 @@ def locality_edit(request):
                 # if location is changed
                 new_geom = [locality.geom.x, locality.geom.y]
                 if new_geom != old_geom:
-                    locality.update_what3words(request.user, tmp_changeset)
                     regenerate_cache_cluster.delay()
                 regenerate_cache.delay(tmp_changeset.id, locality.pk)
 

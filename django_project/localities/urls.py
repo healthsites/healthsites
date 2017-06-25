@@ -35,12 +35,6 @@ urlpatterns = patterns(
     ),
 
     url(
-        r'^search/localities/what3words',
-        'localities.views.search_locality_by_what3words',
-        name='locality-name-search'
-    ),
-
-    url(
         r'^search/cities/name',
         'localities.views.search_cities_by_name',
         name='cities-name-search'

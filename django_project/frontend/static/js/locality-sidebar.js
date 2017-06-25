@@ -39,7 +39,6 @@ window.LocalitySidebar = (function () {
         this.$signin = $('#signin-button');
         this.$sidebar = $('#locality-info');
         // new style
-        this.$what3words = $('#locality-what3words');
         this.$line_updates = $('#line-updates');
         this.$name = $('#locality-name');
         this.$nature_of_facility = $('#locality-nature-of-facility');
@@ -419,7 +418,6 @@ window.LocalitySidebar = (function () {
             this.$defining_hours.html(no_operation_hours_found);
             this.$locality_master_indicator.html("MASTER");
             this.$locality_master_indicator.show();
-            this.$what3words.hide();
         },
         showDefaultEdit: function (evt) {
             $('#full-list').html("");
@@ -615,17 +613,6 @@ window.LocalitySidebar = (function () {
                     this.$name_input.val(name);
                 }
             }
-
-            // WHAT3WORDS
-            {
-                var what3words = this.locality_data.values['what3words'];
-                delete keys[this.getIndex(keys, 'what3words')];
-                if (this.isHasValue(what3words)) {
-                    this.$what3words.text('W3W : ' + what3words);
-                    this.$what3words.show();
-                }
-            }
-
 
             // NATURE OF LOCALITY
             {
@@ -1173,7 +1160,6 @@ window.LocalitySidebar = (function () {
             this.$saveButton.hide();
             this.$createButton.hide();
             this.$line_updates.show();
-            this.$what3words.show();
             if (isEditingMode && !isLoggedIn) {
                 setCookie("type", mode, 30);
                 setCookie("center", APP.getCenterOfMap().lat + "," + APP.getCenterOfMap().lng, 30);
@@ -1189,7 +1175,6 @@ window.LocalitySidebar = (function () {
                 else {
                     this.$createButton.show();
                     this.$line_updates.hide();
-                    this.$what3words.hide();
                     this.showDefaultEdit();
                     $APP.trigger('locality.create');
                 }

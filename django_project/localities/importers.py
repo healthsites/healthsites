@@ -206,7 +206,6 @@ class CSVImporter:
         })
 
     def save_localities(self):
-        from utils import get_what_3_words
         """
         Save every locality in the parsed_data dictionary
         """
@@ -243,10 +242,6 @@ class CSVImporter:
                 LOG.info('Created %s (%s)', loc.uuid, loc.id)
 
                 # save values for Locality
-                # get what3word
-                what3words = get_what_3_words(loc.geom)
-                if what3words != '':
-                    values['values']['what3words'] = what3words
                 loc.set_values(values['values'], social_user=self.user, changeset=tmp_changeset)
 
                 self.report['created'] += 1
