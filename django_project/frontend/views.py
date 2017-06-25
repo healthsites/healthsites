@@ -18,7 +18,7 @@ from django.views.generic import TemplateView
 from braces.views import FormMessagesMixin
 
 from localities.management.commands.generate_shapefile import directory_media
-from localities.models import Country, DataLoaderPermission, Locality, Value
+from localities.models import Country, DataLoaderPermission, Locality
 from localities.utils import (
     get_country_statistic, get_heathsites_master,
     search_locality_by_spec_data, search_locality_by_tag
@@ -116,21 +116,6 @@ def map(request):
             map_url = reverse('map')
             return HttpResponseRedirect(
                 map_url + '?place=%s' % search_query)
-        elif option == 'what3words':
-            locality_values = Value.objects.filter(
-                specification__attribute__key='what3words').filter(
-                data=search_query)
-            if locality_values:
-                locality_value = locality_values[0]
-            else:
-                return render_to_response(
-                    'map.html',
-                    context_instance=RequestContext(request)
-                )
-            locality_uuid = locality_value.locality.uuid
-            map_url = reverse('map')
-            return HttpResponseRedirect(
-                map_url + '#!/locality/%s' % locality_uuid)
         elif option == 'healthsite':
             localities = Locality.objects.filter(
                 name=search_query)

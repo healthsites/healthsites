@@ -365,12 +365,6 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return {k: ' '.join([x[1] for x in v]) for k, v in data_values}
 
-    def update_what3words(self, user, changeset):
-        from utils import get_what_3_words
-        what3words = get_what_3_words(self.geom)
-        if what3words != '':
-            self.set_values({'what3words': what3words}, user, changeset)
-
     def get_synonyms(self):
         synonyms = SynonymLocalities.objects.get(locality=self)
         return synonyms
@@ -664,7 +658,7 @@ class DataLoader(models.Model):
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
         from .tasks import load_data_task
-        load_data_task.delay(instance.pk)
+        load_data_task(instance.pk)
 
 
 # register the signal

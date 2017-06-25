@@ -380,29 +380,6 @@ def search_locality_by_name(request):
             print e
 
 
-def search_locality_by_what3words(request):
-    if request.method == 'GET':
-        query = request.GET.get('q')
-
-        names_start_with = Value.objects.filter(
-            specification__attribute__key='what3words').filter(
-            data__istartswith=query).order_by('data')
-        names_contains_with = Value.objects.filter(
-            specification__attribute__key='what3words').filter(
-            data__icontains=query).exclude(data__istartswith=query).order_by('data')
-
-        result = []
-        # start with with query
-        for name_start_with in names_start_with:
-            result.append(name_start_with.data)
-
-        # contains with query
-        for name_contains_with in names_contains_with:
-            result.append(name_contains_with.data)
-        result = json.dumps(result)
-        return HttpResponse(result, content_type='application/json')
-
-
 def search_cities_by_name(request):
     if request.method == 'GET':
         result = []
