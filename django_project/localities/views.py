@@ -117,7 +117,8 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                         filename = os.path.join(
                             settings.CLUSTER_CACHE_DIR,
                             '{}_{}_{}_localities_{}.json'.format(
-                                zoom, iconsize[0], iconsize[1], country.name
+                                zoom, iconsize[0], iconsize[1],
+                                country.name.encode('ascii', 'ignore')
                             )
                         )
                         try:
