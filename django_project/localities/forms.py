@@ -113,18 +113,15 @@ class DataLoaderForm(models.ModelForm):
         )
 
     json_concept_mapping = forms.FileField(
-        widget=forms.FileInput(
-            attrs={'class': 'form-control'})
+        widget=forms.FileInput()
     )
 
     csv_data = forms.FileField(
-        widget=forms.FileInput(
-            attrs={'class': 'form-control'})
+        widget=forms.FileInput()
     )
 
     data_loader_mode = forms.ChoiceField(
-        widget=forms.RadioSelect(
-            attrs={'class': 'form-control'}),
+        widget=forms.RadioSelect(),
         choices=DataLoader.DATA_LOADER_MODE_CHOICES,
         initial=DataLoader.REPLACE_DATA_CODE,
     )

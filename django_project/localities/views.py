@@ -275,7 +275,13 @@ class DataLoaderView(LoginRequiredMixin, FormView):
     template_name = 'dataloaderform.html'
 
     def form_valid(self, form):
-        pass
+        form.save(True)
+
+        success_message = 'You have successfully uploaded your data!'
+
+        return self.render_to_response(
+            self.get_context_data(form=form, upload_message=success_message)
+        )
 
     def get(self, request, *args, **kwargs):
         permission = DataLoaderPermission.objects.filter(uploader=request.user)
@@ -298,43 +304,6 @@ class DataLoaderView(LoginRequiredMixin, FormView):
         # Update the kwargs with the user_id
         kwargs['user'] = self.request.user
         return kwargs
-
-
-def load_data(request):
-    """Handling load data."""
-    if request.method == 'POST':
-        form = DataLoaderForm(request.POST, files=request.FILES,
-                              user=request.user)
-        if form.is_valid():
-            form.save(True)
-            # load_data_task.delay(data_loader.pk)
-
-            response = {}
-            success_message = 'You have successfully upload your data'
-
-            response['message'] = success_message
-            response['success'] = True
-            response['detailed_message'] = (
-                'Please wait several minutes for Healthsites to load your data. We will send '
-                'you an email if we have finished loading the data.'
-            )
-            return HttpResponse(json.dumps(
-                response,
-                ensure_ascii=False),
-                content_type='application/javascript')
-        else:
-            error_message = form.errors
-            response = {
-                'detailed_message': str(error_message),
-                'success': False,
-                'message': 'You have failed to load data.'
-            }
-            return HttpResponse(json.dumps(
-                response,
-                ensure_ascii=False),
-                content_type='application/javascript')
-    else:
-        pass
 
 
 def search_locality_by_name(request):

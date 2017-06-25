@@ -658,7 +658,7 @@ class DataLoader(models.Model):
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
         from .tasks import load_data_task
-        load_data_task(instance.pk)
+        load_data_task.delay(instance.pk)
 
 
 # register the signal
