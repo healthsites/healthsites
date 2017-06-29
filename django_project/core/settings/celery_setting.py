@@ -2,7 +2,7 @@ import os
 
 from celery.schedules import crontab
 
-BROKER_URL = 'amqp://guest:guest@%s:5672//' % os.environ.get('RABBITMQ_HOST', 'localhost')
+BROKER_URL = 'amqp://guest:guest@rabbitmq:5672//'
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

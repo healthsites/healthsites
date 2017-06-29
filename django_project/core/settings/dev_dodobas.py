@@ -10,12 +10,12 @@ STATIC_ROOT = join(PROJECT_PATH, 'static')
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'hs_dev',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': 'postgresql',
+        'NAME': 'docker',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'HOST': 'db',
         # Set to empty string for default.
-        'PORT': '5433',
+        'PORT': '5432',
     }
 }
 

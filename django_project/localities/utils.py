@@ -112,8 +112,8 @@ def get_country_statistic(query):
                     file.write(output)  # python will convert \n to os.linesep
                     file.close()  # you can omit in most cases as the destructor will call it
                     output = json.loads(output)
-                except Exception:
-                    pass
+                except Exception as e:
+                    print str(e)
 
     except Country.DoesNotExist:
         output = ''
