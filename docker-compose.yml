@@ -4,24 +4,22 @@ services:
   web:
     build: django_project
     command: ./utils/wait-for.sh db:5432 -- python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - ./django_project:/project
-    ports:
-      - "8000:8000"
     depends_on:
       - db
       - rabbitmq
-    environment:
-      - DJANGO_SETTINGS_MODULE=core.settings.dev_dodobas
 
   worker:
     build: django_project
-    command: celery worker -A localities -l info -B -c 1
+    command: ./utils/wait-for.sh db:5432 -- celery worker -A localities -l info -c 1
     depends_on:
       - db
       - rabbitmq
-    environment:
-      - DJANGO_SETTINGS_MODULE=core.settings.dev_dodobas
+
+  scheduler:
+    build: django_project
+    command: celery beat -A localities -l info
+    depends_on:
+      - rabbitmq
 
   rabbitmq:
     image: rabbitmq
@@ -33,3 +31,4 @@ services:
     environment:
       - POSTGRES_USER=docker
       - POSTGERS_PASSWORD=docker
+

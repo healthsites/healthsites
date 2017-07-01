@@ -8,7 +8,7 @@ from .project import *  # noqa
 # Changes for live site
 # ['*'] for testing but not for production
 
-ALLOWED_HOSTS = ['localhost:9000']
+ALLOWED_HOSTS = ['*']
 
 # Comment if you are not running behind proxy
 USE_X_FORWARDED_HOST = True
@@ -17,79 +17,54 @@ USE_X_FORWARDED_HOST = True
 DEBUG = TEMPLATE_DEBUG = False
 
 
-# Logging
-if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
-    # noinspection PyUnresolvedReferences
-    import raven  # noqa
-
-    RAVEN_CONFIG = {
-        # Hosted sentry
-        # 'dsn': 'https://02127c0444ca42b3a7d3275118d74177:'
-        # '2e7a9aa7b77240bd8804f95057991875@app.getsentry.com/55597',
-        # Self hosted sentry
-        'dsn': 'http://ea65e461089d4fcda9d63696cd70fa50:9ba52586ab79479eba68'
-               '9dbbad671149@sentry.kartoza.com/12',
-        # If you are using git, you can also automatically configure the
-        # release based on the git info.
-        # Note from Tim: This won't work since we don't mount the root
-        # of the git project into the docker container...
-        # 'release': raven.fetch_git_sha(os.path.dirname(__file__)),
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'docker',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'HOST': 'db',
+        # Set to empty string for default.
+        'PORT': '5432',
     }
+}
 
-    MIDDLEWARE_CLASSES = (
-        # We recommend putting this as high in the chain as possible
-        # see http://raven.readthedocs.org/en/latest/integrations/  ...
-        # ... django.html#message-references
-        # This will add a client unique id in messages
-        'raven.contrib.django.raven_compat.middleware.'
-        'SentryResponseErrorIdMiddleware',
-    ) + MIDDLEWARE_CLASSES
 
-    # Sentry settings - logs exceptions to a database
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': True,
-        'root': {
-            'level': 'WARNING',
-            'handlers': ['sentry'],
+# Sentry settings - logs exceptions to a database
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        # define output formats
+        'verbose': {
+            'format': (
+                '%(levelname)s %(name)s %(asctime)s %(module)s %(process)d '
+                '%(thread)d %(message)s')
         },
-        'formatters': {
-            'verbose': {
-                'format': '%(levelname)s %(asctime)s %(module)s '
-                          '%(process)d %(thread)d %(message)s'
-            },
+        'simple': {
+            'format': (
+                '%(name)s %(levelname)s %(filename)s L%(lineno)s: '
+                '%(message)s')
         },
-        'handlers': {
-            'sentry': {
-                'level': 'ERROR',
-                'class':
-                    'raven.contrib.django.raven_compat.handlers.SentryHandler',
-            },
-            'console': {
-                'level': 'DEBUG',
-                'class': 'logging.StreamHandler',
-                'formatter': 'verbose'
-            }
-        },
-        'loggers': {
-            'django.db.backends': {
-                'level': 'ERROR',
-                'handlers': ['console'],
-                'propagate': False,
-            },
-            'raven': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-                'propagate': False,
-            },
-            'sentry.errors': {
-                'level': 'DEBUG',
-                'handlers': ['console'],
-                'propagate': False,
-            },
-        },
+    },
+    'handlers': {
+        'logfile': {
+            'class': 'logging.FileHandler',
+            'filename': '/tmp/tmd-web.log',
+            'formatter': 'verbose',
+            'level': 'INFO',
+        }
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['logfile'],
+            'level': 'INFO',  # switch to DEBUG to show actual SQL
+        }
+    },
+    # root logger
+    # non handled logs will propagate to the root logger
+    'root': {
+        'handlers': ['logfile'],
+        'level': 'INFO'
     }
-
-# production settings, webserver expects media files in these folders
-STATIC_ROOT = '/home/web/static'
-MEDIA_ROOT = '/home/web/media'
+}

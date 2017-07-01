@@ -16,3 +16,4 @@ python-social-auth==0.2.19
 pytz
 raven==6.0.0
 pyshp==1.2.11
+uwsgi

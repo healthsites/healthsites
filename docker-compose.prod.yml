@@ -1,0 +1,28 @@
+version: '2.1'
+
+services:
+  web:
+    command: ./utils/wait-for.sh db:5432 -- uwsgi --http-socket :8000 --workers 1 --static-map /static=./static/ --offload-threads --master --module core.wsgi:application
+    ports:
+      - "8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.prod
+
+  worker:
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.prod
+
+  scheduler:
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.prod
+
+  smtp:
+    # Note you cannot scale if you use container_name
+    container_name: healthsites-smtp
+    image: catatnight/postfix
+    hostname: postfix
+    environment:
+      # You could change this to something more suitable
+      - maildomain=healthsites.io
+      - smtp_user=noreply:docker
+    restart: on-failure:5

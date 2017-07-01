@@ -6,7 +6,8 @@ services:
 language: python
 
 env:
-  - DOCKER_COMPOSE_VERSION=1.14.0 DJANGO_SETTINGS_MODULE=core.settings.test_travis
+  global:
+    - DOCKER_COMPOSE_VERSION=1.14.0
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
@@ -20,13 +21,16 @@ before_install:
   - docker-compose build
   - docker-compose pull
 
+install:
+  - pip install coveralls
 
 before_script:
   - docker-compose up -d
 
 script:
-  - docker-compose exec web ./utils/wait-for.sh -t 15 db:5432 -- coverage run manage.py test
+  - docker-compose exec web ./utils/wait-for.sh -t 15 db:5432 -- coverage run manage.py test --settings=core.settings.test
   - docker-compose exec web flake8
 
 after_success:
-  - docker-compose exec web coveralls
+  - cd django_project
+  - coveralls

@@ -10,6 +10,18 @@ TEMPLATE_STRING_IF_INVALID = '*!NV4L!D*'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'docker',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'HOST': 'db',
+        # Set to empty string for default.
+        'PORT': '5432',
+    }
+}
+
 # Disable caching while in development
 CACHES = {
     'default': {
@@ -48,6 +60,12 @@ LOGGING = {
         'django.db.backends': {
             'handlers': ['console'],
             'level': 'INFO',  # switch to DEBUG to show actual SQL
+        },
+        'localities': {
+            'level': 'INFO',
+            'handlers': ['console'],
+            # propagate is True by default, which propagates logs upstream
+            'propagate': False
         }
     },
     # root logger
