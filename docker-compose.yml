@@ -2,7 +2,8 @@ version: '2.1'
 
 services:
   web:
-    build: django_project
+    build:
+      context: django_project
     command: ./utils/wait-for.sh db:5432 -- python manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
