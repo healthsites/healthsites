@@ -2,14 +2,8 @@
 from .utils import ABS_PATH
 
 ADMINS = (
-    ('Tim Sutton', 'tim@kartoza.com'),
-    ('Irwan Fathurrahman', 'irwan@kartoza.com')
+    ('Dražen Odobašić', 'dodobasic@gmail.com'),
 )
-
-# This should be done in prod rather
-SERVER_EMAIL = 'noreploy@healthsites.io'
-EMAIL_HOST = 'localhost'
-DEFAULT_FROM_EMAIL = 'noreploy@healthsites.io'
 
 MANAGERS = ADMINS
 

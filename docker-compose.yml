@@ -8,6 +8,12 @@ services:
     depends_on:
       - db
       - rabbitmq
+    volumes:
+      - ./django_project:/project
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.dev
 
   worker:
     build: django_project
@@ -15,12 +21,20 @@ services:
     depends_on:
       - db
       - rabbitmq
+    volumes:
+      - ./django_project:/project
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.dev
 
   scheduler:
     build: django_project
     command: celery beat -A localities -l info
     depends_on:
       - rabbitmq
+    volumes:
+      - ./django_project:/project
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings.dev
 
   rabbitmq:
     image: rabbitmq

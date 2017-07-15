@@ -91,3 +91,6 @@ deployment/media
 scrap.txt
 celerybeat-schedule
 
+
+docker-compose.override.yml
+

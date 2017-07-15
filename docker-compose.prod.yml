@@ -1,28 +1,113 @@
-version: '2.1'
+version: '3.3'
 
 services:
   web:
+    image: healthsites/web
     command: ./utils/wait-for.sh db:5432 -- uwsgi --http-socket :8000 --workers 1 --static-map /static=./static/ --offload-threads --master --module core.wsgi:application
     ports:
       - "8000"
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings.prod
+    depends_on:
+      - db
+      - rabbitmq
+    networks:
+      - core-infra
+    volumes:
+      - ./media:/data/media
+      - ./cache:/data/cache
+    deploy:
+      replicas: 2
+
 
   worker:
+    image: healthsites/web
+    command: ./utils/wait-for.sh db:5432 -- celery worker -A localities -l info -c 1
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings.prod
+    depends_on:
+      - db
+      - rabbitmq
+    networks:
+      - core-infra
+    volumes:
+      - ./media:/data/media
+      - ./cache:/data/cache
+    deploy:
+      replicas: 1
+
 
   scheduler:
+    image: healthsites/web
+    command: celery beat -A localities -l info
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings.prod
+    depends_on:
+      - db
+      - rabbitmq
+    networks:
+      - core-infra
+    deploy:
+      replicas: 1
+
 
   smtp:
-    # Note you cannot scale if you use container_name
-    container_name: healthsites-smtp
     image: catatnight/postfix
-    hostname: postfix
     environment:
-      # You could change this to something more suitable
       - maildomain=healthsites.io
       - smtp_user=noreply:docker
-    restart: on-failure:5
+    networks:
+      - core-infra
+    deploy:
+      replicas: 1
+
+  rabbitmq:
+    image: rabbitmq
+    environment:
+      - RABBITMQ_NODENAME=rabbitmq
+    networks:
+      - core-infra
+    deploy:
+      replicas: 1
+
+
+  db:
+    image: mdillon/postgis:9.4-alpine
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGERS_PASSWORD=docker
+      - POSTGRES_DB=base_db
+    networks:
+      - core-infra
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+
+
+  nginx:
+    image: healthsites/nginx
+    deploy:
+      replicas: 1
+    secrets:
+      - site.crt
+      - site.key
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - core-infra
+    volumes:
+      - ./media:/data/media
+
+
+secrets:
+  site.crt:
+    external: true
+  site.key:
+    external: true
+
+
+networks:
+  core-infra:
+    external: true
