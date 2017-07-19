@@ -24,14 +24,25 @@ def ensure_secret_key_file():
     """Checks that secret.py exists in settings dir.
 
     If not, creates one with a random generated SECRET_KEY setting."""
+
     secret_path = ABS_PATH('core', 'settings', 'secret.py')
-    if not os.path.exists(secret_path):
-        from django.utils.crypto import get_random_string
-        secret_key = get_random_string(
-            50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
-        )
+
+    if os.path.exists('/run/secrets/secret.py'):
         with open(secret_path, 'w') as f:
-            f.write("SECRET_KEY = " + repr(secret_key) + "\n")
+            py_script = [
+                'import imp\n',
+                'imp.load_source(\'tmp_secret\', \'/run/secrets/secret.py\')\n',
+                'from tmp_secret import *\n'
+            ]
+            f.writelines(py_script)
+    else:
+        if not os.path.exists(secret_path):
+            from django.utils.crypto import get_random_string
+            secret_key = get_random_string(
+                50, 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+            )
+            with open(secret_path, 'w') as f:
+                f.write("SECRET_KEY = " + repr(secret_key) + "\n")
 
 # Import the secret key
 ensure_secret_key_file()

@@ -8,6 +8,8 @@ services:
       - "8000"
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings.prod
+    secrets:
+      - secret.py
     depends_on:
       - db
       - rabbitmq
@@ -25,6 +27,8 @@ services:
     command: ./utils/wait-for.sh db:5432 -- celery worker -A localities -l info -c 1
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings.prod
+    secrets:
+      - secret.py
     depends_on:
       - db
       - rabbitmq
@@ -42,6 +46,8 @@ services:
     command: celery beat -A localities -l info
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings.prod
+    secrets:
+      - secret.py
     depends_on:
       - db
       - rabbitmq
@@ -105,6 +111,8 @@ secrets:
   site.crt:
     external: true
   site.key:
+    external: true
+  secret.py:
     external: true
 
 
