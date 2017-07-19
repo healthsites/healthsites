@@ -1,6 +1,6 @@
-# Welcome to the healthsites code base!
+# healthsites.io: Building a free, curated, canonical source of healthcare location data
 
-[![Join the chat at https://gitter.im/healthsites/healthsites](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/healthsites/healthsites?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Join the chat at https://gitter.im/healthsites/healthsites](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/healthsites/healthsites)
 
 Healthsites is a framework for capturing, publishing and sharing critical
 health and sanitation related data to help make these facilities more
@@ -14,7 +14,7 @@ You can visit a running instance of healthsites at [healthsites.io](http://healt
 
 # Status
 
-These badges reflect the current status of our development branch:
+These badges reflect the current development status of the project:
 
 Tests status: [![Build Status](https://travis-ci.org/healthsites/healthsites.svg?branch=develop)](https://travis-ci.org/healthsites/healthsites)
 
@@ -25,13 +25,19 @@ Development status: [![Stories in Ready](https://badge.waffle.io/healthsites/hea
 # License
 
 Data: [Open Database License](http://opendatacommons.org/licenses/odbl/)
+
 Code: [Free BSD License](http://www.freebsd.org/copyright/freebsd-license.html)
 
-Out intention is to foster wide spread usage of the data and the code that we provide. Please use this code and data in the interests of humanity and not for nefarious purposes.
+Out intention is to foster wide spread usage of the data and the code that we
+provide. Please use this code and data in the interests of humanity and not
+for nefarious purposes.
 
 # Setup instructions
 
-**Note** we provide alternative setup instructions for deployment and development under docker - see our [developer documentation](https://github.com/healthsites/healthsites/blob/develop/README-dev.md) for complete details. If you want to develop locally without using docker, follow the steps below.
+**Note** we provide alternative setup instructions for deployment and
+development under docker - see our [developer documentation](https://github.com/healthsites/healthsites/blob/develop/README-dev.md)
+for complete details. If you want to develop locally without using docker,
+follow the steps below.
 
 ### Check out the source
 
