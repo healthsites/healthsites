@@ -22,7 +22,7 @@ DATABASES = {
         'NAME': 'docker',
         'USER': 'docker',
         'PASSWORD': 'docker',
-        'HOST': 'hs_db',
+        'HOST': 'db',
         # Set to empty string for default.
         'PORT': '5432',
     }
@@ -72,7 +72,7 @@ LOGGING = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # Host for sending e-mail.
-EMAIL_HOST = 'hs_smtp'
+EMAIL_HOST = 'smtp'
 # Port for sending e-mail.
 EMAIL_PORT = 25
 # SMTP authentication information for EMAIL_HOST.
@@ -85,4 +85,4 @@ EMAIL_SUBJECT_PREFIX = '[healthsites]'
 CLUSTER_CACHE_DIR = '/data/cache'
 MEDIA_ROOT = '/data/media'
 
-BROKER_URL = 'amqp://guest:guest@hs_rabbitmq:5672//'
+BROKER_URL = 'amqp://guest:guest@rabbitmq:5672//'

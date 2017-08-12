@@ -154,3 +154,55 @@ scripts/restart_django_server.sh
 
 You may want to rebuild and restart your development docker container too.
 
+
+### Check out the source
+
+
+First checkout out the source tree:
+
+```
+git clone git://github.com/healthsites/healthsites.git
+```
+
+### Install dependencies
+
+```
+sudo apt-get install python-psycopg2 python-virtualenv
+```
+
+```
+cd healthsites
+virtualenv venv
+source venv/bin/activate
+pip install -r REQUIREMENTS-dev.txt
+nodeenv -p --node=0.10.31
+npm -g install yuglify
+```
+
+### Create your dev profile
+
+
+
+```
+cd django_project/core/settings
+cp dev_dodobas.py dev_${USER}.py
+```
+
+Now edit dev_<your username> setting your database connection details as
+needed. We assume you have created a postgres (with postgis extentions)
+database somewhere that you can use for your development work. See
+[http://postgis.net/install/](http://postgis.net/install/) for details on doing
+that.
+
+### Running collect and migrate static
+
+Prepare your database and static resources by doing this:
+
+```
+virtualenv venv
+source venv/bin/activate
+cd django_project
+export RABBITMQ_HOST=localhost
+python manage.py migrate --settings=core.settings.dev_${USER}
+python manage.py collectstatic --noinput --settings=core.settings.dev_${USER}
+```

@@ -4,7 +4,7 @@ services:
   web:
     build:
       context: django_project
-    command: ./utils/wait-for.sh db:5432 -- python manage.py runserver 0.0.0.0:8000
+    command: ./utils/wait-for.sh db:5432 -t 60 -- python manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
       - rabbitmq
@@ -17,7 +17,7 @@ services:
 
   worker:
     build: django_project
-    command: ./utils/wait-for.sh db:5432 -- celery worker -A localities -l info -c 1
+    command: ./utils/wait-for.sh db:5432 -t 60 -- celery worker -A localities -l info -c 1
     depends_on:
       - db
       - rabbitmq

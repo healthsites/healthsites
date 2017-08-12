@@ -1,4 +1,4 @@
-# healthsites.io: Building a free, curated, canonical source of healthcare location data
+# healthsites.io: a free, curated, canonical source of healthcare location data
 
 [![Join the chat at https://gitter.im/healthsites/healthsites](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/healthsites/healthsites)
 
@@ -32,61 +32,18 @@ Out intention is to foster wide spread usage of the data and the code that we
 provide. Please use this code and data in the interests of humanity and not
 for nefarious purposes.
 
-# Setup instructions
-
-**Note** we provide alternative setup instructions for deployment and
-development under docker - see our [developer documentation](https://github.com/healthsites/healthsites/blob/develop/README-dev.md)
-for complete details. If you want to develop locally without using docker,
-follow the steps below.
-
-### Check out the source
+# Getting started
 
 
-First checkout out the source tree:
-
-```
-git clone git://github.com/healthsites/healthsites.git
-```
-
-### Install dependencies
-
-```
-sudo apt-get install python-psycopg2 python-virtualenv
-```
-
-```
-cd healthsites
-virtualenv venv
-source venv/bin/activate
-pip install -r REQUIREMENTS-dev.txt
-nodeenv -p --node=0.10.31
-npm -g install yuglify
-```
-
-### Create your dev profile
-
+The quickest way to get started with the Healthsites project is using [docker-compose](https://docs.docker.com/compose/).
 
 
 ```
-cd django_project/core/settings
-cp dev_dodobas.py dev_${USER}.py
-```
+docker-compose build
 
-Now edit dev_<your username> setting your database connection details as
-needed. We assume you have created a postgres (with postgis extentions)
-database somewhere that you can use for your development work. See
-[http://postgis.net/install/](http://postgis.net/install/) for details on doing
-that.
+docker-compose up -d
 
-### Running collect and migrate static
+docker-compose exec web python manage.py migrate
 
-Prepare your database and static resources by doing this:
-
-```
-virtualenv venv
-source venv/bin/activate
-cd django_project
-export RABBITMQ_HOST=localhost
-python manage.py migrate --settings=core.settings.dev_${USER}
-python manage.py collectstatic --noinput --settings=core.settings.dev_${USER}
+docker-compose exec web python manage.py createsuperuser
 ```
