@@ -48,22 +48,12 @@ class UserF(factory.django.DjangoModelFactory):
     first_name = factory.Sequence(lambda n: 'first_name%s' % n)
     last_name = factory.Sequence(lambda n: 'last_name%s' % n)
     email = factory.Sequence(lambda n: 'email%s@example.com' % n)
-    password = factory.Sequence(lambda n: 'password%s' % n)
+    password = factory.PostGenerationMethodCall('set_password', 'password')
     is_staff = False
     is_active = True
     is_superuser = False
     last_login = datetime.datetime(2000, 1, 1)
     date_joined = datetime.datetime(1999, 1, 1)
-
-    @classmethod
-    def _prepare(cls, create, **kwargs):
-        password = kwargs.pop('password', None)
-        user = super(UserF, cls)._prepare(create, **kwargs)
-        if password:
-            user.set_password(password)
-            if create:
-                user.save()
-        return user
 
     class Meta:
         model = User
