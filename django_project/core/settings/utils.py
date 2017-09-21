@@ -26,12 +26,13 @@ def ensure_secret_key_file():
     If not, creates one with a random generated SECRET_KEY setting."""
 
     secret_path = ABS_PATH('core', 'settings', 'secret.py')
+    secret_file = os.environ.get('SECRET_FILE', 'secret.py')
 
-    if os.path.exists('/run/secrets/secret.py'):
+    if os.path.exists('/run/secrets/{}'.format(secret_file)):
         with open(secret_path, 'w') as f:
             py_script = [
                 'import imp\n',
-                'imp.load_source(\'tmp_secret\', \'/run/secrets/secret.py\')\n',
+                'imp.load_source(\'tmp_secret\', \'/run/secrets/{}\')\n'.format(secret_file),
                 'from tmp_secret import *\n'
             ]
             f.writelines(py_script)
