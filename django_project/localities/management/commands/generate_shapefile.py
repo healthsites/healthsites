@@ -96,7 +96,10 @@ def insert_to_shapefile(healthsites, fields, shp_filename):
                     os.makedirs(directory_media)
 
                 filename = os.path.join(directory_media, shp_filename + '_shapefile.zip')
-                os.remove(filename)
+                try:
+                    os.remove(filename)
+                except Exception:
+                    pass
 
                 zipf = zipfile.ZipFile(filename, 'w', allowZip64=True)
                 zipdir(dir_cache, zipf)
