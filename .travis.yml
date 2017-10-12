@@ -8,6 +8,8 @@ language: python
 env:
   global:
     - DOCKER_COMPOSE_VERSION=1.14.0
+    - secure: Nj8UfoZ10iBX5uXVnIvO9TOWKC9jHhP5q5l/pZzIt1kLoTv4mVpXq+KatfUi5whKVt9+dMCZEWjXGzVfJsg0RtXhi4KX7PhTFnG01w3QXtNvzGKmOkThP60DV21BohOZTXvobQ81DjN+oTw/VCD6Qh1FiBS/yx+vUWM07PTwHrA=
+    - secure: Iq0qyM2NOOa2E/MhK8dYi2AlVWyjovz9xuJJqQHiuFJjy3pt4QLtnhIzcKF7Vixp5f8a5yjttlC1XKzXJR+/rC++qWxR/sIsB8nFLg4vl2Jo4bYIFtlDOYSPOjse0VkupDpgXLCViZM1gmWLa4BAbzZj5oQqjs7xJYzx58mX2bE=
 
 before_install:
   - sudo rm /usr/local/bin/docker-compose
@@ -30,3 +32,9 @@ script:
 
 after_success:
   - docker-compose exec web env TRAVIS=$TRAVIS TRAVIS_JOB_ID=$TRAVIS_JOB_ID TRAVIS_BRANCH=$TRAVIS_BRANCH coveralls --nogit
+  - git clean -dfx
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - export REPO=healthsites/web
+  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+  - docker build django_project/ -t $REPO:$TAG
+  - docker push $REPO:$TAG

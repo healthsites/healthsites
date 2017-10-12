@@ -3,7 +3,7 @@ version: '3.3'
 services:
   web:
     image: healthsites/web
-    command: ./utils/wait-for.sh db:5432 -- uwsgi --http-socket :8000 --workers 1 --static-map /static=./static/ --offload-threads --master --module core.wsgi:application
+    command: ./utils/wait-for.sh db:5432 -- uwsgi --http-socket :8000 --workers 1 --static-map /media=./media --static-map /static=./static/ --offload-threads --master --module core.wsgi:application
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings.prod
       - SECRET_FILE=hs-secret.py
