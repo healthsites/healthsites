@@ -179,7 +179,7 @@ def get_json_from_request(request):
                     is_valid = False
                     json['invalid_key'] = attribute.attribute.key
                     break
-            except:
+            except Exception:
                 pass
 
     json['is_valid'] = is_valid

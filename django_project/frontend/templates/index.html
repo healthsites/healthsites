@@ -36,7 +36,7 @@
 
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
           media="screen, projection"/>
-    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="static/img/favicon.ico" type="image/x-icon">
 
 
     {% stylesheet 'project' %}
@@ -51,7 +51,8 @@
 
     </head>
 
-<body class="body home" itemscope itemtype="https://schema.org/Organization">
+<body class="body home" itemscope itemtype="http://schema.org/Organization">
+<img src="http://healthsites.mashastudio.net/img/healthsites-fb.png" itemprop="image" width="0" height="0"/>
 <nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -78,7 +79,7 @@
                     <i class="fa fa-google-plus"></i>
                 </a>
                 <a class="linkedin-href"
-                   href="https://www.linkedin.com/shareArticle?mini=true&url=https://healthsites.io&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data"
+                   href="https://www.linkedin.com/shareArticle?mini=true&url=http://healthsites.io&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data"
                    target="_blank">
                     <i class="fa fa-linkedin"></i>
                 </a>
@@ -112,6 +113,10 @@
                 <div class="option"><span></span><input type="radio" name="option" id="radio-place"
                                                         value="place"><span></span><label class="option"
                                                                                           for="radio-healthsite">place</label>
+                </div>
+                <div class="option"><span></span><input type="radio" name="option" id="radio-what3words"
+                                                        value="what3words"><span></span><label class="option"
+                                                                                               for="radio-what3words">what3words</label>
                 </div>
             </div>
             <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
@@ -342,6 +347,8 @@
             <li><a href="https://www.ihf-fih.org/" target="_blank"><img src="{% static "img/ihf-logo.png" %}"/></a></li>
             <li><a href="https://hotosm.org/" target="_blank"><img src="{% static "img/hot-logo.png" %}"/></a></li>
             <li><a href="https://www.msf.org/" target="_blank"><img src="{% static "img/msf-logo.png" %}"/></a></li>
+            <li><a href="http://www.missingmaps.org" target="_blank"><img src="{% static "img/missing-maps.png" %}"/></a></li>
+            <li><a href="https://cartong.org/" target="_blank"><img src="{% static "img/cartong.png" %}"/></a></li>
         </ul>
     </div>
 </section>
@@ -404,10 +411,10 @@
 </footer>
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet-src.js"></script>
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.slick/1.5.7/slick.min.js"></script>
 <script type="text/javascript"
@@ -543,6 +550,9 @@
                 $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
             }
         });
+
+        {# first init #}
+        gettingData("");
     });
 </script>
 <!--
