@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from core.settings.utils import generate_logfilename
 from .project import *  # noqa
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
@@ -47,7 +47,7 @@ LOGGING = {
     'handlers': {
         'logfile': {
             'class': 'logging.FileHandler',
-            'filename': '/tmp/tmd-web.log',
+            'filename': generate_logfilename('/data/logs'),
             'formatter': 'verbose',
             'level': 'INFO',
         }

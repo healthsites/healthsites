@@ -3,20 +3,23 @@ version: '3.3'
 services:
   web:
     image: healthsites/web
-    command: ./utils/wait-for.sh db:5432 -- uwsgi --http-socket :8000 --workers 1 --static-map /media=./media --static-map /static=./static/ --offload-threads --master --module core.wsgi:application
+    command: ./utils/wait-for.sh db:5432 -- uwsgi --ini uwsgi.ini
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings.prod
       - SECRET_FILE=hs-secret.py
+      - SERVICE_PORT=10001
     secrets:
       - hs-secret.py
     depends_on:
       - db
       - rabbitmq
     networks:
-      - hs-stag-infra
+      - hs-prod-net
+      - lb-net
     volumes:
       - ./media:/data/media
       - ./cache:/data/cache
+      - ./logs:/data/logs
     deploy:
       replicas: 2
 
@@ -33,10 +36,11 @@ services:
       - db
       - rabbitmq
     networks:
-      - hs-stag-infra
+      - hs-prod-net
     volumes:
       - ./media:/data/media
       - ./cache:/data/cache
+      - ./logs:/data/logs
     deploy:
       replicas: 1
 
@@ -53,7 +57,9 @@ services:
       - db
       - rabbitmq
     networks:
-      - hs-stag-infra
+      - hs-prod-net
+    volumes:
+      - ./logs:/data/logs
     deploy:
       replicas: 1
 
@@ -64,7 +70,7 @@ services:
       - maildomain=healthsites.io
       - smtp_user=noreply:docker
     networks:
-      - hs-stag-infra
+      - hs-prod-net
     deploy:
       replicas: 1
 
@@ -73,10 +79,9 @@ services:
     environment:
       - RABBITMQ_NODENAME=rabbitmq
     networks:
-      - hs-stag-infra
+      - hs-prod-net
     deploy:
       replicas: 1
-
 
   db:
     image: mdillon/postgis:9.4-alpine
@@ -85,30 +90,18 @@ services:
       - POSTGERS_PASSWORD=docker
       - POSTGRES_DB=base_db
     networks:
-      - hs-stag-infra
+      - hs-prod-net
     volumes:
       - ./pg_data:/var/lib/postgresql/data
     deploy:
       replicas: 1
 
-
-  nginx:
-    image: nginx:alpine
-    deploy:
-      replicas: 1
-    ports:
-      - "80"
-    networks:
-      - hs-stag-infra
-    volumes:
-      - ./media:/data/media
-      - ./hs-nginx:/etc/nginx/conf.d
-
 secrets:
   hs-secret.py:
     external: true
 
-
 networks:
-  hs-stag-infra:
+  hs-prod-net:
+    external: true
+  lb-net:
     external: true

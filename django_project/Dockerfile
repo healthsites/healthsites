@@ -8,10 +8,10 @@ WORKDIR /project
 ADD . /project
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libpq-dev build-essential gdal-bin netcat \
+    && apt-get install -y --no-install-recommends libpq-dev build-essential gdal-bin netcat libpcre3 libpcre3-dev \
     && pip install --no-cache-dir -r /project/REQUIREMENTS-dev.txt \
     && apt-get remove -y build-essential \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /project/static && python manage.py collectstatic -c --noinput
+RUN mkdir -p /project/static && python manage.py collectstatic -c --noinput --settings=core.settings.build

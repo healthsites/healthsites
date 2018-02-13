@@ -2,6 +2,8 @@
 import os
 
 # Absolute filesystem path to the Django project directory:
+import socket
+
 DJANGO_ROOT = os.path.dirname(
     os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))
@@ -18,6 +20,13 @@ def ABS_PATH(*args):
     :rtype: str
     """
     return os.path.join(DJANGO_ROOT, *args)
+
+
+def generate_logfilename(base_directory):
+    hostname = socket.gethostname().split('.')[0]
+
+    log_name = '{}.log'.format(hostname)
+    return os.path.join(base_directory, log_name)
 
 
 def ensure_secret_key_file():
