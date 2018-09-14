@@ -198,7 +198,7 @@ def get_json_from_request(request):
                     is_valid = False
                     json['invalid_key'] = attribute.attribute.key
                     break
-            except:
+            except Exception:
                 pass
 
     json['is_valid'] = is_valid
@@ -545,9 +545,9 @@ def search_locality_by_tag(query):
 
 
 def render_fragment(template, context):
-    '''
+    """
     Render a template fragment using provided context
-    '''
+    """
 
     t = Template(template)
     c = Context(context)
@@ -555,11 +555,11 @@ def render_fragment(template, context):
 
 
 def parse_bbox(bbox):
-    '''
+    """
     Convert a textual bbox to a GEOS polygon object
 
     This function assumes that any raised exceptions will be handled upstream
-    '''
+    """
 
     tmp_bbox = map(float, bbox.split(','))
 

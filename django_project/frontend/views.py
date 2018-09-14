@@ -103,7 +103,7 @@ def search_place(request, place):
             result['northeast_lng'] = '%f' % northeast_lng
             result['southwest_lat'] = '%f' % southwest_lat
             result['southwest_lng'] = '%f' % southwest_lng
-        except:
+        except Exception:
             print 'getting place error'
     return result
 

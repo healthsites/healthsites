@@ -11,8 +11,8 @@ from localities.utils import get_heathsites_master, get_statistic
 
 
 class Command(BaseCommand):
-    ''' Command for generate country cache.
-    '''
+    """ Command for generate country cache.
+    """
     help = 'Import Localities from CSV file'
 
     def add_arguments(self, parser):
