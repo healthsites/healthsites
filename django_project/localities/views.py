@@ -55,7 +55,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             data = request.GET.get('data')
             uuid = request.GET.get('uuid')
 
-        except:
+        except Exception:
             # return 404 if any of parameters are missing or not parsable
             raise Http404
 
@@ -213,7 +213,7 @@ def get_json_from_request(request):
         json[req[0].lower()] = req[1]
         try:
             Attribute.objects.get(key=req[0].lower())
-        except:
+        except Exception:
             if req[0] not in special_request:
                 tmp_changeset = Changeset.objects.create(
                     social_user=request.user
@@ -249,7 +249,7 @@ def get_json_from_request(request):
                     is_valid = False
                     json['invalid_key'] = attribute.attribute.key
                     break
-            except:
+            except Exception:
                 print 'except'
 
     json['is_valid'] = is_valid
@@ -286,8 +286,9 @@ class DataLoaderView(LoginRequiredMixin, FormView):
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        '''This method is what injects forms with their keyword
-            arguments.'''
+        """
+        This method is what injects forms with their keyword arguments.
+        """
         # grab the current set of form #kwargs
         kwargs = super(DataLoaderView, self).get_form_kwargs()
         # Update the kwargs with the user_id

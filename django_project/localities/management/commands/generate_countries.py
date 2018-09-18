@@ -79,7 +79,7 @@ class Command(BaseCommand):
                          country.geometry.coords[0]] +
                         [Polygon(coords) for coords in geometry.coords[0]]).geojson
                 country.polygon_geometry = geometry
-            except:
+            except Exception:
                 if 'MultiPolygon' not in geometry.geojson:
                     geometry = MultiPolygon(Polygon(geometry.coords[0])).geojson
                 else:
