@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-from .model_factories import ValueF, SpecificationF, LocalityF
-
 from ..models import ValueArchive
+from .model_factories import LocalityF, SpecificationF, ValueF
 
 
 class TestModelLocalityArchive(TestCase):

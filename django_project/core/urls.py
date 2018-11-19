@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import patterns, include, url
 from django.conf import settings
-
+from django.conf.urls import include, patterns, url
 from django.contrib import admin
-
 
 urlpatterns = patterns(
     '',

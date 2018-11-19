@@ -1,16 +1,9 @@
 # -*- coding: utf-8 -*-
+from django.db import IntegrityError
 from django.test import TestCase
 
-from django.db import IntegrityError
-
-from .model_factories import (
-    ValueF,
-    LocalityF,
-    AttributeF,
-    SpecificationF
-)
-
 from ..models import Value
+from .model_factories import AttributeF, LocalityF, SpecificationF, ValueF
 
 
 class TestModelValue(TestCase):

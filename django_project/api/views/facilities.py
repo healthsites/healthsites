@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/06/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
-from localities.utils import parse_bbox, get_heathsites_master
 from api.views.api_view import ApiView
+from localities.utils import get_heathsites_master, parse_bbox
 
 
 class FacilitiesApiView(ApiView):
@@ -32,19 +27,21 @@ class FacilitiesApiView(ApiView):
             if not page:
                 page = 1
 
-            facilities = self.get_query_by_page(get_heathsites_master().in_polygon(polygon), page)
+            facilities = self.get_query_by_page(
+                get_heathsites_master().in_polygon(polygon), page
+            )
             facilities = self.query_to_json(facilities, self.format)
             return self.api_response(facilities)
 
         elif 'page' in request.GET:
             if not self.page:
                 return self.api_response(
-                    {'error': "page is wrong type"}
+                    {'error': 'page is wrong type'}
                 )
             facilities = self.get_query_by_page(get_heathsites_master(), self.page)
             facilities = self.query_to_json(facilities, self.format)
             return self.api_response(facilities)
         else:
             return self.api_response(
-                {'error': "need parameter"}
+                {'error': 'need parameter'}
             )

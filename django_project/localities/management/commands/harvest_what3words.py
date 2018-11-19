@@ -1,13 +1,9 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '10/05/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
 # -*- coding: utf-8 -*-
-import json
-import requests
-from django.core.management.base import BaseCommand
+
 from django.contrib.auth.models import User
-from localities.models import Attribute, Domain, Changeset, Locality, Specification, Value
+from django.core.management.base import BaseCommand
+
+from localities.models import Attribute, Changeset, Domain, Locality, Specification, Value
 
 
 class Command(BaseCommand):
@@ -17,10 +13,10 @@ class Command(BaseCommand):
         # get user that responsibility to change this
         user = None
         try:
-            user = User.objects.get(username="sharehealthdata")
+            user = User.objects.get(username='sharehealthdata')
         except User.DoesNotExist:
             try:
-                user = User.objects.get(username="admin")
+                user = User.objects.get(username='admin')
             except User.DoesNotExist:
                 pass
         # check attributes of what3word
@@ -40,7 +36,7 @@ class Command(BaseCommand):
                     locality=locality)
                 print value.locality, value.data
             except Value.DoesNotExist:
-                print "%d / %d" % (index, numbers)
+                print '%d / %d' % (index, numbers)
                 locality.update_what3words(user, changeset)
                 index += 1
 
@@ -55,7 +51,7 @@ class Command(BaseCommand):
             attribute.key = 'what3words'
             attribute.changeset = tmp_changeset
             attribute.save()
-            domain = Domain.objects.get(name="Health")
+            domain = Domain.objects.get(name='Health')
             specification = Specification()
             specification.domain = domain
             specification.attribute = attribute

@@ -1,17 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 
-
-from .model_factories import LocalityF
-
-from ..map_clustering import (
-    within_bbox,
-    cluster,
-    overlapping_area,
-    update_minbbox
-)
-
+from ..map_clustering import cluster, overlapping_area, update_minbbox, within_bbox
 from ..models import Locality
+from .model_factories import LocalityF
 
 
 class TestMapClustering(TestCase):
@@ -76,19 +68,22 @@ class TestMapClustering(TestCase):
         dict_cluster = cluster(queryset, 3, 40, 40)
 
         self.assertListEqual(dict_cluster, [
-            {'count': 5, 'minbbox': [0.0, 0.0, 0.0, 0.0], 'geom': (0.0, 0.0),
-                'uuid': '93b7e8c4621a4597938dfd3d27659160', 'bbox': (
-                    -10.546875, -10.546875, 10.546875, 10.546875)},
-            {'count': 3, 'minbbox': [28.0, 28.0, 32.0, 32.0],
-                'geom': (28.0, 28.0),
-                'uuid': '93b7e8c4621a4597938dfd3d27659166',
-                'bbox': (
-                    18.687662106566005, 18.687662106566005,
-                    37.31233789343399, 37.31233789343399)},
-            {'count': 1, 'minbbox': (45.0, 45.0, 45.0, 45.0),
-                'geom': (45.0, 45.0),
-                'uuid': '93b7e8c4621a4597938dfd3d27659169',
-                'bbox': (
-                    37.54223316717313, 37.54223316717313,
-                    52.45776683282687, 52.45776683282687)}
+            {
+                'count': 5, 'uuid': u'93b7e8c4621a4597938dfd3d27659160', 'localities': [],
+                'geom': (0.0, 0.0), 'bbox': (-10.546875, -10.546875, 10.546875, 10.546875),
+                'minbbox': [0.0, 0.0, 0.0, 0.0], 'name': u''
+            },
+            {
+                'count': 3, 'uuid': u'93b7e8c4621a4597938dfd3d27659166', 'localities': [],
+                'geom': (28.0, 28.0), 'bbox': (
+                    18.687662106566005, 18.687662106566005, 37.31233789343399, 37.31233789343399
+                ), 'minbbox': [28.0, 28.0, 32.0, 32.0], 'name': u''
+            },
+            {
+                'count': 1,
+                'uuid': u'93b7e8c4621a4597938dfd3d27659169', 'localities': [],
+                'geom': (45.0, 45.0), 'bbox': (
+                    37.54223316717313, 37.54223316717313, 52.45776683282687, 52.45776683282687
+                ), 'minbbox': (45.0, 45.0, 45.0, 45.0), 'name': u''
+            }
         ])

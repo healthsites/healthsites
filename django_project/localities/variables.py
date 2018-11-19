@@ -1,7 +1,4 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '21/04/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
+# -*- coding: utf-8 -*-
 
 attributes_availables = {
     'global': ['raw_source', 'defining_hours', 'staff', 'ownership', 'notes',

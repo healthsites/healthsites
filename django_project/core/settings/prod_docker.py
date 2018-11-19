@@ -1,8 +1,9 @@
 
 """Configuration for production server"""
-# noinspection PyUnresolvedReferences
-from .prod import *  # noqa
 import os
+
+from .prod import *  # noqa
+
 print os.environ
 
 DEBUG = TEMPLATE_DEBUG = False

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase
 from django.contrib.gis.geos import Point
-
-from .model_factories import LocalityF, DomainF
+from django.test import TestCase
 
 from ..models import LocalityArchive
+from .model_factories import DomainF, LocalityF
 
 
 class TestModelLocalityArchive(TestCase):
@@ -12,7 +11,7 @@ class TestModelLocalityArchive(TestCase):
         self.assertListEqual(
             [fld.name for fld in LocalityArchive._meta.fields], [
                 u'id', 'changeset', 'version', 'content_type', 'object_id',
-                'domain_id', 'uuid', 'upstream_id', 'geom'
+                'domain_id', 'uuid', 'upstream_id', 'geom', 'name', 'source'
             ]
         )
 

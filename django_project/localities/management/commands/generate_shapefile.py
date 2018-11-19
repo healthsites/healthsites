@@ -1,20 +1,18 @@
-# coding=utf-8
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '15/07/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
-from django.core.management.base import BaseCommand
+# -*- coding: utf-8 -*-
 import os
-import shapefile
 import shutil
 import zipfile
+
+import shapefile
+
 from django.conf import settings
-from localities.models import Domain, Specification, Country
+from django.core.management.base import BaseCommand
+
+from localities.models import Country, Domain, Specification
 from localities.utils import get_heathsites_master
 
-directory_cache = settings.CLUSTER_CACHE_DIR + "/shapefiles"
-directory_media = settings.MEDIA_ROOT + "/shapefiles"
+directory_cache = settings.CLUSTER_CACHE_DIR + '/shapefiles'
+directory_media = settings.MEDIA_ROOT + '/shapefiles'
 
 
 def zipdir(path, ziph):
@@ -30,9 +28,9 @@ def zipdir(path, ziph):
 # funtion to generate a .prj file
 def getWKT_PRJ(epsg_code):
     import urllib
-    wkt = urllib.urlopen("http://spatialreference.org/ref/epsg/{0}/prettywkt/".format(epsg_code))
-    remove_spaces = wkt.read().replace(" ", "")
-    output = remove_spaces.replace("\n", "")
+    wkt = urllib.urlopen('http://spatialreference.org/ref/epsg/{0}/prettywkt/'.format(epsg_code))
+    remove_spaces = wkt.read().replace(' ', '')
+    output = remove_spaces.replace('\n', '')
     return output
 
 
@@ -49,7 +47,7 @@ def insert_to_shapefile(healthsites, fields, shp_filename):
             total = healthsites.count()
             if total > 0:
                 # just for healthsite that total more than 0
-                print "generating shape object for " + shp_filename
+                print 'generating shape object for ' + shp_filename
 
                 shp = None
                 shp = shapefile.Writer(shapefile.POINT)
@@ -61,7 +59,7 @@ def insert_to_shapefile(healthsites, fields, shp_filename):
                     values = []
                     dict = healthsite.repr_dict(clean=True)
                     for field in fields:
-                        value = ""
+                        value = ''
                         if field in dict:
                             value = dict[field]
                         elif field in dict['values']:
@@ -71,7 +69,7 @@ def insert_to_shapefile(healthsites, fields, shp_filename):
                         except AttributeError:
                             pass
                         values.append(value)
-                    print "converted %d / %d" % (now, total)
+                    print 'converted %d / %d' % (now, total)
                     shp.point(dict['geom'][0], dict['geom'][1])
                     shp.record(*values)
                     now += 1
@@ -80,30 +78,30 @@ def insert_to_shapefile(healthsites, fields, shp_filename):
                 shp.save(shapefile_output)
 
                 # create .cpg
-                cpg_file = os.path.join(dir_cache, shp_filename + ".cpg")
+                cpg_file = os.path.join(dir_cache, shp_filename + '.cpg')
                 file = open(cpg_file, 'w+')
-                file.write("UTF-8")
+                file.write('UTF-8')
                 file.close()
 
                 # create .prj
-                prj_file = os.path.join(dir_cache, shp_filename + ".prj")
-                prj = open(prj_file, "w+")
-                epsg = getWKT_PRJ("4326")
+                prj_file = os.path.join(dir_cache, shp_filename + '.prj')
+                prj = open(prj_file, 'w+')
+                epsg = getWKT_PRJ('4326')
                 prj.write(epsg)
                 prj.close()
 
                 # zip this output
-                print "rezipping the files"
+                print 'rezipping the files'
                 if not os.path.exists(directory_media):
                     os.makedirs(directory_media)
 
-                filename = os.path.join(directory_media, shp_filename + "_shapefile.zip")
+                filename = os.path.join(directory_media, shp_filename + '_shapefile.zip')
                 os.remove(filename)
 
                 zipf = zipfile.ZipFile(filename, 'w', allowZip64=True)
                 zipdir(dir_cache, zipf)
                 zipf.close()
-                print "done"
+                print 'done'
             shutil.rmtree(dir_cache)
     except Domain.DoesNotExist:
         pass
@@ -113,7 +111,7 @@ class Command(BaseCommand):
     help = 'generate shapefile for data in bulk'
 
     def handle(self, *args, **options):
-        domain = Domain.objects.get(name="Health")
+        domain = Domain.objects.get(name='Health')
         specifications = Specification.objects.filter(domain=domain)
 
         fields = [
@@ -131,6 +129,8 @@ class Command(BaseCommand):
             # query for each of ATTRIBUTE
             healthsites = get_heathsites_master().in_polygon(
                 polygons)
-            insert_to_shapefile(healthsites, fields, country.name)  # generate shapefiles for country
+            # generate shapefiles for country
+            insert_to_shapefile(healthsites, fields, country.name)
 
-        insert_to_shapefile(get_heathsites_master(), fields, 'facilities')  # generate shapefiles for all country
+        # generate shapefiles for all country
+        insert_to_shapefile(get_heathsites_master(), fields, 'facilities')

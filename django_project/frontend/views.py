@@ -1,28 +1,31 @@
 # -*- coding: utf-8 -*-
 import logging
-import json
-
-LOG = logging.getLogger(__name__)
+import os
 
 import googlemaps
-import os
+from envelope.views import ContactView
 from hurry.filesize import size
 
-from braces.views import FormMessagesMixin
-from envelope.views import ContactView
-from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render_to_response
+from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from localities.utils import get_country_statistic, get_heathsites_master, search_locality_by_spec_data, \
-    search_locality_by_tag
+
+from braces.views import FormMessagesMixin
+
 from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
+from localities.utils import (
+    get_country_statistic, get_heathsites_master,
+    search_locality_by_spec_data, search_locality_by_tag
+)
 from social_users.utils import get_profile
+
+LOG = logging.getLogger(__name__)
 
 
 class MainView(TemplateView):
@@ -31,7 +34,7 @@ class MainView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
-        context['locality_count'] = get_country_statistic("")['localities']
+        context['locality_count'] = get_country_statistic('')['localities']
         if request.user.is_authenticated():
             if request.user.is_staff:
                 context['uploader'] = True
@@ -51,7 +54,7 @@ class ContactView(FormMessagesMixin, ContactView):
     form_invalid_message = 'There was an error in the contact form.'
 
     def get_form_valid_message(self):
-        return u"{0} created!".format(self.object.title)
+        return u'{0} created!'.format(self.object.title)
 
 
 class MapView(TemplateView):
@@ -96,12 +99,12 @@ def search_place(request, place):
             southwest_lat = viewport['southwest']['lat']
             southwest_lng = viewport['southwest']['lng']
             request.session['tempe_bongkrek'] = 'alfonso'
-            result['northeast_lat'] = "%f" % northeast_lat
-            result['northeast_lng'] = "%f" % northeast_lng
-            result['southwest_lat'] = "%f" % southwest_lat
-            result['southwest_lng'] = "%f" % southwest_lng
-        except:
-            print "getting place error"
+            result['northeast_lat'] = '%f' % northeast_lat
+            result['northeast_lng'] = '%f' % northeast_lng
+            result['southwest_lat'] = '%f' % southwest_lat
+            result['southwest_lng'] = '%f' % southwest_lng
+        except Exception:
+            print 'getting place error'
     return result
 
 
@@ -118,7 +121,7 @@ def map(request):
         if option == 'place':
             map_url = reverse('map')
             return HttpResponseRedirect(
-                map_url + "?place=%s" % search_query)
+                map_url + '?place=%s' % search_query)
         elif option == 'what3words':
             locality_values = Value.objects.filter(
                 specification__attribute__key='what3words').filter(
@@ -133,7 +136,7 @@ def map(request):
             locality_uuid = locality_value.locality.uuid
             map_url = reverse('map')
             return HttpResponseRedirect(
-                map_url + "#!/locality/%s" % locality_uuid)
+                map_url + '#!/locality/%s' % locality_uuid)
         elif option == 'healthsite':
             localities = Locality.objects.filter(
                 name=search_query)
@@ -142,7 +145,7 @@ def map(request):
                 locality_uuid = locality.uuid
                 map_url = reverse('map')
                 return HttpResponseRedirect(
-                    map_url + "#!/locality/%s" % locality_uuid)
+                    map_url + '#!/locality/%s' % locality_uuid)
             else:
                 return render_to_response(
                     'map.html',
@@ -161,37 +164,43 @@ def map(request):
         elif country:
             result = get_country_statistic(country)
             result['country'] = country
-            result['polygon'] = Country.objects.get(name__iexact=country).polygon_geometry.geojson
+            result['polygon'] = (
+                Country.objects.get(name__iexact=country).polygon_geometry.geojson
+            )
             result['shapefile_size'] = 0
-            filename = os.path.join(directory_media, country + "_shapefile.zip")
+            filename = os.path.join(directory_media, country + '_shapefile.zip')
             if (os.path.isfile(filename)):
                 result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
         elif place:
             result = search_place(request, place)
         elif attribute:
             uuid = request.GET.get('uuid')
-            result = search_locality_by_spec_data("attribute", attribute, uuid)
-            result['attribute'] = {'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],
-                                   'location': result['location']}
+            result = search_locality_by_spec_data('attribute', attribute, uuid)
+            result['attribute'] = {
+                'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],
+                'location': result['location']
+            }
         elif len(request.GET) == 0:
             result = search_place(request, place)
             # get facilities shapefile size
             result['shapefile_size'] = 0
-            filename = os.path.join(directory_media, "facilities_shapefile.zip")
+            filename = os.path.join(directory_media, 'facilities_shapefile.zip')
             if (os.path.isfile(filename)):
                 result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
         else:
             uuid = request.GET.get('uuid')
             for item in request.GET:
-                if item != "uuid":
+                if item != 'uuid':
                     spec = item
                     data = request.GET.get(item)
                     result = search_locality_by_spec_data(spec, data, uuid)
-                    result['spec'] = {'spec': spec, 'data': data, 'uuid': uuid, 'name': result['locality_name'],
-                                      'location': result['location']}
+                    result['spec'] = {
+                        'spec': spec, 'data': data, 'uuid': uuid,
+                        'name': result['locality_name'], 'location': result['location']
+                    }
 
         if 'new_geom' in request.session:
-            result["new_geom"] = request.session['new_geom']
+            result['new_geom'] = request.session['new_geom']
             del request.session['new_geom']
         return render_to_response(
             'map.html',

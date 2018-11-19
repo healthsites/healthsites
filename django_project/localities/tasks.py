@@ -1,24 +1,18 @@
-# coding=utf-8
-"""Docstring for this file."""
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
-
-__author__ = 'ismailsunni'
-__project_name = 'healthsites'
-__filename = 'tasks'
-__date__ = '8/27/15'
-__copyright__ = 'imajimatika@gmail.com'
-__doc__ = ''
 
 from datetime import datetime
 
+from django.core import management
 from django.core.mail import send_mail
 
+from celery import shared_task
 from celery.utils.log import get_task_logger
+
 from .celery import app
+from .importers import CSVImporter
 
 logger = get_task_logger(__name__)
-
-from .importers import CSVImporter
 
 
 def send_email(data_loader, report, additional_email=[]):
@@ -40,7 +34,7 @@ def send_email(data_loader, report, additional_email=[]):
 
     email_message += report + '\n\n'
 
-    email_message += "You receive this email because you are the admin of Healthsites.io"
+    email_message += 'You receive this email because you are the admin of Healthsites.io'
 
     send_mail(
         subject='Healthsites Data Loader Report',
@@ -109,9 +103,9 @@ def load_data_task(self, data_loader_pk):
             call_command('generate_countries_cache')
             regenerate_cache_cluster()
         except DataLoaderPermission.DoesNotExist:
-            print "file is not authenticated"
-            logger.info("file is not authenticated")
-            send_email(data_loader, "file is not authenticated", [data_loader.author.email])
+            print 'file is not authenticated'
+            logger.info('file is not authenticated')
+            send_email(data_loader, 'file is not authenticated', [data_loader.author.email])
 
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)
@@ -141,10 +135,6 @@ def regenerate_cache(self, changeset_pk, locality_pk):
 def regenerate_cache_cluster(self):
     from django.core.management import call_command
     call_command('gen_cluster_cache', 48, 46)
-
-
-from django.core import management
-from celery import shared_task
 
 
 @shared_task(name='localities.tasks.generate_shapefile')
