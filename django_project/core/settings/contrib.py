@@ -10,7 +10,7 @@ INSTALLED_APPS = (
 
 INSTALLED_APPS += (
     'raven.contrib.django.raven_compat',  # enable Raven plugin
-    'social.apps.django_app.default',
+    'social_django',
     'pg_fts',
     'django_forms_bootstrap',
     'celery',
@@ -25,14 +25,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 # Added for userena
 AUTHENTICATION_BACKENDS = (
-    'social.backends.open_id.OpenIdAuth',
-    'social.backends.yahoo.YahooOpenId',
-    'social.backends.openstreetmap.OpenStreetMapOAuth',
-    'social.backends.twitter.TwitterOAuth',
-    'social.backends.github.GithubOAuth2',
-    'social.backends.google.GoogleOAuth2',
-    'social.backends.facebook.FacebookOAuth2',
-    'social.backends.linkedin.LinkedinOAuth2',
+    'social_core.backends.openstreetmap.OpenStreetMapOAuth',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -43,21 +36,21 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_LOGIN_URL = '/'
 
 SOCIAL_AUTH_PIPELINE = (
-    'social.pipeline.social_auth.social_details',
-    'social.pipeline.social_auth.social_uid',
-    'social.pipeline.social_auth.auth_allowed',
-    'social.pipeline.social_auth.social_user',
-    'social.pipeline.user.get_username',
-    'social.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
     'social_users.views.save_profile',
-    'social.pipeline.social_auth.associate_user',
-    'social.pipeline.social_auth.load_extra_data',
-    'social.pipeline.user.user_details'
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details'
 )
 
 TEMPLATE_CONTEXT_PROCESSORS += (
-    'social.apps.django_app.context_processors.backends',
-    'social.apps.django_app.context_processors.login_redirect')
+    'social_django.context_processors.backends',
+    'social_django.context_processors.login_redirect')
 
 # TEMPLATES = [
 #     {
