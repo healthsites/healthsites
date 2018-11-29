@@ -1,6 +1,11 @@
 Django>=1.8,<1.9
 celery
 dicttoxml
+
+djangorestframework>=3.2,<3.7
+djangorestframework-gis<0.11
+coreapi==2.3.3
+
 django-braces
 django-envelope
 django-forms-bootstrap
