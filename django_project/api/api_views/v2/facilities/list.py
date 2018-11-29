@@ -50,7 +50,7 @@ class GetFacilities(PaginationAPI):
                 queryset = queryset.from_datetime(
                     datetime.fromtimestamp(int(timestamp_from))
                 )
-            except TypeError as e:
+            except TypeError:
                 return HttpResponseBadRequest('From needs to be in integer')
         timestamp_to = request.GET.get('to', None)
         if timestamp_to:

@@ -9,7 +9,7 @@ INSTALLED_APPS = (
                  ) + INSTALLED_APPS
 
 INSTALLED_APPS += (
-    'raven.contrib.django.raven_compat',  # enable Raven plugin
+    # 'raven.contrib.django.raven_compat',  # enable Raven plugin
     'social.apps.django_app.default',
     'pg_fts',
     'django_forms_bootstrap',

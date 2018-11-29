@@ -10,48 +10,48 @@ class Parameters(object):
     """ Class that holds all parameter schemas
     """
     page = Field(
-        "page",
-        location="query",
+        'page',
+        location='query',
         required=True,
         schema=Integer(
-            description="A page number within the paginated result set."
+            description='A page number within the paginated result set.'
         ),
     )
 
     extent = Field(
-        "extent",
-        location="query",
+        'extent',
+        location='query',
         required=False,
         schema=String(
-            description="Extent of map that is used for filtering data. "
-                        "(format: minLng, minLat, maxLng, maxLat)"
+            description='Extent of map that is used for filtering data. '
+                        '(format: minLng, minLat, maxLng, maxLat)'
         ),
     )
 
     timestamp_from = Field(
-        "from",
-        location="query",
+        'from',
+        location='query',
         required=False,
         schema=Integer(
-            description="Get latest modified data from this timestamp."
+            description='Get latest modified data from this timestamp.'
         ),
     )
 
     timestamp_to = Field(
-        "to",
-        location="query",
+        'to',
+        location='query',
         required=False,
         schema=Integer(
-            description="Get latest modified data from this timestamp."
+            description='Get latest modified data from this timestamp.'
         ),
     )
 
     output = Field(
-        "output",
-        location="query",
+        'output',
+        location='query',
         required=False,
         schema=String(
-            description="Output format for the request. (choices: json/xml/geojson, default: json)"
+            description='Output format for the request. (json/xml/geojson, default: json)'
         ),
     )
 
