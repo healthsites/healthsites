@@ -24,12 +24,11 @@ class ApiSchema(ApiSchemaBase):
 
 class GetFacilities(PaginationAPI):
     """
-    Return facility list
+    Returns a list of facilities with some filtering parameters.
     """
-    limit = 100
     filter_backends = (ApiSchema,)
 
-    def get(self, request, format=None):
+    def get(self, request):
         validation = self.validation()
         if validation:
             return HttpResponseBadRequest(validation)
