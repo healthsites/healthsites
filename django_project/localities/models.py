@@ -145,6 +145,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     A Locality is in a *Domain* and data values for Attributes, to be exact,
     their Specifications, are defined through *Value*
     """
+    DEFINED_DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
     domain = models.ForeignKey('Domain')
     uuid = models.TextField(unique=True)
@@ -388,6 +389,30 @@ class Locality(UpdateMixin, ChangesetMixin):
     def __unicode__(self):
         return u'{}'.format(self.id)
 
+    def validate_data_by_defined_list(self, data, key, options, required=False):
+        """ Check value data by key if it is string and it is in options.
+
+        :param data: Data to be inserted
+        :param key: Key data that is checked
+        :param options: Options to be checked
+        :return:
+        """
+        try:
+            value = data[key]
+            if isinstance(value, list):
+                raise ValueError(
+                    'nature_of_facility should be string'
+                )
+            if value not in options:
+                raise ValueError(
+                    '%s is not recognized, options : %s' % (key, options)
+                )
+
+        except KeyError as e:
+            if required:
+                raise ValueError('%s is required' % e)
+            pass
+
     def validate_data(self, data):
         """ Validate data based on fields
 
@@ -411,6 +436,91 @@ class Locality(UpdateMixin, ChangesetMixin):
         for attribute in attributes:
             if not data[attribute.attribute.key]:
                 raise ValueError('%s is empty' % attribute.attribute.key)
+
+        # inpatient_service
+        try:
+            inpatient_service = data['inpatient_service']
+            try:
+                full_time_beds = inpatient_service['full_time_beds']
+            except KeyError:
+                raise ValueError(
+                    'full_time_beds needs to be in inpatient_service'
+                )
+            try:
+                part_time_beds = inpatient_service['part_time_beds']
+            except KeyError:
+                raise ValueError(
+                    'part_time_beds needs to be in inpatient_service'
+                )
+            data['inpatient_service'] = '%s|%s' % (
+                full_time_beds,
+                part_time_beds
+            )
+        except KeyError:
+            pass
+
+        # staff
+        try:
+            staff = data['staff']
+            try:
+                doctors = staff['doctors']
+            except KeyError:
+                raise ValueError(
+                    'doctors needs to be in staff'
+                )
+            try:
+                nurses = staff['nurses']
+            except KeyError:
+                raise ValueError(
+                    'nurses needs to be in staff'
+                )
+            data['staff'] = '%s|%s' % (
+                doctors,
+                nurses
+            )
+        except KeyError:
+            pass
+
+        # nature of facility
+        options = ['clinic without beds',
+                   'clinic with beds',
+                   'first referral hospital',
+                   'second referral hospital or General hospital',
+                   'tertiary level including University hospital']
+        self.validate_data_by_defined_list(
+            data, 'nature_of_facility', options)
+
+        # nature of facility
+        options = ['public',
+                   'private not for profit',
+                   'private commercial']
+        self.validate_data_by_defined_list(
+            data, 'ownership', options)
+
+        # defined_hours
+        try:
+            defined_hours = []
+            for index, day in enumerate(Locality.DEFINED_DAYS):
+                try:
+                    hours = data['defining_hours'][day]
+                    if not isinstance(hours, list):
+                        raise ValueError('%s is need to be in list' % day)
+                    if len(hours) == 1:
+                        hours.append('-')
+                    elif len(hours) > 2:
+                        raise ValueError('maximum lenght of %s is 2' % day)
+                    hours = '-'.join(hours)
+                    if not hours:
+                        hours = '-'
+                    defined_hours.append(hours)
+                except KeyError as e:
+                    raise ValueError('%s is required on defined_hours' % e)
+            data['defining_hours'] = defined_hours
+        except KeyError:
+            pass
+        except TypeError:
+            raise TypeError('defining_hours needs to be in dictionary')
+
         return True
 
     def update_data(self, data, user):
@@ -419,9 +529,18 @@ class Locality(UpdateMixin, ChangesetMixin):
         :param data: Data that will be inserted
         :type data: dict
         """
+        import uuid
+        from django.contrib.gis.geos import Point
+        from localities.tasks import regenerate_cache, regenerate_cache_cluster
 
         self.validate_data(data)
-        self.set_geom(data['lng'], data['lat'])
+        old_geom = None
+        try:
+            old_geom = [self.geom.x, self.geom.y]
+            self.set_geom(data['lng'], data['lat'])
+        except AttributeError:
+            self.geom = Point(data['lng'], data['lat'])
+
         self.name = data['name']
 
         # there are some changes so create a new changeset
@@ -429,14 +548,33 @@ class Locality(UpdateMixin, ChangesetMixin):
             social_user=user
         )
         self.changeset = changeset
-        self.set_values(data, user, changeset)
 
         del data['lng']
         del data['lat']
+
+        created = False
+        if not self.pk:
+            created = True
+            self.domain = Domain.objects.get(name='Health')
+            self.changeset = changeset
+            self.uuid = uuid.uuid4().hex
+            self.upstream_id = u'web¶{}'.format(self.uuid)
+            self.save()
+
         self.set_specifications(data, changeset)
-        if self.tracker.changed():
+        if not created and self.tracker.changed():
             self.changeset = changeset
             self.save()
+
+        # generate some attributes if location changed/created
+        new_geom = [self.geom.x, self.geom.y]
+        if new_geom != old_geom or created:
+            try:
+                self.update_what3words(user, changeset)
+            except AttributeError:
+                pass
+            regenerate_cache_cluster.delay()
+        regenerate_cache.delay(changeset.pk, self.pk)
         return True
 
     def set_specifications(
@@ -457,6 +595,12 @@ class Locality(UpdateMixin, ChangesetMixin):
         for key, value in data.iteritems():
             if key in fields:
                 continue
+
+            if isinstance(value, list):
+                value = '|'.join(value)
+            else:
+                value = '%s' % value
+
             value = value.replace(',', '|')
             value = value.replace('| ', '|')
 
@@ -483,7 +627,6 @@ class Locality(UpdateMixin, ChangesetMixin):
                 obj.locality = self
                 obj.specification = specification
 
-            # set data
             obj.data = value
 
             # check if Value.data actually changed, and save if it did

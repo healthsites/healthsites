@@ -17,7 +17,7 @@ from api.api_views.v2.facilities.list import GetFacilities
 api_v2 = patterns(
     '',
     url(r'^docs/', include_docs_urls(title='Healthsites API Version 2')),
-    url(r'^schema/', get_schema_view(title="Healthsites API Version 2 Schema")),
+    url(r'^schema/', get_schema_view(title='Healthsites API Version 2 Schema')),
     url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
         GetDetailFacility.as_view(), name='api_v2_facility_detail'),
     url(r'^facilities',

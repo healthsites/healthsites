@@ -9,8 +9,6 @@ from localities.models import Locality
 
 
 class LocalitySerializerBase(object):
-    days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
-
     def get_attributes(self, obj):
         """ Serializing attributes of locality
         """
@@ -30,15 +28,15 @@ class LocalitySerializerBase(object):
             except KeyError:
                 pass
             dict['inpatient_service'] = {
-                "full_time_beds": full_time_beds,
-                "part_time_beds": part_time_beds
+                'full_time_beds': full_time_beds,
+                'part_time_beds': part_time_beds
             }
-        except KeyError as e:
+        except KeyError:
             pass
 
         # Defining Hours
         defining_hours = {}
-        for index, day in enumerate(self.days):
+        for index, day in enumerate(Locality.DEFINED_DAYS):
             defining_hours[day] = '-'
             try:
                 hours = dict['defining_hours'][index].split('-')
@@ -70,10 +68,10 @@ class LocalitySerializerBase(object):
             except KeyError:
                 pass
             dict['staff'] = {
-                "doctors": doctors,
-                "nurses": nurses
+                'doctors': doctors,
+                'nurses': nurses
             }
-        except KeyError as e:
+        except KeyError:
             pass
         return dict
 
