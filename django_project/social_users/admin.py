@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from social.apps.django_app.default.models import UserSocialAuth
+from social_django.admin import UserSocialAuth
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
