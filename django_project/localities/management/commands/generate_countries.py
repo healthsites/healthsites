@@ -69,15 +69,13 @@ class Command(BaseCommand):
             try:
                 country = Country.objects.get(name=country_name)
                 if 'MultiPolygon' not in geometry.geojson:
-                    geometry = MultiPolygon(
-                        [Polygon(coords) for coords in
-                         country.geometry.coords[0]] +
-                        [Polygon(geometry.coords[0])]).geojson
+                    polygons = [Polygon(coords) for coords in country.geometry.coords[0]]
+                    polygons += [Polygon(geometry.coords[0])]
+                    geometry = MultiPolygon(polygons).geojson
                 else:
-                    geometry = MultiPolygon(
-                        [Polygon(coords) for coords in
-                         country.geometry.coords[0]] +
-                        [Polygon(coords) for coords in geometry.coords[0]]).geojson
+                    polygons = [Polygon(coords) for coords in country.geometry.coords[0]]
+                    polygons += [Polygon(coords) for coords in geometry.coords[0]]
+                    geometry = MultiPolygon(polygons).geojson
                 country.polygon_geometry = geometry
             except Exception:
                 if 'MultiPolygon' not in geometry.geojson:

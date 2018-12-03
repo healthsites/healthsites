@@ -67,9 +67,9 @@ class LocalitySearchApiView(ApiView):
                 # if country is not found
                 output = search_place(request, place_name)
                 output['countries'] = ''
-                bbox = (
-                    output['southwest_lng'] + ',' + output['southwest_lat'] + ',' +
-                    output['northeast_lng'] + ',' + output['northeast_lat']
+                bbox = '%s,%s,%s,%s' % (
+                    output['southwest_lng'], output['southwest_lat'],
+                    output['northeast_lng'], output['northeast_lat']
                 )
                 try:
                     polygon = parse_bbox(bbox)
