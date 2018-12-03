@@ -254,7 +254,7 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return changed_values
 
-    def repr_dict(self, clean=False):
+    def repr_dict(self, clean=False, in_array=False):
         """
         Basic locality representation, as a dictionary
         """
@@ -277,6 +277,16 @@ class Locality(UpdateMixin, ChangesetMixin):
         )
 
         for val in data_query:
+            if in_array:
+                dict['values'][val.specification.attribute.key] = [
+                    data for data in val.data.split('|') if data]
+
+                clean_data = dict['values'][val.specification.attribute.key]
+                if len(clean_data) == 0:
+                    dict['values'][val.specification.attribute.key] = '-'
+                elif len(clean_data) == 1:
+                    dict['values'][val.specification.attribute.key] = clean_data[0]
+                continue
             if clean:
                 # clean if empty
                 temp = val.data.replace('|', '')
@@ -377,6 +387,125 @@ class Locality(UpdateMixin, ChangesetMixin):
 
     def __unicode__(self):
         return u'{}'.format(self.id)
+
+    def validate_data(self, data):
+        """ Validate data based on fields
+
+        :param data: Data that will be inserted
+        :type data: dict
+        """
+        try:
+            data['lng'] = float(data['lng'])
+        except ValueError:
+            raise ValueError('lng is not in float')
+        try:
+            data['lat'] = float(data['lat'])
+        except ValueError:
+            raise ValueError('lat is not in float')
+
+        if not data['name']:
+            raise ValueError('name is empty')
+
+        domain = Domain.objects.get(name='Health')
+        attributes = Specification.objects.filter(domain=domain).filter(required=True)
+        for attribute in attributes:
+            if not data[attribute.attribute.key]:
+                raise ValueError('%s is empty' % attribute.attribute.key)
+        return True
+
+    def update_data(self, data, user):
+        """ Update locality data with new data.
+
+        :param data: Data that will be inserted
+        :type data: dict
+        """
+
+        self.validate_data(data)
+        self.set_geom(data['lng'], data['lat'])
+        self.name = data['name']
+
+        # there are some changes so create a new changeset
+        changeset = Changeset.objects.create(
+            social_user=user
+        )
+        self.changeset = changeset
+        self.set_values(data, user, changeset)
+
+        del data['lng']
+        del data['lat']
+        self.set_specifications(data, changeset)
+        if self.tracker.changed():
+            self.changeset = changeset
+            self.save()
+        return True
+
+    def set_specifications(
+            self, data, changeset, autocreate_specification=True):
+        """
+        Set values for a Locality which are defined by Specifications
+
+        Once all of values are set, 'SIG_locality_values_updated' signal will
+        be triggered to update FullTextSearch index for this Locality
+
+        :param data: Data to be inserted as specification
+        :type data: dict
+        """
+        fields = self._meta.get_all_field_names()
+        domain = Domain.objects.get(name='Health')
+
+        changed_values = []
+        for key, value in data.iteritems():
+            if key in fields:
+                continue
+            value = value.replace(',', '|')
+            value = value.replace('| ', '|')
+
+            try:
+                specification = Specification.objects.get(
+                    domain=domain, attribute__key=key)
+            except Specification.DoesNotExist:
+                if autocreate_specification:
+                    try:
+                        attribute = Attribute.objects.get(key=key)
+                    except Attribute.DoesNotExist:
+                        attribute = Attribute.objects.create(
+                            key=key, changeset=changeset)
+                    specification = Specification.objects.create(
+                        domain=domain, attribute=attribute, changeset=changeset)
+                else:
+                    continue
+
+            try:
+                obj = self.value_set.get(specification=specification)
+            except Value.DoesNotExist:
+                # in case there is no value for the specification, create
+                obj = Value()
+                obj.locality = self
+                obj.specification = specification
+
+            # set data
+            obj.data = value
+
+            # check if Value.data actually changed, and save if it did
+            if obj.tracker.changed():
+                obj.changeset = changeset
+                obj.save()
+                changed_values.append(obj)
+            else:
+                # nothing changed, don't save the value
+                pass
+
+        # send values_updated signal
+        signals.SIG_locality_values_updated.send(
+            sender=self.__class__, instance=self
+        )
+
+        # calculate completeness
+        if changed_values:
+            self.completeness = self.calculate_completeness()
+            self.save()
+
+        return changed_values
 
 
 class LocalityArchive(ArchiveMixin):
