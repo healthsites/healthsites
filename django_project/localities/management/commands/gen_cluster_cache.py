@@ -59,20 +59,23 @@ class Command(BaseCommand):
             self.stdout.write('Generated cluster cache for zoom: %s' % zoom)
 
         for country in Country.objects.all():
-            self.stdout.write('Generated cluster for %s' % country.name)
-            polygon = country.polygon_geometry
-            localities = get_heathsites_master().in_polygon(polygon)
-            for zoom in range(settings.CLUSTER_CACHE_MAX_ZOOM + 1):
-                filename = os.path.join(
-                    settings.CLUSTER_CACHE_DIR,
-                    '{}_{}_{}_localities_{}.json'.format(
-                        zoom, icon_size[0], icon_size[1], country.name
+            try:
+                self.stdout.write('Generated cluster for %s' % country.name)
+                polygon = country.polygon_geometry
+                localities = get_heathsites_master().in_polygon(polygon)
+                for zoom in range(settings.CLUSTER_CACHE_MAX_ZOOM + 1):
+                    filename = os.path.join(
+                        settings.CLUSTER_CACHE_DIR,
+                        '{}_{}_{}_localities_{}.json'.format(
+                            zoom, icon_size[0], icon_size[1], country.name
+                        )
                     )
-                )
 
-                object_list = cluster(localities, zoom, *icon_size)
+                    object_list = cluster(localities, zoom, *icon_size)
 
-                with open(filename, 'wb') as cache_file:
-                    json.dump(object_list, cache_file)
+                    with open(filename, 'wb') as cache_file:
+                        json.dump(object_list, cache_file)
 
-                self.stdout.write('Generated cluster cache for zoom: %s' % zoom)
+                    self.stdout.write('Generated cluster cache for zoom: %s' % zoom)
+            except UnicodeEncodeError:
+                pass

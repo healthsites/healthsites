@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
 
-from .models import (
+from localities.models import (
     Attribute, AttributeArchive, Domain, DomainArchive, Locality, LocalityArchive,
     LocalityIndex, Specification, SpecificationArchive, Value, ValueArchive
 )
