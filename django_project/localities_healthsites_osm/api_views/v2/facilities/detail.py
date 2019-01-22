@@ -1,12 +1,13 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from django.http.response import Http404, HttpResponseBadRequest
+from django.http.response import Http404
 from rest_framework.response import Response
-from api.api_views.v2.facilities.base_api import (
+
+from localities_healthsites_osm.api_views.v2 import (
     BaseAPI
 )
-from localities.models import Locality
+from localities_osm.models.locality import LocalityOSMView
 
 
 class GetDetailFacility(BaseAPI):
@@ -14,7 +15,7 @@ class GetDetailFacility(BaseAPI):
     get:
     Returns a facility detail.
 
-    put:
+    post:
     Update a facility.
     There are mandatory field for this:
     1. uuid : this is path parameters
@@ -81,33 +82,35 @@ class GetDetailFacility(BaseAPI):
         tertiary level including University hospital]
     """
 
-    def get(self, request, uuid):
+    def get(self, request, osm_type, osm_id):
         try:
-            facility = Locality.objects.get(uuid=uuid)
-            return Response(self.serialize(facility))
-        except Locality.DoesNotExist:
+            locality_osm = LocalityOSMView.objects.get(
+                osm_type=osm_type,
+                osm_id=osm_id)
+            return Response(self.serialize(locality_osm))
+        except LocalityOSMView.DoesNotExist:
             raise Http404()
 
-    def put(self, request, uuid):
+    def post(self, request, osm_type, osm_id):
+        # TODO: Also update data into osm database
         try:
-            data = request.data
-            facility = Locality.objects.get(uuid=uuid)
-            try:
-                facility.update_data(data, request.user)
-                return Response('OK')
-            except KeyError as e:
-                return HttpResponseBadRequest('%s is required' % e)
-            except ValueError as e:
-                return HttpResponseBadRequest('%s' % e)
-            except TypeError as e:
-                return HttpResponseBadRequest('%s' % e)
-        except Locality.DoesNotExist:
+            locality_osm = LocalityOSMView.objects.get(
+                osm_type=osm_type,
+                osm_id=osm_id)
+            return Response(self.serialize(locality_osm))
+        except LocalityOSMView.DoesNotExist:
             raise Http404()
-
-    def delete(self, request, uuid):
-        try:
-            facility = Locality.objects.get(uuid=uuid)
-            facility.delete()
-            return Response('OK')
-        except Locality.DoesNotExist:
-            raise Http404()
+        # try:
+            #     data = request.data
+            #     facility = Locality.objects.get(uuid=uuid)
+            #     try:
+            #         facility.update_data(data, request.user)
+            #         return Response('OK')
+            #     except KeyError as e:
+            #         return HttpResponseBadRequest('%s is required' % e)
+            #     except ValueError as e:
+            #         return HttpResponseBadRequest('%s' % e)
+            #     except TypeError as e:
+            #         return HttpResponseBadRequest('%s' % e)
+            # except Locality.DoesNotExist:
+            #     raise Http404()

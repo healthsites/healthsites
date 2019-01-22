@@ -78,6 +78,13 @@ uwsgi:
     - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
     - VIRTUAL_HOST=healthsites.io
     - VIRTUAL_PORT=8080
+    
+    # docker osm
+    - DOCKER_OSM_DATABASE_NAME=gis
+    - DOCKER_OSM_DATABASE_USERNAME=docker
+    - DOCKER_OSM_DATABASE_PASSWORD=docker
+    - DOCKER_OSM_DATABASE_HOST=192.168.1.8
+    - DOCKER_OSM_DATABASE_PORT=35432
   volumes:
     - ../django_project:/home/web/django_project
     - ./static:/home/web/static
@@ -178,6 +185,13 @@ devweb:
     - VIRTUAL_HOST=projecta.kartoza.com
     - VIRTUAL_PORT=8080
     - RABBITMQ_HOST=rabbitmq
+
+    # docker osm
+    - DOCKER_OSM_DATABASE_NAME=gis
+    - DOCKER_OSM_DATABASE_USERNAME=docker
+    - DOCKER_OSM_DATABASE_PASSWORD=docker
+    - DOCKER_OSM_DATABASE_HOST=172.18.0.2
+    - DOCKER_OSM_DATABASE_PORT=5432
   volumes:
     - ../django_project:/home/web/django_project
     - ./static:/home/web/static

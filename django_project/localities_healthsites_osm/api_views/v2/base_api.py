@@ -6,9 +6,11 @@ from django.core.paginator import EmptyPage, Paginator
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from api.serializer.locality import (
-    LocalitySerializer, LocalityGeoSerializer)
-from api.api_views.v2.csrf_exempt_session_authentication import (
+
+from localities_healthsites_osm.serializer.locality import (
+    LocalityHealthsitesOSMSerializer,
+    LocalityHealthsitesOSMGeoSerializer)
+from localities_healthsites_osm.api_views.v2 import (
     CsrfExemptSessionAuthentication
 )
 
@@ -28,11 +30,14 @@ class BaseAPI(APIView):
 
     def serialize(self, queryset, many=False):
         if self.format == 'json':
-            return LocalitySerializer(queryset, many=many).data
+            return LocalityHealthsitesOSMSerializer(
+                queryset, many=many).data
         elif self.format == 'geojson':
-            return LocalityGeoSerializer(queryset, many=many).data
+            return LocalityHealthsitesOSMGeoSerializer(
+                queryset, many=many).data
         elif self.format == 'xml':
-            data = LocalitySerializer(queryset, many=many).data
+            data = LocalityHealthsitesOSMSerializer(
+                queryset, many=many).data
             return dicttoxml.dicttoxml(data)
 
 

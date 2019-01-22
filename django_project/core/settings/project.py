@@ -15,6 +15,8 @@ from .secret import *  # NOQA
 # Project apps
 INSTALLED_APPS += (
     'localities',
+    'localities_osm',
+    'localities_healthsites_osm',
     'frontend',
     'social_users',
     'api',
@@ -118,3 +120,4 @@ CLUSTER_CACHE_MAX_ZOOM = 5
 
 # WHAT3WORDS API
 WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'
+DATABASE_ROUTERS = ['core.router.HealthsiteRouter']

@@ -15,7 +15,8 @@ INSTALLED_APPS += (
     'django_forms_bootstrap',
     'celery',
     'rest_framework',
-    'rest_framework_gis'
+    'rest_framework_gis',
+    'django.contrib.gis'
 )
 
 STOP_WORDS = (
