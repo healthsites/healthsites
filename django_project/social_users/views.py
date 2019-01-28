@@ -13,6 +13,7 @@ from django.views.generic import TemplateView, View
 
 from braces.views import LoginRequiredMixin
 
+from api.models.user_api_key import UserApiKey
 from core.utilities import extract_time
 from localities.models import Locality, LocalityArchive
 from localities.utils import extract_updates, get_update_detail
@@ -45,6 +46,14 @@ class ProfilePage(TemplateView):
         user = get_profile(user)
         context = super(ProfilePage, self).get_context_data(*args, **kwargs)
         context['user'] = user
+
+        context['api_keys'] = None
+        if self.request.user == user:
+            autogenerate_api_key = False
+            if user.is_superuser:
+                autogenerate_api_key = True
+            context['api_keys'] = UserApiKey.get_user_api_key(
+                self.request.user, autogenerate=autogenerate_api_key)
         return context
 
 
@@ -93,18 +102,18 @@ def user_updates(user, date):
     # from locality archive
     ids = (
         LocalityArchive.objects
-        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-        .order_by('-changeset__created')
-        .values('changeset', 'object_id')
-        .annotate(id=Min('id')).values('id')
+            .filter(changeset__social_user=user).filter(changeset__created__lt=date)
+            .order_by('-changeset__created')
+            .values('changeset', 'object_id')
+            .annotate(id=Min('id')).values('id')
     )
     updates_temp = (
         LocalityArchive.objects
-        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-        .filter(id__in=ids)
-        .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-        .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
+            .filter(changeset__social_user=user).filter(changeset__created__lt=date)
+            .filter(id__in=ids)
+            .order_by('-changeset__created')
+            .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+            .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
     )
     changesets = []
     for update in updates_temp:
@@ -114,10 +123,10 @@ def user_updates(user, date):
     # get from locality if not in Locality Archive yet
     updates_temp = (
         Locality.objects
-        .filter(changeset__social_user=user).exclude(changeset__in=changesets)
-        .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-        .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
+            .filter(changeset__social_user=user).exclude(changeset__in=changesets)
+            .order_by('-changeset__created')
+            .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+            .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
     )
     for update in updates_temp:
         updates.append(get_update_detail(update))

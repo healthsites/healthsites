@@ -3,20 +3,13 @@ __date__ = '29/11/18'
 
 import dicttoxml
 from django.core.paginator import EmptyPage, Paginator
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+from api.authentication import APIKeyAuthentication
 from api.serializer.locality import (
     LocalitySerializer, LocalityGeoSerializer)
-from api.api_views.v2.csrf_exempt_session_authentication import (
-    CsrfExemptSessionAuthentication
-)
-
 
 class BaseAPI(APIView):
-    authentication_classes = (
-        CsrfExemptSessionAuthentication, BasicAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated,)
+    authentication_classes = (APIKeyAuthentication,)
 
     _FORMATS = ['json', 'xml', 'geojson']
     format = 'json'

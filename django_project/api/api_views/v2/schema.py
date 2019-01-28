@@ -9,6 +9,15 @@ from rest_framework.filters import BaseFilterBackend
 class Parameters(object):
     """ Class that holds all parameter schemas
     """
+    api_key = Field(
+        'api-key',
+        location='query',
+        required=True,
+        schema=String(
+            description='API KEY for access healthsites api.'
+        ),
+    )
+
     page = Field(
         'page',
         location='query',
@@ -60,4 +69,5 @@ class ApiSchemaBase(BaseFilterBackend):
     schemas = []
 
     def get_schema_fields(self, view):
-        return self.schemas
+        schemas = [Parameters.api_key] + self.schemas
+        return schemas

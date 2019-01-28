@@ -78,6 +78,15 @@
                     </span>
                 </div>
             {% endif %}
+            {% if api_keys %}
+                <div id="api-keys-section">
+                    <strong>Your API KEYS</strong>
+                    <br>
+                    {% for api_key in api_keys %}
+                        <div>{{ api_key }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
         <div class="col-sm-8 profile-graphs">
             <h3>Latest updates</h3>
