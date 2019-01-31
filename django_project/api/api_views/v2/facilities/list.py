@@ -133,7 +133,7 @@ class GetFacilities(PaginationAPI):
         queryset = self.get_query_by_page(queryset)
         return Response(self.serialize(queryset, many=True))
 
-    def put(self, request):
+    def post(self, request):
         data = request.data
         facility = Locality()
         try:

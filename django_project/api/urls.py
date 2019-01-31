@@ -13,11 +13,10 @@ from .views.locality_synonym import LocalitySynonymApiView
 # API Version 2
 from api.api_views.v2.facilities.detail import GetDetailFacility
 from api.api_views.v2.facilities.list import GetFacilities
+from localities_healthsites_osm.urls import api_osm
 
 api_v2 = patterns(
     '',
-    url(r'^docs/', include_docs_urls(title='Healthsites API Version 2')),
-    url(r'^schema/', get_schema_view(title='Healthsites API Version 2 Schema')),
     url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
         GetDetailFacility.as_view(), name='api_v2_facility_detail'),
     url(r'^facilities',
@@ -26,6 +25,8 @@ api_v2 = patterns(
 
 urlpatterns = patterns(
     '',
+    url(r'^docs/', include_docs_urls(title='Healthsites API Version 2')),
+    url(r'^schema/', get_schema_view(title='Healthsites API Version 2 Schema')),
     url(r'^v1/healthsites/facilities', FacilitiesApiView.as_view(), name='api_facilities'),
     url(
         r'^v1/healthsites/search', LocalitySearchApiView.as_view(), name='api_search_localities'
@@ -44,4 +45,5 @@ urlpatterns = patterns(
     ),
     url(r'^v1', Docs.as_view(), name='docs'),
     url(r'v2/', include(api_v2)),
+    url(r'osm/', include(api_osm)),
 )

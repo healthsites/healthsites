@@ -23,6 +23,22 @@ clean:
 	@echo "------------------------------------------------------------------"
 	@docker rmi $(PROJECT_ID)_uwsgi
 
+init-docker-osm:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Get repositories of docker osm"
+	@echo "------------------------------------------------------------------"
+	@git submodule add https://github.com/kartoza/docker-osm.git
+	@git submodule init
+	@git submodule update
+	@cd docker-osm-healthcare; make osm-settings;
+
+run-docker-osm:
+	@echo "------------------------------------------------------------------"
+	@echo "Build and run docker osm for healthsites"
+	@echo "Make sure to run get-docker-osm and uncomment ALLOW_IP_RANGE= 0.0.0.0/0"
+	@echo "------------------------------------------------------------------"
+	@cd docker-osm; make build; make run;
 
 build:
 	@echo

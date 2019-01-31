@@ -11,9 +11,12 @@ from api.serializer.locality import (
 
 class BaseAPI(APIView):
     authentication_classes = (APIKeyAuthentication,)
-
     _FORMATS = ['json', 'xml', 'geojson']
     format = 'json'
+
+    # serializer
+    JSONSerializer = LocalitySerializer
+    GEOJSONSerializer = LocalityGeoSerializer
 
     def validation(self):
         self.format = self.request.GET.get('output', 'json')
@@ -22,11 +25,11 @@ class BaseAPI(APIView):
 
     def serialize(self, queryset, many=False):
         if self.format == 'json':
-            return LocalitySerializer(queryset, many=many).data
+            return self.JSONSerializer(queryset, many=many).data
         elif self.format == 'geojson':
-            return LocalityGeoSerializer(queryset, many=many).data
+            return self.GEOJSONSerializer(queryset, many=many).data
         elif self.format == 'xml':
-            data = LocalitySerializer(queryset, many=many).data
+            data = self.JSONSerializer(queryset, many=many).data
             return dicttoxml.dicttoxml(data)
 
 

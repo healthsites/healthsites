@@ -6,7 +6,18 @@ from rest_framework.response import Response
 from api.api_views.v2.facilities.base_api import (
     BaseAPI
 )
+from api.api_views.v2.schema import (
+    ApiSchemaBase,
+    Parameters
+)
 from localities.models import Locality
+
+
+class ApiSchema(ApiSchemaBase):
+    schemas = [Parameters.page, Parameters.extent,
+               Parameters.timestamp_from, Parameters.timestamp_to,
+               Parameters.output
+               ]
 
 
 class GetDetailFacility(BaseAPI):
@@ -14,7 +25,7 @@ class GetDetailFacility(BaseAPI):
     get:
     Returns a facility detail.
 
-    put:
+    post:
     Update a facility.
     There are mandatory field for this:
     1. uuid : this is path parameters
@@ -80,6 +91,7 @@ class GetDetailFacility(BaseAPI):
         second referral hospital or General hospital,
         tertiary level including University hospital]
     """
+    filter_backends = (ApiSchema,)
 
     def get(self, request, uuid):
         try:
@@ -88,7 +100,7 @@ class GetDetailFacility(BaseAPI):
         except Locality.DoesNotExist:
             raise Http404()
 
-    def put(self, request, uuid):
+    def post(self, request, uuid):
         try:
             data = request.data
             facility = Locality.objects.get(uuid=uuid)
