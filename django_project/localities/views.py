@@ -154,13 +154,8 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                         localities = Locality.objects.filter(id__in=localities)
                     else:
                         # serching by value
-<<<<<<< HEAD
                         if (spec != '' and spec != 'undefined'):
                             if (data != '' and data != 'undefined'):
-=======
-                        if spec != '' and spec != 'undefined':
-                            if data != '' and data != 'undefined':
->>>>>>> f548d604bc9dea5acb0b48b8ce8a0aa0ec475603
                                 localities = get_locality_by_spec_data(spec, data, uuid)
                                 localities = Locality.objects.filter(id__in=localities)
 
