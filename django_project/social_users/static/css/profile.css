@@ -79,3 +79,20 @@
 .right-side {
     width: 100%;
 }
+
+#api-keys-section {
+    margin-top: 10px;
+    border: 1px solid #f44a52;
+    padding: 10px;
+    color: #f44a52;
+}
+
+#api-keys-section div {
+    opacity: 0.7;
+    border: 1px solid #3C4C57;
+    background-color: #3C4C57;
+    color: white;
+    padding: 2px;
+    border-radius: 5px;
+    margin-top: 3px;
+}

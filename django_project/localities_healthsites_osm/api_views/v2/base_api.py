@@ -3,9 +3,8 @@ __date__ = '29/11/18'
 
 import dicttoxml
 from django.core.paginator import EmptyPage, Paginator
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+<<<<<<< HEAD:django_project/localities_healthsites_osm/api_views/v2/base_api.py
 
 from localities_healthsites_osm.serializer.locality import (
     LocalityHealthsitesOSMSerializer,
@@ -13,12 +12,15 @@ from localities_healthsites_osm.serializer.locality import (
 from localities_healthsites_osm.api_views.v2 import (
     CsrfExemptSessionAuthentication
 )
+=======
+from api.authentication import APIKeyAuthentication
+from api.serializer.locality import (
+    LocalitySerializer, LocalityGeoSerializer)
+>>>>>>> 09a01d80504a51e71756ddd0151f3fae52d9dcac:django_project/api/api_views/v2/facilities/base_api.py
 
 
 class BaseAPI(APIView):
-    authentication_classes = (
-        CsrfExemptSessionAuthentication, BasicAuthentication, SessionAuthentication)
-    permission_classes = (IsAuthenticated,)
+    authentication_classes = (APIKeyAuthentication,)
 
     _FORMATS = ['json', 'xml', 'geojson']
     format = 'json'

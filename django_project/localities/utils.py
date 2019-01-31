@@ -37,7 +37,7 @@ def get_what_3_words(geom):
             what3words = '.'.join(data['words'])
             return what3words
         return ''
-    except (Timeout, ConnectionError):
+    except (Timeout, ConnectionError, AttributeError):
         return ''
 
 

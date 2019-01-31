@@ -13,6 +13,7 @@ from django.views.generic import TemplateView, View
 
 from braces.views import LoginRequiredMixin
 
+from api.models.user_api_key import UserApiKey
 from core.utilities import extract_time
 from localities.models import Locality, LocalityArchive
 from localities.utils import extract_updates, get_update_detail
@@ -45,6 +46,14 @@ class ProfilePage(TemplateView):
         user = get_profile(user)
         context = super(ProfilePage, self).get_context_data(*args, **kwargs)
         context['user'] = user
+
+        context['api_keys'] = None
+        if self.request.user == user:
+            autogenerate_api_key = False
+            if user.is_superuser:
+                autogenerate_api_key = True
+            context['api_keys'] = UserApiKey.get_user_api_key(
+                self.request.user, autogenerate=autogenerate_api_key)
         return context
 
 

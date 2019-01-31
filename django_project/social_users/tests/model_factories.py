@@ -2,7 +2,7 @@
 import datetime
 
 import factory
-from social.apps.django_app.default.models import UserSocialAuth
+from social_django.admin import UserSocialAuth
 
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
