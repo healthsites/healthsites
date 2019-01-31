@@ -145,6 +145,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     A Locality is in a *Domain* and data values for Attributes, to be exact,
     their Specifications, are defined through *Value*
     """
+    DEFINED_DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
     domain = models.ForeignKey('Domain')
     uuid = models.TextField(unique=True)
@@ -254,7 +255,7 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return changed_values
 
-    def repr_dict(self, clean=False):
+    def repr_dict(self, clean=False, in_array=False):
         """
         Basic locality representation, as a dictionary
         """
@@ -277,6 +278,16 @@ class Locality(UpdateMixin, ChangesetMixin):
         )
 
         for val in data_query:
+            if in_array:
+                dict['values'][val.specification.attribute.key] = [
+                    data for data in val.data.split('|') if data]
+
+                clean_data = dict['values'][val.specification.attribute.key]
+                if len(clean_data) == 0:
+                    dict['values'][val.specification.attribute.key] = '-'
+                elif len(clean_data) == 1:
+                    dict['values'][val.specification.attribute.key] = clean_data[0]
+                continue
             if clean:
                 # clean if empty
                 temp = val.data.replace('|', '')
@@ -377,6 +388,267 @@ class Locality(UpdateMixin, ChangesetMixin):
 
     def __unicode__(self):
         return u'{}'.format(self.id)
+
+    def validate_data_by_defined_list(self, data, key, options, required=False):
+        """ Check value data by key if it is string and it is in options.
+
+        :param data: Data to be inserted
+        :param key: Key data that is checked
+        :param options: Options to be checked
+        :return:
+        """
+        try:
+            value = data[key]
+            if isinstance(value, list):
+                raise ValueError(
+                    'nature_of_facility should be string'
+                )
+            if value not in options:
+                raise ValueError(
+                    '%s is not recognized, options : %s' % (key, options)
+                )
+
+        except KeyError as e:
+            if required:
+                raise ValueError('%s is required' % e)
+            pass
+
+    def validate_data(self, data):
+        """ Validate data based on fields
+
+        :param data: Data that will be inserted
+        :type data: dict
+        """
+        try:
+            data['lng'] = float(data['lng'])
+        except ValueError:
+            raise ValueError('lng is not in float')
+        try:
+            data['lat'] = float(data['lat'])
+        except ValueError:
+            raise ValueError('lat is not in float')
+
+        if not data['name']:
+            raise ValueError('name is empty')
+
+        domain = Domain.objects.get(name='Health')
+        attributes = Specification.objects.filter(domain=domain).filter(required=True)
+        for attribute in attributes:
+            if not data[attribute.attribute.key]:
+                raise ValueError('%s is empty' % attribute.attribute.key)
+
+        # inpatient_service
+        try:
+            inpatient_service = data['inpatient_service']
+            try:
+                full_time_beds = inpatient_service['full_time_beds']
+            except KeyError:
+                raise ValueError(
+                    'full_time_beds needs to be in inpatient_service'
+                )
+            try:
+                part_time_beds = inpatient_service['part_time_beds']
+            except KeyError:
+                raise ValueError(
+                    'part_time_beds needs to be in inpatient_service'
+                )
+            data['inpatient_service'] = '%s|%s' % (
+                full_time_beds,
+                part_time_beds
+            )
+        except KeyError:
+            pass
+
+        # staff
+        try:
+            staff = data['staff']
+            try:
+                doctors = staff['doctors']
+            except KeyError:
+                raise ValueError(
+                    'doctors needs to be in staff'
+                )
+            try:
+                nurses = staff['nurses']
+            except KeyError:
+                raise ValueError(
+                    'nurses needs to be in staff'
+                )
+            data['staff'] = '%s|%s' % (
+                doctors,
+                nurses
+            )
+        except KeyError:
+            pass
+
+        # nature of facility
+        options = ['clinic without beds',
+                   'clinic with beds',
+                   'first referral hospital',
+                   'second referral hospital or General hospital',
+                   'tertiary level including University hospital']
+        self.validate_data_by_defined_list(
+            data, 'nature_of_facility', options)
+
+        # nature of facility
+        options = ['public',
+                   'private not for profit',
+                   'private commercial']
+        self.validate_data_by_defined_list(
+            data, 'ownership', options)
+
+        # defined_hours
+        try:
+            defined_hours = []
+            for index, day in enumerate(Locality.DEFINED_DAYS):
+                try:
+                    hours = data['defining_hours'][day]
+                    if not isinstance(hours, list):
+                        raise ValueError('%s is need to be in list' % day)
+                    if len(hours) == 1:
+                        hours.append('-')
+                    elif len(hours) > 2:
+                        raise ValueError('maximum lenght of %s is 2' % day)
+                    hours = '-'.join(hours)
+                    if not hours:
+                        hours = '-'
+                    defined_hours.append(hours)
+                except KeyError as e:
+                    raise ValueError('%s is required on defined_hours' % e)
+            data['defining_hours'] = defined_hours
+        except KeyError:
+            pass
+        except TypeError:
+            raise TypeError('defining_hours needs to be in dictionary')
+
+        return True
+
+    def update_data(self, data, user):
+        """ Update locality data with new data.
+
+        :param data: Data that will be inserted
+        :type data: dict
+        """
+        import uuid
+        from django.contrib.gis.geos import Point
+        from localities.tasks import regenerate_cache, regenerate_cache_cluster
+
+        self.validate_data(data)
+        old_geom = None
+        try:
+            old_geom = [self.geom.x, self.geom.y]
+            self.set_geom(data['lng'], data['lat'])
+        except AttributeError:
+            self.geom = Point(data['lng'], data['lat'])
+
+        self.name = data['name']
+
+        # there are some changes so create a new changeset
+        changeset = Changeset.objects.create(
+            social_user=user
+        )
+        self.changeset = changeset
+
+        del data['lng']
+        del data['lat']
+
+        created = False
+        if not self.pk:
+            created = True
+            self.domain = Domain.objects.get(name='Health')
+            self.changeset = changeset
+            self.uuid = uuid.uuid4().hex
+            self.upstream_id = u'web¶{}'.format(self.uuid)
+            self.save()
+
+        self.set_specifications(data, changeset)
+        if not created and self.tracker.changed():
+            self.changeset = changeset
+            self.save()
+
+        # generate some attributes if location changed/created
+        new_geom = [self.geom.x, self.geom.y]
+        if new_geom != old_geom or created:
+            try:
+                self.update_what3words(user, changeset)
+            except AttributeError:
+                pass
+            regenerate_cache_cluster.delay()
+        regenerate_cache.delay(changeset.pk, self.pk)
+        return True
+
+    def set_specifications(
+            self, data, changeset, autocreate_specification=True):
+        """
+        Set values for a Locality which are defined by Specifications
+
+        Once all of values are set, 'SIG_locality_values_updated' signal will
+        be triggered to update FullTextSearch index for this Locality
+
+        :param data: Data to be inserted as specification
+        :type data: dict
+        """
+        fields = self._meta.get_all_field_names()
+        domain = Domain.objects.get(name='Health')
+
+        changed_values = []
+        for key, value in data.iteritems():
+            if key in fields:
+                continue
+
+            if isinstance(value, list):
+                value = '|'.join(value)
+            else:
+                value = '%s' % value
+
+            value = value.replace(',', '|')
+            value = value.replace('| ', '|')
+
+            try:
+                specification = Specification.objects.get(
+                    domain=domain, attribute__key=key)
+            except Specification.DoesNotExist:
+                if autocreate_specification:
+                    try:
+                        attribute = Attribute.objects.get(key=key)
+                    except Attribute.DoesNotExist:
+                        attribute = Attribute.objects.create(
+                            key=key, changeset=changeset)
+                    specification = Specification.objects.create(
+                        domain=domain, attribute=attribute, changeset=changeset)
+                else:
+                    continue
+
+            try:
+                obj = self.value_set.get(specification=specification)
+            except Value.DoesNotExist:
+                # in case there is no value for the specification, create
+                obj = Value()
+                obj.locality = self
+                obj.specification = specification
+
+            obj.data = value
+
+            # check if Value.data actually changed, and save if it did
+            if obj.tracker.changed():
+                obj.changeset = changeset
+                obj.save()
+                changed_values.append(obj)
+            else:
+                # nothing changed, don't save the value
+                pass
+
+        # send values_updated signal
+        signals.SIG_locality_values_updated.send(
+            sender=self.__class__, instance=self
+        )
+
+        # calculate completeness
+        if changed_values:
+            self.completeness = self.calculate_completeness()
+            self.save()
+
+        return changed_values
 
 
 class LocalityArchive(ArchiveMixin):

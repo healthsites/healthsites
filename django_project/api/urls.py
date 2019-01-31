@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import patterns, url
+from django.conf.urls import include, patterns, url
+from rest_framework.documentation import include_docs_urls
+from rest_framework.schemas import get_schema_view
 
 from .views.api_view import Docs
 from .views.facilities import FacilitiesApiView
@@ -7,6 +9,20 @@ from .views.locality_create import LocalityCreateApiView
 from .views.locality_detail import LocalityDetailApiView
 from .views.locality_search import LocalitySearchApiView
 from .views.locality_synonym import LocalitySynonymApiView
+
+# API Version 2
+from api.api_views.v2.facilities.detail import GetDetailFacility
+from api.api_views.v2.facilities.list import GetFacilities
+
+api_v2 = patterns(
+    '',
+    url(r'^docs/', include_docs_urls(title='Healthsites API Version 2')),
+    url(r'^schema/', get_schema_view(title='Healthsites API Version 2 Schema')),
+    url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
+        GetDetailFacility.as_view(), name='api_v2_facility_detail'),
+    url(r'^facilities',
+        GetFacilities.as_view(), name='api_v2_facility_list'),
+)
 
 urlpatterns = patterns(
     '',
@@ -27,4 +43,5 @@ urlpatterns = patterns(
         name='api_search_localities'
     ),
     url(r'^v1', Docs.as_view(), name='docs'),
+    url(r'v2/', include(api_v2)),
 )
