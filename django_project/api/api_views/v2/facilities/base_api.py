@@ -8,6 +8,7 @@ from api.authentication import APIKeyAuthentication
 from api.serializer.locality import (
     LocalitySerializer, LocalityGeoSerializer)
 
+
 class BaseAPI(APIView):
     authentication_classes = (APIKeyAuthentication,)
 

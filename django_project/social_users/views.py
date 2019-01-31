@@ -102,18 +102,18 @@ def user_updates(user, date):
     # from locality archive
     ids = (
         LocalityArchive.objects
-            .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-            .order_by('-changeset__created')
-            .values('changeset', 'object_id')
-            .annotate(id=Min('id')).values('id')
+        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
+        .order_by('-changeset__created')
+        .values('changeset', 'object_id')
+        .annotate(id=Min('id')).values('id')
     )
     updates_temp = (
         LocalityArchive.objects
-            .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-            .filter(id__in=ids)
-            .order_by('-changeset__created')
-            .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-            .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
+        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
+        .filter(id__in=ids)
+        .order_by('-changeset__created')
+        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
     )
     changesets = []
     for update in updates_temp:
@@ -123,10 +123,10 @@ def user_updates(user, date):
     # get from locality if not in Locality Archive yet
     updates_temp = (
         Locality.objects
-            .filter(changeset__social_user=user).exclude(changeset__in=changesets)
-            .order_by('-changeset__created')
-            .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-            .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
+        .filter(changeset__social_user=user).exclude(changeset__in=changesets)
+        .order_by('-changeset__created')
+        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
     )
     for update in updates_temp:
         updates.append(get_update_detail(update))
