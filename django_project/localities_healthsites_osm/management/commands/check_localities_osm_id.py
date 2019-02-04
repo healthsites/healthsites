@@ -34,7 +34,6 @@ class Command(BaseCommand):
                 certainty = True
             except (IndexError, KeyError):
                 name = data['name']
-                current_osm_type = None
                 # TODO: Update how to match this locality and osm
                 # check by name match
                 by_names = LocalityOSMView.objects.filter(

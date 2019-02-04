@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import include, patterns, url
+from django.conf.urls import patterns, url
 from rest_framework.documentation import include_docs_urls
 from rest_framework.schemas import get_schema_view
 

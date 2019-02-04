@@ -1,7 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from django.http.response import Http404, HttpResponseBadRequest
+from django.http.response import Http404
 from rest_framework.response import Response
 from api.api_views.v2.facilities.base_api import (
     BaseAPI
