@@ -18,11 +18,11 @@ DATABASES = {
     },
     'docker_osm': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.environ['DOCKER_OSM_DATABASE_NAME'],
-        'USER': os.environ['DOCKER_OSM_DATABASE_USERNAME'],
-        'PASSWORD': os.environ['DOCKER_OSM_DATABASE_PASSWORD'],
-        'HOST': os.environ['DOCKER_OSM_DATABASE_HOST'],
-        'PORT': os.environ['DOCKER_OSM_DATABASE_PORT'],
+        'NAME': 'gis',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'HOST': 'osm-db',
+        'PORT': 5432,
         'TEST_NAME': 'docker_osm_unittests',
     }
 }

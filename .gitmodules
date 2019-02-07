@@ -1,3 +1,0 @@
-[submodule "deployment/docker-osm"]
-	path = deployment/docker-osm
-	url = https://github.com/kartoza/docker-osm.git

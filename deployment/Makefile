@@ -1,4 +1,5 @@
 PROJECT_ID := healthsites
+COMPOSE := -f docker-osm-compose.yml -f docker-compose.yml
 
 SHELL := /bin/bash
 
@@ -6,7 +7,7 @@ SHELL := /bin/bash
 #    P R O D U C T I O N     C O M M A N D S
 # ----------------------------------------------------------------------------
 default: web
-run: build permissions web migrate collectstatic
+run: run-docker-osm build permissions web migrate collectstatic
 
 deploy: run
 	@echo
@@ -23,40 +24,31 @@ clean:
 	@echo "------------------------------------------------------------------"
 	@docker rmi $(PROJECT_ID)_uwsgi
 
-init-docker-osm:
-	@echo
-	@echo "------------------------------------------------------------------"
-	@echo "Get repositories of docker osm"
-	@echo "------------------------------------------------------------------"
-	@git submodule add https://github.com/kartoza/docker-osm.git
-	@git submodule init
-	@git submodule update
-	@cd docker-osm-healthcare; make osm-settings;
-
 run-docker-osm:
 	@echo "------------------------------------------------------------------"
 	@echo "Build and run docker osm for healthsites"
 	@echo "Make sure to run get-docker-osm and uncomment ALLOW_IP_RANGE= 0.0.0.0/0"
 	@echo "------------------------------------------------------------------"
-	@cd docker-osm; make build; make run;
+	$(MAKE) -C docker-osm-healthcare osm-settings
 
 build:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Building in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) build uwsgi
+	@docker-compose $(COMPOSE)  -p $(PROJECT_ID) build uwsgi
 
 web:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) up -d web
+	@docker-compose $(COMPOSE)  -p $(PROJECT_ID) up -d web
 	@# Dont confuse this with the dbbackup make command below
 	@# This one runs the postgis-backup cron container
 	@# We add --no-recreate so that it does not destroy & recreate the db container
-	@docker-compose -p $(PROJECT_ID) up --no-recreate --no-deps -d dbbackups
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up --no-recreate --no-deps -d dbbackups
+	@docker-compose -f docker-osm-compose.yml -p $(PROJECT_ID) up -d --no-recreate
 
 permissions:
 	# Probably we want something more granular here....
@@ -77,14 +69,14 @@ db:
 	@echo "------------------------------------------------------------------"
 	@echo "Running db in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) up -d db
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up -d db
 
 rabbitmq:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running rabbitmq in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) up -d rabbitmq
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up -d rabbitmq
 
 nginx:
 	@echo
@@ -108,15 +100,16 @@ migrate:
 	@# We add the '-' prefix to the next line as the migration may fail
 	@# but we want to continue anyway.
 	@#We need to migrate accounts first as it has a reference to user model
-	-@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py migrate auth
-	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py migrate
+	-@docker-compose $(COMPOSE) -p $(PROJECT_ID) run uwsgi python manage.py migrate auth
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) run uwsgi python manage.py migrate
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) run uwsgi python manage.py migrate localities_osm --database=docker_osm
 
 update-migrations:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Running update migrations in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py makemigrations
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) run uwsgi python manage.py makemigrations
 
 collectstatic:
 	@echo
@@ -140,21 +133,21 @@ worker:
 	@echo "------------------------------------------------------------------"
 	@echo "Running worker in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) run worker
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) run worker
 
 kill:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Killing in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) kill
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) kill
 
 rm: kill
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Removing production instance!!! "
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) rm
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) rm
 
 logs:
 	@echo
@@ -168,14 +161,14 @@ workerlogs:
 	@echo "------------------------------------------------------------------"
 	@echo "Showing celery worker logs in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) logs worker
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) logs worker
 
 dblogs:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Showing db logs in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) logs db
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) logs db
 
 nginxlogs:
 	@echo
@@ -189,7 +182,7 @@ shell:
 	@echo "------------------------------------------------------------------"
 	@echo "Shelling in in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) run uwsgi /bin/bash
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) run uwsgi /bin/bash
 
 superuser:
 	@echo
@@ -281,14 +274,14 @@ devweb: db rabbitmq
 	@echo "------------------------------------------------------------------"
 	@echo "Running in DEVELOPMENT mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) up --no-deps -d devweb
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up --no-deps -d devweb
 
 build-devweb: db
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Building devweb"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) build devweb
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) build devweb
 
 
 # ----------

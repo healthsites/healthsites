@@ -77,10 +77,10 @@ data_for_import
 deployment/docker/71-apt-cacher-ng
 mapproxy
 maps
+deployment/docker-osm-healthcare/settings
 deployment/static
 deployment/backups
 deployment/media
-deployment/docker-osm-healthcare/settings
 
 # OSX things
 *.DS_Store
