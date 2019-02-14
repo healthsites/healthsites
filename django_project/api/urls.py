@@ -13,7 +13,6 @@ from .views.locality_synonym import LocalitySynonymApiView
 # API Version 2
 from api.api_views.v2.facilities.detail import GetDetailFacility
 from api.api_views.v2.facilities.list import GetFacilities
-from localities_healthsites_osm.urls import api_osm
 
 api_v2 = patterns(
     '',

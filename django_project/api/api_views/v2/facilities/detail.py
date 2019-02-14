@@ -41,7 +41,7 @@ class GetDetailFacility(BaseAPI):
         except Locality.DoesNotExist:
             raise Http404()
 
-    def post(self, request, uuid):
+    def put(self, request, uuid):
         try:
             data = request.data
             data = self.parse_data(data)

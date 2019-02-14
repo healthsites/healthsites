@@ -56,8 +56,8 @@ class BaseAPI(APIView):
             'sat': data['saturday']
         }
         data['inpatient_service'] = {
-            "full_time_beds": data['full_time_beds'],
-            "part_time_beds": data['part_time_beds']
+            'full_time_beds': data['full_time_beds'],
+            'part_time_beds': data['part_time_beds']
         }
         return data
 
