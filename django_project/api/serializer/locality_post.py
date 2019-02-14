@@ -41,21 +41,28 @@ class LocalityPostSerializer(serializers.Serializer):
     latitude = serializers.FloatField(help_text='Latitude position of healthsite')
     longitude = serializers.FloatField(help_text='Longitude position of healthsite')
     nature_of_facility = serializers.ChoiceField(
-        choices=NATURE_OF_FACILITY_CHOICES, required=False, help_text='nature of facility for this healthsite')
+        choices=NATURE_OF_FACILITY_CHOICES, required=False,
+        help_text='nature of facility for this healthsite')
     ownership = serializers.ChoiceField(
-        choices=OWNERSHIP_CHOICES, required=False, help_text='ownership for this healthsite')
+        choices=OWNERSHIP_CHOICES, required=False,
+        help_text='ownership for this healthsite')
 
     activities = serializers.MultipleChoiceField(
         choices=ACTIVITIES_CHOICES, required=False,
-        help_text='Activity for this healthsite. Valid choices are %s' % ACTIVITIES_CHOICES)
+        help_text='Activity for this healthsite. '
+                  'Valid choices are %s' % ACTIVITIES_CHOICES)
     ancillary_services = serializers.MultipleChoiceField(
         choices=ANCILLARY_SERVICES_CHOICES, required=False,
-        help_text='Ancillary services for this healthsite. Valid choices are %s' % ANCILLARY_SERVICES_CHOICES)
+        help_text='Ancillary services for this healthsite. '
+                  'Valid choices are %s' % ANCILLARY_SERVICES_CHOICES)
     scope_of_service = serializers.MultipleChoiceField(
         choices=SCOPE_OF_SERVICE_CHOICES, required=False,
-        help_text='Scope of services for this healthsite. Valid choices are %s' % SCOPE_OF_SERVICE_CHOICES)
-    full_time_beds = serializers.IntegerField(required=False, help_text='Number of full time bed')
-    part_time_beds = serializers.IntegerField(required=False, help_text='Number of part time bed')
+        help_text='Scope of services for this healthsite. '
+                  'Valid choices are %s' % SCOPE_OF_SERVICE_CHOICES)
+    full_time_beds = serializers.IntegerField(
+        required=False, help_text='Number of full time bed')
+    part_time_beds = serializers.IntegerField(
+        required=False, help_text='Number of part time bed')
     nurses = serializers.IntegerField(required=False, help_text='Number of nurses')
     doctors = serializers.IntegerField(required=False, help_text='Number of doctors')
     sunday = serializers.ListField(required=False, help_text='Sunday opening hours')

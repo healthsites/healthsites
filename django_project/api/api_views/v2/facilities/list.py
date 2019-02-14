@@ -29,6 +29,9 @@ class GetFacilities(PaginationAPI):
     """
     get:
     Returns a list of facilities with some filtering parameters.
+
+    post:
+    Create new facility.
     """
     filter_backends = (ApiSchema,)
 
