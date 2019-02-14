@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import itertools
+import json
 import logging
 from datetime import datetime
 
@@ -503,6 +504,14 @@ class Locality(UpdateMixin, ChangesetMixin):
             for index, day in enumerate(Locality.DEFINED_DAYS):
                 try:
                     hours = data['defining_hours'][day]
+                    if isinstance(hours, str) or isinstance(hours, unicode):
+                        if hours == '':
+                            hours = []
+                        else:
+                            try:
+                                hours = json.loads(hours)
+                            except ValueError:
+                                pass
                     if not isinstance(hours, list):
                         raise ValueError('%s is need to be in list' % day)
                     if len(hours) == 1:

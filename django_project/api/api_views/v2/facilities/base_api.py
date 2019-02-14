@@ -32,6 +32,35 @@ class BaseAPI(APIView):
             data = self.JSONSerializer(queryset, many=many).data
             return dicttoxml.dicttoxml(data)
 
+    def parse_data(self, data):
+        """ Parse raw data json to our structure of data
+        :param data: raw data
+        :type data: QueryDict
+
+        :return: clean data
+        :rtype: dict
+        """
+        data['lng'] = data['longitude']
+        data['lat'] = data['latitude']
+        data['staff'] = {
+            'nurses': data['nurses'],
+            'doctors': data['doctors']
+        }
+        data['defining_hours'] = {
+            'sun': data['sunday'],
+            'mon': data['monday'],
+            'tue': data['tuesday'],
+            'wed': data['wednesday'],
+            'thu': data['thursday'],
+            'fri': data['friday'],
+            'sat': data['saturday']
+        }
+        data['inpatient_service'] = {
+            "full_time_beds": data['full_time_beds'],
+            "part_time_beds": data['part_time_beds']
+        }
+        return data
+
 
 class PaginationAPI(BaseAPI):
     """

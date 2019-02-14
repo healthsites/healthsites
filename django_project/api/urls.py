@@ -45,5 +45,4 @@ urlpatterns = patterns(
     ),
     url(r'^v1', Docs.as_view(), name='docs'),
     url(r'v2/', include(api_v2)),
-    url(r'osm/', include(api_osm)),
 )
