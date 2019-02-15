@@ -496,7 +496,7 @@ window.LocalitySidebar = (function () {
                 // SHOW MASTERS
                 //-----------------------------------------
                 var synonyms = this.locality_data.synonyms;
-                if (synonyms.length > 0) {
+                if (synonyms && synonyms.length > 0) {
                     synonyms_indicator = '<div class="master-row">';
                     if (synonyms.length == 1) {
                         synonyms_indicator += 'This is the <b>confirmed master</b> for this alias:';
@@ -523,7 +523,7 @@ window.LocalitySidebar = (function () {
                 // SHOW SYNONYMS
                 //-----------------------------------------
                 var synonyms = this.locality_data.masters;
-                if (synonyms.length > 0) {
+                if (synonyms && synonyms.length > 0) {
                     synonyms_indicator += '<div class="master-row">';
                     synonyms_indicator += 'This is the <b>confirmed alias</b> for this master: ';
                     synonyms_indicator += "<ul>";
@@ -546,7 +546,7 @@ window.LocalitySidebar = (function () {
                 // SHOW POTENTIAL MASTERS
                 //-----------------------------------------
                 var synonyms = this.locality_data.unconfirmed_synonyms;
-                if (synonyms.length > 0) {
+                if (synonyms && synonyms.length > 0) {
                     synonyms_indicator += '<div class="master-row">';
                     synonyms_indicator += 'This is a <b>potential master</b> for ';
                     synonyms_indicator += "<ul>";
@@ -569,7 +569,7 @@ window.LocalitySidebar = (function () {
                 // SHOW UNCONFIRMED SYNONYMS
                 //-----------------------------------------
                 var synonyms = this.locality_data.potential_masters;
-                if (synonyms.length > 0) {
+                if (synonyms && synonyms.length > 0) {
                     synonyms_indicator += '<div class="master-row">';
                     synonyms_indicator += 'This is a <b>potential alias</b> for ';
                     synonyms_indicator += "<ul>";
