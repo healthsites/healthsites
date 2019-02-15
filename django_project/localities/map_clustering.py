@@ -114,3 +114,105 @@ def cluster(query_set, zoom, pix_x, pix_y, localities_is_needed=False):
             cluster_points.append(new_cluster)
 
     return cluster_points
+
+
+def cluster(query_set, zoom, pix_x, pix_y, localities_is_needed=False):
+    """
+    Walk though a set of Localities and create point clusters
+
+    We use a simple method that for every point, that is not within any
+    cluster, calculate it's 'catchment' area and add it to the cluster
+
+    If a point is within a cluster 'catchment' area increase point count for
+    that cluster and recalculate clusters minimum bbox
+    """
+
+    cluster_points = []
+
+    localites = query_set.get_lnglat().values(
+        'id', 'name', 'uuid', 'lnglat', 'changeset__created'
+    )
+    number = localites.count()
+    index = 1
+    for locality in localites.iterator():
+        if localities_is_needed:
+            print '%s/%s' % (index, number)
+        index += 1
+        geomx, geomy = map(float, locality['lnglat'].split(','))
+
+        # check every point in cluster_points
+        for pt in cluster_points:
+            if within_bbox(pt['bbox'], geomx, geomy):
+                # it's in the cluster 'catchment' area
+                pt['count'] += 1
+                pt['minbbox'] = update_minbbox((geomx, geomy), pt['minbbox'])
+                if localities_is_needed:
+                    pt['localities'].append(locality)
+                break
+
+        else:
+            # point is not in the catchment area of any cluster
+            x_range, y_range = overlapping_area(zoom, pix_x, pix_y, geomy)
+            locality_name = locality['name']
+            bbox = (
+                geomx - x_range * 1.5, geomy - y_range * 1.5,
+                geomx + x_range * 1.5, geomy + y_range * 1.5
+            )
+            new_cluster = {
+                'uuid': locality['uuid'],
+                'name': locality_name,
+                'count': 1,
+                'geom': (geomx, geomy),
+                'bbox': bbox,
+                'minbbox': (geomx, geomy, geomx, geomy),
+                'localities': []
+            }
+            if localities_is_needed:
+                new_cluster['localities'].append(locality)
+
+            cluster_points.append(new_cluster)
+
+    return cluster_points
+
+
+def oms_view_cluster(localites, zoom, pix_x, pix_y, localities_is_needed=False):
+    """
+    Walk though a set of osm view and create point clusters
+
+    We use a simple method that for every point, that is not within any
+    cluster, calculate it's 'catchment' area and add it to the cluster
+
+    If a point is within a cluster 'catchment' area increase point count for
+    that cluster and recalculate clusters minimum bbox
+    """
+
+    cluster_points = []
+    for locality in localites.iterator():
+        geomx = locality.geometry.centroid.x
+        geomy = locality.geometry.centroid.y
+
+        # check every point in cluster_points
+        for pt in cluster_points:
+            if within_bbox(pt['bbox'], geomx, geomy):
+                # it's in the cluster 'catchment' area
+                pt['count'] += 1
+                pt['minbbox'] = update_minbbox((geomx, geomy), pt['minbbox'])
+                break
+
+        else:
+            # point is not in the catchment area of any cluster
+            x_range, y_range = overlapping_area(zoom, pix_x, pix_y, geomy)
+            bbox = (
+                geomx - x_range * 1.5, geomy - y_range * 1.5,
+                geomx + x_range * 1.5, geomy + y_range * 1.5
+            )
+            new_cluster = {
+                'row': locality.row,
+                'geom': (geomx, geomy),
+                'count': 1,
+                'bbox': bbox,
+                'minbbox': (geomx, geomy, geomx, geomy),
+                'localities': []
+            }
+            cluster_points.append(new_cluster)
+    return cluster_points

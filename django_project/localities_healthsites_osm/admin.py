@@ -25,24 +25,24 @@ class LocalityHealthsitesOSMAdmin(admin.ModelAdmin):
         return LocalitySerializer(obj.healthsite).data
 
     def osm_data(self, obj):
-        try:
-            osm = LocalityOSMView.objects.get(
-                osm_id=obj.osm_id,
-                osm_type=obj.osm_type
-            )
-            return LocalityHealthsitesOSMSerializer(osm).data
-        except LocalityOSMView.DoesNotExist:
+        if obj.osm_id and obj.osm_type:
             try:
-                if obj.pk:
-                    osm = LocalityOSMNode.objects.get(
-                        pk=obj.osm_pk
-                    )
-                    data = LocalityHealthsitesOSMNodeSerializer(osm).data
-                    return data
-            except LocalityOSMNode.DoesNotExist:
+                osm = LocalityOSMView.objects.get(
+                    osm_id=obj.osm_id,
+                    osm_type=obj.osm_type
+                )
+                return LocalityHealthsitesOSMSerializer(osm).data
+            except LocalityOSMView.DoesNotExist:
                 pass
-            except Exception as e:
-                pass
+        try:
+            if obj.pk:
+                osm = LocalityOSMView.objects.get(
+                    row='%s-%s' % (obj.osm_pk, obj.osm_type)
+                )
+                data = LocalityHealthsitesOSMSerializer(osm).data
+                return data
+        except LocalityOSMView.DoesNotExist:
+            pass
         return '-'
 
     def locality_healthsite(self, obj):

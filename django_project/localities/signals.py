@@ -9,6 +9,9 @@ from .models import (
     Attribute, AttributeArchive, Domain, DomainArchive, Locality, LocalityArchive,
     LocalityIndex, Specification, SpecificationArchive, Value, ValueArchive
 )
+from localities_healthsites_osm.models.locality_healthsites_osm import (
+    LocalityHealthsitesOSM
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -140,3 +143,8 @@ def values_updated_handler(sender, instance, **kwargs):
     locind.rankd = loc_fts.get('D', '')
 
     locind.save()
+
+    # create locality view
+    LocalityHealthsitesOSM.objects.get_or_create(
+        healthsite=instance
+    )

@@ -47,7 +47,7 @@ function gettingData(country) {
         },
         success: function (data) {
             $("#country-locality-number").html(data);
-            if (country === 'World') {
+            if (country === '') {
                 $('#healthsites-count').html('<span class="timer" data-speed="2500"  data-to="' + data + '">' + data + '</span>');
             }
         }

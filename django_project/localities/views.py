@@ -18,12 +18,14 @@ from masterization import report_locality_as_unconfirmed_synonym
 
 # register signals
 from .forms import DataLoaderForm
-from .map_clustering import cluster
+from .map_clustering import (cluster, oms_view_cluster)
 from .models import Attribute, Changeset, Domain, Locality, Specification, Value
 from .utils import (
     get_country_statistic, get_heathsites_master, get_locality_by_spec_data,
     get_locality_detail, locality_create, locality_edit, locality_updates, parse_bbox
 )
+
+from localities_osm.models.locality import LocalityOSMView
 
 LOG = logging.getLogger(__name__)
 
@@ -42,7 +44,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         """
 
         if not (all(param in request.GET for param in [
-                'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid'])):
+            'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid'])):
             raise Http404
 
         try:
@@ -68,11 +70,32 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
 
         return (bbox_poly, zoom, icon_size, geoname, tag, spec, data, uuid)
 
+    def osm_cluster(self, request):
+        bbox, zoom, iconsize, geoname, tag, spec, data, uuid = self._parse_request_params(
+            request
+        )
+        if not all([tag, spec, data]) and geoname:
+            localities = LocalityOSMView.objects.in_bbox(bbox)
+            try:
+                # getting country's polygon
+                country = Country.objects.get(
+                    name__iexact=geoname)
+                polygon = country.polygon_geometry
+                localities = localities.in_polygon(polygon)
+                return oms_view_cluster(localities, zoom, *iconsize)
+            except Country.DoesNotExist:
+                pass
+        return None
+
     def get(self, request, *args, **kwargs):
         # parse request params
         bbox, zoom, iconsize, geoname, tag, spec, data, uuid = self._parse_request_params(
             request
         )
+
+        osm_cluster = self.osm_cluster(request)
+        if osm_cluster != None:
+            return self.render_json_response(osm_cluster)
 
         if not all([geoname, tag, spec, data]) and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
             # if geoname and tag are not set we can return the cached layer
@@ -147,9 +170,9 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     if tag != '' and tag != 'undefined':
                         localities = (
                             Value.objects
-                            .filter(specification__attribute__key='tags')
-                            .filter(data__icontains='|' + tag + '|')
-                            .values('locality')
+                                .filter(specification__attribute__key='tags')
+                                .filter(data__icontains='|' + tag + '|')
+                                .values('locality')
                         )
                         localities = Locality.objects.filter(id__in=localities)
                     else:
