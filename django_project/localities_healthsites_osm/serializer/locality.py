@@ -2,7 +2,6 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '22/01/19'
 
 import json
-from django.db.models import Q
 from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField
@@ -15,7 +14,6 @@ from localities_healthsites_osm.models.locality_healthsites_osm import (
 from localities_osm.models.locality import (
     LocalityOSMView, LocalityOSM
 )
-from api.serializer.locality import LocalitySerializer
 from localities.utils import get_locality_detail
 
 attributes_fields = LocalityOSM._meta.get_all_field_names()
@@ -73,7 +71,8 @@ class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
         for key, value in attributes.items():
             if value:
                 if key == 'doctors' or key == 'nurses':
-                    result['attributes']['staff'] = '%s|%s' % (attributes['doctors'], attributes['nurses'])
+                    result['attributes']['staff'] = '%s|%s' % (
+                        attributes['doctors'], attributes['nurses'])
                 else:
                     result['attributes'][key] = str(value)
         result['geometry'] = json.loads(self.get_geometry(instance).geojson)

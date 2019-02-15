@@ -51,7 +51,7 @@ class GetFacilitiesUtilities(object):
 
         # check by country
         country = request.GET.get('country', None)
-        if country == "World":
+        if country == 'World':
             country = None
         if country:
             # getting country's polygon

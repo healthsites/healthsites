@@ -8,7 +8,9 @@ from api.api_views.v2.facilities.base_api import (
 )
 from api.serializer.locality_post import LocalityPostSerializer
 from localities.models import Locality
-from localities_healthsites_osm.models.locality_healthsites_osm import LocalityHealthsitesOSM
+from localities_healthsites_osm.models.locality_healthsites_osm import (
+    LocalityHealthsitesOSM
+)
 
 
 class GetDetailFacility(BaseAPI):
@@ -24,7 +26,8 @@ class GetDetailFacility(BaseAPI):
         try:
 
             facility = Locality.objects.get(uuid=uuid)
-            locality_osm, created = LocalityHealthsitesOSM.objects.get_or_create(healthsite=facility)
+            locality_osm, created = LocalityHealthsitesOSM.objects.get_or_create(
+                healthsite=facility)
             facility = locality_osm.return_osm_view()
             return Response(self.serialize(facility))
         except Locality.DoesNotExist:

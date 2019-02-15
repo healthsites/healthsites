@@ -29,7 +29,7 @@ api_v2 = patterns(
 urlpatterns = patterns(
     '',
     url(r'^docs/', include_docs_urls(title='Healthsites API Version 2')),
-    url(r'^schema/', SchemaView.as_view(), name="schema_view"),
+    url(r'^schema/', SchemaView.as_view(), name='schema_view'),
     url(r'^v1/healthsites/facilities', FacilitiesApiView.as_view(), name='api_facilities'),
     url(
         r'^v1/healthsites/search', LocalitySearchApiView.as_view(), name='api_search_localities'

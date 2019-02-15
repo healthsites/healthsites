@@ -431,11 +431,11 @@ def localities_updates(locality_ids):
         id=Min('id')).values('id')
     updates_temp = (
         LocalityArchive.objects
-            .filter(object_id__in=locality_ids)
-            .filter(id__in=ids)
-            .order_by('-changeset__created')
-            .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-            .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))
+        .filter(object_id__in=locality_ids)
+        .filter(id__in=ids)
+        .order_by('-changeset__created')
+        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))
     )
     changesets = []
     for update in updates_temp:
@@ -445,10 +445,10 @@ def localities_updates(locality_ids):
     # get from locality if not in Locality Archive yet
     updates_temp = (
         locality_ids
-            .exclude(changeset__in=changesets)
-            .order_by('-changeset__created')
-            .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-            .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:15]
+        .exclude(changeset__in=changesets)
+        .order_by('-changeset__created')
+        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:15]
     )
     for update in updates_temp:
         updates.append(get_update_detail(update))
@@ -536,8 +536,8 @@ def search_locality_by_tag(query):
     try:
         localities = (
             Value.objects
-                .filter(specification__attribute__key='tags')
-                .filter(data__icontains='|' + query + '|').values('locality')
+            .filter(specification__attribute__key='tags')
+            .filter(data__icontains='|' + query + '|').values('locality')
         )
         localities = get_heathsites_master().filter(id__in=localities)
         output = json.dumps(get_statistic(localities), cls=DjangoJSONEncoder)
