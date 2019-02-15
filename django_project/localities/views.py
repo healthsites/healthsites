@@ -218,7 +218,7 @@ class LocalityInfo(JSONResponseMixin, View):
                 data = LocalityHealthsitesOSMSerializer(osm_view).data
                 try:
                     data['values'] = data['attributes']
-                    data['geom'] = [data['geometry']['coordinates'][1], data['geometry']['coordinates'][0]]
+                    data['geom'] = [data['geometry']['coordinates'][0], data['geometry']['coordinates'][1]]
                     del data['attributes']
                 except KeyError:
                     pass
