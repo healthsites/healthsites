@@ -6,10 +6,8 @@ from localities_healthsites_osm.models.locality_healthsites_osm import (
     LocalityHealthsitesOSM
 )
 from api.serializer.locality import LocalitySerializer
-from localities_osm.models.locality import LocalityOSMView, LocalityOSMNode
 from localities_osm.serializer.locality_osm import (
-    LocalityHealthsitesOSMSerializer,
-    LocalityHealthsitesOSMNodeSerializer
+    LocalityHealthsitesOSMSerializer
 )
 
 
@@ -25,25 +23,10 @@ class LocalityHealthsitesOSMAdmin(admin.ModelAdmin):
         return LocalitySerializer(obj.healthsite).data
 
     def osm_data(self, obj):
-        if obj.osm_id and obj.osm_type:
-            try:
-                osm = LocalityOSMView.objects.get(
-                    osm_id=obj.osm_id,
-                    osm_type=obj.osm_type
-                )
-                return LocalityHealthsitesOSMSerializer(osm).data
-            except LocalityOSMView.DoesNotExist:
-                pass
-        try:
-            if obj.pk:
-                osm = LocalityOSMView.objects.get(
-                    row='%s-%s' % (obj.osm_pk, obj.osm_type)
-                )
-                data = LocalityHealthsitesOSMSerializer(osm).data
-                return data
-        except LocalityOSMView.DoesNotExist:
-            pass
-        return '-'
+        osm = obj.return_osm_view()
+        if osm:
+            return LocalityHealthsitesOSMSerializer(osm).data
+        return None
 
     def locality_healthsite(self, obj):
         return (

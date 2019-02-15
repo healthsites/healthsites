@@ -20,6 +20,8 @@ api_v2 = patterns(
         GetFacilitiesCount.as_view(), name='api_v2_facility_count'),
     url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
         GetDetailFacility.as_view(), name='api_v2_facility_detail'),
+    url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
+        GetDetailFacility.as_view(), name='api_v2_facility_detail'),
     url(r'^facilities',
         GetFacilities.as_view(), name='api_v2_facility_list'),
 )

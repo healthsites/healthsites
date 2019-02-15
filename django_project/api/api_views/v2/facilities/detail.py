@@ -8,6 +8,7 @@ from api.api_views.v2.facilities.base_api import (
 )
 from api.serializer.locality_post import LocalityPostSerializer
 from localities.models import Locality
+from localities_healthsites_osm.models.locality_healthsites_osm import LocalityHealthsitesOSM
 
 
 class GetDetailFacility(BaseAPI):
@@ -19,12 +20,12 @@ class GetDetailFacility(BaseAPI):
     Update a facility.
     """
 
-    def get_serializer(self):
-        return LocalityPostSerializer()
-
     def get(self, request, uuid):
         try:
+
             facility = Locality.objects.get(uuid=uuid)
+            locality_osm, created = LocalityHealthsitesOSM.objects.get_or_create(healthsite=facility)
+            facility = locality_osm.return_osm_view()
             return Response(self.serialize(facility))
         except Locality.DoesNotExist:
             raise Http404()
@@ -51,5 +52,28 @@ class GetDetailFacility(BaseAPI):
             facility = Locality.objects.get(uuid=uuid)
             facility.delete()
             return Response('OK')
+        except Locality.DoesNotExist:
+            raise Http404()
+
+
+class GetDetailFacilityPublic(BaseAPI):
+    """
+    get:
+    Returns a facility detail.
+
+    put:
+    Update a facility.
+    """
+
+    def get_serializer(self):
+        return LocalityPostSerializer()
+
+    def get(self, request, uuid):
+        try:
+
+            facility = Locality.objects.get(uuid=uuid)
+            locality_osm, created = LocalityHealthsitesOSM.objects.get_or_create(healthsite=facility)
+            facility = locality_osm.return_osm_view()
+            return Response(self.serialize(facility))
         except Locality.DoesNotExist:
             raise Http404()

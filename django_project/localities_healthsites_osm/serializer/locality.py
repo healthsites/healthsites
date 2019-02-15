@@ -16,6 +16,7 @@ from localities_osm.models.locality import (
     LocalityOSMView, LocalityOSM
 )
 from api.serializer.locality import LocalitySerializer
+from localities.utils import get_locality_detail
 
 attributes_fields = LocalityOSM._meta.get_all_field_names()
 attributes_fields.remove('osm_id')
@@ -29,16 +30,20 @@ class LocalityHealthsitesOSMBaseSerializer(object):
         return attributes
 
     def get_healthsites_data(self, healthsite_osm):
-        try:
-            locality_healthsites_osm = LocalityHealthsitesOSM.objects.get(
-                Q(osm_id=healthsite_osm.osm_id,
-                  osm_type=healthsite_osm.osm_type) | Q(osm_pk=healthsite_osm.row.split('-')[0])
+        if healthsite_osm.osm_id and healthsite_osm.osm_type:
+            locality_healthsites_osm = LocalityHealthsitesOSM.objects.filter(
+                osm_id=healthsite_osm.osm_id,
+                osm_type=healthsite_osm.osm_type
             )
-            data = LocalitySerializer(locality_healthsites_osm.healthsite).data
-        except LocalityHealthsitesOSM.DoesNotExist:
-            return {}
-        del data['geom']
-        del data['id']
+            if locality_healthsites_osm.count() == 0:
+                return {}
+        else:
+            locality_healthsites_osm = LocalityHealthsitesOSM.objects.filter(
+                osm_pk=healthsite_osm.row.split('-')[0]
+            )
+            if locality_healthsites_osm.count() == 0:
+                return {}
+        data = get_locality_detail(locality_healthsites_osm[0].healthsite, None)
         return data
 
 
@@ -57,17 +62,20 @@ class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
     def to_representation(self, instance):
         result = super(LocalityHealthsitesOSMSerializer, self).to_representation(instance)
         locality_data = self.get_healthsites_data(instance)
+        try:
+            locality_data['attributes'] = locality_data['values']
+            del locality_data['values']
+        except KeyError:
+            pass
         # get healthsites locality data and put it on result attributes
         attributes = result['attributes']
         result.update(locality_data)
         for key, value in attributes.items():
             if value:
                 if key == 'doctors' or key == 'nurses':
-                    result['attributes']['staff'][key] = value
-                if key == 'full_time_beds':
-                    result['attributes']['inpatient_service'][key] = value
+                    result['attributes']['staff'] = '%s|%s' % (attributes['doctors'], attributes['nurses'])
                 else:
-                    result['attributes'][key] = value
+                    result['attributes'][key] = str(value)
         result['geometry'] = json.loads(self.get_geometry(instance).geojson)
         return result
 

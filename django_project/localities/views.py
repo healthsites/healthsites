@@ -26,6 +26,9 @@ from .utils import (
 )
 
 from localities_osm.models.locality import LocalityOSMView
+from localities_healthsites_osm.serializer.locality import (
+    LocalityHealthsitesOSMSerializer
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -195,29 +198,35 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             return self.render_json_response(object_list)
 
 
-class LocalityInfo(JSONResponseMixin, DetailView):
+class LocalityInfo(JSONResponseMixin, View):
     """
     Returns JSON representation of an Locality object (repr_dict) and a
     rendered template fragment (repr)
     """
 
-    model = Locality
-    slug_field = 'uuid'
-    slug_url_kwarg = 'uuid'
-
-    def get_queryset(self):
-        queryset = (
-            Locality.objects.select_related('domain')
-        )
-        return queryset
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if 'changes' in kwargs:
-            obj_repr = get_locality_detail(self.object, kwargs['changes'])
-        else:
-            obj_repr = get_locality_detail(self.object, None)
-        return self.render_json_response(obj_repr)
+    def get(self, request, uuid, *args, **kwargs):
+        try:
+            locality = Locality.objects.get(uuid=uuid)
+            if 'changes' in kwargs:
+                obj_repr = get_locality_detail(locality, kwargs['changes'])
+            else:
+                obj_repr = get_locality_detail(locality, None)
+            return self.render_json_response(obj_repr)
+        except Locality.DoesNotExist:
+            try:
+                osm_view = LocalityOSMView.objects.get(row=uuid)
+                data = LocalityHealthsitesOSMSerializer(osm_view).data
+                try:
+                    data['values'] = data['attributes']
+                    geom_y = data['geometry']['coordinates'][1]
+                    data['geometry']['coordinates'][1] = data['geometry']['coordinates'][0]
+                    data['geometry']['coordinates'][0] = geom_y
+                    del data['attributes']
+                except KeyError:
+                    pass
+                return self.render_json_response(data)
+            except LocalityOSMView.DoesNotExist:
+                raise Http404('Locality not found')
 
 
 def get_json_from_request(request):

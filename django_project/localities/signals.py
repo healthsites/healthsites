@@ -127,7 +127,7 @@ def values_updated_handler(sender, instance, **kwargs):
     """
     *SIG_locality_values_updated* triggered LocalityIndex update for a Locality
     """
-
+    from api.serializer.locality import LocalitySerializer
     LOG.debug('Updating LocalityIndex for Locality: %s', instance.pk)
 
     # retrieve ranked attribute values for a Locality
@@ -145,6 +145,11 @@ def values_updated_handler(sender, instance, **kwargs):
     locind.save()
 
     # create locality view
-    LocalityHealthsitesOSM.objects.get_or_create(
+    osm, created = LocalityHealthsitesOSM.objects.get_or_create(
         healthsite=instance
     )
+    healthsite_data = LocalitySerializer(instance).data
+    osm_view = osm.return_osm_view()
+    if osm_view:
+        osm_view.insert_healthsite_data(healthsite_data)
+        osm_view.save()

@@ -3,6 +3,7 @@ __date__ = '31/01/19'
 
 from django.contrib.gis.db import models
 from localities.models import Locality
+from localities_osm.models.locality import LocalityOSMView
 
 OSM_ELEMENT_TYPE = (
     ('node', 'node'),
@@ -47,3 +48,24 @@ class LocalityHealthsitesOSM(models.Model):
             self.osm_pk = node.pk
             self.osm_type = 'node'
         super(LocalityHealthsitesOSM, self).save(*args, **kwargs)
+
+    def return_osm_view(self):
+        if self.osm_id and self.osm_type:
+            try:
+                osm = LocalityOSMView.objects.get(
+                    osm_id=self.osm_id,
+                    osm_type=self.osm_type
+                )
+                return osm
+            except LocalityOSMView.DoesNotExist:
+                pass
+        try:
+            if self.pk:
+                osms = LocalityOSMView.objects.filter(
+                    row='%s-%s' % (self.osm_pk, self.osm_type)
+                )
+                if osms.count() > 0:
+                    return osms[0]
+        except LocalityOSMView.DoesNotExist:
+            pass
+        return None

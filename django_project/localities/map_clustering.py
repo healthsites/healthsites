@@ -207,12 +207,11 @@ def oms_view_cluster(localites, zoom, pix_x, pix_y, localities_is_needed=False):
                 geomx + x_range * 1.5, geomy + y_range * 1.5
             )
             new_cluster = {
-                'row': locality.row,
+                'uuid': locality.row,
                 'geom': (geomx, geomy),
                 'count': 1,
                 'bbox': bbox,
                 'minbbox': (geomx, geomy, geomx, geomy),
-                'localities': []
             }
             cluster_points.append(new_cluster)
     return cluster_points
