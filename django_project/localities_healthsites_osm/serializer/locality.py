@@ -1,6 +1,8 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '22/01/19'
 
+import json
+from django.db.models import Q
 from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField
@@ -29,15 +31,15 @@ class LocalityHealthsitesOSMBaseSerializer(object):
     def get_healthsites_data(self, healthsite_osm):
         try:
             locality_healthsites_osm = LocalityHealthsitesOSM.objects.get(
-                osm_id=healthsite_osm.osm_id,
-                osm_type=healthsite_osm.osm_type
+                Q(osm_id=healthsite_osm.osm_id,
+                  osm_type=healthsite_osm.osm_type) | Q(osm_pk=healthsite_osm.row.split('-')[0])
             )
             data = LocalitySerializer(locality_healthsites_osm.healthsite).data
-            del data['geom']
-            del data['id']
-            return data
         except LocalityHealthsitesOSM.DoesNotExist:
             return {}
+        del data['geom']
+        del data['id']
+        return data
 
 
 class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
@@ -47,10 +49,10 @@ class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
 
     class Meta:
         model = LocalityOSMView
-        exclude = attributes_fields
+        exclude = []
 
     def get_geometry(self, obj):
-        return obj.geometry
+        return obj.geometry.centroid
 
     def to_representation(self, instance):
         result = super(LocalityHealthsitesOSMSerializer, self).to_representation(instance)
@@ -66,6 +68,7 @@ class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
                     result['attributes']['inpatient_service'][key] = value
                 else:
                     result['attributes'][key] = value
+        result['geometry'] = json.loads(self.get_geometry(instance).geojson)
         return result
 
 

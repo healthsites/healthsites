@@ -58,6 +58,19 @@ class LocalityOSM(LocalityOSMBase):
         else:
             return u'%s' % self.name
 
+    def insert_healthsite_data(self, healthsite_data):
+        attributes = healthsite_data['attributes']
+        try:
+            attributes.update(attributes['inpatient_service'])
+        except KeyError:
+            pass
+        try:
+            attributes.update(attributes['staff'])
+        except KeyError:
+            pass
+        for key, value in attributes.items():
+            setattr(self, key, value)
+
 
 class LocalityOSMView(LocalityOSM):
     """ This model is a view model (that created on migrations) that

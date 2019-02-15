@@ -12,10 +12,12 @@ from .views.locality_synonym import LocalitySynonymApiView
 
 # API Version 2
 from api.api_views.v2.facilities.detail import GetDetailFacility
-from api.api_views.v2.facilities.list import GetFacilities
+from api.api_views.v2.facilities.list import (GetFacilities, GetFacilitiesCount)
 
 api_v2 = patterns(
     '',
+    url(r'^facilities/count',
+        GetFacilitiesCount.as_view(), name='api_v2_facility_count'),
     url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
         GetDetailFacility.as_view(), name='api_v2_facility_detail'),
     url(r'^facilities',

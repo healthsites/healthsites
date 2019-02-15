@@ -1,31 +1,71 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from datetime import datetime
 from django.http.response import HttpResponseBadRequest
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from api.api_views.v2.schema import (
     ApiSchemaBase,
+    ApiSchemaBaseWithoutApiKey,
     Parameters
 )
+from api.api_views.v2.utilities import BadRequestError
 from api.serializer.locality_post import LocalityPostSerializer
 from api.api_views.v2.facilities.base_api import (
     PaginationAPI
 )
-from localities.models import Locality
-from localities.utils import get_heathsites_master, parse_bbox
+from localities.models import Country, Locality
+from localities_osm.models.locality import LocalityOSMView
+from localities.utils import parse_bbox
+
+
+class CountScheme(ApiSchemaBaseWithoutApiKey):
+    schemas = [
+        Parameters.country, Parameters.extent, Parameters.output
+    ]
 
 
 class ApiSchema(ApiSchemaBase):
     schemas = [
-        Parameters.page, Parameters.extent,
-        Parameters.timestamp_from, Parameters.timestamp_to,
-        Parameters.output
+        Parameters.page, Parameters.country, Parameters.extent, Parameters.output
     ]
 
 
-class GetFacilities(PaginationAPI):
+class GetFacilitiesUtilities(object):
+    """
+    Parent class that hold filtering method of healthsites
+    """
+
+    def get_healthsites(self, request):
+
+        # check extent data
+        extent = request.GET.get('extent', None)
+        queryset = LocalityOSMView.objects.all()
+        if extent:
+            try:
+                polygon = parse_bbox(request.GET.get('extent'))
+            except (ValueError, IndexError):
+                raise BadRequestError('extent is incorrect format')
+            queryset = queryset.in_polygon(polygon)
+
+        # check by country
+        country = request.GET.get('country', None)
+        if country == "World":
+            country = None
+        if country:
+            # getting country's polygon
+            try:
+                country = Country.objects.get(
+                    name__iexact=country)
+                polygons = country.polygon_geometry
+                queryset = queryset.in_polygon(polygons)
+            except Country.DoesNotExist:
+                raise BadRequestError('%s is not found or not a country.' % country)
+        return queryset
+
+
+class GetFacilities(PaginationAPI, GetFacilitiesUtilities):
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -43,35 +83,7 @@ class GetFacilities(PaginationAPI):
         if validation:
             return HttpResponseBadRequest(validation)
 
-        # check extent data
-        extent = request.GET.get('extent', None)
-        queryset = get_heathsites_master()
-        if extent:
-            try:
-                polygon = parse_bbox(request.GET.get('extent'))
-            except (ValueError, IndexError):
-                return HttpResponseBadRequest('extent is incorrect format')
-            queryset = queryset.in_polygon(polygon)
-
-        # check by timestamp data
-        timestamp_from = request.GET.get('from', None)
-        if timestamp_from:
-            try:
-                queryset = queryset.from_datetime(
-                    datetime.fromtimestamp(int(timestamp_from))
-                )
-            except TypeError:
-                return HttpResponseBadRequest('From needs to be in integer')
-        timestamp_to = request.GET.get('to', None)
-        if timestamp_to:
-            try:
-                queryset = queryset.to_datetime(
-                    datetime.fromtimestamp(int(timestamp_to))
-                )
-            except TypeError:
-                return HttpResponseBadRequest('From needs to be in integer')
-
-        queryset = self.get_query_by_page(queryset)
+        queryset = self.get_query_by_page(self.get_healthsites(request))
         return Response(self.serialize(queryset, many=True))
 
     def post(self, request):
@@ -86,4 +98,18 @@ class GetFacilities(PaginationAPI):
         except ValueError as e:
             return HttpResponseBadRequest('%s' % e)
         except Exception as e:
+            return HttpResponseBadRequest('%s' % e)
+
+
+class GetFacilitiesCount(APIView, GetFacilitiesUtilities):
+    """
+    get:
+    Returns count of facilities with some filtering parameters.
+    """
+    filter_backends = (CountScheme,)
+
+    def get(self, request):
+        try:
+            return Response(self.get_healthsites(request).count())
+        except BadRequestError as e:
             return HttpResponseBadRequest('%s' % e)

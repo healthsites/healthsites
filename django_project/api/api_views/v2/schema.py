@@ -55,6 +55,15 @@ class Parameters(object):
         ),
     )
 
+    country = Field(
+        'country',
+        location='query',
+        required=False,
+        schema=String(
+            description='Filter by country)'
+        ),
+    )
+
     output = Field(
         'output',
         location='query',
@@ -63,6 +72,14 @@ class Parameters(object):
             description='Output format for the request. (json/xml/geojson, default: json)'
         ),
     )
+
+
+class ApiSchemaBaseWithoutApiKey(BaseFilterBackend):
+    schemas = []
+
+    def get_schema_fields(self, view):
+        schemas = self.schemas
+        return schemas
 
 
 class ApiSchemaBase(BaseFilterBackend):

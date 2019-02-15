@@ -7,18 +7,7 @@ from api.api_views.v2.facilities.base_api import (
     BaseAPI
 )
 from api.serializer.locality_post import LocalityPostSerializer
-from api.api_views.v2.schema import (
-    ApiSchemaBase,
-    Parameters
-)
 from localities.models import Locality
-
-
-class ApiSchema(ApiSchemaBase):
-    schemas = [Parameters.page, Parameters.extent,
-               Parameters.timestamp_from, Parameters.timestamp_to,
-               Parameters.output
-               ]
 
 
 class GetDetailFacility(BaseAPI):
@@ -29,7 +18,6 @@ class GetDetailFacility(BaseAPI):
     put:
     Update a facility.
     """
-    filter_backends = (ApiSchema,)
 
     def get_serializer(self):
         return LocalityPostSerializer()

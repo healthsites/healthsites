@@ -5,8 +5,8 @@ import dicttoxml
 from django.core.paginator import EmptyPage, Paginator
 from rest_framework.views import APIView
 from api.authentication import APIKeyAuthentication
-from api.serializer.locality import (
-    LocalitySerializer, LocalityGeoSerializer)
+from localities_healthsites_osm.serializer.locality import (
+    LocalityHealthsitesOSMSerializer, LocalityHealthsitesOSMGeoSerializer)
 
 
 class BaseAPI(APIView):
@@ -15,8 +15,8 @@ class BaseAPI(APIView):
     format = 'json'
 
     # serializer
-    JSONSerializer = LocalitySerializer
-    GEOJSONSerializer = LocalityGeoSerializer
+    JSONSerializer = LocalityHealthsitesOSMSerializer
+    GEOJSONSerializer = LocalityHealthsitesOSMGeoSerializer
 
     def validation(self):
         self.format = self.request.GET.get('output', 'json')
