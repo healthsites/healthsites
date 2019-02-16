@@ -84,7 +84,6 @@ class AttributionsView(TemplateView):
 def search_place(request, place):
     # getting country's polygon
     result = {}
-    result['locality_count'] = get_heathsites_master().count()
     result['countries'] = Country.objects.order_by('name').values('name').distinct()
     # geonames
     if place:

@@ -202,8 +202,7 @@
                         Download all healthsite data in this
                         <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile ({{ shapefile_size }})</a>
                     </p>
-                    <h2 class="sidebar-title "><span data-speed="2500"
-                                                     data-to="{{ locality_count }}">{{ locality_count }}</span>
+                    <h2 class="sidebar-title "><span id="healthsites-count"><i style="opacity: 0.3">loading</i></span>
                         healthsites listed</h2>
                 </div>
                 <div id="countries-table">
@@ -595,6 +594,19 @@
     }
     var APP;
     $(document).ready(function () {
+        {# get locality number #}
+        $.ajax({
+            url: "/api/v2/facilities/count",
+            dataType: 'json',
+            data: {
+                country: ''
+            },
+            success: function (data) {
+                $('#healthsites-count').html('<span class="timer" data-speed="2500"  data-to="' + data + '">' + data + '</span>');
+            }
+        });
+
+        {# ----------- #}
         prerender_popup();
         // Set viewport if exist
         {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
