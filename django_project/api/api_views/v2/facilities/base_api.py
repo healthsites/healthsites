@@ -44,35 +44,100 @@ class BaseAPI(APIView):
         data['lat'] = data['latitude']
         del data['longitude']
         del data['latitude']
+
+        # staff attributes
+        nurse = ''
+        doctors = ''
+        try:
+            nurse = data['nurses']
+            del data['nurses']
+        except KeyError:
+            pass
+        try:
+            doctors = data['doctors']
+            del data['doctors']
+        except KeyError:
+            pass
         data['staff'] = {
-            'nurses': data['nurses'],
-            'doctors': data['doctors']
+            'nurses': nurse,
+            'doctors': doctors
         }
-        del data['nurses']
-        del data['doctors']
+
+        # staff defining_hours
+        sun = ''
+        mon = ''
+        tue = ''
+        wed = ''
+        thu = ''
+        fri = ''
+        sat = ''
+        try:
+            sun = data['sunday']
+            del data['sunday']
+        except KeyError:
+            pass
+        try:
+            mon = data['monday']
+            del data['monday']
+        except KeyError:
+            pass
+        try:
+            tue = data['tuesday']
+            del data['tuesday']
+        except KeyError:
+            pass
+        try:
+            wed = data['wednesday']
+            del data['wednesday']
+        except KeyError:
+            pass
+        try:
+            thu = data['thursday']
+            del data['thursday']
+        except KeyError:
+            pass
+        try:
+            fri = data['friday']
+            del data['friday']
+        except KeyError:
+            pass
+        try:
+            sat = data['saturday']
+            del data['saturday']
+        except KeyError:
+            pass
         data['defining_hours'] = {
-            'sun': data['sunday'],
-            'mon': data['monday'],
-            'tue': data['tuesday'],
-            'wed': data['wednesday'],
-            'thu': data['thursday'],
-            'fri': data['friday'],
-            'sat': data['saturday']
+            'sun': sun,
+            'mon': mon,
+            'tue': tue,
+            'wed': wed,
+            'thu': thu,
+            'fri': fri,
+            'sat': sat
         }
-        del data['sunday']
-        del data['monday']
-        del data['tuesday']
-        del data['wednesday']
-        del data['thursday']
-        del data['friday']
-        del data['saturday']
+        # staff inpatient_service
+        full_time_beds = ''
+        part_time_beds = ''
+        try:
+            full_time_beds = data['full_time_beds']
+            del data['full_time_beds']
+        except KeyError:
+            pass
+        try:
+            part_time_beds = data['part_time_beds']
+            del data['part_time_beds']
+        except KeyError:
+            pass
         data['inpatient_service'] = {
-            'full_time_beds': data['full_time_beds'],
-            'part_time_beds': data['part_time_beds']
+            'full_time_beds': full_time_beds,
+            'part_time_beds': part_time_beds
         }
-        del data['full_time_beds']
-        del data['part_time_beds']
-        del data['csrfmiddlewaretoken']
+
+        # if using csrfmiddlewaretoken
+        try:
+            del data['csrfmiddlewaretoken']
+        except KeyError:
+            pass
         return data
 
 
