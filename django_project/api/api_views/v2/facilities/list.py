@@ -92,7 +92,7 @@ class GetFacilities(PaginationAPI, GetFacilitiesUtilities):
         try:
             data = self.parse_data(data)
             facility.update_data(data, request.user)
-            return Response(self.serialize(facility), status=status.HTTP_201_CREATED)
+            return Response(facility.uuid, status=status.HTTP_201_CREATED)
         except KeyError as e:
             return HttpResponseBadRequest('%s is required' % e)
         except ValueError as e:

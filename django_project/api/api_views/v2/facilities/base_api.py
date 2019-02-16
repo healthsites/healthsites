@@ -42,10 +42,14 @@ class BaseAPI(APIView):
         """
         data['lng'] = data['longitude']
         data['lat'] = data['latitude']
+        del data['longitude']
+        del data['latitude']
         data['staff'] = {
             'nurses': data['nurses'],
             'doctors': data['doctors']
         }
+        del data['nurses']
+        del data['doctors']
         data['defining_hours'] = {
             'sun': data['sunday'],
             'mon': data['monday'],
@@ -55,10 +59,20 @@ class BaseAPI(APIView):
             'fri': data['friday'],
             'sat': data['saturday']
         }
+        del data['sunday']
+        del data['monday']
+        del data['tuesday']
+        del data['wednesday']
+        del data['thursday']
+        del data['friday']
+        del data['saturday']
         data['inpatient_service'] = {
             'full_time_beds': data['full_time_beds'],
             'part_time_beds': data['part_time_beds']
         }
+        del data['full_time_beds']
+        del data['part_time_beds']
+        del data['csrfmiddlewaretoken']
         return data
 
 

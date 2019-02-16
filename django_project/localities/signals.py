@@ -149,7 +149,7 @@ def values_updated_handler(sender, instance, **kwargs):
         healthsite=instance
     )
     healthsite_data = LocalitySerializer(instance).data
-    osm_view = osm.return_osm_view()
+    osm_view = osm.return_osm_node()
     if osm_view:
         osm_view.insert_healthsite_data(healthsite_data)
         osm_view.save()

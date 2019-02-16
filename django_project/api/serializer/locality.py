@@ -60,11 +60,11 @@ class LocalitySerializerBase(object):
             doctors = '-'
             nurses = '-'
             try:
-                doctors = dict['staff'][0]
+                doctors = dict['doctors']
             except KeyError:
                 pass
             try:
-                nurses = dict['staff'][1]
+                nurses = dict['nurses']
             except KeyError:
                 pass
             dict['staff'] = {

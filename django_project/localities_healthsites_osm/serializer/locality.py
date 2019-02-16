@@ -74,7 +74,7 @@ class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
                     result['attributes']['staff'] = '%s|%s' % (
                         attributes['doctors'], attributes['nurses'])
                 else:
-                    result['attributes'][key] = str(value)
+                    result['attributes'][key] = value
         result['geometry'] = json.loads(self.get_geometry(instance).geojson)
         return result
 
