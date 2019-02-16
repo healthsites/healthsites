@@ -63,7 +63,7 @@ class Parameters(object):
         location='query',
         required=False,
         schema=String(
-            description='Filter by country)'
+            description='Filter by country'
         ),
     )
 

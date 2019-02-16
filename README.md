@@ -63,7 +63,7 @@ This database is created automatically by container of docker osm
 To fix it, just wait until the container done on creating database by checking it periodically.
 To check it
 ```
-dockerosm_imposm
+docker logs dockerosm_imposm
 ```
 and see if it is creating database in logs like this
 ```
@@ -114,6 +114,15 @@ make shell
 python manage.py gen_cluster_cache 48 46
 python manage.py generate_countries_cache
 ```
+
+Now, we want to link our data into docker osm data, to do that
+```
+cd healthsites/deployment
+make shell
+python manage.py check_localities_osm_id
+```
+This will taking a lot of time because docker osm is quite a big list.
+
 ## Development setup
 This development setup is just for PyCharm IDE. Please follow this steps.
 ```
