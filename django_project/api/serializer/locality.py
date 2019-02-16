@@ -12,27 +12,16 @@ class LocalitySerializerBase(object):
     def get_attributes(self, obj):
         """ Serializing attributes of locality
         """
-        dict = obj.repr_dict(in_array=True)
+        dict = obj.repr_dict()
         dict = dict['values']
-
+        dict['inpatient_service'] = dict['inpatient_service'].split('|')
+        dict['defining_hours'] = dict['defining_hours'].split('|')
+        dict['staff'] = dict['staff'].split('|')
         # serializing beds
-        try:
-            full_time_beds = '-'
-            part_time_beds = '-'
-            try:
-                full_time_beds = dict['inpatient_service'][0]
-            except KeyError:
-                pass
-            try:
-                part_time_beds = dict['inpatient_service'][1]
-            except KeyError:
-                pass
-            dict['inpatient_service'] = {
-                'full_time_beds': full_time_beds,
-                'part_time_beds': part_time_beds
-            }
-        except KeyError:
-            pass
+        dict['inpatient_service'] = {
+            'full_time_beds': dict['inpatient_service'][0],
+            'part_time_beds': dict['inpatient_service'][1]
+        }
 
         # Defining Hours
         defining_hours = {}
@@ -56,23 +45,10 @@ class LocalitySerializerBase(object):
         dict['defining_hours'] = defining_hours
 
         # serializing staff
-        try:
-            doctors = '-'
-            nurses = '-'
-            try:
-                doctors = dict['doctors']
-            except KeyError:
-                pass
-            try:
-                nurses = dict['nurses']
-            except KeyError:
-                pass
-            dict['staff'] = {
-                'doctors': doctors,
-                'nurses': nurses
-            }
-        except KeyError:
-            pass
+        dict['staff'] = {
+            'doctors': dict['staff'][0],
+            'nurses': dict['staff'][1]
+        }
         return dict
 
 
