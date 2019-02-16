@@ -24,27 +24,30 @@ class LocalitySerializerBase(object):
         except KeyError:
             pass
 
-        dict['defining_hours'] = dict['defining_hours'].split('|')
-        # Defining Hours
-        defining_hours = {}
-        for index, day in enumerate(Locality.DEFINED_DAYS):
-            defining_hours[day] = '-'
-            try:
-                hours = dict['defining_hours'][index].split('-')
-                defining_hours[day] = []
+        try:
+            dict['defining_hours'] = dict['defining_hours'].split('|')
+            # Defining Hours
+            defining_hours = {}
+            for index, day in enumerate(Locality.DEFINED_DAYS):
+                defining_hours[day] = '-'
                 try:
-                    if hours[0] and hours[1]:
-                        defining_hours[day].append(hours[0] + '-' + hours[1])
-                except IndexError:
+                    hours = dict['defining_hours'][index].split('-')
+                    defining_hours[day] = []
+                    try:
+                        if hours[0] and hours[1]:
+                            defining_hours[day].append(hours[0] + '-' + hours[1])
+                    except IndexError:
+                        pass
+                    try:
+                        if hours[2] and hours[3]:
+                            defining_hours[day].append(hours[2] + '-' + hours[3])
+                    except IndexError:
+                        pass
+                except KeyError:
                     pass
-                try:
-                    if hours[2] and hours[3]:
-                        defining_hours[day].append(hours[2] + '-' + hours[3])
-                except IndexError:
-                    pass
-            except KeyError:
-                pass
-        dict['defining_hours'] = defining_hours
+            dict['defining_hours'] = defining_hours
+        except KeyError:
+            pass
 
         try:
             # serializing staff

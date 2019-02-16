@@ -2,6 +2,7 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '31/01/19'
 
 from django.contrib.gis.db import models
+from django.db.utils import ConnectionDoesNotExist
 from localities.models import Locality
 from localities_osm.models.locality import LocalityOSMView, LocalityOSMNode
 
@@ -40,13 +41,16 @@ class LocalityHealthsitesOSM(models.Model):
         from localities_osm.models.locality import LocalityOSMNode
         from api.serializer.locality import LocalitySerializer
         if not self.osm_id and not self.osm_pk:
-            node = LocalityOSMNode()
-            node.geometry = self.healthsite.geom
-            healthsite_data = LocalitySerializer(self.healthsite).data
-            node.insert_healthsite_data(healthsite_data)
-            node.save()
-            self.osm_pk = node.pk
-            self.osm_type = 'node'
+            try:
+                node = LocalityOSMNode()
+                node.geometry = self.healthsite.geom
+                healthsite_data = LocalitySerializer(self.healthsite).data
+                node.insert_healthsite_data(healthsite_data)
+                node.save()
+                self.osm_pk = node.pk
+                self.osm_type = 'node'
+            except ConnectionDoesNotExist:
+                pass
         super(LocalityHealthsitesOSM, self).save(*args, **kwargs)
 
     def return_osm_view(self):
@@ -71,15 +75,18 @@ class LocalityHealthsitesOSM(models.Model):
         return None
 
     def return_osm_node(self):
-        if self.osm_id and self.osm_type:
+        try:
+            if self.osm_id and self.osm_type:
+                try:
+                    osm = LocalityOSMNode.objects.get(osm_id=self.osm_id)
+                    return osm
+                except LocalityOSMNode.DoesNotExist:
+                    pass
             try:
-                osm = LocalityOSMNode.objects.get(osm_id=self.osm_id)
-                return osm
+                if self.pk:
+                    return LocalityOSMNode.objects.get(pk=self.osm_pk)
             except LocalityOSMNode.DoesNotExist:
                 pass
-        try:
-            if self.pk:
-                return LocalityOSMNode.objects.get(pk=self.osm_pk)
-        except LocalityOSMNode.DoesNotExist:
+        except ConnectionDoesNotExist:
             pass
         return None
