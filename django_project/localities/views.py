@@ -9,7 +9,7 @@ import googlemaps
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
-from django.views.generic import DetailView, FormView, ListView, View
+from django.views.generic import FormView, ListView, View
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 
@@ -47,7 +47,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         """
 
         if not (all(param in request.GET for param in [
-            'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid'])):
+                'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid'])):
             raise Http404
 
         try:
@@ -97,7 +97,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         )
 
         osm_cluster = self.osm_cluster(request)
-        if osm_cluster != None:
+        if osm_cluster is not None:
             return self.render_json_response(osm_cluster)
 
         if not all([geoname, tag, spec, data]) and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
@@ -173,9 +173,9 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     if tag != '' and tag != 'undefined':
                         localities = (
                             Value.objects
-                                .filter(specification__attribute__key='tags')
-                                .filter(data__icontains='|' + tag + '|')
-                                .values('locality')
+                            .filter(specification__attribute__key='tags')
+                            .filter(data__icontains='|' + tag + '|')
+                            .values('locality')
                         )
                         localities = Locality.objects.filter(id__in=localities)
                     else:
@@ -218,7 +218,9 @@ class LocalityInfo(JSONResponseMixin, View):
                 data = LocalityHealthsitesOSMSerializer(osm_view).data
                 try:
                     data['values'] = data['attributes']
-                    data['geom'] = [data['geometry']['coordinates'][0], data['geometry']['coordinates'][1]]
+                    data['geom'] = [
+                        data['geometry']['coordinates'][0],
+                        data['geometry']['coordinates'][1]]
                     del data['attributes']
                 except KeyError:
                     pass

@@ -31,7 +31,9 @@ Out intention is to foster wide spread usage of the data and the code that we pr
 
 # Setup instructions
 
-**Note** we provide alternative setup instructions for deployment and development under docker - see our [developer documentation](https://github.com/healthsites/healthsites/blob/develop/README-dev.md) for complete details. If you want to develop locally without using docker, follow the steps below.
+Healthsites infrastructure is using docker, with django platform and has 2 database. The database are django database for django that contains all healthsites data, and another one is for docker osm database.
+Healthsites has docker osm mirror and needs it as main architecture. But all setup are easy to be done.  
+To setup the server, please follow the instruction.
 
 ### Check out the source
 
@@ -42,45 +44,117 @@ First checkout out the source tree:
 git clone git://github.com/healthsites/healthsites.git
 ```
 
-### Install dependencies
+## Production setup
 
+To start production setup, follow this steps
 ```
-sudo apt-get install python-psycopg2 python-virtualenv
-```
-
-```
-cd healthsites
-virtualenv venv
-source venv/bin/activate
-pip install -r REQUIREMENTS-dev.txt
-nodeenv -p --node=0.10.31
-npm -g install yuglify
+cd healthsites/deployment
+make deploy
 ```
 
-### Create your dev profile
-
-
+It will run all of architecture automatically and wait it until this error shows 
 
 ```
-cd django_project/core/settings
-cp dev_dodobas.py dev_${USER}.py
+django.db.utils.ProgrammingError: relation "django_site" does not exist
+LINE 1: SELECT (1) AS "a" FROM "django_site" LIMIT 1
+```
+This is because database in the docker osm needs to be created. 
+This database is created automatically by container of docker osm
+To fix it, just wait until the container done on creating database by checking it periodically.
+To check it
+```
+dockerosm_imposm
+```
+and see if it is creating database in logs like this
+```
+[Feb 16 09:15:13] [INFO] Imposm took: 1m49.293342244s
+Import PBF successful : /home/settings/country.pbf
+Installing QGIS styles.
+SET
+SET
+CREATE TABLE
+ALTER TABLE
+CREATE SEQUENCE
+
+```
+The estimation is about >3 hours for earth data.
+
+After it is done, redo
+```
+cd healthsites/deployment
+make deploy
+```
+and server is ready to be used.
+Server can be accessed in
+```
+http://localhost:49362
 ```
 
-Now edit dev_<your username> setting your database connection details as
-needed. We assume you have created a postgres (with postgis extentions)
-database somewhere that you can use for your development work. See
-[http://postgis.net/install/](http://postgis.net/install/) for details on doing
-that.
+### Creating admin user
+Currently admin can't be accessed because it doesn't had admin user yet.
+To do it
+```
+cd healthsites/deployment
+make shell
+python manage.py createsuperusr
+```
+and fill the instruction shows on the terminal
 
-### Running collect and migrate static
+### I have initial database
+If we already has initial backups database, we need to restore this database into server.
+To do it
+```
+cd healthsites/deployment
+make dbrestore
+```
+Healthsites is using cache to fasten the process. To generate this process, some process needs to be done
+```
+cd healthsites/deployment
+make shell
+python manage.py gen_cluster_cache 48 46
+python manage.py generate_countries_cache
+```
+## Development setup
+This development setup is just for PyCharm IDE. Please follow this steps.
+```
+cd healthsites/deployment
+make devweb
+```
+After that, open projects at the pycharm.
+Right click `django_project` folder and `Mark Directory as` `Source Root`
 
-Prepare your database and static resources by doing this:
+### Project settings
+Next step is setup our project settings
+```
+1. Go to File -> settings
+2. Go to Project: Healthsites -> Project Interpreter
+3. Click `gear` icon and click `SSH Interpreter`
+4. Fill host=localhost, username=root and port=49363
+5. Next and fill password=docker
+6. Next and change interpter to `/usr/bin/python`
+7. Change sync folder with remote folder=healthsite folder/django_project and remote folder=/home/web/django_project
+8. and click finish
+```
+### Django settings
+Next step is setup our django settings
+```
+1. Go to File -> settings
+2. Go to languages & framework -> django
+3. enable `Enable django support`
+4. Django project root= locate this (<your healthsites folder>/django_project)
+5. settings=core/settings/dev_docker.py
+6. Click OK
 
 ```
-virtualenv venv
-source venv/bin/activate
-cd django_project
-export RABBITMQ_HOST=localhost
-python manage.py migrate --settings=core.settings.dev_${USER}
-python manage.py collectstatic --noinput --settings=core.settings.dev_${USER}
+
+### Run configurations
+Now project settings is setup, our next step is setup run configuration to run our development server.
+```
+1. Go to Run -> Edit Configuration
+2. Click + icon and select django server
+3. on the right, fill name with anything
+4. Host=0.0.0.0
+5. Port=8080
+6. Python interpreter= Select the one that we create, which has sentences `localhost:49363`
+7. Click OK and run!
 ```

@@ -14,15 +14,17 @@ class LocalitySerializerBase(object):
         """
         dict = obj.repr_dict()
         dict = dict['values']
-        dict['inpatient_service'] = dict['inpatient_service'].split('|')
-        dict['defining_hours'] = dict['defining_hours'].split('|')
-        dict['staff'] = dict['staff'].split('|')
-        # serializing beds
-        dict['inpatient_service'] = {
-            'full_time_beds': dict['inpatient_service'][0],
-            'part_time_beds': dict['inpatient_service'][1]
-        }
+        try:
+            # serializing beds
+            dict['inpatient_service'] = dict['inpatient_service'].split('|')
+            dict['inpatient_service'] = {
+                'full_time_beds': dict['inpatient_service'][0],
+                'part_time_beds': dict['inpatient_service'][1]
+            }
+        except KeyError:
+            pass
 
+        dict['defining_hours'] = dict['defining_hours'].split('|')
         # Defining Hours
         defining_hours = {}
         for index, day in enumerate(Locality.DEFINED_DAYS):
@@ -44,11 +46,15 @@ class LocalitySerializerBase(object):
                 pass
         dict['defining_hours'] = defining_hours
 
-        # serializing staff
-        dict['staff'] = {
-            'doctors': dict['staff'][0],
-            'nurses': dict['staff'][1]
-        }
+        try:
+            # serializing staff
+            dict['staff'] = dict['staff'].split('|')
+            dict['staff'] = {
+                'doctors': dict['staff'][0],
+                'nurses': dict['staff'][1]
+            }
+        except KeyError:
+            pass
         return dict
 
 

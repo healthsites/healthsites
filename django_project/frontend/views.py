@@ -20,7 +20,7 @@ from braces.views import FormMessagesMixin
 from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from localities.utils import (
-    get_country_statistic, get_heathsites_master,
+    get_country_statistic,
     search_locality_by_spec_data, search_locality_by_tag
 )
 from social_users.utils import get_profile
