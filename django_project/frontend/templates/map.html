@@ -949,27 +949,7 @@
             url: "/api/v2/facilities/shapefile/process/" + country,
             dataType: 'json',
             success: function (data) {
-                var recheck = false;
-                if (data === "Start") {
-                    recheck = true;
-                } else {
-                    var indicator = "" + Math.round((data['index'] / data['total']) * 100) + "%";
-                    if (data['index'] === data['total']) {
-                        {# this is done #}
-                        $('.shapefile-indicator').hide();
-                        $('.shapefile-indicator').html('<i>generating...</i>');
-                        $('.shapefile-downloader').show();
-                        window.location.href = '/data/shapefiles/' + country + '.zip';
-                    } else {
-                        recheck = true;
-                    }
-                    $('.shapefile-indicator').html('<i>' + indicator + '</i>');
-                }
-                if (recheck) {
-                    setTimeout(function () {
-                        checkingShapefile(country)
-                    }, 1000 * 1);
-                }
+                window.location.href = '/data/shapefiles/' + country + '.zip';
             }
         });
     }
