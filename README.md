@@ -123,6 +123,14 @@ python manage.py check_localities_osm_id
 ```
 This will taking a lot of time because docker osm is quite a big list.
 
+### Country data extraction
+When we access page per country, there will be button to download shapefile.
+The generation of shapefile will be done in background for every 24 hours.
+But if we want to run it manually, we can do
+```
+python manage.py generate_shapefile_v2
+```
+
 ## Development setup
 This development setup is just for PyCharm IDE. Please follow this steps.
 ```
