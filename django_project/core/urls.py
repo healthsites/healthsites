@@ -17,16 +17,16 @@ urlpatterns = patterns(
     url(r'', include('localities.urls')),
     url(r'', include('social_users.urls')),
     url(r'api/', include('api.urls')),
+    url(r'data/(?P<path>.*)$', 'django.views.static.serve',
+        {
+            'document_root': settings.MEDIA_ROOT,
+            'show_indexes': True
+        }),
 
 )
 
 # expose static files and uploded media if DEBUG is active
 urlpatterns += patterns(
     '',
-    url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
-        {
-            'document_root': settings.MEDIA_ROOT,
-            'show_indexes': True
-        }),
     url(r'', include('django.contrib.staticfiles.urls'))
 )
