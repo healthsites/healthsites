@@ -139,4 +139,12 @@ def regenerate_cache_cluster(self):
 
 @shared_task(name='localities.tasks.generate_shapefile')
 def generate_shapefile():
-    management.call_command('generate_shapefile')
+    management.call_command('generate_shapefile_v2')
+
+
+@app.task(bind=True)
+def country_data_into_shapefile_task(self, country):
+    from localities.management.commands.generate_shapefile_v2 import (
+        country_data_into_shapefile
+    )
+    country_data_into_shapefile(country)

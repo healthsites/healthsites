@@ -163,7 +163,7 @@
                             {% endif %}
                         </div>
 
-                    <span class="name">
+                        <span class="name">
                         <a href="{% url 'userprofilepage' %}{{ user }}">{{ user.screen_name }}</a>
                     </span>
                     </div>
@@ -200,7 +200,9 @@
                     </p>
                     <p>
                         Download all healthsite data in this
-                        <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile ({{ shapefile_size }})</a>
+                        <span class="shapefile-downloader inner-navbar-brand" style="cursor: pointer"
+                              onclick="downloadShapefile('World')">shapefile</span>
+                        <span class="shapefile-indicator inner-navbar-brand" style="display: none"></span>
                     </p>
                     <h2 class="sidebar-title "><span id="healthsites-count"><i style="opacity: 0.3">loading</i></span>
                         healthsites listed</h2>
@@ -220,8 +222,6 @@
                     healthsites
                 </div>
                 <p id="country-shapefiles" class="header" style="padding-bottom: 10px; display: none">
-                    Download all healthsite data in this
-                    <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile</a>
                 </p>
 
                 <div style="padding: 20px">
@@ -285,7 +285,7 @@
                             <div class="more" style="margin-bottom: 5px">
                                 <div>
                                     last update: <span id="last_update" class="date">11 may 2015 17:23:15</span>, by
-                                <span class="name">
+                                    <span class="name">
                                     <a id="uploader" href="profile/sharehealthdata">@sharehealthdata</a>
                                 </span>
                                 </div>
@@ -771,7 +771,12 @@
             $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
         {% elif country %}
             $("#country-shapefiles").show();
-            $("#country-shapefiles").html('Download all healthsite data from {{ country }} in this <a class="inner-navbar-brand" href="/media/shapefiles/{{ country }}_shapefile.zip">shapefile ({{ shapefile_size }})</a>')
+            $("#country-shapefiles").html('' +
+                'Download all healthsite data from ' +
+                '<span class="shapefile-downloader inner-navbar-brand" style="cursor: pointer" ' +
+                'onclick="downloadShapefile(\'{{ country }}\')">shapefile</span> ' +
+                '<span class="shapefile-indicator inner-navbar-brand" style="display: none"></span>'
+            );
             $("#title-name").html("{{ country }}");
             $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
             // creating polygon
@@ -931,6 +936,43 @@
             }
         }
     });
+
+    function downloadShapefile(country) {
+        $('.shapefile-indicator').show();
+        $('.shapefile-indicator').html('<i>generating...</i>');
+        $('.shapefile-downloader').hide();
+        checkingShapefile(country);
+    }
+
+    function checkingShapefile(country) {
+        $.ajax({
+            url: "/api/v2/facilities/shapefile/process/" + country,
+            dataType: 'json',
+            success: function (data) {
+                var recheck = false;
+                if (data === "Start") {
+                    recheck = true;
+                } else {
+                    var indicator = "" + Math.round((data['index'] / data['total']) * 100) + "%";
+                    if (data['index'] === data['total']) {
+                        {# this is done #}
+                        $('.shapefile-indicator').hide();
+                        $('.shapefile-indicator').html('<i>generating...</i>');
+                        $('.shapefile-downloader').show();
+                        window.location.href = '/media/shapefiles/' + country + '.zip';
+                    } else {
+                        recheck = true;
+                    }
+                    $('.shapefile-indicator').html('<i>' + indicator + '</i>');
+                }
+                if (recheck) {
+                    setTimeout(function () {
+                        checkingShapefile(country)
+                    }, 1000 * 1);
+                }
+            }
+        });
+    }
 </script>
 
 <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>

@@ -686,3 +686,7 @@ a.inner-navbar-brand:hover {
     font-weight: 700;
     text-decoration: none;
 }
+
+.shapefile-indicator {
+    opacity: 0.3;
+}

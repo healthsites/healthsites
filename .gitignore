@@ -1,6 +1,7 @@
 # project specifc
 django_project/core/settings/secret.py
 django_project/cache
+django_project/media
 django_project/celerybeat-schedule
 deployment/pg
 xmlrunner

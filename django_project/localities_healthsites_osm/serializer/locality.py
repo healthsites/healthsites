@@ -64,19 +64,29 @@ class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
             locality_data['attributes'] = locality_data['values']
             del locality_data['values']
         except KeyError:
-            pass
+            locality_data['attributes'] = {}
         # get healthsites locality data and put it on result attributes
         attributes = result['attributes']
         result.update(locality_data)
         for key, value in attributes.items():
             if value:
                 if key == 'doctors' or key == 'nurses':
-                    result['attributes']['staff'] = '%s|%s' % (
+                    locality_data['attributes']['staff'] = '%s|%s' % (
                         attributes['doctors'], attributes['nurses'])
+                elif key == 'full_time_beds':
+                    try:
+                        inpatient_services = list(locality_data['attributes']['inpatient_service'])
+                        inpatient_services[0] = attributes['full_time_beds']
+                        locality_data['attributes']['inpatient_service'] = "".join(inpatient_services)
+                    except KeyError:
+                        locality_data['attributes']['inpatient_service'] = "%s|" % attributes['full_time_beds']
                 else:
-                    result['attributes'][key] = value
-        result['geometry'] = json.loads(self.get_geometry(instance).geojson)
-        return result
+                    locality_data['attributes'][key] = value
+        locality_data['geometry'] = json.loads(self.get_geometry(instance).geojson)
+        locality_data['row'] = result['row']
+        locality_data['osm_id'] = result['osm_id']
+        locality_data['osm_type'] = result['osm_type']
+        return locality_data
 
 
 class LocalityHealthsitesOSMGeoSerializer(LocalityHealthsitesOSMBaseSerializer,

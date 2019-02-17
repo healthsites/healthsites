@@ -115,6 +115,12 @@ services:
       - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
       - VIRTUAL_HOST=stagging.healthsites.io
       - VIRTUAL_PORT=8080
+
+      # docker osm
+      - DOCKER_OSM_DATABASE_NAME=gis
+      - DOCKER_OSM_DATABASE_USERNAME=docker
+      - DOCKER_OSM_DATABASE_PASSWORD=docker
+      - DOCKER_OSM_DATABASE_HOST=osm-db
     volumes:
       - ../django_project:/home/web/django_project
       - ./static:/home/web/static
