@@ -18,23 +18,23 @@ class GetFacilitiesShapefileProcess(APIView):
     """
 
     def get(self, request, country_name):
-        if country_name == "world" or country_name == "World":
-            country_name = "World"
+        if country_name == 'world' or country_name == 'World':
+            country_name = 'World'
         country_cache = os.path.join(settings.CLUSTER_CACHE_DIR, country_name)
         metadata_file = os.path.join(country_cache, 'metadata')
         try:
-            f = open(metadata_file, "r")
+            f = open(metadata_file, 'r')
             file_content = f.read()
-            if file_content == "Start":
-                return Response("Start")
+            if file_content == 'Start':
+                return Response('Start')
             try:
                 metadata = json.loads(file_content)
             except ValueError:
-                return Response("Start")
+                return Response('Start')
             if metadata['total'] == metadata['index']:
                 # check metadata
-                if country_name == "world" or country_name == "World":
-                    country_name = "World"
+                if country_name == 'world' or country_name == 'World':
+                    country_name = 'World'
                     queryset = LocalityOSMView.objects.all().order_by('row')
                 else:
                     country = Country.objects.get(
@@ -55,10 +55,10 @@ class GetFacilitiesShapefileProcess(APIView):
             country_data_into_shapefile_task.delay(country_name)
             try:
                 file = open(metadata_file, 'w+')
-                file.write("Start")
+                file.write('Start')
                 file.close()
             except Exception:
                 pass
-            return Response("Start")
+            return Response('Start')
         except Country.DoesNotExist:
             return HttpResponseBadRequest('%s is not found or not a country.' % country_name)

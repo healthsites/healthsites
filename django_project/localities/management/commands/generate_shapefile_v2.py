@@ -44,8 +44,8 @@ def country_data_into_shapefile(country):
     :param country_name: Country name
     :type: str
     """
-    country_name = "World"
-    if country == "World":
+    country_name = 'World'
+    if country == 'World':
         queryset = LocalityOSMView.objects.all().order_by('row')
     else:
         country = Country.objects.get(
@@ -108,7 +108,9 @@ def insert_to_shapefile(data, fields, shp_filename):
             except AttributeError:
                 pass
             values.append(value)
-        shp.point(healthsite['geometry']['coordinates'][0], healthsite['geometry']['coordinates'][1])
+        shp.point(
+            healthsite['geometry']['coordinates'][0],
+            healthsite['geometry']['coordinates'][1])
         shp.record(*values)
 
         # save the process

@@ -75,11 +75,14 @@ class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
                         attributes['doctors'], attributes['nurses'])
                 elif key == 'full_time_beds':
                     try:
-                        inpatient_services = list(locality_data['attributes']['inpatient_service'])
+                        inpatient_services = list(
+                            locality_data['attributes']['inpatient_service'])
                         inpatient_services[0] = attributes['full_time_beds']
-                        locality_data['attributes']['inpatient_service'] = "".join(inpatient_services)
+                        locality_data['attributes']['inpatient_service'] = \
+                            ''.join(inpatient_services)
                     except KeyError:
-                        locality_data['attributes']['inpatient_service'] = "%s|" % attributes['full_time_beds']
+                        locality_data['attributes']['inpatient_service'] = \
+                            '%s|' % attributes['full_time_beds']
                 else:
                     locality_data['attributes'][key] = value
         locality_data['geometry'] = json.loads(self.get_geometry(instance).geojson)
