@@ -15,5 +15,14 @@ DATABASES = {
         'HOST': 'db',
         'PORT': 5432,
         'TEST_NAME': 'unittests',
+    },
+    'docker_osm': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'gis',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'HOST': 'osm-db',
+        'PORT': 5432,
+        'TEST_NAME': 'docker_osm_unittests',
     }
 }

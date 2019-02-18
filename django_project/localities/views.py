@@ -9,7 +9,7 @@ import googlemaps
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import Http404, HttpResponse
-from django.views.generic import DetailView, FormView, ListView, View
+from django.views.generic import FormView, ListView, View
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 
@@ -18,11 +18,16 @@ from masterization import report_locality_as_unconfirmed_synonym
 
 # register signals
 from .forms import DataLoaderForm
-from .map_clustering import cluster
+from .map_clustering import (cluster, oms_view_cluster)
 from .models import Attribute, Changeset, Domain, Locality, Specification, Value
 from .utils import (
     get_country_statistic, get_heathsites_master, get_locality_by_spec_data,
     get_locality_detail, locality_create, locality_edit, locality_updates, parse_bbox
+)
+
+from localities_osm.models.locality import LocalityOSMView
+from localities_healthsites_osm.serializer.locality import (
+    LocalityHealthsitesOSMSerializer
 )
 
 LOG = logging.getLogger(__name__)
@@ -68,11 +73,32 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
 
         return (bbox_poly, zoom, icon_size, geoname, tag, spec, data, uuid)
 
+    def osm_cluster(self, request):
+        bbox, zoom, iconsize, geoname, tag, spec, data, uuid = self._parse_request_params(
+            request
+        )
+        if not all([tag, spec, data]) and geoname:
+            localities = LocalityOSMView.objects.in_bbox(bbox)
+            try:
+                # getting country's polygon
+                country = Country.objects.get(
+                    name__iexact=geoname)
+                polygon = country.polygon_geometry
+                localities = localities.in_polygon(polygon)
+                return oms_view_cluster(localities, zoom, *iconsize)
+            except Country.DoesNotExist:
+                pass
+        return None
+
     def get(self, request, *args, **kwargs):
         # parse request params
         bbox, zoom, iconsize, geoname, tag, spec, data, uuid = self._parse_request_params(
             request
         )
+
+        osm_cluster = self.osm_cluster(request)
+        if osm_cluster is not None:
+            return self.render_json_response(osm_cluster)
 
         if not all([geoname, tag, spec, data]) and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
             # if geoname and tag are not set we can return the cached layer
@@ -172,29 +198,35 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             return self.render_json_response(object_list)
 
 
-class LocalityInfo(JSONResponseMixin, DetailView):
+class LocalityInfo(JSONResponseMixin, View):
     """
     Returns JSON representation of an Locality object (repr_dict) and a
     rendered template fragment (repr)
     """
 
-    model = Locality
-    slug_field = 'uuid'
-    slug_url_kwarg = 'uuid'
-
-    def get_queryset(self):
-        queryset = (
-            Locality.objects.select_related('domain')
-        )
-        return queryset
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if 'changes' in kwargs:
-            obj_repr = get_locality_detail(self.object, kwargs['changes'])
-        else:
-            obj_repr = get_locality_detail(self.object, None)
-        return self.render_json_response(obj_repr)
+    def get(self, request, uuid, *args, **kwargs):
+        try:
+            locality = Locality.objects.get(uuid=uuid)
+            if 'changes' in kwargs:
+                obj_repr = get_locality_detail(locality, kwargs['changes'])
+            else:
+                obj_repr = get_locality_detail(locality, None)
+            return self.render_json_response(obj_repr)
+        except Locality.DoesNotExist:
+            try:
+                osm_view = LocalityOSMView.objects.get(row=uuid)
+                data = LocalityHealthsitesOSMSerializer(osm_view).data
+                try:
+                    data['values'] = data['attributes']
+                    data['geom'] = [
+                        data['geometry']['coordinates'][0],
+                        data['geometry']['coordinates'][1]]
+                    del data['attributes']
+                except KeyError:
+                    pass
+                return self.render_json_response(data)
+            except LocalityOSMView.DoesNotExist:
+                raise Http404('Locality not found')
 
 
 def get_json_from_request(request):

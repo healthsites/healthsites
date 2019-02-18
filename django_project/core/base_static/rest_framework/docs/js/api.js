@@ -220,30 +220,58 @@ $(function () {
         }
 
         params['api-key'] = $('#api-key').val();
-        var client = new coreapi.Client(options)
-        client.action(schema, key, params).then(function (data) {
-            var response = JSON.stringify(data, null, 2)
-            $requestAwaiting.addClass('hide')
-            $responseRaw.addClass('hide')
-            $responseData.addClass('hide').text('').jsonView(response)
+        var client = new coreapi.Client(options);
+        try {
+            client.action(schema, key, params).then(function (data) {
+                var response = JSON.stringify(data, null, 2)
+                $requestAwaiting.addClass('hide')
+                $responseRaw.addClass('hide')
+                $responseData.addClass('hide').text('').jsonView(response)
 
-            if (responseDisplay === 'data') {
-                $responseData.removeClass('hide')
-            } else {
-                $responseRaw.removeClass('hide')
-            }
-        }).catch(function (error) {
-            var response = JSON.stringify(error.content, null, 2)
-            $requestAwaiting.addClass('hide')
-            $responseRaw.addClass('hide')
-            $responseData.addClass('hide').text('').jsonView(response)
+                if (responseDisplay === 'data') {
+                    $responseData.removeClass('hide')
+                } else {
+                    $responseRaw.removeClass('hide')
+                }
+            }).catch(function (error) {
+                var response = JSON.stringify(error.content, null, 2)
+                $requestAwaiting.addClass('hide')
+                $responseRaw.addClass('hide')
+                $responseData.addClass('hide').text('').jsonView(response)
 
-            if (responseDisplay === 'data') {
-                $responseData.removeClass('hide')
-            } else {
-                $responseRaw.removeClass('hide')
-            }
-        })
+                if (responseDisplay === 'data') {
+                    $responseData.removeClass('hide')
+                } else {
+                    $responseRaw.removeClass('hide')
+                }
+            })
+        } catch (e) {
+            delete params['api-key'];
+            client.action(schema, key, params).then(function (data) {
+                var response = JSON.stringify(data, null, 2)
+                $requestAwaiting.addClass('hide')
+                $responseRaw.addClass('hide')
+                $responseData.addClass('hide').text('').jsonView(response)
+
+                if (responseDisplay === 'data') {
+                    $responseData.removeClass('hide')
+                } else {
+                    $responseRaw.removeClass('hide')
+                }
+            }).catch(function (error) {
+                var response = JSON.stringify(error.content, null, 2)
+                $requestAwaiting.addClass('hide')
+                $responseRaw.addClass('hide')
+                $responseData.addClass('hide').text('').jsonView(response)
+
+                if (responseDisplay === 'data') {
+                    $responseData.removeClass('hide')
+                } else {
+                    $responseRaw.removeClass('hide')
+                }
+            })
+
+        }
     })
 
     // 'Data'/'Raw' control

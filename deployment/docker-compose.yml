@@ -19,179 +19,197 @@
 
 # Our main nginx service - this is for testing only - normally
 # You would use a standalone nginx instance running on the host!
-nginx:
-  # Note you cannot scale if you use conteiner_name
-  container_name: healthsites-nginx
-  image: nginx
-  hostname: nginx
-  volumes:
-    - ./nginx-conf:/etc/nginx/conf.d
-  ports:
-    - "0.0.0.0:80:80"
-  restart: on-failure:5
+version: '2.1'
+services:
+  nginx:
+    # Note you cannot scale if you use conteiner_name
+    container_name: healthsites-nginx
+    image: nginx
+    hostname: nginx
+    volumes:
+      - ./nginx-conf:/etc/nginx/conf.d
+    ports:
+      - "0.0.0.0:80:80"
+    restart: on-failure:5
 
-smtp:
-  # Note you cannot scale if you use container_name
-  container_name: healthsites-smtp
-  image: catatnight/postfix
-  hostname: postfix
-  environment:
-    # You could change this to something more suitable
-    - maildomain=healthsites.io
-    - smtp_user=noreply:docker
-  restart: on-failure:5
+  smtp:
+    # Note you cannot scale if you use container_name
+    container_name: healthsites-smtp
+    image: catatnight/postfix
+    hostname: postfix
+    environment:
+      # You could change this to something more suitable
+      - maildomain=healthsites.io
+      - smtp_user=noreply:docker
+    restart: on-failure:5
 
-db:
-  # Note you cannot scale if you use container_name
-  container_name: healthsites-db
-  image: kartoza/postgis:9.4-2.1
-  volumes:
-    #- ./pg/postgres_data:/var/lib/postgresql
-    - ./backups:/backups
-  environment:
-    - USERNAME=docker
-    - PASS=docker
-  restart: on-failure:5
-  # To log into postgis from the host, using localhost 5432
-  # ports:
-  #  - "5432:5432"
+  db:
+    # Note you cannot scale if you use container_name
+    container_name: healthsites-db
+    image: kartoza/postgis:9.6-2.4
+    volumes:
+      #- ./pg/postgres_data:/var/lib/postgresql
+      - ./backups:/backups
+    environment:
+      - ALLOW_IP_RANGE=0.0.0.0/0
+      - USERNAME=docker
+      - PASS=docker
+    restart: on-failure:5
+    # To log into postgis from the host, using localhost 5432
+    # ports:
+    #  - "5432:5432"
 
-rabbitmq:
-  image: library/rabbitmq
-  hostname: rabbitmq
-  environment:
-      - RABBIT_PASSWORD=rabbit_test_password
-      - USER=rabbit_user
-      - RABBITMQ_NODENAME=rabbit
+  rabbitmq:
+    image: library/rabbitmq
+    hostname: rabbitmq
+    environment:
+        - RABBIT_PASSWORD=rabbit_test_password
+        - USER=rabbit_user
+        - RABBITMQ_NODENAME=rabbit
 
-uwsgi:
-  # Note you cannot scale if you use container_name
-  container_name: healthsites-uwsgi
-  build: docker
-  hostname: uwsgi
-  environment:
-    - DATABASE_NAME=gis
-    - DATABASE_USERNAME=docker
-    - DATABASE_PASSWORD=docker
-    - DATABASE_HOST=db
-    - RABBITMQ_HOST=rabbitmq
-    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
-    - VIRTUAL_HOST=healthsites.io
-    - VIRTUAL_PORT=8080
-  volumes:
-    - ../django_project:/home/web/django_project
-    - ./static:/home/web/static
-    - ./media:/home/web/media
-    - ./reports:/home/web/reports
-    - ./logs:/var/log/
-    - /etc/letsencrypt:/etc/letsencrypt
-    - ./webroot-path:/var/www/webroot
-  links:
-    - smtp:smtp
-    - db:db
-    - rabbitmq:rabbitmq
-    - worker:worker
+  uwsgi:
+    # Note you cannot scale if you use container_name
+    container_name: healthsites-uwsgi
+    build: docker
+    hostname: uwsgi
+    environment:
+      - DATABASE_NAME=gis
+      - DATABASE_USERNAME=docker
+      - DATABASE_PASSWORD=docker
+      - DATABASE_HOST=db
+      - RABBITMQ_HOST=rabbitmq
+      - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+      - VIRTUAL_HOST=healthsites.io
+      - VIRTUAL_PORT=8080
 
-worker:
-  build: docker
-  hostname: worker
-  command: celery worker -A localities -l info --beat
-  environment:
-    - DATABASE_NAME=gis
-    - DATABASE_USERNAME=docker
-    - DATABASE_PASSWORD=docker
-    - DATABASE_HOST=db
-    - RABBITMQ_HOST=rabbitmq
-    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
-    - VIRTUAL_HOST=stagging.healthsites.io
-    - VIRTUAL_PORT=8080
-  volumes:
-    - ../django_project:/home/web/django_project
-    - ./static:/home/web/static
-    - ./media:/home/web/media
-    - ./reports:/home/web/reports
-    - ./logs:/var/log/
-  links:
-    - smtp:smtp
-    - db:db
-    - rabbitmq:rabbitmq
-  restart: on-failure:5
+          # docker osm
+      - DOCKER_OSM_DATABASE_NAME=gis
+      - DOCKER_OSM_DATABASE_USERNAME=docker
+      - DOCKER_OSM_DATABASE_PASSWORD=docker
+      - DOCKER_OSM_DATABASE_HOST=osm-db
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./static:/home/web/static
+      - ./media:/home/web/media
+      - ./reports:/home/web/reports
+      - ./logs:/var/log/
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./webroot-path:/var/www/webroot
+    links:
+      - smtp:smtp
+      - db:db
+      - osm-db:osm-db
+      - rabbitmq:rabbitmq
+      - worker:worker
 
-dbbackups:
-  # Note you cannot scale if you use container_name
-  container_name: healthsites-db-backups
-  image: kartoza/pg-backup:9.4
-  hostname: pg-backups
-  volumes:
-    - ./backups:/backups
-  links:
-    - db:db
-  environment:
-    # take care to let the project name below match that
-    # declared in the top of the makefile
-    - DUMPPREFIX=PG_HEALTHSITES
-    # These are all defaults anyway, but setting explicitly in
-    # case we ever want to ever use different credentials
-    - PGUSER=docker
-    - PGPASSWORD=docker
-    - PGPORT=5432
-    - PGHOST=db
-    - PGDATABASE=gis
-  restart: on-failure:5
+  worker:
+    build: docker
+    hostname: worker
+    command: celery worker -A localities -l info --beat
+    environment:
+      - DATABASE_NAME=gis
+      - DATABASE_USERNAME=docker
+      - DATABASE_PASSWORD=docker
+      - DATABASE_HOST=db
+      - RABBITMQ_HOST=rabbitmq
+      - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+      - VIRTUAL_HOST=stagging.healthsites.io
+      - VIRTUAL_PORT=8080
 
-# This is normally the main entry point for a production server
-web:
-  # Note you cannot scale if you use container_name
-  container_name: healthsites-web
-  image: nginx
-  hostname: nginx
-  volumes:
-    - ./sites-enabled:/etc/nginx/conf.d:ro
-    # I dont use volumes_from as I want to use the ro modifier
-    - ./static:/home/web/static:ro
-    - ./media:/home/web/media:ro
-    - ./logs:/var/log/nginx
-    - /etc/letsencrypt:/etc/letsencrypt
-    - ./webroot-path:/var/www/webroot
-  links:
-    - uwsgi:uwsgi
-  ports:
-    - "49361:8080"
-  restart: on-failure:5
+      # docker osm
+      - DOCKER_OSM_DATABASE_NAME=gis
+      - DOCKER_OSM_DATABASE_USERNAME=docker
+      - DOCKER_OSM_DATABASE_PASSWORD=docker
+      - DOCKER_OSM_DATABASE_HOST=osm-db
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./static:/home/web/static
+      - ./media:/home/web/media
+      - ./reports:/home/web/reports
+      - ./logs:/var/log/
+    links:
+      - smtp:smtp
+      - db:db
+      - osm-db:osm-db
+      - rabbitmq:rabbitmq
+    restart: on-failure:5
 
-# This is the entry point for a development server.
-# Run with --no-deps to run attached to the services
-# from produ environment if wanted
-devweb:
-  # Note you cannot scale if you use container_name
-  container_name: healthsites-dev-web
-  build: docker
-  dockerfile: Dockerfile-dev
-  hostname: uwsgi
-  environment:
-    - DATABASE_NAME=gis
-    - DATABASE_USERNAME=docker
-    - DATABASE_PASSWORD=docker
-    - DATABASE_HOST=db
-    - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
-    - PYTHONPATH=/home/web/django_project
-    - VIRTUAL_HOST=projecta.kartoza.com
-    - VIRTUAL_PORT=8080
-    - RABBITMQ_HOST=rabbitmq
-  volumes:
-    - ../django_project:/home/web/django_project
-    - ./static:/home/web/static
-    - ./media:/home/web/media
-    - ./reports:/home/web/reports
-    - ./logs:/var/log/
-  links:
-    - smtp:smtp
-    - db:db
-    - rabbitmq:rabbitmq
-  ports:
-    # for django test server
-    - "49362:8080"
-    # for ssh
-    - "49363:22"
+  dbbackups:
+    # Note you cannot scale if you use container_name
+    container_name: healthsites-db-backups
+    image: kartoza/pg-backup:9.6
+    hostname: pg-backups
+    volumes:
+      - ./backups:/backups
+    links:
+      - db:db
+    environment:
+      # take care to let the project name below match that
+      # declared in the top of the makefile
+      - DUMPPREFIX=PG_HEALTHSITES
+      # These are all defaults anyway, but setting explicitly in
+      # case we ever want to ever use different credentials
+      - PGUSER=docker
+      - PGPASSWORD=docker
+      - PGPORT=5432
+      - PGHOST=db
+      - PGDATABASE=gis
+    restart: on-failure:5
 
+  # This is normally the main entry point for a production server
+  web:
+    # Note you cannot scale if you use container_name
+    container_name: healthsites-web
+    image: nginx
+    hostname: nginx
+    volumes:
+      - ./sites-enabled:/etc/nginx/conf.d:ro
+      # I dont use volumes_from as I want to use the ro modifier
+      - ./static:/home/web/static:ro
+      - ./media:/home/web/media:ro
+      - ./logs:/var/log/nginx
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./webroot-path:/var/www/webroot
+    links:
+      - uwsgi:uwsgi
+    ports:
+      - "49361:8080"
+    restart: on-failure:5
+
+  # This is the entry point for a development server.
+  # Run with --no-deps to run attached to the services
+  # from produ environment if wanted
+  devweb:
+    # Note you cannot scale if you use container_name
+    container_name: healthsites-dev-web
+    build:
+      context: docker
+      dockerfile: Dockerfile-dev
+    hostname: uwsgi
+    environment:
+      - DATABASE_NAME=gis
+      - DATABASE_USERNAME=docker
+      - DATABASE_PASSWORD=docker
+      - DATABASE_HOST=db
+      - DJANGO_SETTINGS_MODULE=core.settings.prod_docker
+      - PYTHONPATH=/home/web/django_project
+      - VIRTUAL_HOST=projecta.kartoza.com
+      - VIRTUAL_PORT=8080
+      - RABBITMQ_HOST=rabbitmq
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./static:/home/web/static
+      - ./media:/home/web/media
+      - ./reports:/home/web/reports
+      - ./logs:/var/log/
+    links:
+      - smtp:smtp
+      - db:db
+      - osm-db:osm-db
+      - rabbitmq:rabbitmq
+    ports:
+      # for django test server
+      - "49362:8080"
+      # for ssh
+      - "49363:22"
 

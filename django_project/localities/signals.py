@@ -9,6 +9,9 @@ from .models import (
     Attribute, AttributeArchive, Domain, DomainArchive, Locality, LocalityArchive,
     LocalityIndex, Specification, SpecificationArchive, Value, ValueArchive
 )
+from localities_healthsites_osm.models.locality_healthsites_osm import (
+    LocalityHealthsitesOSM
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -124,7 +127,7 @@ def values_updated_handler(sender, instance, **kwargs):
     """
     *SIG_locality_values_updated* triggered LocalityIndex update for a Locality
     """
-
+    from api.serializer.locality import LocalitySerializer
     LOG.debug('Updating LocalityIndex for Locality: %s', instance.pk)
 
     # retrieve ranked attribute values for a Locality
@@ -140,3 +143,13 @@ def values_updated_handler(sender, instance, **kwargs):
     locind.rankd = loc_fts.get('D', '')
 
     locind.save()
+
+    # create locality view
+    osm, created = LocalityHealthsitesOSM.objects.get_or_create(
+        healthsite=instance
+    )
+    healthsite_data = LocalitySerializer(instance).data
+    osm_view = osm.return_osm_node()
+    if osm_view:
+        osm_view.insert_healthsite_data(healthsite_data)
+        osm_view.save()

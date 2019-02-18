@@ -1,4 +1,3 @@
-
 """Configuration for production server"""
 import os
 
@@ -24,9 +23,18 @@ DATABASES = {
         'HOST': os.environ['DATABASE_HOST'],
         'PORT': 5432,
         'TEST_NAME': 'unittests',
+    },
+    'docker_osm': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.environ['DOCKER_OSM_DATABASE_NAME'],
+        'USER': os.environ['DOCKER_OSM_DATABASE_USERNAME'],
+        'PASSWORD': os.environ['DOCKER_OSM_DATABASE_PASSWORD'],
+        'HOST': os.environ['DOCKER_OSM_DATABASE_HOST'],
+        'PORT': 5432,
+        'TEST_NAME': 'docker_osm_unittests',
     }
-}
 
+}
 
 # See fig.yml file for postfix container definition
 #

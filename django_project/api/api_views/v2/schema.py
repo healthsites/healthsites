@@ -1,9 +1,12 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+import json
 from coreapi import Field
 from coreschema import Integer, String
 from rest_framework.filters import BaseFilterBackend
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 
 class Parameters(object):
@@ -55,6 +58,15 @@ class Parameters(object):
         ),
     )
 
+    country = Field(
+        'country',
+        location='query',
+        required=False,
+        schema=String(
+            description='Filter by country'
+        ),
+    )
+
     output = Field(
         'output',
         location='query',
@@ -65,9 +77,24 @@ class Parameters(object):
     )
 
 
+class ApiSchemaBaseWithoutApiKey(BaseFilterBackend):
+    schemas = []
+
+    def get_schema_fields(self, view):
+        schemas = self.schemas
+        return schemas
+
+
 class ApiSchemaBase(BaseFilterBackend):
     schemas = []
 
     def get_schema_fields(self, view):
         schemas = [Parameters.api_key] + self.schemas
         return schemas
+
+
+class SchemaView(APIView):
+    def get(self, request):
+        schema = open('api/schema.json', 'rb')
+        schema = schema.read()
+        return Response(json.loads(schema))

@@ -21,6 +21,7 @@ from localities.models import (
 )
 from localities.tasks import regenerate_cache, regenerate_cache_cluster
 from social_users.utils import get_profile
+from localities_osm.models.locality import LocalityOSMView
 
 
 def get_what_3_words(geom):
@@ -107,6 +108,8 @@ def get_country_statistic(query):
                     output = json.loads(output)
                 except Exception:
                     pass
+            output['localities'] = LocalityOSMView.objects.in_polygon(
+                polygons).count()
         else:
             # get cache
             filename = os.path.join(
@@ -133,7 +136,7 @@ def get_country_statistic(query):
                     output = json.loads(output)
                 except Exception:
                     pass
-
+            output['localities'] = LocalityOSMView.objects.count()
     except Country.DoesNotExist:
         output = ''
     return output

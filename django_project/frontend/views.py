@@ -20,7 +20,7 @@ from braces.views import FormMessagesMixin
 from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from localities.utils import (
-    get_country_statistic, get_heathsites_master,
+    get_country_statistic,
     search_locality_by_spec_data, search_locality_by_tag
 )
 from social_users.utils import get_profile
@@ -34,7 +34,6 @@ class MainView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
-        context['locality_count'] = get_country_statistic('')['localities']
         if request.user.is_authenticated():
             if request.user.is_staff:
                 context['uploader'] = True
@@ -85,7 +84,6 @@ class AttributionsView(TemplateView):
 def search_place(request, place):
     # getting country's polygon
     result = {}
-    result['locality_count'] = get_heathsites_master().count()
     result['countries'] = Country.objects.order_by('name').values('name').distinct()
     # geonames
     if place:

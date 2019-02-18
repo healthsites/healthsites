@@ -111,6 +111,7 @@ class Command(BaseCommand):
     help = 'generate shapefile for data in bulk'
 
     def handle(self, *args, **options):
+        return
         domain = Domain.objects.get(name='Health')
         specifications = Specification.objects.filter(domain=domain)
 

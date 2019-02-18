@@ -1,0 +1,143 @@
+tables:
+  healthcare_facilities_node:
+    columns:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: name
+      name: name
+      type: string
+    - key: addr:full
+      name: physical_address
+      type: string
+    - key: contact:phone
+      name: phone
+      type: string
+    - key: nature_of_facility
+      name: nature_of_facility
+      type: string
+    - key: facility
+      name: scope_of_service
+      type: string
+    - key: opening_hours
+      name: operation
+      type: string
+    - key: health_facility:bed
+      name: full_time_beds
+      type: string
+    - key: staff_count:nurses
+      name: nurses
+      type: string
+    - key: staff_count:doctors
+      name: doctors
+      type: string
+    - key: operator:type
+      name: ownership
+      type: string
+
+    - key: operator
+      name: operator
+      type: string
+    - key: status
+      name: status
+      type: string
+    - key: emergency
+      name: emergency
+      type: string
+    - key: contact:website
+      name: website
+      type: string
+    - key: healthcare:speciality
+      name: speciality
+      type: string
+    mapping:
+      amenity:
+      - clinic
+      - hospital
+      - doctors
+      - dentist
+      - pharmacy
+      - laboratory
+      healthcare:
+      - clinic
+      - hospital
+      - doctors
+      - dentist
+      - pharmacy
+      - laboratory
+    type: point
+
+  healthcare_facilities_way:
+    columns:
+    columns:
+    - name: osm_id
+      type: id
+    - name: geometry
+      type: geometry
+    - name: type
+      type: mapping_value
+    - key: name
+      name: name
+      type: string
+    - key: addr:full
+      name: physical_address
+      type: string
+    - key: contact:phone
+      name: phone
+      type: string
+    - key: nature_of_facility
+      name: nature_of_facility
+      type: string
+    - key: facility
+      name: scope_of_service
+      type: string
+    - key: opening_hours
+      name: operation
+      type: string
+    - key: health_facility:bed
+      name: full_time_beds
+      type: string
+    - key: staff_count:nurses
+      name: nurses
+      type: string
+    - key: staff_count:doctors
+      name: doctors
+      type: string
+    - key: operator:type
+      name: ownership
+      type: string
+
+    - key: operator
+      name: operator
+      type: string
+    - key: status
+      name: status
+      type: string
+    - key: emergency
+      name: emergency
+      type: string
+    - key: contact:website
+      name: website
+      type: string
+    - key: healthcare:speciality
+      name: speciality
+      type: string
+    mapping:
+      amenity:
+      - clinic
+      - hospital
+      - doctors
+      - dentist
+      - pharmacy
+      - laboratory
+      healthcare:
+      - clinic
+      - hospital
+      - doctors
+      - dentist
+      - pharmacy
+      - laboratory
+    type: linestring
