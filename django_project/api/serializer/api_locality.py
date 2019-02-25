@@ -1,7 +1,6 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '22/01/19'
 
-import json
 from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField
@@ -34,13 +33,17 @@ class LocalityHealthsitesOSMBaseSerializer(object):
                 osm_type=healthsite_osm.osm_type
             )
             if locality_healthsites_osm.count() == 0:
-                return {}
+                return {
+                    'attributes': {}
+                }
         else:
             locality_healthsites_osm = LocalityHealthsitesOSM.objects.filter(
                 osm_pk=healthsite_osm.row.split('-')[0]
             )
             if locality_healthsites_osm.count() == 0:
-                return {}
+                return {
+                    'attributes': {}
+                }
 
         # get values data
         data = {}
@@ -108,7 +111,7 @@ class LocalityHealthsitesOSMBaseSerializer(object):
                     None, defining_hours[6].split('-'))
             }
         except (KeyError, IndexError):
-            locality_data['attributes']['defining_hours'] = None
+            data['attributes']['defining_hours'] = {}
         try:
             data['attributes']['tags'] = filter(
                 None, data['attributes']['tags'].split('|'))
@@ -141,7 +144,7 @@ class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
         result.update(locality_data)
         for key, value in attributes.items():
             if value:
-                if key == 'doctors' or key == "nurses":
+                if key == 'doctors' or key == 'nurses':
                     try:
                         locality_data['attributes']['staff'][key] = attributes[key]
                     except KeyError:

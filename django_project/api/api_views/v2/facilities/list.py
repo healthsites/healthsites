@@ -11,7 +11,6 @@ from api.api_views.v2.schema import (
     Parameters
 )
 from api.api_views.v2.utilities import BadRequestError
-from api.serializer.locality_post import LocalityPostSerializer
 from api.api_views.v2.facilities.base_api import (
     PaginationAPI
 )
