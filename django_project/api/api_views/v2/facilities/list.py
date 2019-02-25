@@ -75,9 +75,6 @@ class GetFacilities(PaginationAPI, GetFacilitiesUtilities):
     """
     filter_backends = (ApiSchema,)
 
-    def get_serializer(self):
-        return LocalityPostSerializer()
-
     def get(self, request):
         validation = self.validation()
         if validation:
