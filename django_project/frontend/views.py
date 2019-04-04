@@ -23,6 +23,7 @@ from localities.utils import (
     get_country_statistic,
     search_locality_by_spec_data, search_locality_by_tag
 )
+from localities_osm.utilities import get_all_osm_query
 from social_users.utils import get_profile
 
 LOG = logging.getLogger(__name__)
@@ -34,6 +35,7 @@ class MainView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
+        context['locality_count'] = get_all_osm_query().count()
         if request.user.is_authenticated():
             if request.user.is_staff:
                 context['uploader'] = True

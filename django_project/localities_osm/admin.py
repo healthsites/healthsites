@@ -8,7 +8,7 @@ from localities_osm.models.locality import (
 
 
 class LocalityOSMAdmin(admin.ModelAdmin):
-    list_display = ('osm_id', 'type', 'name')
+    list_display = ('osm_id', 'type', 'name', 'changeset_timestamp', 'changeset_user')
     list_filter = ('type',)
     ordering = ('name',)
     search_fields = ('name', 'osm_id')
@@ -16,7 +16,7 @@ class LocalityOSMAdmin(admin.ModelAdmin):
 
 
 class LocalityOSMViewAdmin(LocalityOSMAdmin):
-    list_display = ('osm_id', 'type', 'name', 'osm_type')
+    list_display = ('osm_id', 'type', 'name', 'osm_type', 'changeset_timestamp', 'changeset_user')
     list_filter = ('type', 'osm_type')
     readonly_fields = ('osm_id', 'row', 'osm_type')
 

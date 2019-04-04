@@ -2,18 +2,23 @@
  * Created by meomancer on 21/03/16.
  */
 //{# FOR UPDATING CHART #}
-function updateChart(hospital, medical, orthopedic) {
-    var hospital_per = hospital / (hospital + medical + orthopedic);
-    var medical_per = medical / (hospital + medical + orthopedic);
-    var orthopedic_per = orthopedic / (hospital + medical + orthopedic);
+function updateChart(number_of_data, data) {
+    var xValue = ['x'];
+    var numberValue = ['number'];
+    var percentValue = ['percent'];
+    $.each(data, function (key, value) {
+        xValue.push(key);
+        numberValue.push(value);
+        percentValue.push(value / number_of_data);
+    });
     chart.load({
         columns: [
             //the healthsites names
-            ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
+            xValue,
             //the healthsites number
-            ['number', hospital, medical, orthopedic],
+            numberValue,
             //the healthsites percentgage
-            ['percent', hospital_per, medical_per, orthopedic_per]
+            percentValue
         ]
     });
 }
@@ -30,39 +35,41 @@ function updatePieChart(basic, partial, complete) {
 
 
 $("#country-form").submit(function (event) {
-    var country = $("#country-form").find("#country-search-box")[0].value;
+    var $input = $($(this).find("#country-search-box")[0]);
+    var $searchIcon = $(this).find('.fa-search');
+    var country = $input.val();
     event.preventDefault();
-    gettingData(country);
+    $input.prop("disabled", true);
+    $searchIcon.removeClass('fa-search');
+    $searchIcon.addClass('fa-circle-o-notch');
+    $searchIcon.addClass('fa-spin');
+    gettingData(country, function () {
+        $input.prop("disabled", false);
+        $searchIcon.addClass('fa-search');
+        $searchIcon.removeClass('fa-circle-o-notch');
+        $searchIcon.removeClass('fa-spin');
+    });
+
 });
 
 
-function gettingData(country) {
+function gettingData(country, callback) {
     // Get count of country
     $("#country-locality-number").html(0);
     $.ajax({
-        url: "/api/v2/facilities/count",
+        url: "/api/v2/facilities/statistic",
         dataType: 'json',
         data: {
             country: country
         },
         success: function (data) {
-            $("#country-locality-number").html(data);
-            if (country === '') {
-                $('#healthsites-count').html('<span class="timer" data-speed="2500"  data-to="' + data + '">' + data + '</span>');
+            if (callback) {
+                callback();
             }
-        }
-    });
-
-    $.ajax({
-        url: "/search/localities/country",
-        dataType: 'json',
-        data: {
-            q: country
-        },
-        success: function (data) {
             $APP.trigger('map.update-geoname', {'geoname': country});
+            //{# default #}
+            $("#country-locality-number").html(0);
             $("#updates-wrapper").html('<div id="updates-1" class="graph updates"><div class="entry">-</div></div>');
-            updateChart(0, 0, 0);
 
             //{# show the real data #}
             //{# country title #}
@@ -83,48 +90,44 @@ function gettingData(country) {
             }
 
             //{# country healthsite number #}
-            if (data.numbers) {
-                updateChart(data.numbers.hospital, data.numbers.medical_clinic, data.numbers.orthopaedic_clinic);
+            if (data.localities) {
+                $("#country-locality-number").html(data.localities);
+                if (data.numbers) {
+                    updateChart(data.localities, data.numbers);
+                }
             }
             if (data.completeness) {
                 updatePieChart(data.completeness.basic, data.completeness.partial, data.completeness.complete);
             }
             if (data.last_update.length > 0) {
                 $("#updates-wrapper").html("");
-                for (var i = 0; i < data.last_update.length; i++) {
+                $.each(data.last_update, function (i, update) {
                     var page = parseInt(i / 5);
                     var wrapper = $("#updates-" + page);
-                    if (wrapper.length > 0) {
-
-                    } else {
+                    if (wrapper.length == 0) {
                         $("#updates-wrapper").append('<div id="updates-' + page + '" class="graph updates"></div>');
                         wrapper = $("#updates-" + page);
                         if (page != 0) {
                             wrapper.hide();
                         }
                     }
-                    var update = data.last_update[i];
                     var html = "<div class=\"entry\">";
                     html += "<div class=\"entry\">";
-                    html += "<span class=\"date\">" + getDateString(update.date_applied) + "</span> - ";
+                    html += "<span class=\"date\">" + getDateString(update.changeset_timestamp) + "</span> - ";
                     html += "<span class=\"name\">";
-                    html += "<a href=\"profile/" + update.author + "\">@" + update.author_nickname + "</a></span> - ";
+                    html += "<a href=\"profile/" + update.changeset_user + "\">@" + update.changeset_user + "</a></span> - ";
                     var mode = "";
-                    if (update.mode == 1) {
+                    if (update.changeset_version == 1) {
                         mode = "added";
                     } else {
                         mode = "amended";
                     }
                     //{# update the html #}
-                    if (update.data_count == 1) {
-                        html += "<a href=\"map#!/locality/" + update.locality_uuid + "\" class=\"location-name\">" + data.last_update[i].locality + "</a>";
-                        html += "<span class=\"location-name\"> " + mode + " </span>";
-                    } else {
-                        html += "<span class=\"location-name\">" + data.last_update[i].data_count + " HS/" + mode + "</span>";
-                    }
+                    html += "<a href=\"map#!/locality/" + update.locality_uuid + "\" class=\"location-name\">" + update.name + "</a>";
+                    html += "<span class=\"location-name\"> " + mode + " </span>";
                     html += "</div>";
                     wrapper.append(html);
-                }
+                });
                 updateButton();
             }
 
