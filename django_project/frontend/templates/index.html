@@ -274,8 +274,8 @@
             </div>
         </div>
         <div class="col-md-6 country-data pad10x">
-            <h2 class="col-md-12"><strong><a id="country-title" href="#">World</a></strong> - <span
-                    id="country-locality-number"
+            <h2 class="col-md-12"><strong><a id="title" href="#">World</a></strong> - <span
+                    id="locality-number"
                     class="number">{{ locality_count }}</span>
                 healthsites</h2>
 
@@ -283,7 +283,7 @@
                 <h3>Number of heathsites per type</h3>
 
                 <div class="graph">
-                    <div id="chart1"></div>
+                    <div id="chart"></div>
 
                     <script>
                     </script>
@@ -432,129 +432,11 @@
 {% javascript 'map' %}
 {% javascript 'home' %}
 
-<script>
-    var chart = c3.generate({
-        bindto: '#chart1',
-        size: {
-            height: 220
-        },
-        bar: {
-            width: 18
-        },
-        data: {
-            x: 'x',
-            y: 'percent',
-            columns: [
-                //the healthsites names
-                ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
-                //the healthsites number
-                ['number', 0, 0, 0],
-                //the healthsites percentgage
-                ['percent', 0, 0, 0]
-            ],
-            axes: {
-                number: 'y2'
-            },
-            types: {
-                percent: 'bar',
-                number: 'bar'
-            },
-            order: 'asc',
-
-            labels: {
-                format: {
-                    number: function (v, id, i, j) {
-                        return v;
-                    },
-                }
-            },
-
-
-        },
-        axis: {
-            rotated: true,
-            x: {
-                type: 'category',
-
-            },
-            y: {
-                max: 1,
-                tick: {
-                    values: [0, 0.5, 1],
-                    format: d3.format('%,')
-
-                }
-            }
-        },
-        legend: {
-            show: false
-        },
-        color: {
-            pattern: ['#b6cccc', '#f89ea1']
-        }
-    });
-
-    var piechart = c3.generate({
-        bindto: '#piechart',
-        size: {
-            height: 220
-        },
-        data: {
-            // iris data from R
-            columns: [
-                ['complete', 0],
-                ['partial', 0],
-                ['basic', 0],
-            ],
-            colors: {
-                complete: '#f89ea1',
-                partial: '#b6cccc',
-                basic: '#8698a4'
-            },
-            type: 'pie',
-            onclick: function (d, i) {
-                console.log("onclick", d, i);
-            },
-            onmouseover: function (d, i) {
-                console.log("onmouseover", d, i);
-            },
-            onmouseout: function (d, i) {
-                console.log("onmouseout", d, i);
-            }
-        }
-    });
-</script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script>
     $(document).ready(function () {
         var map = new MAP();
         renderCredit();
-        $("#country-search-box").autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: "{% url 'countries' %}",
-                    dataType: 'json',
-                    data: {
-                        q: request.term
-                    },
-                    success: function (data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 3,
-            select: function (event, ui) {
-            },
-            open: function () {
-                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-            },
-            close: function () {
-                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-            }
-        });
-
-        {# first init #}
-        gettingData("");
     });
 </script>
 <!--

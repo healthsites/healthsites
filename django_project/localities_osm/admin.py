@@ -16,7 +16,8 @@ class LocalityOSMAdmin(admin.ModelAdmin):
 
 
 class LocalityOSMViewAdmin(LocalityOSMAdmin):
-    list_display = ('osm_id', 'type', 'name', 'osm_type', 'changeset_timestamp', 'changeset_user')
+    list_display = (
+        'osm_id', 'type', 'name', 'osm_type', 'changeset_timestamp', 'changeset_user')
     list_filter = ('type', 'osm_type')
     readonly_fields = ('osm_id', 'row', 'osm_type')
 

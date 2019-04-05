@@ -36,6 +36,18 @@ class GetFacilitiesBaseAPI(object):
     Parent class that hold filtering method of healthsites
     """
 
+    def get_country(self, country):
+        """ This function is for get country object from request
+        """
+        # check by country
+        if country == 'World':
+            country = None
+        if country:
+            # getting country's polygon
+            country = Country.objects.get(
+                name__iexact=country)
+        return country
+
     def get_healthsites(self, request):
 
         # check extent data
@@ -50,17 +62,13 @@ class GetFacilitiesBaseAPI(object):
 
         # check by country
         country = request.GET.get('country', None)
-        if country == 'World':
-            country = None
-        if country:
-            # getting country's polygon
-            try:
-                country = Country.objects.get(
-                    name__iexact=country)
+        try:
+            country = self.get_country(country)
+            if country:
                 polygons = country.polygon_geometry
                 queryset = queryset.in_polygon(polygons)
-            except Country.DoesNotExist:
-                raise BadRequestError('%s is not found or not a country.' % country)
+        except Country.DoesNotExist:
+            raise BadRequestError('%s is not found or not a country.' % country)
         return queryset
 
 
@@ -133,6 +141,11 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
                     output['numbers'][type] = number['total']
             healthsites = healthsites[:10]
             output['last_update'] = LocalityOSMBasic(healthsites, many=True).data
+
+            country = request.GET.get('country', None)
+            country = self.get_country(country)
+            if country:
+                output['geometry'] = country.polygon_geometry.geojson
             return Response(output)
         except BadRequestError as e:
             return HttpResponseBadRequest('%s' % e)
