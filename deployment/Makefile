@@ -198,6 +198,13 @@ dbshell:
 	@echo "------------------------------------------------------------------"
 	@docker exec -t -i $(PROJECT_ID)-db psql -U docker -h localhost gis
 
+dbshell-osm:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling in in production database"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i dockerosm_db psql -U docker -h localhost gis
+
 dbrestore:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -295,3 +302,12 @@ renew-letsencrypt:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi certbot renew --dry-run
 
+# ----------
+# docker osm
+# ----------
+rm-volumes:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Removing all volumes!!!! "
+	@echo "------------------------------------------------------------------"
+	@docker volume rm $(PROJECT_ID)_osm-postgis-data $(PROJECT_ID)_import_queue $(PROJECT_ID)_import_done $(PROJECT_ID)_cache

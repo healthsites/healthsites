@@ -71,7 +71,6 @@ function onChange(element) {
 function onKeyPress(element) {
     if (element.id == "locality-phone-input-int") {
         var val = $(element).val();
-        console.log(val);
         if (val.length > 3) {
             val = val.substring(0, 3);
             $(element).val(val);
