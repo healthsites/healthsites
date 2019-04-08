@@ -102,3 +102,31 @@ services:
       # seconds between 2 executions of the script
       # if 0, then no update will be done, only the first initial import from the PBF
       - TIME=120
+
+  osmenrich:
+    image: kartoza/docker-osm:osmrich-latest
+    container_name: dockerosm_osmenrich
+    volumes:
+      # These are sharable to other containers
+      - ./docker-osm-healthcare/settings:/home/settings
+      - import_done:/home/import_done
+      - import_queue:/home/import_queue
+      - cache:/home/cache
+    depends_on:
+      osm-db:
+        condition: service_healthy
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASS=docker
+      - POSTGRES_DBNAME=gis
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=osm-db
+      # These are all currently the defaults but listed here for your
+      # convenience if you want to change them
+      # folder for diff which hasn't been imported yet
+      - IMPORT_QUEUE=import_queue
+      # folder for diff which has been imported
+      - IMPORT_DONE=import_done
+      # seconds between 2 executions of the script
+      # if 0, then no update will be done, only the first initial import from the PBF
+      - TIME=120
