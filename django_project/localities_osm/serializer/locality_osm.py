@@ -34,3 +34,11 @@ class LocalityHealthsitesOSMNodeSerializer(LocalityHealthsitesOSMSerializer):
     class Meta:
         model = LocalityOSMNode
         exclude = []
+
+
+class LocalityOSMBasic(ModelSerializer):
+    class Meta:
+        model = LocalityOSMView
+        fields = ['row', 'osm_id', 'osm_type',
+                  'type', 'name', 'changeset_version',
+                  'changeset_timestamp', 'changeset_user']

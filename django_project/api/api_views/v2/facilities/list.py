@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+from django.db.models import Count
 from django.http.response import HttpResponseBadRequest
 from rest_framework import status
 from rest_framework.response import Response
@@ -11,37 +12,47 @@ from api.api_views.v2.schema import (
     Parameters
 )
 from api.api_views.v2.utilities import BadRequestError
-from api.serializer.locality_post import LocalityPostSerializer
 from api.api_views.v2.facilities.base_api import (
     PaginationAPI
 )
 from localities.models import Country, Locality
-from localities_osm.models.locality import LocalityOSMView
 from localities.utils import parse_bbox
+from localities_osm.serializer.locality_osm import LocalityOSMBasic
+from localities_osm.utilities import get_all_osm_query
 
 
-class CountScheme(ApiSchemaBaseWithoutApiKey):
+class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
     schemas = [
         Parameters.country, Parameters.extent, Parameters.output
     ]
 
 
 class ApiSchema(ApiSchemaBase):
-    schemas = [
-        Parameters.page, Parameters.country, Parameters.extent, Parameters.output
-    ]
+    schemas = [Parameters.page] + FilterFacilitiesScheme.schemas
 
 
-class GetFacilitiesUtilities(object):
+class GetFacilitiesBaseAPI(object):
     """
     Parent class that hold filtering method of healthsites
     """
+
+    def get_country(self, country):
+        """ This function is for get country object from request
+        """
+        # check by country
+        if country == 'World':
+            country = None
+        if country:
+            # getting country's polygon
+            country = Country.objects.get(
+                name__iexact=country)
+        return country
 
     def get_healthsites(self, request):
 
         # check extent data
         extent = request.GET.get('extent', None)
-        queryset = LocalityOSMView.objects.all()
+        queryset = get_all_osm_query()
         if extent:
             try:
                 polygon = parse_bbox(request.GET.get('extent'))
@@ -51,21 +62,17 @@ class GetFacilitiesUtilities(object):
 
         # check by country
         country = request.GET.get('country', None)
-        if country == 'World':
-            country = None
-        if country:
-            # getting country's polygon
-            try:
-                country = Country.objects.get(
-                    name__iexact=country)
+        try:
+            country = self.get_country(country)
+            if country:
                 polygons = country.polygon_geometry
                 queryset = queryset.in_polygon(polygons)
-            except Country.DoesNotExist:
-                raise BadRequestError('%s is not found or not a country.' % country)
+        except Country.DoesNotExist:
+            raise BadRequestError('%s is not found or not a country.' % country)
         return queryset
 
 
-class GetFacilities(PaginationAPI, GetFacilitiesUtilities):
+class GetFacilities(PaginationAPI, GetFacilitiesBaseAPI):
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -74,9 +81,6 @@ class GetFacilities(PaginationAPI, GetFacilitiesUtilities):
     Create new facility.
     """
     filter_backends = (ApiSchema,)
-
-    def get_serializer(self):
-        return LocalityPostSerializer()
 
     def get(self, request):
         validation = self.validation()
@@ -101,15 +105,47 @@ class GetFacilities(PaginationAPI, GetFacilitiesUtilities):
             return HttpResponseBadRequest('%s' % e)
 
 
-class GetFacilitiesCount(APIView, GetFacilitiesUtilities):
+class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):
     """
     get:
     Returns count of facilities with some filtering parameters.
     """
-    filter_backends = (CountScheme,)
+    filter_backends = (FilterFacilitiesScheme,)
 
     def get(self, request):
         try:
             return Response(self.get_healthsites(request).count())
+        except BadRequestError as e:
+            return HttpResponseBadRequest('%s' % e)
+
+
+class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
+    """
+    get:
+    Returns statistic of facilities with some filtering parameters.
+    """
+    filter_backends = (FilterFacilitiesScheme,)
+
+    def get(self, request):
+        try:
+            healthsites = self.get_healthsites(request).order_by('-changeset_timestamp')
+            output = {
+                'localities': healthsites.count(),
+                'numbers': {},
+                'last_update': []
+            }
+            numbers = healthsites.values('type').annotate(total=Count('type')).order_by('-total')
+            for number in numbers[:5]:
+                type = number['type']
+                if type:
+                    output['numbers'][type] = number['total']
+            healthsites = healthsites[:10]
+            output['last_update'] = LocalityOSMBasic(healthsites, many=True).data
+
+            country = request.GET.get('country', None)
+            country = self.get_country(country)
+            if country:
+                output['geometry'] = country.polygon_geometry.geojson
+            return Response(output)
         except BadRequestError as e:
             return HttpResponseBadRequest('%s' % e)
