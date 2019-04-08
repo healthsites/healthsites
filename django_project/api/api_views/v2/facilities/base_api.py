@@ -1,11 +1,12 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+import json
 import dicttoxml
 from django.core.paginator import EmptyPage, Paginator
 from rest_framework.views import APIView
 from api.authentication import APIKeyAuthentication
-from localities_healthsites_osm.serializer.locality import (
+from api.serializer.api_locality import (
     LocalityHealthsitesOSMSerializer, LocalityHealthsitesOSMGeoSerializer)
 
 
@@ -40,28 +41,12 @@ class BaseAPI(APIView):
         :return: clean data
         :rtype: dict
         """
-        data['lng'] = data['longitude']
-        data['lat'] = data['latitude']
+        used_data = data['attributes']
+        used_data['name'] = data['name']
+        used_data['lng'] = data['longitude']
+        used_data['lat'] = data['latitude']
         del data['longitude']
         del data['latitude']
-
-        # staff attributes
-        nurse = ''
-        doctors = ''
-        try:
-            nurse = data['nurses']
-            del data['nurses']
-        except KeyError:
-            pass
-        try:
-            doctors = data['doctors']
-            del data['doctors']
-        except KeyError:
-            pass
-        data['staff'] = {
-            'nurses': nurse,
-            'doctors': doctors
-        }
 
         # staff defining_hours
         sun = ''
@@ -72,41 +57,34 @@ class BaseAPI(APIView):
         fri = ''
         sat = ''
         try:
-            sun = data['sunday']
-            del data['sunday']
+            sun = data['attributes']['defining_hours']['sunday']
         except KeyError:
             pass
         try:
-            mon = data['monday']
-            del data['monday']
+            mon = data['attributes']['defining_hours']['monday']
         except KeyError:
             pass
         try:
-            tue = data['tuesday']
-            del data['tuesday']
+            tue = data['attributes']['defining_hours']['tuesday']
         except KeyError:
             pass
         try:
-            wed = data['wednesday']
-            del data['wednesday']
+            wed = data['attributes']['defining_hours']['wednesday']
         except KeyError:
             pass
         try:
-            thu = data['thursday']
-            del data['thursday']
+            thu = data['attributes']['defining_hours']['thursday']
         except KeyError:
             pass
         try:
-            fri = data['friday']
-            del data['friday']
+            fri = data['attributes']['defining_hours']['friday']
         except KeyError:
             pass
         try:
-            sat = data['saturday']
-            del data['saturday']
+            sat = data['attributes']['defining_hours']['saturday']
         except KeyError:
             pass
-        data['defining_hours'] = {
+        used_data['defining_hours'] = {
             'sun': sun,
             'mon': mon,
             'tue': tue,
@@ -115,30 +93,35 @@ class BaseAPI(APIView):
             'fri': fri,
             'sat': sat
         }
-        # staff inpatient_service
-        full_time_beds = ''
-        part_time_beds = ''
-        try:
-            full_time_beds = data['full_time_beds']
-            del data['full_time_beds']
-        except KeyError:
-            pass
-        try:
-            part_time_beds = data['part_time_beds']
-            del data['part_time_beds']
-        except KeyError:
-            pass
-        data['inpatient_service'] = {
-            'full_time_beds': full_time_beds,
-            'part_time_beds': part_time_beds
-        }
 
-        # if using csrfmiddlewaretoken
-        try:
-            del data['csrfmiddlewaretoken']
-        except KeyError:
-            pass
-        return data
+        # check schema
+        schema = open('api/schema.json', 'rb')
+        schema = json.loads(schema.read())
+        for field in schema['facilities']['create']['fields']:
+            if field['type'] == 'object':
+                for key, prop in field['properties'].items():
+                    try:
+                        prop_value = used_data[prop['name']]
+                    except KeyError:
+                        continue
+                    enum = None
+                    if 'enum' in prop:
+                        enum = prop['enum']
+                    if prop['type'] == 'array':
+                        if type(prop_value) != list:
+                            raise ValueError('%s should be in list' % prop['name'])
+                        if enum:
+                            for value in prop_value:
+                                if value not in enum:
+                                    raise ValueError('%s is not recognized. Choices : %s' % (
+                                        prop['name'], enum))
+                    else:
+                        if enum:
+                            if prop_value not in enum:
+                                raise ValueError('%s is not recognized. Choices : %s' % (
+                                    prop['name'], enum))
+
+        return used_data
 
 
 class PaginationAPI(BaseAPI):

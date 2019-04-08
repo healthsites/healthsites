@@ -35,6 +35,8 @@ class LocalityHealthsitesOSM(models.Model):
     class Meta:
         ordering = ('healthsite__name',)
         db_table = 'localities_healthsites_osm'
+        verbose_name = 'Healthsites And Osm'
+        verbose_name_plural = 'Healthsites And Osm'
 
     def save(self, *args, **kwargs):
         # Create osm node if no osm id and pk found
