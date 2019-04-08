@@ -47,6 +47,13 @@ class LocalityOSM(LocalityOSMBase):
     speciality = models.CharField(
         max_length=512, blank=True, null=True)
 
+    # changesets
+    changeset_id = models.IntegerField(blank=True, null=True)
+    changeset_version = models.IntegerField(blank=True, null=True)
+    changeset_timestamp = models.DateTimeField(blank=True, null=True)
+    changeset_user = models.CharField(
+        max_length=512, blank=True, null=True)
+
     objects = PassThroughGeoManager.for_queryset_class(OSMQuerySet)()
 
     class Meta:
@@ -87,6 +94,8 @@ class LocalityOSMView(LocalityOSM):
     class Meta:
         managed = False
         db_table = 'osm_healthcare_facilities'
+        verbose_name = 'OSM Node and Way'
+        verbose_name_plural = 'OSM Node and Way'
 
 
 class LocalityOSMNode(LocalityOSM):
@@ -98,6 +107,8 @@ class LocalityOSMNode(LocalityOSM):
     class Meta:
         managed = False
         db_table = 'osm_healthcare_facilities_node'
+        verbose_name = 'OSM Node'
+        verbose_name_plural = 'OSM Node'
 
 
 class LocalityOSMWay(LocalityOSM):
@@ -109,3 +120,5 @@ class LocalityOSMWay(LocalityOSM):
     class Meta:
         managed = False
         db_table = 'osm_healthcare_facilities_way'
+        verbose_name = 'OSM Way'
+        verbose_name_plural = 'OSM Way'

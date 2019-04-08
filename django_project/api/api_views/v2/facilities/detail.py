@@ -38,15 +38,14 @@ class GetDetailFacility(BaseAPI):
             data = request.data
             data = self.parse_data(data)
             facility = Locality.objects.get(uuid=uuid)
-            try:
-                facility.update_data(data, request.user)
-                return Response('OK')
-            except KeyError as e:
-                return HttpResponseBadRequest('%s is required' % e)
-            except ValueError as e:
-                return HttpResponseBadRequest('%s' % e)
-            except TypeError as e:
-                return HttpResponseBadRequest('%s' % e)
+            facility.update_data(data, request.user)
+            return Response('OK')
+        except KeyError as e:
+            return HttpResponseBadRequest('%s is required' % e)
+        except ValueError as e:
+            return HttpResponseBadRequest('%s' % e)
+        except TypeError as e:
+            return HttpResponseBadRequest('%s' % e)
         except Locality.DoesNotExist:
             raise Http404()
 

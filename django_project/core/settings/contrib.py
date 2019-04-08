@@ -100,7 +100,7 @@ DEFAULT_FILE_STORAGE = (
 PIPELINE_TEMPLATE_FUNC = '_.template'
 
 # enable cached storage - requires uglify.js (node.js)
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 # Contributed / third party js libs for pipeline compression
 # For hand rolled js for this app, use project.py
