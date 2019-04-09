@@ -134,9 +134,10 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
                 'numbers': {},
                 'last_update': []
             }
-            numbers = healthsites.values('type').annotate(total=Count('type')).order_by('-total')
+            numbers = healthsites.values(
+                'category').annotate(total=Count('category')).order_by('-total')
             for number in numbers[:5]:
-                type = number['type']
+                type = number['category']
                 if type:
                     output['numbers'][type] = number['total']
             healthsites = healthsites[:10]
