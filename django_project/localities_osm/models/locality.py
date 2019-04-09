@@ -13,36 +13,47 @@ class LocalityOSM(LocalityOSMBase):
     """ This maps through to the docker-osm cache table containing healthcare facilities
     that defined in mapping.yml at docker-osm-healthcare/mapping.yml
     """
+    # mandatory
     osm_id = models.BigIntegerField()
+    category = models.CharField(
+        max_length=512, blank=True, null=True)
     type = models.CharField(
-        max_length=512, blank=True, null=True)
-    name = models.CharField(
-        max_length=512, blank=True, null=True)
-    physical_address = models.CharField(
-        max_length=512, blank=True, null=True)
-    phone = models.CharField(
-        max_length=512, blank=True, null=True)
-    nature_of_facility = models.CharField(
-        max_length=512, blank=True, null=True)
-    scope_of_service = models.CharField(
-        max_length=512, blank=True, null=True)
-    operation = models.CharField(
-        max_length=512, blank=True, null=True)
-    full_time_beds = models.CharField(
-        max_length=512, blank=True, null=True)
-    nurses = models.CharField(
-        max_length=512, blank=True, null=True)
-    doctors = models.CharField(
         max_length=512, blank=True, null=True)
     ownership = models.CharField(
         max_length=512, blank=True, null=True)
+    name = models.CharField(
+        max_length=512, blank=True, null=True)
+    source = models.CharField(
+        max_length=512, blank=True, null=True)
+
     operator = models.CharField(
+        max_length=512, blank=True, null=True)
+    physical_address = models.CharField(
+        max_length=512, blank=True, null=True)
+    contact_number = models.CharField(
         max_length=512, blank=True, null=True)
     status = models.CharField(
         max_length=512, blank=True, null=True)
-    emergency = models.CharField(
+    operation = models.CharField(
         max_length=512, blank=True, null=True)
-    website = models.CharField(
+    inpatient_service = models.CharField(
+        max_length=512, blank=True, null=True)
+    staff_doctors = models.CharField(
+        max_length=512, blank=True, null=True)
+    staff_nurses = models.CharField(
+        max_length=512, blank=True, null=True)
+    nature_of_facility = models.CharField(
+        max_length=512, blank=True, null=True)
+    insurance = models.CharField(
+        max_length=512, blank=True, null=True)
+    dispensing = models.BooleanField(blank=True)
+    wheelchair_access = models.BooleanField(blank=True)
+    emergency = models.BooleanField(blank=True)
+    water_source = models.CharField(
+        max_length=512, blank=True, null=True)
+    power_source = models.CharField(
+        max_length=512, blank=True, null=True)
+    raw_data_archive_url = models.CharField(
         max_length=512, blank=True, null=True)
     speciality = models.CharField(
         max_length=512, blank=True, null=True)
