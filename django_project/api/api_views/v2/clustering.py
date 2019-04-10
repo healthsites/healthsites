@@ -2,6 +2,7 @@
 __author__ = 'Anita Hapsari <anita@kartoza.com>'
 __date__ = '09/04/19'
 
+from django.conf import settings
 from pandas import DataFrame
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -32,8 +33,8 @@ class Clustering(APIView):
         total = query.count()
 
         if total > 0:
-            clusters = 20
-            if total < 20:
+            clusters = settings.KMEANS_TOTAL_CLUSTER_DEFAULT
+            if total < settings.KMEANS_TOTAL_CLUSTER_DEFAULT:
                 clusters = total
 
             kmeans = KMeans(n_clusters=clusters, max_iter=50).fit(df)
