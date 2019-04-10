@@ -57,7 +57,10 @@ def extract_updates(updates):
                 update['locality'] = locality.name
             except Locality.DoesNotExist:
                 update['locality_uuid'] = 'unknown'
-                update['locality'] = 'unknown'
+                if not update['name']:
+                    update['locality'] = 'unknown'
+                else:
+                    update['locality'] = update['name']
 
         if 'version' in update:
             if update['version'] == 1:
@@ -419,6 +422,14 @@ def get_update_detail(update):
     profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
     update['nickname'] = profile.screen_name
     update['changeset__created'] = update['changeset__created']
+    return update
+
+
+def get_update_osm_detail(update):
+    update['changeset__social_user__username'] = update['changeset_user']
+    update['nickname'] = update['changeset_user']
+    update['changeset__created'] = update['changeset_timestamp']
+    update['locality_id'] = None
     return update
 
 
