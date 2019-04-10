@@ -18,6 +18,10 @@ require([
 
 ], function (Backbone, _, Shared, CountrySearch, CountryStatistic) {
     shared.dispatcher = _.extend({}, Backbone.Events);
-    new CountryStatistic();
+
+    // render country statistic view
+    var countryStatictic = new CountryStatistic();
+    countryStatictic.showStatistic("");
+
     new CountrySearch();
 });

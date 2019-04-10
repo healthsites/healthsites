@@ -162,15 +162,7 @@ def map(request):
             result = search_locality_by_tag(tag)
             result['tag'] = tag
         elif country:
-            result = get_country_statistic(country)
-            result['country'] = country
-            result['polygon'] = (
-                Country.objects.get(name__iexact=country).polygon_geometry.geojson
-            )
-            result['shapefile_size'] = 0
-            filename = os.path.join(directory_media, country + '_shapefile.zip')
-            if (os.path.isfile(filename)):
-                result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
+            pass
         elif place:
             result = search_place(request, place)
         elif attribute:
