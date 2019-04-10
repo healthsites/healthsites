@@ -26,7 +26,7 @@ class Clustering(APIView):
         serializer = LocalityOSMCentroidSerializer(query, many=True)
         df = DataFrame(
             serializer.data,
-            columns=['centroid_lat', 'centroid_lng'], index=None)
+            columns=['lat', 'lng'], index=None)
 
         response_data = []
         total = query.count()
@@ -44,14 +44,16 @@ class Clustering(APIView):
                 response_data.append({
                     'centroid_lat': centroids[i][0],
                     'centroid_lng': centroids[i][1],
-                    'count': len([j for j in samples if j == i])
+                    'count': 0
                 })
+
+            for sample in samples:
+                response_data[sample]['count'] += 1
 
             response = {
                 'data': response_data,
                 'cluster': 'true',
                 'total_data': query.count(),
-                'mean_distance': kmeans.inertia_
             }
 
         else:

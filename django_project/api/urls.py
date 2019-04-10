@@ -15,6 +15,7 @@ from api.api_views.v2.facilities.detail import GetDetailFacility
 from api.api_views.v2.facilities.list import (
     GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
 from api.api_views.v2.facilities.shapefile import GetFacilitiesShapefileProcess
+from api.api_views.v2.clustering import Clustering
 
 api_v2 = patterns(
     '',
@@ -30,6 +31,8 @@ api_v2 = patterns(
         GetDetailFacility.as_view(), name='api_v2_facility_detail'),
     url(r'^facilities',
         GetFacilities.as_view(), name='api_v2_facility_list'),
+    url(r'^cluster/',
+        Clustering.as_view(), name='api_v2_cluster'),
 )
 
 urlpatterns = patterns(

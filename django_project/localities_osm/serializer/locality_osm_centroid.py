@@ -18,9 +18,9 @@ class LocalityOSMCentroidSerializer(serializers.ModelSerializer):
         ]
 
     def get_lat(self, instance):
-        lat, lon = instance.geometry.centroid.tuple
+        lat = instance.geometry.centroid.x
         return lat
 
     def get_lng(self, instance):
-        lat, lon = instance.geometry.centroid.tuple
+        lon = instance.geometry.centroid.y
         return lon
