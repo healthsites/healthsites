@@ -22,7 +22,7 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
+    <link href="{% static 'libs/bootstrap/3.3.5/css/bootstrap.min.css' %} " rel="stylesheet" type="text/css"
           media="screen, projection"/>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
@@ -214,8 +214,8 @@
             </div>
             <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
                 <div id="title-statistic" class="header" style="font-size: 24px; padding-bottom: 10px;">
-                    <strong id="title-name">No Title</strong> -
-                    <span id="number-locality" style="margin-left: 5px; margin-right: 5px"> 0 </span>
+                    <strong id="title">Loading</strong> -
+                    <span id="locality-number" style="margin-left: 5px; margin-right: 5px">Loading</span>
                     healthsites
                 </div>
                 <p id="country-shapefiles" class="header" style="padding-bottom: 10px; display: none">
@@ -226,7 +226,7 @@
                         <h3>Number of heathsites per type</h3>
 
                         <div class="graph">
-                            <div id="chart1"></div>
+                            <div id="chart"></div>
 
                             <script>
                             </script>
@@ -244,7 +244,7 @@
                     <div>
                         <h3>Latest updates</h3>
 
-                        <div id="updates" class="graph updates">
+                        <div id="updates-wrapper" class="graph updates">
                             <div class="entry">-</div>
                         </div>
                     </div>
@@ -564,7 +564,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 <script type="text/javascript"
-        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        src="{% static 'libs/bootstrap/3.3.5/js/bootstrap.min.js' %} "></script>
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
@@ -611,21 +611,6 @@
         $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
         $(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
 
-        // checking default view
-        var url = window.location.href;
-        $country_table = $('#accordion-country');
-        for (var i = 0; i < titleRow.length; i++) {
-            var html = '<h3 onClick="loadByAlphabet(' + i + ')">' + titleRow[i] + '</h3>';
-            html += '<div id="title-row-' + i + '" class="table">';
-            html += '</div>';
-            $country_table.append(html);
-        }
-
-        $(".accordion").accordion({
-            collapsible: true,
-            header: "h3",
-            active: false,
-        });
         // render country data list
         {% if countries %}
             {% for country in countries %}
@@ -731,7 +716,7 @@
         $("#locality-statistic").hide();
         $("#locality-info").hide();
         $("#locality-default").hide();
-        {% if tag or country or spec or attribute %}
+        {% if tag or spec or attribute %}
             $("#locality-statistic").show();
             $("#number-locality").html("{{ localities }}");
             updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
@@ -829,97 +814,6 @@
             }
         {% endif %}
     }
-
-    var chart = c3.generate({
-        bindto: '#chart1',
-        size: {
-            height: 220
-        },
-        bar: {
-            width: 18
-        },
-        data: {
-            x: 'x',
-            y: 'percent',
-            columns: [
-                //the healthsites names
-                ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
-                //the healthsites number
-                ['number', 12, 12, 12],
-                //the healthsites percentgage
-                ['percent', 0.33, 0.33, 0.34]
-            ],
-            axes: {
-                number: 'y2'
-            },
-            types: {
-                percent: 'bar',
-                number: 'bar'
-            },
-            order: 'asc',
-
-            labels: {
-                format: {
-                    number: function (v, id, i, j) {
-                        return v;
-                    },
-                }
-            },
-
-
-        },
-        axis: {
-            rotated: true,
-            x: {
-                type: 'category',
-
-            },
-            y: {
-                max: 1,
-                tick: {
-                    values: [0, 0.5, 1],
-                    format: d3.format('%,')
-
-                }
-            }
-        },
-        legend: {
-            show: false
-        },
-        color: {
-            pattern: ['#b6cccc', '#f89ea1']
-        }
-    });
-
-    var piechart = c3.generate({
-        bindto: '#piechart',
-        size: {
-            height: 220
-        },
-        data: {
-            // iris data from R
-            columns: [
-                ['complete', 33],
-                ['partial', 33],
-                ['basic', 34],
-            ],
-            colors: {
-                complete: '#f89ea1',
-                partial: '#b6cccc',
-                basic: '#8698a4'
-            },
-            type: 'pie',
-            onclick: function (d, i) {
-                console.log("onclick", d, i);
-            },
-            onmouseover: function (d, i) {
-                console.log("onmouseover", d, i);
-            },
-            onmouseout: function (d, i) {
-                console.log("onmouseout", d, i);
-            }
-        }
-    });
 
     function downloadShapefile(country) {
         $('.shapefile-indicator').show();
