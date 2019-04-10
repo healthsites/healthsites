@@ -14,9 +14,18 @@ require([
     'backbone',
     'underscore',
     'static/scripts/shared.js',
+    'static/scripts/views/statistic/view.js',
     'static/scripts/views/map-sidebar/country-list.js'
 
-], function (Backbone, _, Shared, CountryList) {
+], function (Backbone, _, Shared, CountryStatistic, CountryList) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     new CountryList();
+    if (parameters['country']) {
+        $("#locality-statistic").show();
+        $("#locality-info").hide();
+        $("#locality-default").hide();
+        var countryStatictic = new CountryStatistic();
+        countryStatictic.showStatistic(parameters['country']);
+    }
+    console.log(parameters);
 });

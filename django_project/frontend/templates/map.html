@@ -214,8 +214,8 @@
             </div>
             <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
                 <div id="title-statistic" class="header" style="font-size: 24px; padding-bottom: 10px;">
-                    <strong id="title-name">No Title</strong> -
-                    <span id="number-locality" style="margin-left: 5px; margin-right: 5px"> 0 </span>
+                    <strong id="title">Loading</strong> -
+                    <span id="locality-number" style="margin-left: 5px; margin-right: 5px">Loading</span>
                     healthsites
                 </div>
                 <p id="country-shapefiles" class="header" style="padding-bottom: 10px; display: none">
@@ -226,7 +226,7 @@
                         <h3>Number of heathsites per type</h3>
 
                         <div class="graph">
-                            <div id="chart1"></div>
+                            <div id="chart"></div>
 
                             <script>
                             </script>
@@ -244,7 +244,7 @@
                     <div>
                         <h3>Latest updates</h3>
 
-                        <div id="updates" class="graph updates">
+                        <div id="updates-wrapper" class="graph updates">
                             <div class="entry">-</div>
                         </div>
                     </div>
@@ -716,7 +716,7 @@
         $("#locality-statistic").hide();
         $("#locality-info").hide();
         $("#locality-default").hide();
-        {% if tag or country or spec or attribute %}
+        {% if tag or spec or attribute %}
             $("#locality-statistic").show();
             $("#number-locality").html("{{ localities }}");
             updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
@@ -814,97 +814,6 @@
             }
         {% endif %}
     }
-
-    var chart = c3.generate({
-        bindto: '#chart1',
-        size: {
-            height: 220
-        },
-        bar: {
-            width: 18
-        },
-        data: {
-            x: 'x',
-            y: 'percent',
-            columns: [
-                //the healthsites names
-                ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
-                //the healthsites number
-                ['number', 12, 12, 12],
-                //the healthsites percentgage
-                ['percent', 0.33, 0.33, 0.34]
-            ],
-            axes: {
-                number: 'y2'
-            },
-            types: {
-                percent: 'bar',
-                number: 'bar'
-            },
-            order: 'asc',
-
-            labels: {
-                format: {
-                    number: function (v, id, i, j) {
-                        return v;
-                    },
-                }
-            },
-
-
-        },
-        axis: {
-            rotated: true,
-            x: {
-                type: 'category',
-
-            },
-            y: {
-                max: 1,
-                tick: {
-                    values: [0, 0.5, 1],
-                    format: d3.format('%,')
-
-                }
-            }
-        },
-        legend: {
-            show: false
-        },
-        color: {
-            pattern: ['#b6cccc', '#f89ea1']
-        }
-    });
-
-    var piechart = c3.generate({
-        bindto: '#piechart',
-        size: {
-            height: 220
-        },
-        data: {
-            // iris data from R
-            columns: [
-                ['complete', 33],
-                ['partial', 33],
-                ['basic', 34],
-            ],
-            colors: {
-                complete: '#f89ea1',
-                partial: '#b6cccc',
-                basic: '#8698a4'
-            },
-            type: 'pie',
-            onclick: function (d, i) {
-                console.log("onclick", d, i);
-            },
-            onmouseover: function (d, i) {
-                console.log("onmouseover", d, i);
-            },
-            onmouseout: function (d, i) {
-                console.log("onmouseout", d, i);
-            }
-        }
-    });
 
     function downloadShapefile(country) {
         $('.shapefile-indicator').show();

@@ -14,9 +14,6 @@ define([
             this.chart = new Chart('chart', 220, 18);
             this.pie = new Pie('piechart', 220);
             this.request = new Request();
-
-            // show world statistic
-            this.showStatistic("");
         },
         showStatistic: function (country, callback) {
             var self = this;
