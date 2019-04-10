@@ -140,7 +140,9 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
                 type = number['category']
                 if type:
                     output['numbers'][type] = number['total']
-            healthsites = healthsites[:10]
+
+            # last update
+            healthsites = healthsites.exclude(changeset_timestamp__isnull=True)[:10]
             output['last_update'] = LocalityOSMBasic(healthsites, many=True).data
 
             country = request.GET.get('country', None)

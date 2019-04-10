@@ -22,7 +22,7 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
+    <link href="{% static 'libs/bootstrap/3.3.5/css/bootstrap.min.css' %} " rel="stylesheet" type="text/css"
           media="screen, projection"/>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
@@ -564,7 +564,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 <script type="text/javascript"
-        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+        src="{% static 'libs/bootstrap/3.3.5/js/bootstrap.min.js' %} "></script>
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
@@ -611,21 +611,6 @@
         $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
         $(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
 
-        // checking default view
-        var url = window.location.href;
-        $country_table = $('#accordion-country');
-        for (var i = 0; i < titleRow.length; i++) {
-            var html = '<h3 onClick="loadByAlphabet(' + i + ')">' + titleRow[i] + '</h3>';
-            html += '<div id="title-row-' + i + '" class="table">';
-            html += '</div>';
-            $country_table.append(html);
-        }
-
-        $(".accordion").accordion({
-            collapsible: true,
-            header: "h3",
-            active: false,
-        });
         // render country data list
         {% if countries %}
             {% for country in countries %}
