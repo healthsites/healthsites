@@ -17,54 +17,6 @@ function returnPosition(position) {
     $APP.trigger('map.pan', {'location': [position.coords.latitude, position.coords.longitude]});
 }
 
-function loadCountry(country) {
-    var country_id = country.split(".").join("-");
-    country_id = country_id.split("&#39;").join("-");
-    country_id = country_id.split(" ").join("-");
-    country_id = country_id.split("(").join("-");
-    country_id = country_id.split(")").join("-");
-    var html = '<div class="block-data"><span class="col-xs-6"><a href="map?country=' + country + '">' + country + '</a></span> <span id="' + country_id + '-number" class="col-xs-3">loading</span> <span id="' + country_id + '-complete" class="col-xs-3">loading</span></div>';
-    $.ajax({
-        number: country_id + "-number",
-        completeness: country_id + "-complete",
-        url: "/search/localities/country",
-        dataType: 'json',
-        data: {
-            q: country
-        },
-        success: function (data) {
-            var number = 0;
-            var completness = 0;
-            if (data.localities > 0) {
-                completness = data.completeness.complete / data.localities * 100;
-                number = data.localities;
-            }
-            $("#" + this.number).html(number);
-            $("#" + this.completeness).html(completness.toFixed(2));
-        },
-        fail: function (data) {
-            $("#" + this.number).html("fail");
-            $("#" + this.completeness).html("fail");
-        }
-    });
-    return html;
-}
-function loadByAlphabet(index) {
-    var wrapper = $("#title-row-" + index);
-    if (wrapper.html() == "") {
-        var found = false;
-        for (var i = 0; i < countries.length; i++) {
-            if (countries[i].toLowerCase()[0].match(titleRowRegex[index]) != null) {
-                found = true;
-                wrapper.append(loadCountry(countries[i]));
-            } else {
-                if (found) break;
-            }
-        }
-        wrapper.css("height", "auto");
-    }
-}
-
 function onChange(element) {
     $APP.trigger('sidebar.option-onchange', {'element': element});
 }
