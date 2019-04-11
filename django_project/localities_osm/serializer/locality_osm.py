@@ -47,6 +47,11 @@ class LocalityOSMBasic(ModelSerializer):
 
 
 class LocalityOSMUpdates(ModelSerializer):
+    changeset__social_user__username = serializers.SerializerMethodField()
+    nickname = serializers.SerializerMethodField()
+    locality_id = serializers.SerializerMethodField()
+    changeset__created = serializers.SerializerMethodField()
+    edit_count = serializers.SerializerMethodField()
 
     class Meta:
         model = LocalityOSMView
@@ -58,14 +63,24 @@ class LocalityOSMUpdates(ModelSerializer):
             'changeset_version',
             'changeset_timestamp',
             'changeset_user',
+            'changeset__social_user__username',
+            'nickname',
+            'locality_id',
+            'changeset__created',
+            'edit_count'
         ]
 
-    def to_representation(self, instance):
-        result = super(LocalityOSMUpdates, self).to_representation(instance)
-        result['changeset__social_user__username'] = None
-        print(result['changeset_timestamp'])
-        result['changeset__created'] = datetime.datetime.strptime(result['changeset_timestamp'], '%Y-%m-%dT%H:%M:%S')
-        result['nickname'] = result['changeset_user']
-        result['locality_id'] = None
-        result['edit_count'] = 1
-        return result
+    def get_changeset__social_user__username(self, instance):
+        return None
+
+    def get_nickname(self, instance):
+        return instance.changeset_user
+
+    def get_locality_id(self, instance):
+        return None
+
+    def get_changeset__created(self, instance):
+        return instance.changeset_timestamp
+
+    def get_edit_count(self, instance):
+        return 1
