@@ -51,6 +51,8 @@ class LocalityOSMUpdates(ModelSerializer):
     class Meta:
         model = LocalityOSMView
         fields = [
+            'pk',
+            'osm_id',
             'name',
             'changeset_id',
             'changeset_version',

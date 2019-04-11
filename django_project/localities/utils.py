@@ -47,20 +47,8 @@ def extract_updates(updates):
     last_updates = []
     histories = updates
     for update in histories:
-        update['locality_uuid'] = ''
-        update['locality'] = ''
-        if update['edit_count'] == 1:
-            # get the locality to show in web
-            try:
-                locality = Locality.objects.get(pk=update['locality_id'])
-                update['locality_uuid'] = locality.uuid
-                update['locality'] = locality.name
-            except Locality.DoesNotExist:
-                update['locality_uuid'] = 'unknown'
-                if not update['name']:
-                    update['locality'] = 'unknown'
-                else:
-                    update['locality'] = update['name']
+        update['locality_uuid'] = update['pk']
+        update['locality'] = update['name']
 
         if 'version' in update:
             if update['version'] == 1:
