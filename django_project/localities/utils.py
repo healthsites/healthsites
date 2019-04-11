@@ -419,17 +419,18 @@ def get_statistic(healthsites):
 
 
 def get_update_detail(update):
-    profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
-    update['nickname'] = profile.screen_name
-    update['changeset__created'] = update['changeset__created']
-    return update
+    if update['osm_user']:
+        update['changeset__social_user__username'] = update['changeset_user']
+        update['nickname'] = update['changeset_user']
+        update['changeset__created'] = update['changeset_timestamp']
+        update['locality_id'] = None
 
-
-def get_update_osm_detail(update):
-    update['changeset__social_user__username'] = update['changeset_user']
-    update['nickname'] = update['changeset_user']
-    update['changeset__created'] = update['changeset_timestamp']
-    update['locality_id'] = None
+    else:
+        profile = get_profile(
+            User.objects.get(
+                username=update['changeset__social_user__username']))
+        update['nickname'] = profile.screen_name
+        update['changeset__created'] = update['changeset__created']
     return update
 
 

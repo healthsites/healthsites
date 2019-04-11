@@ -19,7 +19,6 @@ from localities.models import Locality, LocalityArchive
 from localities.utils import (
     extract_updates,
     get_update_detail,
-    get_update_osm_detail
 )
 from localities_osm.models.locality import LocalityOSMView
 from social_users.models import Profile
@@ -146,6 +145,7 @@ def user_updates(user, date, osm_user):
             .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
         )
         for update in updates_temp:
+            update['osm_user'] = osm_user
             updates.append(get_update_detail(update))
 
     else:
@@ -159,7 +159,8 @@ def user_updates(user, date, osm_user):
         )
 
         for update in updates_osm:
-            updates.append(get_update_osm_detail(update))
+            update['osm_user'] = osm_user
+            updates.append(get_update_detail(update))
 
     updates.sort(key=extract_time, reverse=True)
     return updates[:10]
