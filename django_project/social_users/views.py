@@ -15,12 +15,12 @@ from braces.views import LoginRequiredMixin
 
 from api.models.user_api_key import UserApiKey
 from core.utilities import extract_time
-from localities.models import Locality, LocalityArchive
 from localities.utils import (
     extract_updates,
     get_update_detail,
 )
 from localities_osm.models.locality import LocalityOSMView
+from localities_osm.serializer.locality_osm import LocalityOSMUpdates
 from social_users.models import Profile
 from social_users.utils import get_profile
 
@@ -110,57 +110,17 @@ def save_profile(backend, user, response, *args, **kwargs):
     return {'user': user}
 
 
-def user_updates(user, date, osm_user):
+def user_updates(user, date):
     updates = []
-    changesets = []
 
-    if not osm_user:
-        # from locality archive
-        ids = (
-            LocalityArchive.objects
-            .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-            .order_by('-changeset__created')
-            .values('changeset', 'object_id')
-            .annotate(id=Min('id')).values('id')
-        )
-        updates_temp = (
-            LocalityArchive.objects
-            .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-            .filter(id__in=ids)
-            .order_by('-changeset__created')
-            .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-            .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
-        )
+    # get from locality osm for osm users
+    updates_osm = \
+        LocalityOSMView.objects.filter(
+            changeset_user=user).order_by('-changeset_timestamp')
+    serializer = LocalityOSMUpdates(updates_osm, many=True)
 
-        for update in updates_temp:
-            changesets.append(update['changeset'])
-            updates.append(get_update_detail(update))
-
-        # get from locality if not in Locality Archive yet
-        updates_temp = (
-            Locality.objects
-            .filter(changeset__social_user=user).exclude(changeset__in=changesets)
-            .order_by('-changeset__created')
-            .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-            .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
-        )
-        for update in updates_temp:
-            update['osm_user'] = osm_user
-            updates.append(get_update_detail(update))
-
-    else:
-        # get from locality osm for osm users
-        updates_osm = (
-            LocalityOSMView.objects
-            .filter(changeset_user=user)
-            .order_by('-changeset_timestamp')
-            .values('changeset_id', 'changeset_timestamp', 'changeset_user', 'changeset_version', 'name')
-            .annotate(edit_count=Count('changeset_id'))
-        )
-
-        for update in updates_osm:
-            update['osm_user'] = osm_user
-            updates.append(get_update_detail(update))
+    for update in serializer.data:
+        updates.append(get_update_detail(update))
 
     updates.sort(key=extract_time, reverse=True)
     return updates[:10]
@@ -173,11 +133,7 @@ def get_user_updates(request):
         if not date:
             date = datetime.now()
 
-        try:
-            user = User.objects.get(username=user)
-            last_updates = user_updates(user, date, False)
-        except User.DoesNotExist:
-            last_updates = user_updates(user, date, True)
+        last_updates = user_updates(user, date)
 
         updates = extract_updates(last_updates)
         result = {}
