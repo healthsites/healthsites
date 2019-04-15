@@ -11,7 +11,10 @@ from .views.locality_search import LocalitySearchApiView
 from .views.locality_synonym import LocalitySynonymApiView
 
 # API Version 2
-from api.api_views.v2.facilities.detail import GetDetailFacility
+from api.api_views.v2.facilities.detail import (
+    GetDetailFacility,
+    GetDetailFacilityByUUID
+)
 from api.api_views.v2.facilities.list import (
     GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
 from api.api_views.v2.facilities.shapefile import GetFacilitiesShapefileProcess
@@ -24,9 +27,9 @@ api_v2 = patterns(
         GetFacilitiesStatistic.as_view(), name='api_v2_facility_statistic'),
     url(r'^facilities/shapefile/process/(?P<country_name>[\w\+%_& ]+)',
         GetFacilitiesShapefileProcess.as_view(), name='api_v2_facility_list'),
-    url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
-        GetDetailFacility.as_view(), name='api_v2_facility_detail'),
-    url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
+    url(r'^facilities/by-uuid/(?P<uuid>[\w\+%_& ]+)',
+        GetDetailFacilityByUUID.as_view(), name='api_v2_facility_detail_by_uuid'),
+    url(r'^facilities/(?P<osm_type>\w+)/(?P<osm_id>\d+)',
         GetDetailFacility.as_view(), name='api_v2_facility_detail'),
     url(r'^facilities',
         GetFacilities.as_view(), name='api_v2_facility_list'),

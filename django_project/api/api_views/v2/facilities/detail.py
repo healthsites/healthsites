@@ -6,14 +6,14 @@ from rest_framework.response import Response
 from api.api_views.v2.facilities.base_api import (
     BaseAPI
 )
-from api.serializer.locality_post import LocalityPostSerializer
 from localities.models import Locality
 from localities_healthsites_osm.models.locality_healthsites_osm import (
     LocalityHealthsitesOSM
 )
+from localities_osm.models.locality import LocalityOSMView
 
 
-class GetDetailFacility(BaseAPI):
+class GetDetailFacilityByUUID(BaseAPI):
     """
     get:
     Returns a facility detail.
@@ -49,16 +49,8 @@ class GetDetailFacility(BaseAPI):
         except Locality.DoesNotExist:
             raise Http404()
 
-    def delete(self, request, uuid):
-        try:
-            facility = Locality.objects.get(uuid=uuid)
-            facility.delete()
-            return Response('OK')
-        except Locality.DoesNotExist:
-            raise Http404()
 
-
-class GetDetailFacilityPublic(BaseAPI):
+class GetDetailFacility(BaseAPI):
     """
     get:
     Returns a facility detail.
@@ -67,16 +59,15 @@ class GetDetailFacilityPublic(BaseAPI):
     Update a facility.
     """
 
-    def get_serializer(self):
-        return LocalityPostSerializer()
-
-    def get(self, request, uuid):
+    def get(self, request, osm_type, osm_id):
+        validation = self.validation()
+        if validation:
+            return HttpResponseBadRequest(validation)
         try:
 
-            facility = Locality.objects.get(uuid=uuid)
-            locality_osm, created = LocalityHealthsitesOSM.objects.get_or_create(
-                healthsite=facility)
-            facility = locality_osm.return_osm_view()
+            facility = LocalityOSMView.objects.get(
+                osm_type=osm_type,
+                osm_id=osm_id)
             return Response(self.serialize(facility))
-        except Locality.DoesNotExist:
+        except LocalityOSMView.DoesNotExist:
             raise Http404()

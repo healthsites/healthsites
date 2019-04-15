@@ -63,8 +63,7 @@ window.MAP = (function () {
             var name = $("#locality-name").text();
             if (name == "No Name") {
                 name = "";
-            }
-            else {
+            } else {
                 name = "See " + name + " ";
             }
             var nowURL = hasher.getURL().replace("#", "%23");
@@ -216,7 +215,6 @@ window.MAP = (function () {
                     self.MAP.removeLayer(self.pointLayer);
                     self.pointLayer.setLatLng([0, 0]);
                 }
-                ;
 
                 self.original_marker_position = [payload.geom[1], payload.geom[0]];
                 // move map to the marker
@@ -249,6 +247,10 @@ window.MAP = (function () {
 
             $APP.on('map.create-polygon', function (evt, payload) {
                 self._createPolygon(payload.polygon);
+            });
+
+            $APP.on('map.create-locality-polygon', function (evt, coordinates) {
+                self._createPolygonLocality(coordinates);
             });
 
             $APP.on('map.pan', function (evt, payload) {
@@ -345,25 +347,32 @@ window.MAP = (function () {
                 "geometry": {
                     "type": "MultiPolygon",
                     "coordinates": polygon
-                },
-                "properties": {
-                    "name": "MultiPolygon",
-                    "style": {
-                        color: "#f44a52",
-                        opacity: 0.6,
-                        weight: 2,
-                        fillColor: "#f44a52",
-                        fillOpacity: 0.4
-                    }
                 }
             };
             this.geoJson = new L.GeoJSON(mp, {
                 style: function (feature) {
-                    return feature.properties.style
+                    return styles['area-polygon'];
                 }
             }).addTo(this.MAP);
             this.MAP.fitBounds(this.geoJson.getBounds());
         },
+
+        _createPolygonLocality: function (geojsonFeature) {
+            if (this.localityPolygon) {
+                this.localityPolygon.clearLayers()
+            } else {
+                this.localityPolygon = new L.GeoJSON([], {
+                    style: function (feature) {
+                        return styles['locality-polygon'];
+                    }
+                }).addTo(this.MAP);
+            }
+            if (geojsonFeature.type !== "Point") {
+                this.localityPolygon.addData(geojsonFeature);
+                this.MAP.fitBounds(this.localityPolygon.getBounds());
+            }
+        },
+
 
         _moveTo: function (location, zoom) {
             if (!zoom) {
