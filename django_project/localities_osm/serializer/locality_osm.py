@@ -39,9 +39,14 @@ class LocalityHealthsitesOSMNodeSerializer(LocalityHealthsitesOSMSerializer):
 
 
 class LocalityOSMBasic(ModelSerializer):
+    uuid = serializers.SerializerMethodField()
+
+    def get_uuid(self, obj):
+        return '%s/%s' % (obj.osm_type, obj.osm_id)
+
     class Meta:
         model = LocalityOSMView
-        fields = ['row', 'osm_id', 'osm_type',
+        fields = ['uuid', 'osm_id', 'osm_type',
                   'type', 'name', 'changeset_version',
                   'changeset_timestamp', 'changeset_user']
 

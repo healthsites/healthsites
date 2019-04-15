@@ -13,6 +13,8 @@ class LocalityOSM(LocalityOSMBase):
     """ This maps through to the docker-osm cache table containing healthcare facilities
     that defined in mapping.yml at docker-osm-healthcare/mapping.yml
     """
+    MANDATORY_FIELD = ['category', 'type', 'ownership', 'name', 'source']
+
     # mandatory
     osm_id = models.BigIntegerField()
     category = models.CharField(
@@ -26,6 +28,7 @@ class LocalityOSM(LocalityOSMBase):
     source = models.CharField(
         max_length=512, blank=True, null=True)
 
+    # optional
     operator = models.CharField(
         max_length=512, blank=True, null=True)
     physical_address = models.CharField(
@@ -46,9 +49,12 @@ class LocalityOSM(LocalityOSMBase):
         max_length=512, blank=True, null=True)
     insurance = models.CharField(
         max_length=512, blank=True, null=True)
-    dispensing = models.BooleanField(blank=True)
-    wheelchair_access = models.BooleanField(blank=True)
-    emergency = models.BooleanField(blank=True)
+    dispensing = models.CharField(
+        max_length=512, blank=True, null=True)
+    wheelchair_access = models.CharField(
+        max_length=512, blank=True, null=True)
+    emergency = models.CharField(
+        max_length=512, blank=True, null=True)
     water_source = models.CharField(
         max_length=512, blank=True, null=True)
     power_source = models.CharField(
@@ -75,6 +81,35 @@ class LocalityOSM(LocalityOSMBase):
             return u'%s [%s]' % (self.name, self.type)
         else:
             return u'%s' % self.name
+
+    @staticmethod
+    def get_count_of_basic(queryset):
+        for mandatory_field in LocalityOSM.MANDATORY_FIELD:
+            queryset = queryset.exclude(**{'%s' % mandatory_field: ''})
+        return queryset.count()
+
+    @staticmethod
+    def get_count_of_complete(queryset):
+        for field in LocalityOSM._meta.get_all_field_names():
+            if field in ['osm_id', 'changeset_id', 'changeset_version', 'changeset_timestamp', 'changeset_user']:
+                continue
+            print field
+            queryset = queryset.exclude(**{'%s' % field: ''})
+        return queryset.count()
+
+    def get_completeness(self):
+        """ Get completeness of osm data
+        :return: percentage of completeness
+        :rtype: int
+        """
+        total = 0
+        completed = 0
+        for field in LocalityOSM._meta.get_all_field_names():
+            total += 1
+            if self._meta.get_field(field).get_internal_type() == 'CharField':
+                if getattr(self, field):
+                    completed += 1
+        return float(completed * 100 / total)
 
     def insert_healthsite_data(self, healthsite_data):
         attributes = healthsite_data['attributes']
