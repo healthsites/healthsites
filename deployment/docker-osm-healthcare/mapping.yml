@@ -56,13 +56,13 @@ tables:
         type: string
       - key: dispensing
         name: dispensing
-        type: bool
+        type: string
       - key: wheelchair
         name: wheelchair_access
-        type: bool
+        type: string
       - key: emergency
         name: emergency
-        type: bool
+        type: string
       - key: water_source
         name: water_source
         type: string
@@ -159,13 +159,13 @@ tables:
         type: string
       - key: dispensing
         name: dispensing
-        type: bool
+        type: string
       - key: wheelchair
         name: wheelchair_access
-        type: bool
+        type: string
       - key: emergency
         name: emergency
-        type: bool
+        type: string
       - key: water_source
         name: water_source
         type: string

@@ -4,6 +4,7 @@ __date__ = '29/11/18'
 import json
 import dicttoxml
 from django.core.paginator import EmptyPage, Paginator
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 from api.authentication import APIKeyAuthentication
 from api.serializer.api_locality import (
@@ -11,7 +12,6 @@ from api.serializer.api_locality import (
 
 
 class BaseAPI(APIView):
-    authentication_classes = (APIKeyAuthentication,)
     _FORMATS = ['json', 'xml', 'geojson']
     format = 'json'
 
@@ -124,7 +124,11 @@ class BaseAPI(APIView):
         return used_data
 
 
-class PaginationAPI(BaseAPI):
+class BaseAPIWithAuth(APIView):
+    authentication_classes = (SessionAuthentication, BasicAuthentication, APIKeyAuthentication)
+
+
+class PaginationAPI(BaseAPIWithAuth):
     """
     Base API for Facilities in pagination
     """

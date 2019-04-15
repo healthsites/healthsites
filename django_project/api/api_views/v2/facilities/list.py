@@ -17,6 +17,7 @@ from api.api_views.v2.facilities.base_api import (
 )
 from localities.models import Country, Locality
 from localities.utils import parse_bbox
+from localities_osm.models.locality import LocalityOSM
 from localities_osm.serializer.locality_osm import LocalityOSMBasic
 from localities_osm.utilities import get_all_osm_query
 
@@ -140,6 +141,14 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
                 type = number['category']
                 if type:
                     output['numbers'][type] = number['total']
+
+            # get completeness
+            basic = LocalityOSM.get_count_of_basic(healthsites)
+            complete = LocalityOSM.get_count_of_complete(healthsites)
+            output['completeness'] = {
+                'basic': basic,
+                'complete': complete
+            }
 
             # last update
             healthsites = healthsites.exclude(changeset_timestamp__isnull=True)[:10]

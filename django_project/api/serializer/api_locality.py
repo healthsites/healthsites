@@ -123,21 +123,7 @@ class LocalityHealthsitesOSMBaseSerializer(object):
             pass
         return data
 
-
-class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
-                                       ModelSerializer):
-    geometry = GeometrySerializerMethodField
-    attributes = SerializerMethodField()
-
-    class Meta:
-        model = LocalityOSMView
-        exclude = []
-
-    def get_geometry(self, obj):
-        return obj.geometry.centroid
-
-    def to_representation(self, instance):
-        result = super(LocalityHealthsitesOSMSerializer, self).to_representation(instance)
+    def parse_attributes(self, instance, result):
         locality_data = self.get_healthsites_data(instance)
         # get healthsites locality data and put it on result attributes
         attributes = result['attributes']
@@ -170,11 +156,32 @@ class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
                     continue
                 else:
                     locality_data['attributes'][key] = value
+        locality_data['osm_id'] = result['osm_id']
+        locality_data['osm_type'] = result['osm_type']
+        locality_data['completeness'] = instance.get_completeness()
+
+        # completeness
+        return locality_data
+
+
+class LocalityHealthsitesOSMSerializer(LocalityHealthsitesOSMBaseSerializer,
+                                       ModelSerializer):
+    geometry = GeometrySerializerMethodField
+    attributes = SerializerMethodField()
+
+    class Meta:
+        model = LocalityOSMView
+        exclude = []
+
+    def get_geometry(self, obj):
+        return obj.geometry.centroid
+
+    def to_representation(self, instance):
+        result = super(LocalityHealthsitesOSMSerializer, self).to_representation(instance)
+        locality_data = self.parse_attributes(instance, result)
         locality_data['latitude'] = self.get_geometry(instance).y
         locality_data['longitude'] = self.get_geometry(instance).x
         locality_data['row'] = result['row']
-        locality_data['osm_id'] = result['osm_id']
-        locality_data['osm_type'] = result['osm_type']
         return locality_data
 
 
@@ -186,3 +193,10 @@ class LocalityHealthsitesOSMGeoSerializer(LocalityHealthsitesOSMBaseSerializer,
         model = LocalityOSMView
         geo_field = 'geometry'
         exclude = attributes_fields
+
+    def to_representation(self, instance):
+        result = super(LocalityHealthsitesOSMGeoSerializer, self).to_representation(instance)
+        result['properties'] = self.parse_attributes(
+            instance, result['properties'])
+        result['properties']['geometry'] = instance.geometry.centroid.tuple
+        return result
