@@ -47,17 +47,8 @@ def extract_updates(updates):
     last_updates = []
     histories = updates
     for update in histories:
-        update['locality_uuid'] = ''
-        update['locality'] = ''
-        if update['edit_count'] == 1:
-            # get the locality to show in web
-            try:
-                locality = Locality.objects.get(pk=update['locality_id'])
-                update['locality_uuid'] = locality.uuid
-                update['locality'] = locality.name
-            except Locality.DoesNotExist:
-                update['locality_uuid'] = 'unknown'
-                update['locality'] = 'unknown'
+        update['locality_uuid'] = update['pk']
+        update['locality'] = update['name']
 
         if 'version' in update:
             if update['version'] == 1:
@@ -416,9 +407,14 @@ def get_statistic(healthsites):
 
 
 def get_update_detail(update):
-    profile = get_profile(User.objects.get(username=update['changeset__social_user__username']))
-    update['nickname'] = profile.screen_name
-    update['changeset__created'] = update['changeset__created']
+    try:
+        user = \
+            User.objects.get(
+                username=update['changeset__social_user__username'])
+        profile = get_profile(user)
+        update['nickname'] = profile.screen_name
+    except (User.DoesNotExist, KeyError) as e:
+        pass
     return update
 
 

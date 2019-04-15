@@ -8,7 +8,7 @@
     <section class="white container">
         <div class="col-sm-4 user-profile">
             <div class="profile-image-size">
-                {% if user.profile_picture == "" %}
+                {% if user.profile_picture == "" or osm_user %}
                     <img class="profile-image" src="{% static "img/no-profile-img.gif" %}"/>
                 {% else %}
                     <img class="profile-image" src="{{ user.profile_picture }}"/>
@@ -42,6 +42,9 @@
                     -
                 {% else %}
                     {{ user.get_full_name }}
+                {% endif %}
+                {% if osm_user %}
+                    <img src="{% static "img/osm-logo.png" %}" height="20px" data-toggle="tooltip" data-placement="top" title="OSM User"/> OSM User
                 {% endif %}
             </div>
             {% if user.is_trusted_user %}
