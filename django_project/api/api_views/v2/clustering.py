@@ -51,6 +51,15 @@ class Clustering(APIView):
             for sample in samples:
                 response_data[sample]['count'] += 1
 
+            for data in response_data:
+                if data['count'] == 1:
+                    all_osm_data = serializer.data
+                    for osm_data in all_osm_data:
+                        if osm_data['lat'] == data['centroid_lat'] and osm_data['lng'] == data['centroid_lng']:
+                            data['osm_id'] = osm_data['osm_id']
+                            data['geometry'] = osm_data['geometry']
+                            data['osm_type'] = osm_data['osm_type']
+
             response = {
                 'data': response_data,
                 'cluster': 'true',

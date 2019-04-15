@@ -14,7 +14,10 @@ class LocalityOSMCentroidSerializer(serializers.ModelSerializer):
         model = LocalityOSMView
         fields = [
             'lat',
-            'lng'
+            'lng',
+            'osm_id',
+            'geometry',
+            'osm_type'
         ]
 
     def get_lat(self, instance):
