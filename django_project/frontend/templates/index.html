@@ -10,11 +10,11 @@
     {# The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags #}
     <html itemscope itemtype="https://schema.org/Organization">
     <meta itemprop="name" content="healthsites.io">
-    <meta itemprop="description" content="A free, curated, global, canonical source of healthcare location data">
+    <meta itemprop="description" content="Building an open data commons of health facility data with OpenStreetMap">
     <meta itemprop="image" content="https://staging.healthsites.io/static/img/healthsites-gp.png">
     <meta property="og:title" content="healthsites.io"/>
     <meta property="og:image" content="https://staging.healthsites.io/static/img/healthsites-fb.png"/>
-    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data"/>
+    <meta property="og:description" content="Building an open data commons of health facility data with OpenStreetMap"/>
 
     <title>Healthsites.io</title>
 
@@ -84,10 +84,11 @@
                     <i class="fa fa-linkedin"></i>
                 </a>
             </div>
-            <span class="tagline" itemprop="description">Building a free, curated, canonical source of healthcare location data</span>
+            <span class="tagline" itemprop="description">Building an open data commons of health facility data with OpenStreetMap</span>
         </div>
         <div id="navbar" class="collapse navbar-collapse pull-right">
             <ul class="nav navbar-nav">
+                <li><a href="https://medium.com/healthsites-io" target="_blank">Blog</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="/map">Map</a></li>
                 <li><a href="#country-data">Country data</a></li>
@@ -126,8 +127,7 @@
 <section id="tophome" class="slideshow js-fullheight fluid-container">
     <div class="slideshow-container limiter pin-top pin-bottom clearfix">
         <div class="z1 slideshow-text pad4y col-md-4 prose prose-big dark">
-            <h2 class="fancy "><span class="timer" data-speed="2500"
-                                     data-to="{{ locality_count }}">{{ locality_count }}</span><br/>
+            <h2 class="fancy"><span id="healthsites-count"><i style="opacity: 0.3">loading</i><br/></span>
                 healthsites added</h2>
 
             <div class="cta col-md-12 clearfix pad0x">
@@ -341,12 +341,15 @@
     <div class="container">
         <h3>Partners</h3>
         <ul class="partners-list">
-            <li><a href="http://healthcareindanger.org/hcid-project/" target="_blank"><img
-                    src="{% static "img/hcid-logo.png" %}"/></a></li>
+            <li><a href="http://healthcareindanger.org/hcid-project/" target="_blank"><img src="{% static "img/hcid-logo.png" %}"/></a></li>
             <li><a href="https://www.icrc.org/" target="_blank"><img src="{% static "img/icrc-logo.png" %}"/></a></li>
             <li><a href="https://www.ihf-fih.org/" target="_blank"><img src="{% static "img/ihf-logo.png" %}"/></a></li>
             <li><a href="https://hotosm.org/" target="_blank"><img src="{% static "img/hot-logo.png" %}"/></a></li>
             <li><a href="https://www.msf.org/" target="_blank"><img src="{% static "img/msf-logo.png" %}"/></a></li>
+            <li><a href="https://www.missingmaps.org" target="_blank"><img src="{% static "img/missing-maps.png" %}"/></a></li>
+            <li><a href="https://cartong.org/" target="_blank"><img src="{% static "img/cartong.png" %}"/></a></li>
+            <li><a href="https://www.radiant.earth/" target="_blank"><img src="{% static "img/radiant-earth-logo.png" %}"/></a></li>
+            <li><a href="https://www.it4life.org/" target="_blank"><img src="{% static "img/it4life-logo.png" %}"/></a></li>
         </ul>
     </div>
 </section>

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
-LOG = logging.getLogger(__name__)
 
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.query import GeoQuerySet
 
 from model_utils.managers import PassThroughManagerMixin
+
+LOG = logging.getLogger(__name__)
 
 
 class PassThroughGeoManager(PassThroughManagerMixin, models.GeoManager):
@@ -41,3 +42,19 @@ class LocalitiesQuerySet(GeoQuerySet):
 
         LOG.debug('Filtering Localities using polygon: %s', polygon)
         return self.filter(geom__within=polygon)
+
+    def from_datetime(self, datetime):
+        """
+        Filter Localities after datetime
+        """
+
+        LOG.debug('Filtering Localities after : %s', datetime)
+        return self.filter(changeset__created__gte=datetime)
+
+    def to_datetime(self, datetime):
+        """
+        Filter Localities before datetime
+        """
+
+        LOG.debug('Filtering Localities before : %s', datetime)
+        return self.filter(changeset__created__lte=datetime)

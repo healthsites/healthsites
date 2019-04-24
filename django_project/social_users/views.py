@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-import logging
 import json
-
-LOG = logging.getLogger(__name__)
-
-from braces.views import LoginRequiredMixin
-from core.utilities import extract_time
+import logging
 from datetime import datetime
+
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
@@ -14,10 +10,17 @@ from django.db.models import Count, Max, Min
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView, View
+
+from braces.views import LoginRequiredMixin
+
+from api.models.user_api_key import UserApiKey
+from core.utilities import extract_time
 from localities.models import Locality, LocalityArchive
 from localities.utils import extract_updates, get_update_detail
 from social_users.models import Profile
 from social_users.utils import get_profile
+
+LOG = logging.getLogger(__name__)
 
 
 class UserProfilePage(LoginRequiredMixin, TemplateView):
@@ -27,7 +30,7 @@ class UserProfilePage(LoginRequiredMixin, TemplateView):
         context = super(UserProfilePage, self).get_context_data(*args, **kwargs)
         context['auths'] = [
             auth.provider for auth in self.request.user.social_auth.all()
-            ]
+        ]
         return context
 
 
@@ -39,10 +42,18 @@ class ProfilePage(TemplateView):
         *debug* toggles GoogleAnalytics support on the main page
         """
 
-        user = get_object_or_404(User, username=kwargs["username"])
+        user = get_object_or_404(User, username=kwargs['username'])
         user = get_profile(user)
         context = super(ProfilePage, self).get_context_data(*args, **kwargs)
         context['user'] = user
+
+        context['api_keys'] = None
+        if self.request.user == user:
+            autogenerate_api_key = False
+            if user.is_superuser:
+                autogenerate_api_key = True
+            context['api_keys'] = UserApiKey.get_user_api_key(
+                self.request.user, autogenerate=autogenerate_api_key)
         return context
 
 
@@ -59,7 +70,7 @@ class LogoutUser(View):
 def save_profile(backend, user, response, *args, **kwargs):
     url = None
     if backend.name == 'facebook':
-        url = "http://graph.facebook.com/%s/picture?type=large" % response['id']
+        url = 'http://graph.facebook.com/%s/picture?type=large' % response['id']
     if backend.name == 'twitter':
         url = response.get('profile_image_url', '').replace('_normal', '')
     if backend.name == 'google-oauth2':
@@ -68,7 +79,7 @@ def save_profile(backend, user, response, *args, **kwargs):
     if kwargs['is_new']:
         if 'username' in kwargs['details']:
             new_username = kwargs['details']['username']
-            new_username = new_username.replace(" ", "")
+            new_username = new_username.replace(' ', '')
             if user.username != new_username:
                 try:
                     old_username = user.username
@@ -89,26 +100,34 @@ def save_profile(backend, user, response, *args, **kwargs):
 def user_updates(user, date):
     updates = []
     # from locality archive
-    ids = LocalityArchive.objects.filter(changeset__social_user=user).filter(changeset__created__lt=date).order_by(
-        '-changeset__created').values(
-        'changeset', 'object_id').annotate(
-        id=Min('id')).values('id')
-    updates_temp = LocalityArchive.objects.filter(changeset__social_user=user).filter(
-        changeset__created__lt=date).filter(
-        id__in=ids).order_by(
-        '-changeset__created').values(
-        'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-        edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
+    ids = (
+        LocalityArchive.objects
+        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
+        .order_by('-changeset__created')
+        .values('changeset', 'object_id')
+        .annotate(id=Min('id')).values('id')
+    )
+    updates_temp = (
+        LocalityArchive.objects
+        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
+        .filter(id__in=ids)
+        .order_by('-changeset__created')
+        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
+    )
     changesets = []
     for update in updates_temp:
         changesets.append(update['changeset'])
         updates.append(get_update_detail(update))
 
     # get from locality if not in Locality Archive yet
-    updates_temp = Locality.objects.filter(changeset__social_user=user).exclude(changeset__in=changesets).order_by(
-        '-changeset__created').values(
-        'changeset', 'changeset__created', 'changeset__social_user__username', 'version').annotate(
-        edit_count=Count('changeset'), locality_id=Max('id'))[:10]
+    updates_temp = (
+        Locality.objects
+        .filter(changeset__social_user=user).exclude(changeset__in=changesets)
+        .order_by('-changeset__created')
+        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
+    )
     for update in updates_temp:
         updates.append(get_update_detail(update))
 

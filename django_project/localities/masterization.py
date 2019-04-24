@@ -1,8 +1,4 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '11/05/16'
-__license__ = "GPL"
-__copyright__ = 'kartoza.com'
-
+# -*- coding: utf-8 -*-
 from .models import Locality, SynonymLocalities, UnconfirmedSynonym
 
 
@@ -48,7 +44,9 @@ def promote_unconfirmed_synonym(id):
     try:
         # get unconfirmed
         unconfirmed_synonym = UnconfirmedSynonym.objects.get(id=id)
-        result = downgrade_master_as_synonyms(unconfirmed_synonym.synonym.id, unconfirmed_synonym.locality.id)
+        result = downgrade_master_as_synonyms(
+            unconfirmed_synonym.synonym.id, unconfirmed_synonym.locality.id
+        )
         print result
         if result:
             unconfirmed_synonym.delete()

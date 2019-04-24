@@ -28,13 +28,12 @@ if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
         # 'dsn': 'https://02127c0444ca42b3a7d3275118d74177:'
         # '2e7a9aa7b77240bd8804f95057991875@app.getsentry.com/55597',
         # Self hosted sentry
-        'dsn': 'http://ea65e461089d4fcda9d63696cd70fa50:9ba52586ab79479eba68'
-               '9dbbad671149@sentry.kartoza.com/12',
+        'dsn': 'http://b318bf6d392b479da15e5fdcc4deb1a3:3a0c87ea79fb4d4a98a67902a87c3343@sentry.kartoza.com/23',
         # If you are using git, you can also automatically configure the
         # release based on the git info.
         # Note from Tim: This won't work since we don't mount the root
         # of the git project into the docker container...
-        # 'release': raven.fetch_git_sha(os.path.dirname(__file__)),
+        'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
     }
 
     MIDDLEWARE_CLASSES = (

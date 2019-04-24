@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """Settings for when running under docker in development mode."""
-from .dev import *  # noqa
 import os
+
+from .dev import *  # noqa
+
 print os.environ
 
 DATABASES = {
@@ -13,5 +15,14 @@ DATABASES = {
         'HOST': 'db',
         'PORT': 5432,
         'TEST_NAME': 'unittests',
+    },
+    'docker_osm': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': 'gis',
+        'USER': 'docker',
+        'PASSWORD': 'docker',
+        'HOST': 'osm-db',
+        'PORT': 5432,
+        'TEST_NAME': 'docker_osm_unittests',
     }
 }

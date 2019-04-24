@@ -1,8 +1,8 @@
-
 """Configuration for production server"""
-# noinspection PyUnresolvedReferences
-from .prod import *  # noqa
 import os
+
+from .prod import *  # noqa
+
 print os.environ
 
 DEBUG = TEMPLATE_DEBUG = False
@@ -23,9 +23,18 @@ DATABASES = {
         'HOST': os.environ['DATABASE_HOST'],
         'PORT': 5432,
         'TEST_NAME': 'unittests',
+    },
+    'docker_osm': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.environ['DOCKER_OSM_DATABASE_NAME'],
+        'USER': os.environ['DOCKER_OSM_DATABASE_USERNAME'],
+        'PASSWORD': os.environ['DOCKER_OSM_DATABASE_PASSWORD'],
+        'HOST': os.environ['DOCKER_OSM_DATABASE_HOST'],
+        'PORT': 5432,
+        'TEST_NAME': 'docker_osm_unittests',
     }
-}
 
+}
 
 # See fig.yml file for postfix container definition
 #

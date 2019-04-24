@@ -35,7 +35,24 @@ $("#country-form").submit(function (event) {
     gettingData(country);
 });
 
+
 function gettingData(country) {
+    // Get count of country
+    $("#country-locality-number").html(0);
+    $.ajax({
+        url: "/api/v2/facilities/count",
+        dataType: 'json',
+        data: {
+            country: country
+        },
+        success: function (data) {
+            $("#country-locality-number").html(data);
+            if (country === '') {
+                $('#healthsites-count').html('<span class="timer" data-speed="2500"  data-to="' + data + '">' + data + '</span>');
+            }
+        }
+    });
+
     $.ajax({
         url: "/search/localities/country",
         dataType: 'json',
@@ -44,8 +61,6 @@ function gettingData(country) {
         },
         success: function (data) {
             $APP.trigger('map.update-geoname', {'geoname': country});
-            //{# default #}
-            $("#country-locality-number").html(0);
             $("#updates-wrapper").html('<div id="updates-1" class="graph updates"><div class="entry">-</div></div>');
             updateChart(0, 0, 0);
 
@@ -68,9 +83,6 @@ function gettingData(country) {
             }
 
             //{# country healthsite number #}
-            if (data.localities) {
-                $("#country-locality-number").html(data.localities);
-            }
             if (data.numbers) {
                 updateChart(data.numbers.hospital, data.numbers.medical_clinic, data.numbers.orthopaedic_clinic);
             }

@@ -12,11 +12,11 @@
 
     <html itemscope itemtype="https://schema.org/Organization">
     <meta itemprop="name" content="healthsites.io">
-    <meta itemprop="description" content="A free, curated, global, canonical source of healthcare location data">
+    <meta itemprop="description" content="Building an open data commons of health facility data with OpenStreetMap">
     <meta itemprop="image" content="https://staging.healthsites.io/static/img/healthsites-gp.png">
     <meta property="og:title" content="healthsites.io"/>
     <meta property="og:image" content="https://staging.healthsites.io/static/img/healthsites-fb.png"/>
-    <meta property="og:description" content="A free, curated, global, canonical source of healthcare location data"/>
+    <meta property="og:description" content="Building an open data commons of health facility data with OpenStreetMap"/>
 
     <title>Healthsites.io</title>
 
@@ -106,10 +106,11 @@
                     <i class="fa fa-linkedin"></i>
                 </a>
             </div>
-            <span class="tagline">Building a free, curated, canonical source of healthcare location data</span>
+            <span class="tagline">Building an open data commons of health facility data with OpenStreetMap</span>
         </div>
         <div id="navbar" class="collapse navbar-collapse pull-right">
             <ul class="nav navbar-nav">
+                <li><a href="https://medium.com/healthsites-io" target="_blank">Blog</a></li>
                 <li><a href="/#about">About</a></li>
                 <li><a href="{% url "map" %}">Map</a></li>
                 <li><a href="/#country-data">Country data</a></li>
@@ -136,10 +137,6 @@
                                                         value="place"><span></span><label class="option"
                                                                                           for="radio-healthsite">place</label>
                 </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-what3words"
-                                                        value="what3words"><span></span><label class="option"
-                                                                                               for="radio-what3words">what3words</label>
-                </div>
             </div>
             <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
         </form>
@@ -163,7 +160,7 @@
                             {% endif %}
                         </div>
 
-                    <span class="name">
+                        <span class="name">
                         <a href="{% url 'userprofilepage' %}{{ user }}">{{ user.screen_name }}</a>
                     </span>
                     </div>
@@ -200,10 +197,11 @@
                     </p>
                     <p>
                         Download all healthsite data in this
-                        <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile ({{ shapefile_size }})</a>
+                        <span class="shapefile-downloader inner-navbar-brand" style="cursor: pointer"
+                              onclick="downloadShapefile('World')">shapefile</span>
+                        <span class="shapefile-indicator inner-navbar-brand" style="display: none"></span>
                     </p>
-                    <h2 class="sidebar-title "><span data-speed="2500"
-                                                     data-to="{{ locality_count }}">{{ locality_count }}</span>
+                    <h2 class="sidebar-title "><span id="healthsites-count"><i style="opacity: 0.3">loading</i></span>
                         healthsites listed</h2>
                 </div>
                 <div id="countries-table">
@@ -221,8 +219,6 @@
                     healthsites
                 </div>
                 <p id="country-shapefiles" class="header" style="padding-bottom: 10px; display: none">
-                    Download all healthsite data in this
-                    <a class="inner-navbar-brand" href="/media/shapefiles/facilities_shapefile.zip">shapefile</a>
                 </p>
 
                 <div style="padding: 20px">
@@ -286,7 +282,7 @@
                             <div class="more" style="margin-bottom: 5px">
                                 <div>
                                     last update: <span id="last_update" class="date">11 may 2015 17:23:15</span>, by
-                                <span class="name">
+                                    <span class="name">
                                     <a id="uploader" href="profile/sharehealthdata">@sharehealthdata</a>
                                 </span>
                                 </div>
@@ -316,8 +312,7 @@
                                 Unighted Kingdom</p>
                             <input type="text" id="locality-physical-address-input" name="physical_address"
                                    placeholder="Physical Address" style="display: none; margin-bottom: 5px;"/>
-
-                            <p class="coordinates" style="margin-bottom: 5px"><b id="locality-what3words">test</b></p>
+                            
                             <p class="coordinates" id="locality-coordinates">lat: 0, long: 0</p>
 
                             <p class="coordinates" id="locality-coordinates-input"
@@ -564,10 +559,10 @@
     </form>
 </section>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet-src.js"></script>
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 <script type="text/javascript"
         src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script type="text/javascript"
@@ -595,6 +590,19 @@
     }
     var APP;
     $(document).ready(function () {
+        {# get locality number #}
+        $.ajax({
+            url: "/api/v2/facilities/count",
+            dataType: 'json',
+            data: {
+                country: ''
+            },
+            success: function (data) {
+                $('#healthsites-count').html('<span class="timer" data-speed="2500"  data-to="' + data + '">' + data + '</span>');
+            }
+        });
+
+        {# ----------- #}
         prerender_popup();
         // Set viewport if exist
         {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
@@ -759,7 +767,12 @@
             $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
         {% elif country %}
             $("#country-shapefiles").show();
-            $("#country-shapefiles").html('Download all healthsite data from {{ country }} in this <a class="inner-navbar-brand" href="/media/shapefiles/{{ country }}_shapefile.zip">shapefile ({{ shapefile_size }})</a>')
+            $("#country-shapefiles").html('' +
+                'Download all healthsite data from ' +
+                '<span class="shapefile-downloader inner-navbar-brand" style="cursor: pointer" ' +
+                'onclick="downloadShapefile(\'{{ country }}\')">shapefile</span> ' +
+                '<span class="shapefile-indicator inner-navbar-brand" style="display: none"></span>'
+            );
             $("#title-name").html("{{ country }}");
             $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
             // creating polygon
@@ -919,6 +932,23 @@
             }
         }
     });
+
+    function downloadShapefile(country) {
+        $('.shapefile-indicator').show();
+        $('.shapefile-indicator').html('<i>generating...</i>');
+        $('.shapefile-downloader').hide();
+        checkingShapefile(country);
+    }
+
+    function checkingShapefile(country) {
+        $.ajax({
+            url: "/api/v2/facilities/shapefile/process/" + country,
+            dataType: 'json',
+            success: function (data) {
+                window.location.href = '/data/shapefiles/' + country + '.zip';
+            }
+        });
+    }
 </script>
 
 <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>

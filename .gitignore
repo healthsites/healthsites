@@ -1,6 +1,9 @@
 # project specifc
 django_project/core/settings/secret.py
 django_project/cache
+django_project/media
+django_project/celerybeat-schedule
+deployment/pg
 xmlrunner
 
 # Byte-compiled / optimized / DLL files
@@ -75,6 +78,7 @@ data_for_import
 deployment/docker/71-apt-cacher-ng
 mapproxy
 maps
+deployment/docker-osm-healthcare/settings
 deployment/static
 deployment/backups
 deployment/media

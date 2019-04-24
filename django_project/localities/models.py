@@ -1,26 +1,27 @@
 # -*- coding: utf-8 -*-
-import logging
-
-LOG = logging.getLogger(__name__)
-
 import itertools
 import json
-import requests
-
-from .querysets import PassThroughGeoManager, LocalitiesQuerySet
+import logging
 from datetime import datetime
+
+from pg_fts.fields import TSVectorField
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.gis.db import models
 from django.contrib.sites.models import Site
+from django.core.exceptions import ValidationError
 from django.db.models.signals import post_save, pre_delete
 from django.utils import timezone
 from django.utils.text import slugify
 
 from model_utils import FieldTracker
-from pg_fts.fields import TSVectorField
+
+from .querysets import LocalitiesQuerySet, PassThroughGeoManager
 from .variables import attributes_availables
+
+LOG = logging.getLogger(__name__)
 
 
 class ChangesetMixin(models.Model):
@@ -145,6 +146,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     A Locality is in a *Domain* and data values for Attributes, to be exact,
     their Specifications, are defined through *Value*
     """
+    DEFINED_DAYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
 
     domain = models.ForeignKey('Domain')
     uuid = models.TextField(unique=True)
@@ -189,7 +191,9 @@ class Locality(UpdateMixin, ChangesetMixin):
         Once all of values are set, 'SIG_locality_values_updated' signal will
         be triggered to update FullTextSearch index for this Locality
         """
-        special_key = ['scope_of_service', "ancillary_services", "activities", "inpatient_service", "staff"]
+        special_key = [
+            'scope_of_service', 'ancillary_services', 'activities', 'inpatient_service', 'staff'
+        ]
         attrs = self._get_attr_map()
 
         tmp_changeset = changeset
@@ -197,12 +201,12 @@ class Locality(UpdateMixin, ChangesetMixin):
         changed_values = []
         for key, data in changed_data.iteritems():
             if key in special_key:
-                data = data.replace(",", "|")
-                data = data.replace("| ", "|")
+                data = data.replace(',', '|')
+                data = data.replace('| ', '|')
             # try to match key from changed items with a key from attr_map
             attr_list = [
                 attr for attr in attrs if attr['attribute__key'] == key
-                ]
+            ]
 
             if attr_list:
                 # get specification id for specific key
@@ -252,7 +256,7 @@ class Locality(UpdateMixin, ChangesetMixin):
 
         return changed_values
 
-    def repr_dict(self, clean=False):
+    def repr_dict(self, clean=False, in_array=False):
         """
         Basic locality representation, as a dictionary
         """
@@ -269,16 +273,33 @@ class Locality(UpdateMixin, ChangesetMixin):
         }
 
         dict['values'] = {}
-        for val in self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact=''):
+
+        data_query = (
+            self.value_set.select_related().exclude(data__isnull=True).exclude(data__exact='')
+        )
+
+        for val in data_query:
+            if in_array:
+                dict['values'][val.specification.attribute.key] = [
+                    data for data in val.data.split('|') if data]
+
+                clean_data = dict['values'][val.specification.attribute.key]
+                if len(clean_data) == 0:
+                    dict['values'][val.specification.attribute.key] = '-'
+                elif len(clean_data) == 1:
+                    dict['values'][val.specification.attribute.key] = clean_data[0]
+                continue
             if clean:
                 # clean if empty
-                temp = val.data.replace("|", "")
+                temp = val.data.replace('|', '')
                 if len(temp) == 0:
-                    val.data = ""
+                    val.data = ''
                 # clean data
-                val.data = val.data.replace("|", ",")
-                val.specification.attribute.key = val.specification.attribute.key.replace("_", "-")
-                cleaned_data = val.data.replace(",", "")
+                val.data = val.data.replace('|', ',')
+                val.specification.attribute.key = (
+                    val.specification.attribute.key.replace('_', '-')
+                )
+                cleaned_data = val.data.replace(',', '')
                 if len(cleaned_data) > 0:
                     dict['values'][val.specification.attribute.key] = val.data
             else:
@@ -291,8 +312,8 @@ class Locality(UpdateMixin, ChangesetMixin):
             pass
 
         # exclusive for open street map
-        if "openstreetmap" in self.upstream_id.lower():
-            osm_whole_id = self.upstream_id.split(u"¶")
+        if self.upstream_id is not None and 'openstreetmap' in self.upstream_id.lower():
+            osm_whole_id = self.upstream_id.split(u'¶')
             if len(osm_whole_id) > 0:
                 osm_whole_id = osm_whole_id[1]
                 identifier = osm_whole_id[0]
@@ -309,11 +330,11 @@ class Locality(UpdateMixin, ChangesetMixin):
         return dict
 
     def is_type(self, value):
-        if value != "":
+        if value != '':
             try:
                 self.value_set.filter(specification__attribute__key='type').get(data=value)
                 return True
-            except Exception as e:
+            except Exception:
                 return False
         return True
 
@@ -323,7 +344,9 @@ class Locality(UpdateMixin, ChangesetMixin):
         specific_attr = attributes_availables['hospital']
         for key in attributes_availables.keys():
             try:
-                self.value_set.filter(specification__attribute__key='type').get(data__icontains=key)
+                self.value_set.filter(specification__attribute__key='type').get(
+                    data__icontains=key
+                )
                 specific_attr = attributes_availables[key]
             except Value.DoesNotExist:
                 continue
@@ -335,7 +358,7 @@ class Locality(UpdateMixin, ChangesetMixin):
         for attr in global_attr + specific_attr:
             if attr in values:
                 data = values[attr]
-                if len(data.replace("-", "").replace("|", "").strip()) != 0:
+                if len(data.replace('-', '').replace('|', '').strip()) != 0:
                     counted_value += 1
 
         return (counted_value + 0.0) / (max_value + 0.0) * 100
@@ -357,7 +380,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     def update_what3words(self, user, changeset):
         from utils import get_what_3_words
         what3words = get_what_3_words(self.geom)
-        if what3words != "":
+        if what3words != '':
             self.set_values({'what3words': what3words}, user, changeset)
 
     def get_synonyms(self):
@@ -366,6 +389,275 @@ class Locality(UpdateMixin, ChangesetMixin):
 
     def __unicode__(self):
         return u'{}'.format(self.id)
+
+    def validate_data_by_defined_list(self, data, key, options, required=False):
+        """ Check value data by key if it is string and it is in options.
+
+        :param data: Data to be inserted
+        :param key: Key data that is checked
+        :param options: Options to be checked
+        :return:
+        """
+        try:
+            value = data[key]
+            if isinstance(value, list):
+                raise ValueError(
+                    'nature_of_facility should be string'
+                )
+            if value not in options:
+                raise ValueError(
+                    '%s is not recognized, options : %s' % (key, options)
+                )
+
+        except KeyError as e:
+            if required:
+                raise ValueError('%s is required' % e)
+            pass
+
+    def validate_data(self, data):
+        """ Validate data based on fields
+
+        :param data: Data that will be inserted
+        :type data: dict
+        """
+        try:
+            data['lng'] = float(data['lng'])
+        except ValueError:
+            raise ValueError('lng is not in float')
+        try:
+            data['lat'] = float(data['lat'])
+        except ValueError:
+            raise ValueError('lat is not in float')
+
+        if not data['name']:
+            raise ValueError('name is empty')
+
+        domain = Domain.objects.get(name='Health')
+        attributes = Specification.objects.filter(domain=domain).filter(required=True)
+        for attribute in attributes:
+            if not data[attribute.attribute.key]:
+                raise ValueError('%s is empty' % attribute.attribute.key)
+
+        # inpatient_service
+        try:
+            inpatient_service = data['inpatient_service']
+            try:
+                full_time_beds = inpatient_service['full_time_beds']
+            except KeyError:
+                raise ValueError(
+                    'full_time_beds needs to be in inpatient_service'
+                )
+            try:
+                part_time_beds = inpatient_service['part_time_beds']
+            except KeyError:
+                raise ValueError(
+                    'part_time_beds needs to be in inpatient_service'
+                )
+            data['inpatient_service'] = '%s|%s' % (
+                full_time_beds,
+                part_time_beds
+            )
+        except KeyError:
+            pass
+
+        # staff
+        try:
+            staff = data['staff']
+            try:
+                doctors = staff['doctors']
+            except KeyError:
+                raise ValueError(
+                    'doctors needs to be in staff'
+                )
+            try:
+                nurses = staff['nurses']
+            except KeyError:
+                raise ValueError(
+                    'nurses needs to be in staff'
+                )
+            data['staff'] = '%s|%s' % (
+                doctors,
+                nurses
+            )
+        except KeyError:
+            pass
+
+        # nature of facility
+        options = ['clinic without beds',
+                   'clinic with beds',
+                   'first referral hospital',
+                   'second referral hospital or General hospital',
+                   'tertiary level including University hospital']
+        self.validate_data_by_defined_list(
+            data, 'nature_of_facility', options)
+
+        # nature of facility
+        options = ['public',
+                   'private not for profit',
+                   'private commercial']
+        self.validate_data_by_defined_list(
+            data, 'ownership', options)
+
+        # defined_hours
+        try:
+            defined_hours = []
+            for index, day in enumerate(Locality.DEFINED_DAYS):
+                try:
+                    hours = data['defining_hours'][day]
+                    if isinstance(hours, str) or isinstance(hours, unicode):
+                        if hours == '':
+                            hours = []
+                        else:
+                            try:
+                                hours = json.loads(hours)
+                            except ValueError:
+                                pass
+                    if not isinstance(hours, list):
+                        raise ValueError('%s is need to be in list' % day)
+                    if len(hours) == 1:
+                        hours.append('-')
+                    elif len(hours) > 2:
+                        raise ValueError('maximum lenght of %s is 2' % day)
+                    hours = '-'.join(hours)
+                    if not hours:
+                        hours = '-'
+                    defined_hours.append(hours)
+                except KeyError as e:
+                    raise ValueError('%s is required on defined_hours' % e)
+            data['defining_hours'] = defined_hours
+        except KeyError:
+            pass
+        except TypeError:
+            raise TypeError('defining_hours needs to be in dictionary')
+
+        return True
+
+    def update_data(self, data, user):
+        """ Update locality data with new data.
+
+        :param data: Data that will be inserted
+        :type data: dict
+        """
+        import uuid
+        from django.contrib.gis.geos import Point
+        from localities.tasks import regenerate_cache, regenerate_cache_cluster
+
+        self.validate_data(data)
+        old_geom = None
+        try:
+            old_geom = [self.geom.x, self.geom.y]
+            self.set_geom(data['lng'], data['lat'])
+        except AttributeError:
+            self.geom = Point(data['lng'], data['lat'])
+
+        self.name = data['name']
+
+        # there are some changes so create a new changeset
+        changeset = Changeset.objects.create(
+            social_user=user
+        )
+        self.changeset = changeset
+
+        del data['lng']
+        del data['lat']
+
+        created = False
+        if not self.pk:
+            created = True
+            self.domain = Domain.objects.get(name='Health')
+            self.changeset = changeset
+            self.uuid = uuid.uuid4().hex
+            self.upstream_id = u'web¶{}'.format(self.uuid)
+            self.save()
+
+        self.set_specifications(data, changeset)
+        if not created and self.tracker.changed():
+            self.changeset = changeset
+            self.save()
+
+        # generate some attributes if location changed/created
+        new_geom = [self.geom.x, self.geom.y]
+        if new_geom != old_geom or created:
+            try:
+                self.update_what3words(user, changeset)
+            except AttributeError:
+                pass
+            regenerate_cache_cluster.delay()
+        regenerate_cache.delay(changeset.pk, self.pk)
+        return True
+
+    def set_specifications(
+            self, data, changeset, autocreate_specification=True):
+        """
+        Set values for a Locality which are defined by Specifications
+
+        Once all of values are set, 'SIG_locality_values_updated' signal will
+        be triggered to update FullTextSearch index for this Locality
+
+        :param data: Data to be inserted as specification
+        :type data: dict
+        """
+        fields = self._meta.get_all_field_names()
+        domain = Domain.objects.get(name='Health')
+
+        changed_values = []
+        for key, value in data.iteritems():
+            if key in fields:
+                continue
+
+            if isinstance(value, list):
+                value = '|'.join(value)
+            else:
+                value = '%s' % value
+
+            value = value.replace(',', '|')
+            value = value.replace('| ', '|')
+
+            try:
+                specification = Specification.objects.get(
+                    domain=domain, attribute__key=key)
+            except Specification.DoesNotExist:
+                if autocreate_specification:
+                    try:
+                        attribute = Attribute.objects.get(key=key)
+                    except Attribute.DoesNotExist:
+                        attribute = Attribute.objects.create(
+                            key=key, changeset=changeset)
+                    specification = Specification.objects.create(
+                        domain=domain, attribute=attribute, changeset=changeset)
+                else:
+                    continue
+
+            try:
+                obj = self.value_set.get(specification=specification)
+            except Value.DoesNotExist:
+                # in case there is no value for the specification, create
+                obj = Value()
+                obj.locality = self
+                obj.specification = specification
+
+            obj.data = value
+
+            # check if Value.data actually changed, and save if it did
+            if obj.tracker.changed():
+                obj.changeset = changeset
+                obj.save()
+                changed_values.append(obj)
+            else:
+                # nothing changed, don't save the value
+                pass
+
+        # send values_updated signal
+        signals.SIG_locality_values_updated.send(
+            sender=self.__class__, instance=self
+        )
+
+        # calculate completeness
+        if changed_values:
+            self.completeness = self.calculate_completeness()
+            self.save()
+
+        return changed_values
 
 
 class LocalityArchive(ArchiveMixin):
@@ -539,11 +831,6 @@ class LocalityIndex(models.Model):
     ))
 
 
-# register signals
-import signals  # noqa
-from .tasks import load_data_task
-
-
 class DataLoader(models.Model):
     """
     """
@@ -595,7 +882,7 @@ class DataLoader(models.Model):
 
     data_loader_mode = models.IntegerField(
         choices=DATA_LOADER_MODE_CHOICES,
-        verbose_name="Data Loader Mode",
+        verbose_name='Data Loader Mode',
         help_text='The mode of the data loader.',
         blank=False,
         null=False
@@ -628,7 +915,7 @@ class DataLoader(models.Model):
 
     separator = models.IntegerField(
         choices=SEPARATOR_CHOICES,
-        verbose_name="Separator Character",
+        verbose_name='Separator Character',
         help_text='Separator character.',
         null=False,
         default=COMMA_CODE
@@ -657,6 +944,7 @@ class DataLoader(models.Model):
 # method for updating
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
+        from .tasks import load_data_task
         load_data_task.delay(instance.pk)
 
 
@@ -702,8 +990,6 @@ class Country(Boundary):
 Country._meta.get_field('name').verbose_name = 'Country name'
 Country._meta.get_field('name').help_text = 'The name of the country.'
 
-from django.core.exceptions import ValidationError
-
 
 def validate_file_extension(value):
     if value.file.content_type != 'text/csv':
@@ -735,7 +1021,7 @@ class DataLoaderPermission(models.Model):
     )
 
     def __str__(self):
-        return "%s : %s" % (self.accepted_csv, self.uploader)
+        return '%s : %s' % (self.accepted_csv, self.uploader)
 
 
 def data_loader_deleted(sender, instance, **kwargs):
@@ -752,32 +1038,41 @@ pre_delete.connect(data_loader_deleted, sender=DataLoaderPermission)
 
 
 class UnconfirmedSynonym(models.Model):
-    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym')
-    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym')
+    synonym = models.ForeignKey(
+        Locality, on_delete=models.CASCADE, related_name='unconfirmed_synonym'
+    )
+    locality = models.ForeignKey(
+        Locality, on_delete=models.CASCADE, related_name='master_of_unconfirmed_synonym'
+    )
 
     class Meta:
-        ordering = ["locality", "synonym"]
-        verbose_name = "Potential Synonym"
-        verbose_name_plural = "Potential Synonyms"
+        ordering = ['locality', 'synonym']
+        verbose_name = 'Potential Synonym'
+        verbose_name_plural = 'Potential Synonyms'
 
 
 class SynonymLocalities(models.Model):
-    synonym = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='synonym_of_locality')
-    locality = models.ForeignKey(Locality, on_delete=models.CASCADE, related_name='master_of_synonym')
+    synonym = models.ForeignKey(
+        Locality, on_delete=models.CASCADE, related_name='synonym_of_locality'
+    )
+    locality = models.ForeignKey(
+        Locality, on_delete=models.CASCADE, related_name='master_of_synonym'
+    )
 
     class Meta:
-        ordering = ["locality", "synonym"]
-        verbose_name = "Synonyms"
-        verbose_name_plural = "Synonyms"
-
-
-from masterization import downgrade_master_as_synonyms
+        ordering = ['locality', 'synonym']
+        verbose_name = 'Synonyms'
+        verbose_name_plural = 'Synonyms'
 
 
 def update_others_synonyms(sender, instance, **kwargs):
+    from .masterization import downgrade_master_as_synonyms
     new_synonym = instance.synonym
     new_master = instance.locality
     downgrade_master_as_synonyms(new_synonym.id, new_master.id)
 
 
 post_save.connect(update_others_synonyms, sender=SynonymLocalities)
+
+# register signals
+from . import signals  # noqa  # isort:skip

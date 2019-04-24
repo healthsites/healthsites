@@ -30,5 +30,5 @@ class Command(BaseCommand):
 
         CSVImporter(
             domain_name, source_name, csv_filename, attr_map_file,
-            options["use_tabs"]
+            options['use_tabs']
         )

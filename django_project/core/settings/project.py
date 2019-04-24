@@ -6,15 +6,17 @@ Adjust these values as needed but don't commit passwords etc. to any public
 repository!
 """
 
-import os  # noqa
 from django.utils.translation import ugettext_lazy as _
-from .utils import absolute_path
+
+from .celery_setting import *
 from .contrib import *  # noqa
-from .secret import *  # secret
+from .secret import *  # NOQA
 
 # Project apps
 INSTALLED_APPS += (
     'localities',
+    'localities_osm',
+    'localities_healthsites_osm',
     'frontend',
     'social_users',
     'api',
@@ -39,7 +41,7 @@ LANGUAGES = (
 )
 
 # Set storage path for the translation files
-LOCALE_PATHS = (absolute_path('locale'),)
+LOCALE_PATHS = [ABS_PATH('locale')]
 
 # Project specific javascript files to be pipelined
 # For third party libs like jquery should go in contrib.py
@@ -118,5 +120,4 @@ CLUSTER_CACHE_MAX_ZOOM = 5
 
 # WHAT3WORDS API
 WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'
-
-from .celery_setting import *
+DATABASE_ROUTERS = ['core.router.HealthsiteRouter']

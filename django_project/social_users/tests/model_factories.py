@@ -1,22 +1,24 @@
 # -*- coding: utf-8 -*-
-import factory
 import datetime
-from django.contrib.contenttypes.models import ContentType
+
+import factory
+from social_django.admin import UserSocialAuth
+
 from django.contrib.auth.models import Group, Permission, User
-from social.apps.django_app.default.models import UserSocialAuth
+from django.contrib.contenttypes.models import ContentType
 
 
 class ContentTypeF(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "content type %s" % n)
+    name = factory.Sequence(lambda n: 'content type %s' % n)
 
     class Meta:
         model = ContentType
 
 
 class PermissionF(factory.django.DjangoModelFactory):
-    name = factory.Sequence(lambda n: "permission%s" % n)
+    name = factory.Sequence(lambda n: 'permission%s' % n)
     content_type = factory.SubFactory(ContentTypeF)
-    codename = factory.Sequence(lambda n: "factory_%s" % n)
+    codename = factory.Sequence(lambda n: 'factory_%s' % n)
 
     class Meta:
         model = Permission
@@ -31,18 +33,18 @@ class GroupF(factory.django.DjangoModelFactory):
         except IndexError:
             return 0
 
-    name = factory.Sequence(lambda n: "group%s" % n)
+    name = factory.Sequence(lambda n: 'group%s' % n)
 
     class Meta:
         model = Group
 
 
 class UserF(factory.django.DjangoModelFactory):
-    username = factory.Sequence(lambda n: "username%s" % n)
-    first_name = factory.Sequence(lambda n: "first_name%s" % n)
-    last_name = factory.Sequence(lambda n: "last_name%s" % n)
-    email = factory.Sequence(lambda n: "email%s@example.com" % n)
-    password = factory.Sequence(lambda n: "password%s" % n)
+    username = factory.Sequence(lambda n: 'username%s' % n)
+    first_name = factory.Sequence(lambda n: 'first_name%s' % n)
+    last_name = factory.Sequence(lambda n: 'last_name%s' % n)
+    email = factory.Sequence(lambda n: 'email%s@example.com' % n)
+    password = factory.Sequence(lambda n: 'password%s' % n)
     is_staff = False
     is_active = True
     is_superuser = False
@@ -65,8 +67,8 @@ class UserF(factory.django.DjangoModelFactory):
 
 class UserSocialAuthF(factory.django.DjangoModelFactory):
     user = factory.SubFactory('social_users.tests.model_factories.UserF')
-    provider = factory.Sequence(lambda n: "provider%s" % n)
-    uid = factory.Sequence(lambda n: "uid%s" % n)
+    provider = factory.Sequence(lambda n: 'provider%s' % n)
+    uid = factory.Sequence(lambda n: 'uid%s' % n)
     extra_data = {}
 
     class Meta:
