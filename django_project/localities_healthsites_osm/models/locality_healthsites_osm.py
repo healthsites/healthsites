@@ -3,8 +3,8 @@ __date__ = '31/01/19'
 
 from django.contrib.gis.db import models
 from django.db.utils import ConnectionDoesNotExist
-from localities.models import Locality
 from localities_osm.models.locality import LocalityOSMView, LocalityOSMNode
+from localities_healthsites_osm.models.tag import Tag
 
 OSM_ELEMENT_TYPE = (
     ('node', 'node'),
@@ -17,7 +17,7 @@ class LocalityHealthsitesOSM(models.Model):
     """ This model is a relationship of Locality Healthsites
     and locality OSM
     """
-    healthsite = models.OneToOneField(Locality)
+
     osm_id = models.BigIntegerField(
         db_index=True,
         null=True,
@@ -31,28 +31,18 @@ class LocalityHealthsitesOSM(models.Model):
         blank=True,
         choices=OSM_ELEMENT_TYPE,  # way / node / relation
         max_length=30)
+    custom_tag = models.ManyToManyField(
+        Tag,
+        blank=True
+    )
 
     class Meta:
-        ordering = ('healthsite__name',)
+        ordering = ('osm_id',)
         db_table = 'localities_healthsites_osm'
         verbose_name = 'Healthsites And Osm'
         verbose_name_plural = 'Healthsites And Osm'
 
     def save(self, *args, **kwargs):
-        # Create osm node if no osm id and pk found
-        from localities_osm.models.locality import LocalityOSMNode
-        from api.serializer.locality import LocalitySerializer
-        if not self.osm_id and not self.osm_pk:
-            try:
-                node = LocalityOSMNode()
-                node.geometry = self.healthsite.geom
-                healthsite_data = LocalitySerializer(self.healthsite).data
-                node.insert_healthsite_data(healthsite_data)
-                node.save()
-                self.osm_pk = node.pk
-                self.osm_type = 'node'
-            except ConnectionDoesNotExist:
-                pass
         super(LocalityHealthsitesOSM, self).save(*args, **kwargs)
 
     def return_osm_view(self):

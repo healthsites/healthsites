@@ -59,9 +59,8 @@ class Command(BaseCommand):
                 print '%s : [%s , %s]' % (name, name_match, geom_match)
 
             instance, crt = LocalityHealthsitesOSM.objects.get_or_create(
-                healthsite=locality
+                osm_id=osm_id,
+                osm_type=osm_type,
             )
-            instance.osm_id = osm_id
-            instance.osm_type = osm_type
             instance.certainty = certainty
             instance.save()
