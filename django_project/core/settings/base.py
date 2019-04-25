@@ -13,6 +13,10 @@ ADMINS = (
     ('Irwan Fathurrahman', 'irwan@kartoza.com')
 )
 
+# OSM API endpoint
+OSM_API_URL = 'https://api.openstreetmap.org'
+DEV_OSM_API_URL = 'https://api06.dev.openstreetmap.org'
+
 # This should be done in prod rather
 SERVER_EMAIL = 'noreploy@healthsites.io'
 EMAIL_HOST = 'localhost'
