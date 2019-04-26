@@ -5,6 +5,7 @@ import os
 import sys
 
 from api.osm_api_client import OsmApiWrapper
+from core.settings.base import DEV_OSM_API_URL
 from core.settings.secret import (
     SOCIAL_AUTH_OPENSTREETMAP_KEY, SOCIAL_AUTH_OPENSTREETMAP_SECRET)
 
@@ -20,12 +21,15 @@ __location__ = os.path.realpath(
     )
 )
 
+OAUTH_TOKEN = ''  # use authorised oauth token
+OAUTH_TOKEN_SECRET = ''  # use authorised oauth token secret
+
 
 class TestOsmApi(unittest.TestCase):
     def setUp(self):
-        self.oauth_token = 'pbrOXxk9Z5jF9lXmXhJoTZbNCNuYJEsq2S57HMRp'
-        self.oauth_token_secret = 'JhyOZTXTTXnAf43779qcR9f93nivQKubNA8sEChz'
-        self.api_base = "https://api06.dev.openstreetmap.org"
+        self.oauth_token = OAUTH_TOKEN
+        self.oauth_token_secret = OAUTH_TOKEN_SECRET
+        self.api_base = DEV_OSM_API_URL
         self.app_id = 'healthsites.testcase'
         self.api = OsmApiWrapper(
             client_key=SOCIAL_AUTH_OPENSTREETMAP_KEY,
@@ -64,7 +68,7 @@ class TestOsmApi(unittest.TestCase):
 
     def _return_values(self, filenames):
         if filenames is None:
-            filenames = [self._testMethodName + ".xml"]
+            filenames = [self._testMethodName + '.xml']
 
         return_values = []
         for filename in filenames:
@@ -145,6 +149,9 @@ class TestOsmApi(unittest.TestCase):
         self.assertEquals(result['lon'], test_node['lon'])
         self.assertEquals(result['tag'], test_node['tag'])
 
+    @unittest.skipIf(
+        condition=not (OAUTH_TOKEN and OAUTH_TOKEN_SECRET),
+        reason='requires valid oauth token')
     def test_push_osm_node(self):
         test_node = {
             'lat': 47.287,
