@@ -5,6 +5,8 @@ import os
 import sys
 
 from api.osm_api_client import OsmApiWrapper
+from core.settings.secret import (
+    SOCIAL_AUTH_OPENSTREETMAP_KEY, SOCIAL_AUTH_OPENSTREETMAP_SECRET)
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -21,11 +23,13 @@ __location__ = os.path.realpath(
 
 class TestOsmApi(unittest.TestCase):
     def setUp(self):
-        self.oauth_token = ''
-        self.oauth_token_secret = ''
-        self.api_base = "http://api06.dev.openstreetmap.org"
+        self.oauth_token = 'pbrOXxk9Z5jF9lXmXhJoTZbNCNuYJEsq2S57HMRp'
+        self.oauth_token_secret = 'JhyOZTXTTXnAf43779qcR9f93nivQKubNA8sEChz'
+        self.api_base = "https://api06.dev.openstreetmap.org"
         self.app_id = 'healthsites.testcase'
         self.api = OsmApiWrapper(
+            client_key=SOCIAL_AUTH_OPENSTREETMAP_KEY,
+            client_secret=SOCIAL_AUTH_OPENSTREETMAP_SECRET,
             oauth_token=self.oauth_token,
             oauth_token_secret=self.oauth_token_secret,
             api=self.api_base,
@@ -137,6 +141,22 @@ class TestOsmApi(unittest.TestCase):
         self.assertEquals(args[1], self.api_base + '/api/0.6/node/create')
 
         self.assertEquals(result['id'], 9876)
+        self.assertEquals(result['lat'], test_node['lat'])
+        self.assertEquals(result['lon'], test_node['lon'])
+        self.assertEquals(result['tag'], test_node['tag'])
+
+    def test_push_osm_node(self):
+        test_node = {
+            'lat': 47.287,
+            'lon': 8.765,
+            'tag': {
+                'amenity': 'place_of_worship',
+                'religion': 'pastafarian'
+            }
+        }
+
+        result = self.api.create_node(test_node)
+
         self.assertEquals(result['lat'], test_node['lat'])
         self.assertEquals(result['lon'], test_node['lon'])
         self.assertEquals(result['tag'], test_node['tag'])
