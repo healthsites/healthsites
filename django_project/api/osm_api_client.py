@@ -18,14 +18,14 @@ class OAuthTokenMissingError(OsmApiError):
     pass
 
 
-class WrappedOsmApi(OsmApi):
+class OsmApiWrapper(OsmApi, object):
 
     def __init__(self, oauth_token, oauth_token_secret, api, appid):
-        """Wrapped OsmApi object constructor.
+        """OsmApi wrapper object constructor.
         """
-        super(WrappedOsmApi, self).__init__(api=api, appid=appid)
-        self.oauth_token = oauth_token
-        self.oauth_token_secret = oauth_token_secret
+        super(OsmApiWrapper, self).__init__(api=api, appid=appid)
+        self._oauth_token = oauth_token
+        self._oauth_token_secret = oauth_token_secret
 
     def _http_request(self, method, path, auth, send, return_value=True):
         """
@@ -64,8 +64,8 @@ class WrappedOsmApi(OsmApi):
                 user_credentials = OAuth1(
                     client_key=SOCIAL_AUTH_OPENSTREETMAP_KEY,
                     client_secret=SOCIAL_AUTH_OPENSTREETMAP_SECRET,
-                    resource_owner_key=self.oauth_token,
-                    resource_owner_secret=self.oauth_token_secret,
+                    resource_owner_key=self._oauth_token,
+                    resource_owner_secret=self._oauth_token_secret,
                 )
             except AttributeError:
                 raise OAuthTokenMissingError("OAuth token missing")
@@ -95,3 +95,127 @@ class WrappedOsmApi(OsmApi):
             )
             print(error_msg)
         return response.content
+
+    def create_osm_node(self, data):
+        """Create OSM node data and push it to OSM instance through OSM api.
+
+        :param data: OSM Node data.
+        :type data: dict
+            example: {
+                'lat': latitude of node,
+                'lon': longitude of node,
+                'tag': {},
+            }
+
+        :return: OSM changeset data.
+        :rtype: dict
+            example: {
+                'id': id of node,
+                'lat': latitude of node,
+                'lon': longitude of node,
+                'tag': dict of tags,
+                'changeset': id of changeset of last change,
+                'version': version number of node,
+                'user': username of last change,
+                'uid': id of user of last change,
+                'visible': True|False
+            }
+        """
+        self.ChangesetCreate()
+        changeset = self.NodeCreate(data)
+        self.ChangesetClose()
+
+        return changeset
+
+    def update_osm_node(self, data):
+        """Update OSM node data and push it to OSM instance through OSM api.
+
+        :param data: OSM Node data.
+        :type data: dict
+            example: {
+                'id': id of node,
+                'lat': latitude of node,
+                'lon': longitude of node,
+                'tag': {},
+                'version': version number of node,
+            }
+
+        :return: OSM changeset data.
+        :rtype: dict
+            example: {
+                'id': id of node,
+                'lat': latitude of node,
+                'lon': longitude of node,
+                'tag': dict of tags,
+                'changeset': id of changeset of last change,
+                'version': version number of node,
+                'user': username of last change,
+                'uid': id of user of last change,
+                'visible': True|False
+            }
+        """
+        self.ChangesetCreate()
+        changeset = self.NodeUpdate(data)
+        self.ChangesetClose()
+
+        return changeset
+
+    def create_osm_way(self, data):
+        """Create OSM way data and push it to OSM instance through OSM api.
+
+        :param data: OSM Way data.
+        :type data: dict
+            example: {
+                'nd': [] list of nodes,
+                'tag': {} dict of tags,
+            }
+
+        :return: OSM changeset data.
+        :rtype: dict
+            example: {
+                'id': id of node,
+                'nd': [] list of nodes,
+                'tag': {} dict of tags,
+                'changeset': id of changeset of last change,
+                'version': version number of way,
+                'user': username of last change,
+                'uid': id of user of last change,
+                'visible': True|False
+            }
+        """
+        self.ChangesetCreate()
+        changeset = self.WayCreate(data)
+        self.ChangesetClose()
+
+        return changeset
+
+    def update_osm_way(self, data):
+        """Update OSM way data and push it to OSM instance through OSM api.
+
+        :param data: OSM Way data.
+        :type data: dict
+            example: {
+                'id': id of way,
+                'nd': [] list of nodes,
+                'tag': {},
+                'version': version number of way,
+            }
+
+        :return: OSM changeset data.
+        :rtype: dict
+            example: {
+                'id': id of node,
+                'nd': [] list of nodes,
+                'tag': {} dict of tags,
+                'changeset': id of changeset of last change,
+                'version': version number of way,
+                'user': username of last change,
+                'uid': id of user of last change,
+                'visible': True|False
+            }
+        """
+        self.ChangesetCreate()
+        changeset = self.WayUpdate(data)
+        self.ChangesetClose()
+
+        return changeset
