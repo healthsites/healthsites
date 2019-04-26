@@ -9,7 +9,12 @@ def get_all_osm_query():
 
 
 def convert_into_osm_dict(locality):
-    """Utility to convert old locality dict into osm dict."""
+    """Utility to convert old locality dict into osm dict.
+
+    :param locality: Locality object.
+    :type locality: localities.models.Locality
+
+    """
 
     data = locality.repr_dict()
 
@@ -30,9 +35,6 @@ def convert_into_osm_dict(locality):
         total_bed = sum(beds)
         osm_dict['inpatient_service'] = str(total_bed)
 
-    if not osm_dict.get('inpatient_service', None):
-        osm_dict['inpatient_service'] = '0'
-
     for item, value in osm_dict.items():
         if '|' in value:
             value = value.split('|')
@@ -42,7 +44,33 @@ def convert_into_osm_dict(locality):
 
 
 def split_osm_and_extension_attr(locality_attr):
-    """Utility to split osm and extension attributes."""
+    """Utility to split osm and extension attributes.
+
+    :param locality_attr: Locality attributes.
+    :type locality_attr: dict
+        example: {
+            "activities": [
+                "medicine and medical specialties",
+                "Maternal and women health",
+                "pediatric care"
+            ],
+            "facility": "puskesmas",
+            "notes": [
+                "Outpatient consultation"
+            ],
+            "tags": [
+                "general"
+            ],
+            "scope_of_service": [
+                "specialized care",
+                "general acute care",
+                "rehabilitation care"
+            ],
+            "inpatient_service": "12",
+            "staff_doctors": "8",
+        }
+
+    """
 
     osm_fields = LocalityOSM._meta.get_all_field_names()
 
@@ -51,8 +79,6 @@ def split_osm_and_extension_attr(locality_attr):
         if locality_attr.get(field, None):
             osm_attr[field] = locality_attr[field]
             del locality_attr[field]
-        else:
-            osm_attr[field] = ''
 
     if locality_attr.get('defining_hours', None):
         del locality_attr['defining_hours']
