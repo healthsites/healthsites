@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from api.osm_api_client import WrappedOsmApi
+from api.osm_api_client import OsmApiWrapper
 from core.settings.base import OSM_API_URL
 
 
@@ -59,7 +59,7 @@ def create_osm_node(user, data):
         }
     """
     oauth_token, oauth_token_secret = get_oauth_token(user)
-    osm_api = WrappedOsmApi(
+    osm_api = OsmApiWrapper(
         oauth_token=oauth_token,
         oauth_token_secret=oauth_token_secret,
         api=OSM_API_URL,
