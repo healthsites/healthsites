@@ -7,9 +7,6 @@ from osmapi import (
     ResponseEmptyApiError, ElementDeletedApiError)
 from requests_oauthlib import OAuth1
 
-from core.settings.secret import (
-    SOCIAL_AUTH_OPENSTREETMAP_KEY, SOCIAL_AUTH_OPENSTREETMAP_SECRET)
-
 
 class OAuthTokenMissingError(OsmApiError):
     """
@@ -20,10 +17,19 @@ class OAuthTokenMissingError(OsmApiError):
 
 class OsmApiWrapper(OsmApi, object):
 
-    def __init__(self, oauth_token, oauth_token_secret, api, appid):
+    def __init__(
+            self,
+            client_key,
+            client_secret,
+            oauth_token,
+            oauth_token_secret,
+            api,
+            appid):
         """OsmApi wrapper object constructor.
         """
         super(OsmApiWrapper, self).__init__(api=api, appid=appid)
+        self._client_key = client_key
+        self._client_secret = client_secret
         self._oauth_token = oauth_token
         self._oauth_token_secret = oauth_token_secret
 
@@ -62,8 +68,8 @@ class OsmApiWrapper(OsmApi, object):
         if auth:
             try:
                 user_credentials = OAuth1(
-                    client_key=SOCIAL_AUTH_OPENSTREETMAP_KEY,
-                    client_secret=SOCIAL_AUTH_OPENSTREETMAP_SECRET,
+                    client_key=self._client_key,
+                    client_secret=self._client_secret,
                     resource_owner_key=self._oauth_token,
                     resource_owner_secret=self._oauth_token_secret,
                 )
@@ -96,7 +102,7 @@ class OsmApiWrapper(OsmApi, object):
             print(error_msg)
         return response.content
 
-    def create_osm_node(self, data):
+    def create_node(self, data, comment=None):
         """Create OSM node data and push it to OSM instance through OSM api.
 
         :param data: OSM Node data.
@@ -106,6 +112,9 @@ class OsmApiWrapper(OsmApi, object):
                 'lon': longitude of node,
                 'tag': {},
             }
+
+        :param comment: Changeset comment.
+        :type comment: str
 
         :return: OSM changeset data.
         :rtype: dict
@@ -121,13 +130,19 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
-        self.ChangesetCreate()
+        changeset_tags = {}
+        if comment:
+            changeset_tags.update({
+                'comment': comment
+            })
+
+        self.ChangesetCreate(changeset_tags)
         changeset = self.NodeCreate(data)
         self.ChangesetClose()
 
         return changeset
 
-    def update_osm_node(self, data):
+    def update_node(self, data, comment=None):
         """Update OSM node data and push it to OSM instance through OSM api.
 
         :param data: OSM Node data.
@@ -140,6 +155,9 @@ class OsmApiWrapper(OsmApi, object):
                 'version': version number of node,
             }
 
+        :param comment: Changeset comment.
+        :type comment: str
+
         :return: OSM changeset data.
         :rtype: dict
             example: {
@@ -154,13 +172,19 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
-        self.ChangesetCreate()
+        changeset_tags = {}
+        if comment:
+            changeset_tags.update({
+                'comment': comment
+            })
+
+        self.ChangesetCreate(changeset_tags)
         changeset = self.NodeUpdate(data)
         self.ChangesetClose()
 
         return changeset
 
-    def create_osm_way(self, data):
+    def create_way(self, data, comment=None):
         """Create OSM way data and push it to OSM instance through OSM api.
 
         :param data: OSM Way data.
@@ -169,6 +193,9 @@ class OsmApiWrapper(OsmApi, object):
                 'nd': [] list of nodes,
                 'tag': {} dict of tags,
             }
+
+        :param comment: Changeset comment.
+        :type comment: str
 
         :return: OSM changeset data.
         :rtype: dict
@@ -183,13 +210,19 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
-        self.ChangesetCreate()
+        changeset_tags = {}
+        if comment:
+            changeset_tags.update({
+                'comment': comment
+            })
+
+        self.ChangesetCreate(changeset_tags)
         changeset = self.WayCreate(data)
         self.ChangesetClose()
 
         return changeset
 
-    def update_osm_way(self, data):
+    def update_way(self, data, comment=None):
         """Update OSM way data and push it to OSM instance through OSM api.
 
         :param data: OSM Way data.
@@ -201,6 +234,9 @@ class OsmApiWrapper(OsmApi, object):
                 'version': version number of way,
             }
 
+        :param comment: Changeset comment.
+        :type comment: str
+
         :return: OSM changeset data.
         :rtype: dict
             example: {
@@ -214,7 +250,13 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
-        self.ChangesetCreate()
+        changeset_tags = {}
+        if comment:
+            changeset_tags.update({
+                'comment': comment
+            })
+
+        self.ChangesetCreate(changeset_tags)
         changeset = self.WayUpdate(data)
         self.ChangesetClose()
 
