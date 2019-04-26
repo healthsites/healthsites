@@ -10,7 +10,8 @@ from localities_osm.utilities import (
 from localities_osm.models.locality import LocalityOSM
 from localities.tests.model_factories import (
     AttributeF,
-    LocalityValue4F
+    LocalityValue4F,
+    LocalityValue1F
 )
 from social_users.tests.model_factories import UserF
 
@@ -53,6 +54,65 @@ class AttributeConverterUtilityTest(TestCase):
             osm_data_dict['scope_of_service'],
             ['specialized care', 'general acute care', 'rehabilitation care'])
         self.assertEqual(osm_data_dict['facility'], 'building')
+
+        locality0 = LocalityValue1F.create(
+            name='locality test',
+            val1__data='5|',
+            val1__specification__attribute=self.attr3,
+        )
+        osm_data_dict = convert_into_osm_dict(locality0)
+        self.assertEqual(osm_data_dict['inpatient_service'], '5')
+
+        locality1 = LocalityValue1F.create(
+            name='locality test',
+            val1__data='|3',
+            val1__specification__attribute=self.attr3,
+        )
+        osm_data_dict = convert_into_osm_dict(locality1)
+        self.assertEqual(osm_data_dict['inpatient_service'], '3')
+
+        locality2 = LocalityValue1F.create(
+            name='locality test',
+            val1__data='',
+            val1__specification__attribute=self.attr3,
+        )
+        osm_data_dict = convert_into_osm_dict(locality2)
+        self.assertEqual(osm_data_dict['inpatient_service'], '0')
+
+        locality3 = LocalityValue1F.create(
+            name='locality test',
+            val1__data='|',
+            val1__specification__attribute=self.attr3,
+        )
+        osm_data_dict = convert_into_osm_dict(locality3)
+        self.assertEqual(osm_data_dict['inpatient_service'], '0')
+
+        locality4 = LocalityValue1F.create(
+            name='locality test',
+            val1__data='5|',
+            val1__specification__attribute=self.attr2,
+        )
+        osm_data_dict = convert_into_osm_dict(locality4)
+        self.assertEqual(osm_data_dict['staff_doctors'], '5')
+        self.assertEqual(osm_data_dict['staff_nurses'], '0')
+
+        locality5 = LocalityValue1F.create(
+            name='locality test',
+            val1__data='|2',
+            val1__specification__attribute=self.attr2,
+        )
+        osm_data_dict = convert_into_osm_dict(locality5)
+        self.assertEqual(osm_data_dict['staff_doctors'], '0')
+        self.assertEqual(osm_data_dict['staff_nurses'], '2')
+
+        locality6 = LocalityValue1F.create(
+            name='locality test',
+            val1__data='|',
+            val1__specification__attribute=self.attr2,
+        )
+        osm_data_dict = convert_into_osm_dict(locality6)
+        self.assertEqual(osm_data_dict['staff_doctors'], '0')
+        self.assertEqual(osm_data_dict['staff_nurses'], '0')
 
     def test_split_osm_attr_and_extension(self):
         """Test splitting osm attributes and extension attributes."""

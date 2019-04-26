@@ -9,21 +9,29 @@ def get_all_osm_query():
 
 
 def convert_into_osm_dict(locality):
+    """Utility to convert old locality dict into osm dict."""
+
     data = locality.repr_dict()
 
     osm_dict = data['values']
     osm_dict['name'] = data['name']
 
-    if 'staff' in osm_dict.keys():
+    if osm_dict.get('staff', None):
         staff = osm_dict['staff'].split('|')
+        staff = [u'0' if v is u'' else v for v in staff]
         osm_dict['staff_doctors'] = staff[0]
         osm_dict['staff_nurses'] = staff[1]
         del osm_dict['staff']
 
-    if 'inpatient_service' in osm_dict.keys():
+    if osm_dict.get('inpatient_service', None):
         beds = osm_dict['inpatient_service'].split('|')
-        total_bed = int(beds[0]) + int(beds[1])
+        beds = list(filter(None, beds))
+        beds = [int(x) for x in beds]
+        total_bed = sum(beds)
         osm_dict['inpatient_service'] = str(total_bed)
+
+    if not osm_dict.get('inpatient_service', None):
+        osm_dict['inpatient_service'] = '0'
 
     for item, value in osm_dict.items():
         if '|' in value:
@@ -34,6 +42,8 @@ def convert_into_osm_dict(locality):
 
 
 def split_osm_and_extension_attr(locality_attr):
+    """Utility to split osm and extension attributes."""
+
     osm_fields = LocalityOSM._meta.get_all_field_names()
 
     osm_attr = {}
@@ -44,7 +54,7 @@ def split_osm_and_extension_attr(locality_attr):
         else:
             osm_attr[field] = ''
 
-    if 'defining_hours' in locality_attr.keys():
+    if locality_attr.get('defining_hours', None):
         del locality_attr['defining_hours']
 
-    return [osm_attr, locality_attr]
+    return osm_attr, locality_attr
