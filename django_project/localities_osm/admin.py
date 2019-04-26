@@ -5,8 +5,6 @@ from localities_osm.models.locality import (
     LocalityOSMWay,
     LocalityOSMView
 )
-from localities_osm.models.locality_osm_extension import LocalityOSMExtension
-from localities_osm.models.tag import Tag
 
 
 class LocalityOSMAdmin(admin.ModelAdmin):
@@ -27,5 +25,3 @@ class LocalityOSMViewAdmin(LocalityOSMAdmin):
 admin.site.register(LocalityOSMWay, LocalityOSMAdmin)
 admin.site.register(LocalityOSMNode, LocalityOSMAdmin)
 admin.site.register(LocalityOSMView, LocalityOSMViewAdmin)
-admin.site.register(LocalityOSMExtension)
-admin.site.register(Tag)

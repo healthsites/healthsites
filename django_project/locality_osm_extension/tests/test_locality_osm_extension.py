@@ -4,7 +4,7 @@ __date__ = '24/02/19'
 
 import random
 from django.test import TestCase
-from .model_factories import TagF, LocalityHealthsitesOSMF
+from .model_factories import TagF, LocalityOSMExtensionF
 
 
 class TestTagModel(TestCase):
@@ -21,9 +21,9 @@ class TestTagModel(TestCase):
         self.assertTrue(model.name is not None)
 
 
-class TestLocalityHealthsitesOSM(TestCase):
+class TestLocalityOSMExtension(TestCase):
 
-    def test_locality_healthsites_osm_create(self):
+    def test_locality_osm_extension_create(self):
         """Test locality healthsites osm model creation."""
 
         tag1 = TagF.create()
@@ -32,7 +32,7 @@ class TestLocalityHealthsitesOSM(TestCase):
         self.assertTrue(tag1.pk is not None)
         self.assertTrue(tag2.pk is not None)
 
-        model = LocalityHealthsitesOSMF.create(
+        model = LocalityOSMExtensionF.create(
             osm_id=random.randint(1, 99999),
             osm_pk=random.randint(1, 99),
             osm_type='node',

@@ -26,7 +26,7 @@ from .utils import (
 )
 
 from localities_osm.models.locality import LocalityOSMView
-from localities_healthsites_osm.serializer.locality import (
+from localities_osm.serializer.locality_osm import (
     LocalityHealthsitesOSMSerializer
 )
 

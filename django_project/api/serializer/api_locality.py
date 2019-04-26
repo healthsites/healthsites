@@ -7,9 +7,6 @@ from rest_framework.serializers import (
 )
 from rest_framework_gis.serializers import (
     GeoFeatureModelSerializer, GeometrySerializerMethodField, )
-from localities_healthsites_osm.models.locality_healthsites_osm import (
-    LocalityHealthsitesOSM
-)
 from localities_osm.models.locality import (
     LocalityOSMView, LocalityOSM
 )
@@ -27,32 +24,34 @@ class LocalityHealthsitesOSMBaseSerializer(object):
         return attributes
 
     def get_healthsites_data(self, healthsite_osm):
-        if healthsite_osm.osm_id and healthsite_osm.osm_type:
-            locality_healthsites_osm = LocalityHealthsitesOSM.objects.filter(
-                osm_id=healthsite_osm.osm_id,
-                osm_type=healthsite_osm.osm_type
-            )
-            if locality_healthsites_osm.count() == 0:
-                return {
-                    'attributes': {}
-                }
-        else:
-            locality_healthsites_osm = LocalityHealthsitesOSM.objects.filter(
-                osm_pk=healthsite_osm.row.split('-')[0]
-            )
-            if locality_healthsites_osm.count() == 0:
-                return {
-                    'attributes': {}
-                }
+        # TODO: fix this
+
+        # if healthsite_osm.osm_id and healthsite_osm.osm_type:
+        #     locality_healthsites_osm = LocalityHealthsitesOSM.objects.filter(
+        #         osm_id=healthsite_osm.osm_id,
+        #         osm_type=healthsite_osm.osm_type
+        #     )
+        #     if locality_healthsites_osm.count() == 0:
+        #         return {
+        #             'attributes': {}
+        #         }
+        # else:
+        #     locality_healthsites_osm = LocalityHealthsitesOSM.objects.filter(
+        #         osm_pk=healthsite_osm.row.split('-')[0]
+        #     )
+        #     if locality_healthsites_osm.count() == 0:
+        #         return {
+        #             'attributes': {}
+        #         }
 
         # get values data
         data = {}
-        locality_data = get_locality_detail(locality_healthsites_osm[0].healthsite, None)
-        data['name'] = locality_data['name']
-        data['completeness'] = locality_data['completeness']
-        data['uuid'] = locality_data['uuid']
-        data['date_modified'] = locality_data['date_modified']
-        data['attributes'] = locality_data['values']
+        # locality_data = get_locality_detail(locality_healthsites_osm[0].healthsite, None)
+        # data['name'] = locality_data['name']
+        # data['completeness'] = locality_data['completeness']
+        # data['uuid'] = locality_data['uuid']
+        # data['date_modified'] = locality_data['date_modified']
+        # data['attributes'] = locality_data['values']
         try:
             data['attributes']['activities'] = filter(
                 None, data['attributes']['activities'].split('|'))

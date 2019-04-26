@@ -13,8 +13,10 @@ from localities_healthsites_osm.models.locality_healthsites_osm import (
 class Command(BaseCommand):
     """
     This command try to making check osm_id from healthsittes locality
-    and also on docker osm data
+    and also on docker osm data.
+
     """
+
     help = 'Check osm id of localities'
 
     def handle(self, *args, **options):
@@ -24,14 +26,12 @@ class Command(BaseCommand):
             data = locality.repr_dict()
             osm_type = None
             osm_id = None
-            certainty = False
             print '%s/%s' % (index, total)
             try:
                 # this is obviously from osm
                 osm = data['source_url'].split('www.openstreetmap.org/')[1].split('/')
                 osm_type = osm[0]
                 osm_id = osm[1]
-                certainty = True
             except (IndexError, KeyError):
                 name = data['name']
                 # TODO: Update how to match this locality and osm
@@ -49,12 +49,9 @@ class Command(BaseCommand):
                 geom_match = True if by_geom.count() >= 1 else False
 
                 # if geom match and name match, it is same locality
-                # if name is not match, certainty is false
                 if geom_match:
                     osm_id = by_geom[0].osm_id
                     osm_type = by_geom[0].osm_type
-                    if name_match:
-                        certainty = True
 
                 print '%s : [%s , %s]' % (name, name_match, geom_match)
 
@@ -62,5 +59,4 @@ class Command(BaseCommand):
                 osm_id=osm_id,
                 osm_type=osm_type,
             )
-            instance.certainty = certainty
             instance.save()

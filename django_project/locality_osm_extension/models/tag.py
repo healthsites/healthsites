@@ -13,7 +13,6 @@ class Tag(models.Model):
 
     class Meta:
         ordering = ('name',)
-        app_label = 'localities_osm'
 
     def __unicode__(self):
         return self.name

@@ -5,7 +5,7 @@ __date__ = '26/04/19'
 from django.contrib.gis.db import models
 from django.db.utils import ConnectionDoesNotExist
 from localities_osm.models.locality import LocalityOSMView, LocalityOSMNode
-from localities_osm.models.tag import Tag
+from .tag import Tag
 
 OSM_ELEMENT_TYPE = (
         ('node', 'node'),
@@ -37,7 +37,6 @@ class LocalityOSMExtension(models.Model):
 
     class Meta:
         ordering = ('osm_id',)
-        app_label = 'localities_osm'
 
     def save(self, *args, **kwargs):
         super(LocalityOSMExtension, self).save(*args, **kwargs)
