@@ -56,8 +56,8 @@ class OsmApiWrapper(OsmApi, object):
         """
         if self._debug:
             error_msg = (
-                "%s %s %s"
-                % (time.strftime("%Y-%m-%d %H:%M:%S"), method, path)
+                '%s %s %s'
+                % (time.strftime('%Y-%m-%d %H:%M:%S'), method, path)
             )
             print(error_msg)
 
@@ -74,7 +74,7 @@ class OsmApiWrapper(OsmApi, object):
                     resource_owner_secret=self._oauth_token_secret,
                 )
             except AttributeError:
-                raise OAuthTokenMissingError("OAuth token missing")
+                raise OAuthTokenMissingError('OAuth token missing')
 
         response = self._session.request(method, path, auth=user_credentials,
                                          data=send)
@@ -96,8 +96,8 @@ class OsmApiWrapper(OsmApi, object):
 
         if self._debug:
             error_msg = (
-                "%s %s %s"
-                % (time.strftime("%Y-%m-%d %H:%M:%S"), method, path)
+                '%s %s %s'
+                % (time.strftime('%Y-%m-%d %H:%M:%S'), method, path)
             )
             print(error_msg)
         return response.content
