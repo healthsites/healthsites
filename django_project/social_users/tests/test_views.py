@@ -58,8 +58,8 @@ class TestViews(TestCase):
         )
 
     @patch('localities_osm.models.locality.LocalityOSMView')
-    def test_logout_view(self, mock_locality_osm):
-        mock_locality_osm = MagicMock()
+    def test_logout_view(self, mock_locality_osm):  # noqa
+        mock_locality_osm = MagicMock()  # noqa
         UserF(username='test1', password='test1')
         self.client.login(username='test1', password='test1')
         resp = self.client.get(reverse('logout_user'))

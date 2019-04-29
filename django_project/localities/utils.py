@@ -413,7 +413,7 @@ def get_update_detail(update):
                 username=update['changeset__social_user__username'])
         profile = get_profile(user)
         update['nickname'] = profile.screen_name
-    except (User.DoesNotExist, KeyError) as e:
+    except (User.DoesNotExist, KeyError) as e:  # noqa
         pass
     return update
 

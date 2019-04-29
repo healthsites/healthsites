@@ -6,9 +6,7 @@ from datetime import datetime
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Count, Max, Min
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView, View
 
 from braces.views import LoginRequiredMixin

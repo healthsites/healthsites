@@ -11,8 +11,8 @@ class TestViews(TestCase):
         self.client = Client()
 
     @patch('localities_osm.models.locality.LocalityOSMView')
-    def test_home_view(self, mock_locality_osm):
-        mock_locality_osm = MagicMock()
+    def test_home_view(self, mock_locality_osm):  # noqa
+        mock_locality_osm = MagicMock()  # noqa
         resp = self.client.get(reverse('home'))
 
         self.assertEqual(resp.status_code, 200)
@@ -20,8 +20,8 @@ class TestViews(TestCase):
         self.assertEqual(resp.context['debug'], False)
 
     @patch('localities_osm.models.locality.LocalityOSMView')
-    def test_home_view_no_googleanalytics(self, mock_locality_osm):
-        mock_locality_osm = MagicMock()
+    def test_home_view_no_googleanalytics(self, mock_locality_osm):  # noqa
+        mock_locality_osm = MagicMock()  # noqa
         # specifically set DEBUG to True
         settings.DEBUG = True
 
@@ -33,8 +33,8 @@ class TestViews(TestCase):
         self.assertTrue(resp.content.find('GoogleAnalyticsObject') == -1)
 
     @patch('localities_osm.models.locality.LocalityOSMView')
-    def test_about_view(self, mock_locality_osm):
-        mock_locality_osm = MagicMock()
+    def test_about_view(self, mock_locality_osm):  # noqa
+        mock_locality_osm = MagicMock()  # noqa
         resp = self.client.get(reverse('about'))
 
         self.assertEqual(resp.status_code, 200)
@@ -45,8 +45,8 @@ class TestViews(TestCase):
         )
 
     @patch('localities_osm.models.locality.LocalityOSMView')
-    def test_help_view(self, mock_locality_osm):
-        mock_locality_osm = MagicMock()
+    def test_help_view(self, mock_locality_osm):  # noqa
+        mock_locality_osm = MagicMock()  # noqa
         resp = self.client.get(reverse('help'))
 
         self.assertEqual(resp.status_code, 200)
