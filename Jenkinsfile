@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'flake8'
+//                sh 'flake8'
                 sh 'coverage run manage.py test'
             }
         }
