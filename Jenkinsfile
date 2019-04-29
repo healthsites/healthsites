@@ -9,7 +9,8 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'curl --version'
+                sh 'flake8'
+                sh 'coverage run manage.py test'
             }
         }
     }
