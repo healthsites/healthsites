@@ -17,7 +17,8 @@ RUN apt-get -y update
 RUN apt-get -y install libpq5 yui-compressor vim
 
 ADD REQUIREMENTS.txt /REQUIREMENTS.txt
-RUN pip install -r /REQUIREMENTS.txt
+ADD REQUIREMENTS-dev.txt /REQUIREMENTS-dev.txt
+RUN pip install -r /REQUIREMENTS.txt -r /REQUIREMENTS-dev.txt
 RUN pip install uwsgi
 
 # Open port 49360 as we will be running our uwsgi socket on that
