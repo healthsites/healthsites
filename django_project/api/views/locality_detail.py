@@ -27,7 +27,7 @@ class LocalityDetailApiView(ApiView):
             facilities = Locality.objects.get(uuid=uuid)
         except Locality.DoesNotExist:
             return self.api_response(
-                {'error': 'facility isn\'t found'}
+                {'error': 'facility is not found'}
             )
 
         facilities = self.query_to_json([facilities], self.format)

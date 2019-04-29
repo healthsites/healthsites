@@ -859,8 +859,8 @@ class DataLoader(models.Model):
     )
 
     organisation_name = models.CharField(
-        verbose_name='Organisation\'s Name',
-        help_text='Organiation\'s Name',
+        verbose_name="Organisation's Name",
+        help_text="Organisation's Name",
         null=False,
         blank=False,
         max_length=100

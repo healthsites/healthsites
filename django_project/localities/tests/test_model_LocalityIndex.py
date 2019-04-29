@@ -42,7 +42,7 @@ class TestModelLocalityIndex(TestCase):
         cursor = connection.cursor()
         cursor.execute((
             'UPDATE localities_localityindex SET '
-            'fts_index = to_tsvector(\'english\', \'super data bad data\')'
+            'fts_index = to_tsvector(\'english\', \'super data bad data\')' # noqa
         ))
 
         # test LocalityIndex

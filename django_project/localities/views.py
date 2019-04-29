@@ -510,12 +510,12 @@ class LocalityReportDuplicate(JSONResponseMixin, View):
     def post(self, request, *args, **kwargs):
         if 'master' not in request.POST:
             result = json.dumps(
-                {'error': 'master uuid parameter isn\'t provided'}, cls=DjangoJSONEncoder
+                {'error': 'master uuid parameter is not provided'}, cls=DjangoJSONEncoder
             )
             return HttpResponse(result, content_type='application/json')
         if 'synonym' not in request.POST:
             result = json.dumps(
-                {'error': 'synonym uuid parameter isn\'t provided'}, cls=DjangoJSONEncoder
+                {'error': 'synonym uuid parameter is not provided'}, cls=DjangoJSONEncoder
             )
             return HttpResponse(result, content_type='application/json')
 
