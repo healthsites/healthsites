@@ -14,21 +14,15 @@ RUN apt-get -y update
 
 #-------------Application Specific Stuff ----------------------------------------------------
 
-RUN apt-get -y install libpq5
+RUN apt-get -y install libpq5 yui-compressor vim
 
 ADD REQUIREMENTS.txt /REQUIREMENTS.txt
 RUN pip install -r /REQUIREMENTS.txt
 RUN pip install uwsgi
 
-RUN apt-get update -y; apt-get -y --force-yes install yui-compressor
-
 # Open port 49360 as we will be running our uwsgi socket on that
 EXPOSE 49360
 
-ADD sources.list /etc/apt/sources.list.d/
-RUN apt-get update -y
-RUN apt-get install vim -y
-RUN apt-get install certbot -t jessie-backports -y
 ADD rpl-1.5.5.egg-info /usr/lib/pymodules/python2.7/
 
 # You could put --protocol=http as a parameter (to test it directly)
