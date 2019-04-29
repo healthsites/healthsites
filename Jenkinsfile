@@ -10,7 +10,7 @@ pipeline {
         stage('Test') {
             steps {
 //                sh 'flake8'
-                sh 'cd django_project && coverage run manage.py test'
+//                sh 'cd django_project && coverage run manage.py test'
             }
         }
     }
