@@ -22,5 +22,6 @@ social-auth-app-django==3.1.0
 pytz
 raven
 pyshp
+pyyaml
 osmapi
 requests_oauthlib
