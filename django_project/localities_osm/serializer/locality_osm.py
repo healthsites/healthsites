@@ -38,7 +38,7 @@ class LocalityHealthsitesOSMNodeSerializer(LocalityHealthsitesOSMSerializer):
         exclude = []
 
 
-class LocalityOSMBasic(ModelSerializer):
+class LocalityOSMBasicSerializer(ModelSerializer):
     uuid = serializers.SerializerMethodField()
 
     def get_uuid(self, obj):
@@ -47,7 +47,7 @@ class LocalityOSMBasic(ModelSerializer):
     class Meta:
         model = LocalityOSMView
         fields = ['uuid', 'osm_id', 'osm_type',
-                  'type', 'name', 'changeset_version',
+                  'healthcare', 'name', 'changeset_version',
                   'changeset_timestamp', 'changeset_user']
 
 
