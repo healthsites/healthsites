@@ -16,6 +16,23 @@ def remap_dict(old_dict, transform):
     return new_dict
 
 
+def changeset_tags(comment=None):
+    """Helper to create osm changeset tags.
+
+    :param comment: The changeset comment.
+    :type comment: str
+
+    :return: The changeset tags.
+    :rtype: dict
+    """
+    tags = {}
+    if comment:
+        tags.update({
+            'comment': comment
+        })
+    return tags
+
+
 def get_oauth_token(user):
     """Get OAuth token from social auth.
 
