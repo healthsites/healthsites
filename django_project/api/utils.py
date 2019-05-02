@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+
+import yaml
+
+from os.path import exists
+
 from api.osm_api_client import OsmApiWrapper
 from core.settings.base import OSM_API_URL, APP_NAME
 from core.settings.secret import SOCIAL_AUTH_OPENSTREETMAP_KEY, \
@@ -16,6 +21,46 @@ def remap_dict(old_dict, transform):
         else:
             new_dict.update({k: v})
     return new_dict
+
+
+def convert_to_osm_tag(mapping_file_path, data, osm_type):
+    """Convert local tags to osm tags based on mapping file.
+
+    :param mapping_file_path: Path of the mapping file with yml format.
+    :type mapping_file_path: str
+
+    :param data: Locality data.
+    :type data: dict
+
+    :param osm_type: OSM geometry type of the data. 'node' or 'way'
+    :type osm_type: str
+
+    :return: Re-mapped locality data.
+    :rtype: dict
+    """
+    if not exists(mapping_file_path):
+        return data
+
+    document = open(mapping_file_path, 'r')
+    mapping_data = yaml.load(document)
+
+    mapping_table_reference = 'healthcare_facilities_{}'.format(osm_type)
+    mapping_data_reference = mapping_data.get(
+        'tables', {}).get(mapping_table_reference, {})
+    if not mapping_data_reference:
+        return data
+
+    # construct mapping dictionary
+    mapping_dict = {}
+    for column in mapping_data_reference.get('columns', []):
+        try:
+            mapping_dict.update({
+                column['name']: column['key']
+            })
+        except:
+            pass
+
+    return remap_dict(data, mapping_dict)
 
 
 def get_oauth_token(user):
