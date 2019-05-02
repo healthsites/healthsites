@@ -1,0 +1,196 @@
+tables:
+  healthcare_facilities_node:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+
+      # mandatory
+      - key: amenity
+        name: amenity
+        type: string
+      - key: healthcare
+        name: healthcare
+        type: string
+      - key: name
+        name: name
+        type: string
+      - key: operator
+        name: operator
+        type: string
+      - key: source
+        name: source
+        type: string
+
+      # others
+      - key: healthcare:speciality
+        name: speciality
+        type: string
+      - key: operator:type
+        name: operator_type
+        type: string
+      - key: addr:full
+        name: addr_full
+        type: string
+      - key: contact:phone
+        name: contact_number
+        type: string
+      - key: operational_status
+        name: operational_status
+        type: string
+      - key: opening_hours
+        name: opening_hours
+        type: string
+      - key: beds
+        name: beds
+        type: string
+      - key: staff_count:doctors
+        name: staff_doctors
+        type: string
+      - key: staff_count:nurses
+        name: staff_nurses
+        type: string
+      - key: health_amenity:type
+        name: health_amenity_type
+        type: string
+      - key: dispensing
+        name: dispensing
+        type: string
+      - key: wheelchair
+        name: wheelchair
+        type: string
+      - key: emergency
+        name: emergency
+        type: string
+      - key: insurance:health
+        name: insurance
+        type: string
+      - key: water_source
+        name: water_source
+        type: string
+      - key: generator:source
+        name: generator_source
+        type: string
+      - key: url
+        name: url
+        type: string
+    mapping:
+      amenity:
+        - clinic
+        - doctors
+        - hospital
+        - dentist
+        - pharmacy
+      healthcare:
+        - doctor
+        - pharmacy
+        - hospital
+        - clinic
+        - dentist
+        - physiotherapist
+        - alternative
+        - laboratory
+        - optometrist
+        - rehabilitation
+        - blood_donation
+        - birthing_center
+    type: point
+
+  healthcare_facilities_way:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+
+      # mandatory
+      - key: amenity
+        name: amenity
+        type: string
+      - key: healthcare
+        name: healthcare
+        type: string
+      - key: name
+        name: name
+        type: string
+      - key: operator
+        name: operator
+        type: string
+      - key: source
+        name: source
+        type: string
+
+      # others
+      - key: healthcare:speciality
+        name: speciality
+        type: string
+      - key: operator:type
+        name: operator_type
+        type: string
+      - key: addr:full
+        name: addr_full
+        type: string
+      - key: contact:phone
+        name: contact_number
+        type: string
+      - key: operational_status
+        name: operational_status
+        type: string
+      - key: opening_hours
+        name: opening_hours
+        type: string
+      - key: beds
+        name: beds
+        type: string
+      - key: staff_count:doctors
+        name: staff_doctors
+        type: string
+      - key: staff_count:nurses
+        name: staff_nurses
+        type: string
+      - key: health_amenity:type
+        name: health_amenity_type
+        type: string
+      - key: dispensing
+        name: dispensing
+        type: string
+      - key: wheelchair
+        name: wheelchair
+        type: string
+      - key: emergency
+        name: emergency
+        type: string
+      - key: insurance:health
+        name: insurance
+        type: string
+      - key: water_source
+        name: water_source
+        type: string
+      - key: generator:source
+        name: generator_source
+        type: string
+      - key: url
+        name: url
+        type: string
+    mapping:
+      amenity:
+        - clinic
+        - doctors
+        - hospital
+        - dentist
+        - pharmacy
+      healthcare:
+        - doctor
+        - pharmacy
+        - hospital
+        - clinic
+        - dentist
+        - physiotherapist
+        - alternative
+        - laboratory
+        - optometrist
+        - rehabilitation
+        - blood_donation
+        - birthing_center
+    type: polygon
