@@ -305,6 +305,12 @@ renew-letsencrypt:
 # ----------
 # docker osm
 # ----------
+rm-all: rm rm-volumes
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Removing production instance!!! "
+	@echo "------------------------------------------------------------------"
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) rm
 rm-volumes:
 	@echo
 	@echo "------------------------------------------------------------------"

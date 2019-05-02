@@ -18,7 +18,7 @@ from api.api_views.v2.facilities.base_api import (
 from localities.models import Country, Locality
 from localities.utils import parse_bbox
 from localities_osm.models.locality import LocalityOSM
-from localities_osm.serializer.locality_osm import LocalityOSMBasic
+from localities_osm.serializer.locality_osm import LocalityOSMBasicSerializer
 from localities_osm.utilities import get_all_osm_query
 
 
@@ -136,9 +136,9 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
                 'last_update': []
             }
             numbers = healthsites.values(
-                'category').annotate(total=Count('category')).order_by('-total')
+                'amenity').annotate(total=Count('amenity')).order_by('-total')
             for number in numbers[:5]:
-                type = number['category']
+                type = number['amenity']
                 if type:
                     output['numbers'][type] = number['total']
 
@@ -152,7 +152,7 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
 
             # last update
             healthsites = healthsites.exclude(changeset_timestamp__isnull=True)[:10]
-            output['last_update'] = LocalityOSMBasic(healthsites, many=True).data
+            output['last_update'] = LocalityOSMBasicSerializer(healthsites, many=True).data
 
             country = request.GET.get('country', None)
             country = self.get_country(country)
