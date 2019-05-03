@@ -7,8 +7,8 @@ from django.core.paginator import EmptyPage, Paginator
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
 from api.authentication import APIKeyAuthentication
-from api.serializer.api_locality import (
-    LocalityHealthsitesOSMSerializer, LocalityHealthsitesOSMGeoSerializer)
+from localities_osm.serializer.locality_osm import (
+    LocalityOSMSerializer, LocalityOSMGeoSerializer)
 
 
 class BaseAPI(APIView):
@@ -16,8 +16,8 @@ class BaseAPI(APIView):
     format = 'json'
 
     # serializer
-    JSONSerializer = LocalityHealthsitesOSMSerializer
-    GEOJSONSerializer = LocalityHealthsitesOSMGeoSerializer
+    JSONSerializer = LocalityOSMSerializer
+    GEOJSONSerializer = LocalityOSMGeoSerializer
 
     def validation(self):
         self.format = self.request.GET.get('output', 'json')
@@ -124,7 +124,7 @@ class BaseAPI(APIView):
         return used_data
 
 
-class BaseAPIWithAuth(APIView):
+class BaseAPIWithAuth(BaseAPI):
     authentication_classes = (SessionAuthentication, BasicAuthentication, APIKeyAuthentication)
 
 

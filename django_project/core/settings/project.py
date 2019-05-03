@@ -16,7 +16,7 @@ from .secret import *  # NOQA
 INSTALLED_APPS += (
     'localities',
     'localities_osm',
-    'localities_healthsites_osm',
+    'localities_osm_extension',
     'frontend',
     'social_users',
     'api',

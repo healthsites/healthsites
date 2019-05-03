@@ -9,9 +9,6 @@ from .models import (
     Attribute, AttributeArchive, Domain, DomainArchive, Locality, LocalityArchive,
     LocalityIndex, Specification, SpecificationArchive, Value, ValueArchive
 )
-from localities_healthsites_osm.models.locality_healthsites_osm import (
-    LocalityHealthsitesOSM
-)
 
 LOG = logging.getLogger(__name__)
 
@@ -144,12 +141,3 @@ def values_updated_handler(sender, instance, **kwargs):
 
     locind.save()
 
-    # create locality view
-    osm, created = LocalityHealthsitesOSM.objects.get_or_create(
-        healthsite=instance
-    )
-    healthsite_data = LocalitySerializer(instance).data
-    osm_view = osm.return_osm_node()
-    if osm_view:
-        osm_view.insert_healthsite_data(healthsite_data)
-        osm_view.save()

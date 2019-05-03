@@ -15,9 +15,12 @@ define([
             this.pie = new Pie('piechart', 220);
             this.request = new Request();
         },
-        showStatistic: function (country, callback) {
+        getStatistic: function (country, successCallback, errorCallback) {
+            this.request.getStatistic(country, successCallback, errorCallback);
+        },
+        showStatistic: function (country, successCallback) {
             var self = this;
-            this.request.getStatistic(country, function (data) {
+            this.getStatistic(country, function (data) {
                 $APP.trigger('map.update-geoname', {'geoname': country});
 
                 //{# default #}
@@ -105,8 +108,8 @@ define([
                 $APP.trigger('map.rerender');
 
                 // call callback
-                if (callback) {
-                    callback();
+                if (successCallback) {
+                    successCallback(data);
                 }
             });
         }
