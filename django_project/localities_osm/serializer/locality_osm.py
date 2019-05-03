@@ -14,6 +14,9 @@ attributes_fields.remove('osm_id')
 
 
 class LocalityOSMBaseSerializer(object):
+    def get_completeness(self, obj):
+        return obj.get_completeness()
+
     def get_attributes(self, obj):
         attributes = {}
         for attribute in attributes_fields:
@@ -29,21 +32,23 @@ class LocalityOSMSerializer(LocalityOSMBaseSerializer,
                             ModelSerializer):
     attributes = SerializerMethodField()
     centroid = SerializerMethodField()
+    completeness = SerializerMethodField()
 
     class Meta:
         model = LocalityOSMView
-        fields = ['attributes', 'centroid', 'osm_id', 'osm_type']
+        fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
 
 
 class LocalityOSMGeoSerializer(LocalityOSMBaseSerializer,
                                GeoFeatureModelSerializer):
     attributes = SerializerMethodField()
     centroid = SerializerMethodField()
+    completeness = SerializerMethodField()
 
     class Meta:
         model = LocalityOSMView
         geo_field = 'geometry'
-        fields = ['attributes', 'centroid', 'osm_id', 'osm_type']
+        fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
 
 
 class LocalityOSMBasicSerializer(ModelSerializer):
