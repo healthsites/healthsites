@@ -97,3 +97,18 @@ class LocalityOSMProfileSerializer(ModelSerializer):
 
     def get_edit_count(self, instance):
         return 1
+
+
+class LocalityOSMAutoCompleteSerializer(ModelSerializer):
+    label = SerializerMethodField()
+    id = SerializerMethodField()
+
+    class Meta:
+        model = LocalityOSMView
+        fields = ['label', 'id']
+
+    def get_label(self, instance):
+        return instance.name
+
+    def get_id(self, instance):
+        return '%s/%s' % (instance.osm_type, instance.osm_id)

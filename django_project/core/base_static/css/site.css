@@ -442,7 +442,7 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
 .nav-searchbar {
     display: none;
     background: #dadddf;
-    height: 73px;
+    height: 55px;
     position: fixed;
     top: 53px;
     width: 100%;
@@ -1013,3 +1013,11 @@ section.container {
 }
 
 /*-----------------------------------------*/
+
+.ui-menu .ui-menu-item {
+    padding: 0;
+}
+
+.ui-menu .ui-menu-item div {
+    padding: 3px 1em 3px .4em;
+}
