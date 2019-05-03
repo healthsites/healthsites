@@ -117,7 +117,6 @@ class LocalityOSM(LocalityOSMBase):
         for field in LocalityOSM._meta.get_all_field_names():
             if field in ['osm_id', 'changeset_id', 'changeset_version', 'changeset_timestamp', 'changeset_user']:
                 continue
-            print field
             queryset = queryset.exclude(**{'%s' % field: ''})
         return queryset.count()
 
