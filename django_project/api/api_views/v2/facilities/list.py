@@ -95,7 +95,6 @@ class GetFacilities(PaginationAPI, GetFacilitiesBaseAPI):
         data = request.data
         facility = Locality()
         try:
-            data = self.parse_data(data)
             facility.update_data(data, request.user)
             return Response(facility.uuid, status=status.HTTP_201_CREATED)
         except KeyError as e:

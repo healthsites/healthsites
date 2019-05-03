@@ -17,12 +17,13 @@ require([
     'static/scripts/views/statistic/view.js',
     'static/scripts/views/map-sidebar/country-list.js',
     'static/scripts/views/map-sidebar/locality-detail.js',
-
-], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail) {
+    'static/scripts/views/navbar/search.js'
+], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail, Search) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     var countryStatictic = new CountryStatistic();
     new CountryList();
     new LocalityDetail();
+    new Search();
     var uuid = shared.hash();
     uuid = uuid.replace('/locality/', '');
     if (parameters['country']) {

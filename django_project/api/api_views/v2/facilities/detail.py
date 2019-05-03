@@ -4,12 +4,12 @@ __date__ = '29/11/18'
 from django.http.response import Http404, HttpResponseBadRequest
 from rest_framework.response import Response
 from api.api_views.v2.facilities.base_api import (
-    BaseAPI
+    FacilitiesBaseAPI
 )
 from localities_osm.models.locality import LocalityOSMView
 
 
-class GetDetailFacility(BaseAPI):
+class GetDetailFacility(FacilitiesBaseAPI):
     """
     get:
     Returns a facility detail.

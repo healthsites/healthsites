@@ -6,14 +6,6 @@ $(document).ready(function () {
         fixed: true
     });
 
-    //activate searchbar
-    $('.navbar-search, #icons-nav .search').click(function () {
-        $("body").toggleClass("searchbar-active");
-        $(".navbar-search i").toggleClass("fa-search fa-times");
-        mapcount();
-        return false;
-    });
-
     //activate social login/share
     $('.navbar-share').click(function () {
         $("#site-social").toggleClass("hidden");
