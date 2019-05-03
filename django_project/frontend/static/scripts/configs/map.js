@@ -20,6 +20,7 @@ require([
 
 ], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail) {
     shared.dispatcher = _.extend({}, Backbone.Events);
+    var countryStatictic = new CountryStatistic();
     new CountryList();
     new LocalityDetail();
     var uuid = shared.hash();
@@ -28,7 +29,6 @@ require([
         $("#locality-statistic").show();
         $("#locality-info").hide();
         $("#locality-default").hide();
-        var countryStatictic = new CountryStatistic();
         countryStatictic.showStatistic(
             parameters['country'],
             function () {
@@ -39,6 +39,10 @@ require([
     } else {
         if (uuid) {
             shared.dispatcher.trigger('show-locality-detail', {'uuid': uuid});
+        } else {
+            countryStatictic.getStatistic("", function (data) {
+                $('#healthsites-count').html(data['localities']);
+            });
         }
     }
 });

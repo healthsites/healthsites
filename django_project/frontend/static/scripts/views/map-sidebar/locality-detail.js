@@ -60,7 +60,8 @@ define([
             var self = this;
             var properties = data['properties'];
             var attributes = properties['attributes'];
-            attributes['coordinates'] = 'lat: ' + properties.geometry[1] + ', long: ' + properties.geometry[0];
+            var centroid = properties.centroid['coordinates'];
+            attributes['coordinates'] = 'lat: ' + centroid[1] + ', long: ' + centroid[0];
             attributes['changeset_timestamp'] = getDateString(attributes['changeset_timestamp']);
             if (attributes['changeset_user']) {
                 attributes['changeset_user'] = "@" + attributes['changeset_user'];
@@ -83,7 +84,7 @@ define([
             $APP.trigger('locality.info', {
                 'locality_uuid': identifire,
                 'locality_name': name,
-                'geom': properties.geometry,
+                'geom': centroid,
                 'zoomto': true
             });
 

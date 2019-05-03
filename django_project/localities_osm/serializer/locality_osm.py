@@ -1,41 +1,49 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '22/01/19'
 
-import datetime
+import json
 from rest_framework import serializers
 from rest_framework.serializers import (
-    ModelSerializer
+    ModelSerializer, SerializerMethodField
 )
-from rest_framework_gis.serializers import GeometrySerializerMethodField
-from localities_osm.models.locality import (
-    LocalityOSMView,
-    LocalityOSMNode
-)
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
+from localities_osm.models.locality import LocalityOSM, LocalityOSMView
+
+attributes_fields = LocalityOSM._meta.get_all_field_names()
+attributes_fields.remove('osm_id')
 
 
-class LocalityHealthsitesOSMSerializer(ModelSerializer):
-    geometry = GeometrySerializerMethodField
+class LocalityOSMBaseSerializer(object):
+    def get_attributes(self, obj):
+        attributes = {}
+        for attribute in attributes_fields:
+            if getattr(obj, attribute):
+                attributes[attribute] = getattr(obj, attribute)
+        return attributes
+
+    def get_centroid(self, obj):
+        return json.loads(obj.geometry.centroid.geojson)
+
+
+class LocalityOSMSerializer(LocalityOSMBaseSerializer,
+                            ModelSerializer):
+    attributes = SerializerMethodField()
+    centroid = SerializerMethodField()
 
     class Meta:
         model = LocalityOSMView
-        exclude = []
-
-    def get_geometry(self, obj):
-        return obj.geometry.centroid
-
-    def to_representation(self, instance):
-        result = super(LocalityHealthsitesOSMSerializer, self).to_representation(instance)
-        clean_result = {}
-        for key, value in result.items():
-            if value:
-                clean_result[key] = value
-        return result
+        fields = ['attributes', 'centroid', 'osm_id', 'osm_type']
 
 
-class LocalityHealthsitesOSMNodeSerializer(LocalityHealthsitesOSMSerializer):
+class LocalityOSMGeoSerializer(LocalityOSMBaseSerializer,
+                               GeoFeatureModelSerializer):
+    attributes = SerializerMethodField()
+    centroid = SerializerMethodField()
+
     class Meta:
-        model = LocalityOSMNode
-        exclude = []
+        model = LocalityOSMView
+        geo_field = 'geometry'
+        fields = ['attributes', 'centroid', 'osm_id', 'osm_type']
 
 
 class LocalityOSMBasicSerializer(ModelSerializer):
@@ -51,7 +59,7 @@ class LocalityOSMBasicSerializer(ModelSerializer):
                   'changeset_timestamp', 'changeset_user']
 
 
-class LocalityOSMUpdates(ModelSerializer):
+class LocalityOSMProfileSerializer(ModelSerializer):
     changeset__social_user__username = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
     locality_id = serializers.SerializerMethodField()
