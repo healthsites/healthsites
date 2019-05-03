@@ -36,6 +36,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='localityosmextension',
             name='custom_tag',
-            field=models.ManyToManyField(to='locality_osm_extension.Tag', blank=True),
+            field=models.ManyToManyField(to='localities_osm_extension.Tag', blank=True),
         ),
     ]
