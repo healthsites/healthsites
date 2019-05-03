@@ -3,7 +3,7 @@ __author__ = 'Anita Hapsari <anita@kartoza.com>'
 __date__ = '24/02/19'
 
 import factory
-from ..models.locality_osm_extension import LocalityOSMExtension
+from ..models.extension import LocalityOSMExtension
 from ..models.tag import Tag
 
 

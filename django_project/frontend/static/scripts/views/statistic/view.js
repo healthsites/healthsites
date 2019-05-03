@@ -15,12 +15,12 @@ define([
             this.pie = new Pie('piechart', 220);
             this.request = new Request();
         },
-        showStatistic: function (country, callback) {
+        getStatistic: function (country, successCallback, errorCallback) {
+            this.request.getStatistic(country, successCallback, errorCallback);
+        },
+        showStatistic: function (country, successCallback) {
             var self = this;
-            this.request.getStatistic(country, function (data) {
-                if (callback) {
-                    callback();
-                }
+            this.getStatistic(country, function (data) {
                 $APP.trigger('map.update-geoname', {'geoname': country});
 
                 //{# default #}
@@ -43,9 +43,10 @@ define([
                     if (data.numbers) {
                         self.chart.update(data.localities, data.numbers);
                     }
-                }
-                if (data.completeness) {
-                    self.pie.update(data.completeness.basic, data.completeness.partial, data.completeness.complete);
+                    if (data.completeness) {
+                        data.completeness['partial'] = data.localities - data.completeness['basic'] - data.completeness['complete'];
+                        self.pie.update(data.completeness.basic, data.completeness.partial, data.completeness.complete);
+                    }
                 }
 
                 // Create latest updates data
@@ -72,7 +73,7 @@ define([
                         }
 
                         //{# update the html #}
-                        html += "<a href=\"map#!/locality/" + update.locality_uuid + "\" class=\"location-name\">" + update.name + "</a>";
+                        html += "<a href=\"map#!/locality/" + update.uuid + "\" class=\"location-name\">" + update.name + "</a>";
                         html += "<span class=\"location-name\"> " + mode + " </span>";
                         html += "</div>";
                         wrapper.append(html);
@@ -105,6 +106,11 @@ define([
                 }
                 mapcount();
                 $APP.trigger('map.rerender');
+
+                // call callback
+                if (successCallback) {
+                    successCallback(data);
+                }
             });
         }
     })

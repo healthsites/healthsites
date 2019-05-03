@@ -7,16 +7,21 @@ var monthNames = [
     "August", "September", "October",
     "November", "December"
 ];
-function getDateString(date_input) {
-    var date = new Date(date_input);
-    var day = date.getDate();
-    var monthIndex = date.getMonth();
-    var year = date.getFullYear();
-    var hour = ("0" + date.getHours()).slice(-2);
-    var minute = ("0" + date.getMinutes()).slice(-2);
-    var second = ("0" + date.getSeconds()).slice(-2);
 
-    return day + ' ' + monthNames[monthIndex] + ' ' + year + ' ' + hour + ':' + minute + ':' + second;
+function getDateString(date_input) {
+    if (date_input) {
+        var date = new Date(date_input);
+        var day = date.getDate();
+        var monthIndex = date.getMonth();
+        var year = date.getFullYear();
+        var hour = ("0" + date.getHours()).slice(-2);
+        var minute = ("0" + date.getMinutes()).slice(-2);
+        var second = ("0" + date.getSeconds()).slice(-2);
+
+        return day + ' ' + monthNames[monthIndex] + ' ' + year + ' ' + hour + ':' + minute + ':' + second;
+    } else {
+        return null;
+    }
 }
 
 // Will remove all false values: undefined, null, 0, false, NaN and "" (empty string)

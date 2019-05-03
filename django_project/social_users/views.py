@@ -20,7 +20,7 @@ from localities.utils import (
     get_update_detail,
 )
 from localities_osm.models.locality import LocalityOSMView
-from localities_osm.serializer.locality_osm import LocalityOSMUpdates
+from localities_osm.serializer.locality_osm import LocalityOSMProfileSerializer
 from social_users.models import Profile
 from social_users.utils import get_profile
 
@@ -117,7 +117,7 @@ def user_updates(user, date):
     updates_osm = \
         LocalityOSMView.objects.filter(
             changeset_user=user).order_by('-changeset_timestamp')
-    serializer = LocalityOSMUpdates(updates_osm, many=True)
+    serializer = LocalityOSMProfileSerializer(updates_osm, many=True)
 
     for update in serializer.data:
         updates.append(get_update_detail(update))

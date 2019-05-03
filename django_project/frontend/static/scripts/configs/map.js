@@ -15,17 +15,34 @@ require([
     'underscore',
     'static/scripts/shared.js',
     'static/scripts/views/statistic/view.js',
-    'static/scripts/views/map-sidebar/country-list.js'
+    'static/scripts/views/map-sidebar/country-list.js',
+    'static/scripts/views/map-sidebar/locality-detail.js',
 
-], function (Backbone, _, Shared, CountryStatistic, CountryList) {
+], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail) {
     shared.dispatcher = _.extend({}, Backbone.Events);
+    var countryStatictic = new CountryStatistic();
     new CountryList();
+    new LocalityDetail();
+    var uuid = shared.hash();
+    uuid = uuid.replace('/locality/', '');
     if (parameters['country']) {
         $("#locality-statistic").show();
         $("#locality-info").hide();
         $("#locality-default").hide();
-        var countryStatictic = new CountryStatistic();
-        countryStatictic.showStatistic(parameters['country']);
+        countryStatictic.showStatistic(
+            parameters['country'],
+            function () {
+                if (uuid) {
+                    shared.dispatcher.trigger('show-locality-detail', {'uuid': uuid});
+                }
+            });
+    } else {
+        if (uuid) {
+            shared.dispatcher.trigger('show-locality-detail', {'uuid': uuid});
+        } else {
+            countryStatictic.getStatistic("", function (data) {
+                $('#healthsites-count').html(data['localities']);
+            });
+        }
     }
-    console.log(parameters);
 });

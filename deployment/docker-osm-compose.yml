@@ -104,7 +104,7 @@ services:
       - TIME=120
 
   osmenrich:
-    image: kartoza/docker-osm:osmrich-latest
+    image: kartoza/docker-osm:osmenrich-latest
     container_name: dockerosm_osmenrich
     volumes:
       # These are sharable to other containers
