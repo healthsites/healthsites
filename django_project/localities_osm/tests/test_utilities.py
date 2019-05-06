@@ -49,7 +49,8 @@ class AttributeConverterUtilityTest(TestCase):
         self.assertEqual(osm_data_dict['name'], 'locality test')
         self.assertEqual(osm_data_dict['staff_nurses'], '18')
         self.assertEqual(osm_data_dict['staff_doctors'], '15')
-        self.assertEqual(osm_data_dict['inpatient_service'], '12')
+        self.assertEqual(osm_data_dict['beds'], '5')
+        self.assertEqual(osm_data_dict['partial_beds'], '7')
         self.assertEqual(
             osm_data_dict['scope_of_service'],
             ['specialized care', 'general acute care', 'rehabilitation care'])
@@ -61,7 +62,7 @@ class AttributeConverterUtilityTest(TestCase):
             val1__specification__attribute=self.attr3,
         )
         osm_data_dict = convert_into_osm_dict(locality0)
-        self.assertEqual(osm_data_dict['inpatient_service'], '5')
+        self.assertEqual(osm_data_dict['beds'], '5')
 
         locality1 = LocalityValue1F.create(
             name='locality test',
@@ -69,7 +70,7 @@ class AttributeConverterUtilityTest(TestCase):
             val1__specification__attribute=self.attr3,
         )
         osm_data_dict = convert_into_osm_dict(locality1)
-        self.assertEqual(osm_data_dict['inpatient_service'], '3')
+        self.assertEqual(osm_data_dict['partial_beds'], '3')
 
         locality2 = LocalityValue1F.create(
             name='locality test',
@@ -77,7 +78,7 @@ class AttributeConverterUtilityTest(TestCase):
             val1__specification__attribute=self.attr3,
         )
         osm_data_dict = convert_into_osm_dict(locality2)
-        self.assertEqual(osm_data_dict.get('inpatient_service', None), None)
+        self.assertEqual(osm_data_dict.get('beds', None), None)
 
         locality3 = LocalityValue1F.create(
             name='locality test',
@@ -85,7 +86,7 @@ class AttributeConverterUtilityTest(TestCase):
             val1__specification__attribute=self.attr3,
         )
         osm_data_dict = convert_into_osm_dict(locality3)
-        self.assertEqual(osm_data_dict.get('inpatient_service', None), '0')
+        self.assertEqual(osm_data_dict.get('beds', None), None)
 
         locality4 = LocalityValue1F.create(
             name='locality test',
@@ -94,7 +95,7 @@ class AttributeConverterUtilityTest(TestCase):
         )
         osm_data_dict = convert_into_osm_dict(locality4)
         self.assertEqual(osm_data_dict['staff_doctors'], '5')
-        self.assertEqual(osm_data_dict['staff_nurses'], '0')
+        self.assertEqual(osm_data_dict.get('staff_nurses', None), None)
 
         locality5 = LocalityValue1F.create(
             name='locality test',
@@ -102,7 +103,7 @@ class AttributeConverterUtilityTest(TestCase):
             val1__specification__attribute=self.attr2,
         )
         osm_data_dict = convert_into_osm_dict(locality5)
-        self.assertEqual(osm_data_dict['staff_doctors'], '0')
+        self.assertEqual(osm_data_dict.get('staff_doctors', None), None)
         self.assertEqual(osm_data_dict['staff_nurses'], '2')
 
         locality6 = LocalityValue1F.create(
@@ -111,8 +112,8 @@ class AttributeConverterUtilityTest(TestCase):
             val1__specification__attribute=self.attr2,
         )
         osm_data_dict = convert_into_osm_dict(locality6)
-        self.assertEqual(osm_data_dict['staff_doctors'], '0')
-        self.assertEqual(osm_data_dict['staff_nurses'], '0')
+        self.assertEqual(osm_data_dict.get('staff_doctors', None), None)
+        self.assertEqual(osm_data_dict.get('staff_nurses', None), None)
 
     def test_split_osm_attr_and_extension(self):
         """Test splitting osm attributes and extension attributes."""
@@ -126,7 +127,8 @@ class AttributeConverterUtilityTest(TestCase):
             extension_attr['scope_of_service'],
             ['specialized care', 'general acute care', 'rehabilitation care'])
         self.assertEqual(
-            extension_attr.keys(), ['facility', 'scope_of_service'])
+            extension_attr.keys(),
+            ['facility', 'scope_of_service', 'partial_beds'])
         self.assertTrue(
             any(key in [
                 'speciality', 'osm_id', 'operator', 'operation',
@@ -136,14 +138,14 @@ class AttributeConverterUtilityTest(TestCase):
                 'physical_address', 'emergency', 'changeset_timestamp',
                 'nature_of_facility', 'ownership', 'name',
                 'staff_nurses', 'changeset_user', 'changeset_version',
-                'dispensing', 'power_source', 'inpatient_service'
+                'dispensing', 'power_source', 'beds'
             ] for key in osm_attr.keys())
 )
 
         osm_fields = LocalityOSM._meta.get_all_field_names()
         self.assertTrue(any(key in osm_fields for key in osm_attr.keys()))
 
-        self.assertEqual(osm_attr['inpatient_service'], '12')
+        self.assertEqual(osm_attr['beds'], '5')
         self.assertEqual(osm_attr.get('physical_address', None), None)
         self.assertEqual(osm_attr['name'], 'locality test')
         self.assertEqual(osm_attr['staff_nurses'], '18')

@@ -23,16 +23,24 @@ def convert_into_osm_dict(locality):
 
     if osm_dict.get('staff', None):
         staff = osm_dict['staff'].split('|')
-        staff = [u'0' if v is u'' else v for v in staff]
-        osm_dict['staff_doctors'] = staff[0]
-        osm_dict['staff_nurses'] = staff[1]
+
+        if staff[0] is not u'':
+            osm_dict['staff_doctors'] = staff[0]
+
+        if staff[1] is not u'':
+            osm_dict['staff_nurses'] = staff[1]
+
         del osm_dict['staff']
 
     if osm_dict.get('inpatient_service', None):
         beds = osm_dict['inpatient_service'].split('|')
-        beds = [u'0' if v is u'' else v for v in beds]
-        osm_dict['beds'] = beds[0]
-        osm_dict['partial_beds'] = beds[1]
+
+        if beds[0] is not u'':
+            osm_dict['beds'] = beds[0]
+
+        if beds[1] is not u'':
+            osm_dict['partial_beds'] = beds[1]
+
         del osm_dict['inpatient_service']
 
     for item, value in osm_dict.items():
