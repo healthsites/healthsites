@@ -104,24 +104,22 @@
         <!--/.nav-collapse -->
 
     </div>
-    <div class="nav-searchbar container-fluid">
-        <form action="map" method="POST">
-            <div class="option-group">
-                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite" checked><span></span><label class="option"
-                                                                                                       for="radio-healthsite">healthsite</label>
-                </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
-                                                        value="place"><span></span><label class="option"
-                                                                                          for="radio-healthsite">place</label>
-                </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-what3words"
-                                                        value="what3words"><span></span><label class="option"
-                                                                                               for="radio-what3words">what3words</label>
-                </div>
+    <div class="nav-searchbar container-fluid" id="search-form">
+        <div id="search-options" class="option-group">
+            <div class="option">
+                <span></span>
+                <input type="radio" name="option" id="radio-healthsite" value="healthsite" checked>
+                <span></span>
+                <label class="option" for="radio-healthsite">healthsite</label>
             </div>
-            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
-        </form>
+            <div class="option">
+                <span></span>
+                <input type="radio" name="option" id="radio-place" value="country">
+                <span></span>
+                <label class="option" for="radio-healthsite">country</label>
+            </div>
+        </div>
+        <input id="search-box" type="search" name="q" placeholder="search...">
     </div>
 </nav>
 <section id="tophome" class="slideshow js-fullheight fluid-container">
@@ -425,7 +423,6 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
-
 
 {% javascript 'outsource' %}
 {% javascript 'project' %}

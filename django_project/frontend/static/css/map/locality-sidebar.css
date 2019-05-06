@@ -1,0 +1,9 @@
+#others-tag-table {
+    width: 100%;
+}
+
+#others-tag-table th {
+    border: 1px solid #DDD;
+    padding: 5px 15px;
+    width: 50%;
+}

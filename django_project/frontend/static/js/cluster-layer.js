@@ -259,7 +259,7 @@
                 } else {
                     if (evt.target.data['count'] === 1) {
                         if (window.location.href.indexOf("map") > -1) {
-                            $APP.trigger('locality.map.click', {'locality_uuid': evt.target.data['uuid']});
+                            shared.dispatcher.trigger('show-locality-detail', {'uuid': evt.target.data['uuid']});
                             $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
                         } else {
                             window.location.href = "/map#!/locality/" + evt.target.data['uuid'];

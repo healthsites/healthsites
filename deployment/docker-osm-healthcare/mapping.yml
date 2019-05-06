@@ -8,39 +8,42 @@ tables:
 
       # mandatory
       - key: amenity
-        name: category
+        name: amenity
         type: string
       - key: healthcare
-        name: type
-        type: string
-      - key: operator:type
-        name: ownership
+        name: healthcare
         type: string
       - key: name
         name: name
+        type: string
+      - key: operator
+        name: operator
         type: string
       - key: source
         name: source
         type: string
 
       # others
-      - key: legal_entity
-        name: operator
+      - key: healthcare:speciality
+        name: speciality
+        type: string
+      - key: operator:type
+        name: operator_type
         type: string
       - key: addr:full
-        name: physical_address
+        name: addr_full
         type: string
       - key: contact:phone
         name: contact_number
         type: string
       - key: operational_status
-        name: status
+        name: operational_status
         type: string
       - key: opening_hours
-        name: operation
+        name: opening_hours
         type: string
       - key: beds
-        name: inpatient_service
+        name: beds
         type: string
       - key: staff_count:doctors
         name: staff_doctors
@@ -48,51 +51,43 @@ tables:
       - key: staff_count:nurses
         name: staff_nurses
         type: string
-      - key: health_facility:type
-        name: nature_of_facility
-        type: string
-      - key: insurance
-        name: insurance
+      - key: health_amenity:type
+        name: health_amenity_type
         type: string
       - key: dispensing
         name: dispensing
-        type: bool
+        type: string
       - key: wheelchair
-        name: wheelchair_access
-        type: bool
+        name: wheelchair
+        type: string
       - key: emergency
         name: emergency
-        type: bool
+        type: string
+      - key: insurance:health
+        name: insurance
+        type: string
       - key: water_source
         name: water_source
         type: string
       - key: generator:source
-        name: power_source
+        name: generator_source
         type: string
       - key: url
-        name: raw_data_archive_url
-        type: string
-
-      # additional
-      - key: healthcare:speciality
-        name: speciality
+        name: url
         type: string
     mapping:
       amenity:
         - clinic
-        - hospital
         - doctors
+        - hospital
         - dentist
         - pharmacy
-        - laboratory
       healthcare:
         - doctor
-        - clinic
-        - hospital
-        - doctors
-        - dentist
         - pharmacy
-        - laboratory
+        - hospital
+        - clinic
+        - dentist
         - physiotherapist
         - alternative
         - laboratory
@@ -111,39 +106,42 @@ tables:
 
       # mandatory
       - key: amenity
-        name: category
+        name: amenity
         type: string
       - key: healthcare
-        name: type
-        type: string
-      - key: operator:type
-        name: ownership
+        name: healthcare
         type: string
       - key: name
         name: name
+        type: string
+      - key: operator
+        name: operator
         type: string
       - key: source
         name: source
         type: string
 
       # others
-      - key: legal_entity
-        name: operator
+      - key: healthcare:speciality
+        name: speciality
+        type: string
+      - key: operator:type
+        name: operator_type
         type: string
       - key: addr:full
-        name: physical_address
+        name: addr_full
         type: string
       - key: contact:phone
         name: contact_number
         type: string
       - key: operational_status
-        name: status
+        name: operational_status
         type: string
       - key: opening_hours
-        name: operation
+        name: opening_hours
         type: string
       - key: beds
-        name: inpatient_service
+        name: beds
         type: string
       - key: staff_count:doctors
         name: staff_doctors
@@ -151,51 +149,43 @@ tables:
       - key: staff_count:nurses
         name: staff_nurses
         type: string
-      - key: health_facility:type
-        name: nature_of_facility
-        type: string
-      - key: insurance
-        name: insurance
+      - key: health_amenity:type
+        name: health_amenity_type
         type: string
       - key: dispensing
         name: dispensing
-        type: bool
+        type: string
       - key: wheelchair
-        name: wheelchair_access
-        type: bool
+        name: wheelchair
+        type: string
       - key: emergency
         name: emergency
-        type: bool
+        type: string
+      - key: insurance:health
+        name: insurance
+        type: string
       - key: water_source
         name: water_source
         type: string
       - key: generator:source
-        name: power_source
+        name: generator_source
         type: string
       - key: url
-        name: raw_data_archive_url
-        type: string
-
-      # additional
-      - key: healthcare:speciality
-        name: speciality
+        name: url
         type: string
     mapping:
       amenity:
         - clinic
-        - hospital
         - doctors
+        - hospital
         - dentist
         - pharmacy
-        - laboratory
       healthcare:
         - doctor
-        - clinic
-        - hospital
-        - doctors
-        - dentist
         - pharmacy
-        - laboratory
+        - hospital
+        - clinic
+        - dentist
         - physiotherapist
         - alternative
         - laboratory
