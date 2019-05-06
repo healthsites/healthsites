@@ -30,10 +30,10 @@ def convert_into_osm_dict(locality):
 
     if osm_dict.get('inpatient_service', None):
         beds = osm_dict['inpatient_service'].split('|')
-        beds = list(filter(None, beds))
-        beds = [int(x) for x in beds]
-        total_bed = sum(beds)
-        osm_dict['inpatient_service'] = str(total_bed)
+        beds = [u'0' if v is u'' else v for v in beds]
+        osm_dict['beds'] = beds[0]
+        osm_dict['partial_beds'] = beds[1]
+        del osm_dict['inpatient_service']
 
     for item, value in osm_dict.items():
         if '|' in value:
