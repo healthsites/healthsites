@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from api.osm_api_client import OsmApiWrapper
-from core.settings.base import OSM_API_URL
+from core.settings.base import OSM_API_URL, APP_NAME
+from core.settings.secret import SOCIAL_AUTH_OPENSTREETMAP_KEY, \
+    SOCIAL_AUTH_OPENSTREETMAP_SECRET
 
 
 def remap_dict(old_dict, transform):
@@ -14,23 +16,6 @@ def remap_dict(old_dict, transform):
         else:
             new_dict.update({k: v})
     return new_dict
-
-
-def changeset_tags(comment=None):
-    """Helper to create osm changeset tags.
-
-    :param comment: The changeset comment.
-    :type comment: str
-
-    :return: The changeset tags.
-    :rtype: dict
-    """
-    tags = {}
-    if comment:
-        tags.update({
-            'comment': comment
-        })
-    return tags
 
 
 def get_oauth_token(user):
@@ -77,13 +62,13 @@ def create_osm_node(user, data):
     """
     oauth_token, oauth_token_secret = get_oauth_token(user)
     osm_api = OsmApiWrapper(
+        client_key=SOCIAL_AUTH_OPENSTREETMAP_KEY,
+        client_secret=SOCIAL_AUTH_OPENSTREETMAP_SECRET,
         oauth_token=oauth_token,
         oauth_token_secret=oauth_token_secret,
         api=OSM_API_URL,
-        appid='Healthsites.io'
+        appid=APP_NAME
     )
-    osm_api.ChangesetCreate()
-    changeset = osm_api.CreateNode(data)
-    osm_api.ChangesetClose()
+    response = osm_api.create_node(data)
 
-    return changeset
+    return response

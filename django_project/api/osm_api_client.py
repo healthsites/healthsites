@@ -8,16 +8,16 @@ from osmapi import (
     ResponseEmptyApiError, ElementDeletedApiError)
 from requests_oauthlib import OAuth1
 
-from api.utils import changeset_tags
-
 LOG = logging.getLogger(__name__)
 
 
-class OAuthTokenMissingError(OsmApiError):
+class OAuthTokenMissingError(BaseException):
     """
     Error when oauth token is missing for an authenticated request
     """
-    pass
+    def __init__(self):
+        message = 'OAuth token missing'
+        super(OAuthTokenMissingError, self).__init__(message)
 
 
 class OsmApiWrapper(OsmApi, object):
@@ -90,7 +90,7 @@ class OsmApiWrapper(OsmApi, object):
                     resource_owner_secret=self._oauth_token_secret,
                 )
             except AttributeError:
-                raise OAuthTokenMissingError('OAuth token missing')
+                raise OAuthTokenMissingError
 
         response = self._session.request(
             method, path, auth=user_credentials, data=send)
@@ -111,6 +111,23 @@ class OsmApiWrapper(OsmApi, object):
         self._debug and self.log_request()
 
         return response.content
+
+    @staticmethod
+    def changeset_tags(comment=None):
+        """Helper to create osm changeset tags.
+
+        :param comment: The changeset comment.
+        :type comment: str
+
+        :return: The changeset tags.
+        :rtype: dict
+        """
+        tags = {}
+        if comment:
+            tags.update({
+                'comment': comment
+            })
+        return tags
 
     def create_node(self, data, comment=None):
         """Create OSM node data and push it to OSM instance through OSM api.
@@ -140,7 +157,7 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
-        self.ChangesetCreate(changeset_tags(comment))
+        self.ChangesetCreate(self.changeset_tags(comment))
         changeset = self.NodeCreate(data)
         self.ChangesetClose()
 
@@ -176,7 +193,7 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
-        self.ChangesetCreate(changeset_tags(comment))
+        self.ChangesetCreate(self.changeset_tags(comment))
         changeset = self.NodeUpdate(data)
         self.ChangesetClose()
 
@@ -208,7 +225,7 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
-        self.ChangesetCreate(changeset_tags(comment))
+        self.ChangesetCreate(self.changeset_tags(comment))
         changeset = self.WayCreate(data)
         self.ChangesetClose()
 
@@ -242,7 +259,7 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
-        self.ChangesetCreate(changeset_tags(comment))
+        self.ChangesetCreate(self.changeset_tags(comment))
         changeset = self.WayUpdate(data)
         self.ChangesetClose()
 
