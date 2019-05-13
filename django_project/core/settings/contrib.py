@@ -29,6 +29,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # Added for userena
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.openstreetmap.OpenStreetMapOAuth',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 

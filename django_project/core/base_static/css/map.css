@@ -690,3 +690,7 @@ a.inner-navbar-brand:hover {
 .shapefile-indicator {
     opacity: 0.3;
 }
+
+.avatar-icon {
+    position: absolute;
+}

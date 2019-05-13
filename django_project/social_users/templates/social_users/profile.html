@@ -23,8 +23,10 @@
                     {% endif %}
                 {% endfor %}
             {% endif %}
-                {% if user.profile_picture == "" or osm_user %}
+                {% if user.profile_picture == "" and not user.social_auth.get.extra_data.avatar %}
                     <img class="profile-image" src="{% static "img/no-profile-img.gif" %}"/>
+                {% elif user.social_auth.get.extra_data.avatar %}
+                    <img class="profile-image" src="{{ user.social_auth.get.extra_data.avatar }}"/>
                 {% else %}
                     <img class="profile-image" src="{{ user.profile_picture }}"/>
                 {% endif %}
