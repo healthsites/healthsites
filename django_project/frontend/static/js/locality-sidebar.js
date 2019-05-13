@@ -1134,8 +1134,6 @@ window.LocalitySidebar = (function () {
         goToSignin: function () {
             resetCookies();
             setCookie("oldurl", window.location.href, 30);
-            window.location.href = "/signin/";
-
         },
         isHasValue: function (value) {
             if (value && value.length > 0) {

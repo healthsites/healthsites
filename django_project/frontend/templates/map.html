@@ -191,8 +191,9 @@
                         You are not signed in
                     </span>
                     </div>
-                    <a id="signin-button" class="button col-xs-4 pad0x blue stroke" style="cursor: pointer"><i
-                            class="fa fa-sign-in"></i> sign in</a>
+                    <button id="signin-button" type="button" class="button col-xs-4 pad0x blue stroke" data-toggle="modal" data-target="#signInModal">
+                      <i class="fa fa-sign-in"></i> sign in
+                    </button>
                 {% endif %}
 
                 <div style="clear: both;"></div>
@@ -585,8 +586,6 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
 <script type="text/javascript"
-        src="{% static 'libs/bootstrap/3.3.5/js/bootstrap.min.js' %} "></script>
-<script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
@@ -856,5 +855,31 @@
 
 <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
 <p id="alert"></p>
+
+<!-- Modal -->
+<div class="modal fade" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+          <h3 class="modal-title" id="signInModalLabel">Sign In</h3>
+      </div>
+      <div class="modal-body">
+        <h4>Please sign in with one of the account below.</h4>
+        <p class="text-warning">All feature under healthsites are using OpenStreetMap.
+                        It is used for user to be able to create/edit data into OpenStreetMap.</p>
+        <p class="text-warning"><b>Important!</b> Only OpenStreetMap account can add/edit data.</p>
+        <div class="social">
+          <a href="{% url 'social:begin' 'openstreetmap' %}?next=/map" class="btn btn-primary">OpenStreetMap</a>
+          <a href="{% url 'social:begin' 'twitter' %}?next=/map" class="btn btn-primary">Twitter</a>
+          <a href="{% url 'social:begin' 'facebook' %}?next=/map" class="btn btn-primary">Facebook</a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

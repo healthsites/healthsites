@@ -694,3 +694,7 @@ a.inner-navbar-brand:hover {
 .avatar-icon {
     position: absolute;
 }
+
+#signInModal .modal-content {
+    margin-top: 70px;
+}
