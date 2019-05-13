@@ -69,8 +69,14 @@ tables:
       - key: water_source
         name: water_source
         type: string
-      - key: generator:source
-        name: generator_source
+      - key: Key:electricity
+        name: electricity
+        type: string
+      - key: is_in:health_area
+        name: is_in_health_area
+        type: string
+      - key: is_in:health_zone
+        name: is_in_health_zone
         type: string
       - key: url
         name: url
@@ -167,8 +173,14 @@ tables:
       - key: water_source
         name: water_source
         type: string
-      - key: generator:source
-        name: generator_source
+      - key: electricity
+        name: electricity
+        type: string
+      - key: is_in:health_area
+        name: is_in_health_area
+        type: string
+      - key: is_in:health_zone
+        name: is_in_health_zone
         type: string
       - key: url
         name: url
