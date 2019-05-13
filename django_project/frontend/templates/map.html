@@ -70,6 +70,15 @@
         {% endif %}
     </script>
 <body class="map-page">
+<div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+
 <nav class="navbar navbar-fixed-top masthead no-tag">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -492,40 +501,51 @@
                 </div>
             </div>
             <div class="buttons col-md-4 col-sm-12 col-xs-12">
-                <div class="button-wrapper col-xs-4">
-                    <a id="twitter_share_map" class="button share stroke blue">
-                        <i class="fa fa-twitter"></i> share
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="edit-button">
-                    <a class="button edit stroke blue"
-                       style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> edit
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="save-button" style="display: none">
-                    <a class="button edit stroke blue"
-                       style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> save
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="create-button" style="display: none">
-                    <a class="button edit stroke blue"
-                       style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> create
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="add-button">
-                    <a class="button add" style="cursor: pointer">
-                        <i class="fa fa-plus"></i> add new
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="cancel-button" style="display: none">
-                    <a class="button edit stroke blue"
-                       style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> cancel
-                    </a>
-                </div>
+                {% if user.social_auth.get.provider == "twitter" %}
+                    <div class="button-wrapper col-xs-4">
+                        <a id="twitter_share_map" class="button share stroke blue">
+                            <i class="fa fa-twitter"></i> share
+                        </a>
+                    </div>
+                {% endif %}
+                {% if user.social_auth.get.provider == "facebook" %}
+                    <div class="fb-share-button"
+                            data-href="https://healthsites.io/map"
+                            data-layout="button_count"
+                            data-size="large">
+                          </div>
+                {% endif %}
+                {% if user.social_auth.get.provider == "openstreetmap" %}
+                    <div class="button-wrapper col-xs-4" id="edit-button">
+                        <a class="button edit stroke blue"
+                           style="cursor: pointer"><i
+                                class="fa fa-pencil"></i> edit
+                        </a>
+                    </div>
+                    <div class="button-wrapper col-xs-4" id="save-button" style="display: none">
+                        <a class="button edit stroke blue"
+                           style="cursor: pointer"><i
+                                class="fa fa-pencil"></i> save
+                        </a>
+                    </div>
+                    <div class="button-wrapper col-xs-4" id="create-button" style="display: none">
+                        <a class="button edit stroke blue"
+                           style="cursor: pointer"><i
+                                class="fa fa-pencil"></i> create
+                        </a>
+                    </div>
+                    <div class="button-wrapper col-xs-4" id="add-button">
+                        <a class="button add" style="cursor: pointer">
+                            <i class="fa fa-plus"></i> add new
+                        </a>
+                    </div>
+                    <div class="button-wrapper col-xs-4" id="cancel-button" style="display: none">
+                        <a class="button edit stroke blue"
+                           style="cursor: pointer"><i
+                                class="fa fa-pencil"></i> cancel
+                        </a>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div class="map-page pad0x col-md-8">

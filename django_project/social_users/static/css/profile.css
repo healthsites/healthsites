@@ -96,3 +96,12 @@
     border-radius: 5px;
     margin-top: 3px;
 }
+
+.profile-image-icon {
+    float: left;
+    position: absolute;
+    background-color: white;
+    padding: 5px;
+    font-size: 30px;
+    border-bottom-right-radius: 5px;
+}

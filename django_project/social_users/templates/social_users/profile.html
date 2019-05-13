@@ -8,6 +8,21 @@
     <section class="white container">
         <div class="col-sm-4 user-profile">
             <div class="profile-image-size">
+            {% if user.social_auth.get.provider == "openstreetmap" %}
+                <img style="height: 40px" class="profile-image-icon" src="{% static "img/osm-logo.png" %}"/>
+            {% endif %}
+            {% if user.social %}
+                {% for social in user.social %}
+                    {% if social.provider == "facebook" %}
+                        <a href="https://www.facebook.com/{{ social.user_link }}" target="_blank"><i
+                                class="fa fa-facebook-square profile-image-icon"></i></a>
+                    {% endif %}
+                    {% if social.provider == "twitter" %}
+                        <a href="https://twitter.com/{{ social.uid }}" target="_blank"><i
+                                class="fa fa-twitter-square profile-image-icon"></i></a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
                 {% if user.profile_picture == "" or osm_user %}
                     <img class="profile-image" src="{% static "img/no-profile-img.gif" %}"/>
                 {% else %}
@@ -15,18 +30,6 @@
                 {% endif %}
             </div>
             <div class="name" style="font-size: 24px">
-                {% if user.social %}
-                    {% for social in user.social %}
-                        {% if social.provider == "facebook" %}
-                            <a href="https://www.facebook.com/{{ social.uid }}" target="_blank"><i
-                                    class="fa fa-facebook-square"></i></a>
-                        {% endif %}
-                        {% if social.provider == "twitter" %}
-                            <a href="https://twitter.com/{{ social.uid }}" target="_blank"><i
-                                    class="fa fa-twitter-square"></i></a>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
             </div>
             <div class="profile-header">
                 <h1>{{ user.screen_name }}</h1>
