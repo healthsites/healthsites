@@ -8,6 +8,7 @@ from rest_framework.serializers import (
 )
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from localities_osm.models.locality import LocalityOSM, LocalityOSMView
+from localities_osm_extension.models.extension import LocalityOSMExtension
 
 attributes_fields = LocalityOSM._meta.get_all_field_names()
 attributes_fields.remove('osm_id')
@@ -22,6 +23,16 @@ class LocalityOSMBaseSerializer(object):
         for attribute in attributes_fields:
             if getattr(obj, attribute):
                 attributes[attribute] = getattr(obj, attribute)
+        try:
+            extension = LocalityOSMExtension.objects.get(
+                osm_id=obj.osm_id,
+                osm_type=obj.osm_type
+            )
+            for tag in extension.tag_set.all():
+                if tag.value:
+                    attributes[tag.name] = tag.value
+        except LocalityOSMExtension.DoesNotExist:
+            pass
         return attributes
 
     def get_centroid(self, obj):

@@ -81,9 +81,15 @@ class LocalityOSM(LocalityOSMBase):
     water_source = models.CharField(
         max_length=512, blank=True, null=True,
         help_text="water_source")
-    generator_source = models.CharField(
+    electricity = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="generator:source")
+        help_text="electricity")
+    is_in_health_area = models.CharField(
+        max_length=512, blank=True, null=True,
+        help_text="is_in:health_area")
+    is_in_health_zone = models.CharField(
+        max_length=512, blank=True, null=True,
+        help_text="is_in:health_zone")
     url = models.CharField(
         max_length=512, blank=True, null=True,
         help_text="url")

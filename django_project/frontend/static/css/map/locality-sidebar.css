@@ -1,8 +1,8 @@
-#others-tag-table {
+#other-tags-table table{
     width: 100%;
 }
 
-#others-tag-table th {
+#other-tags-table td {
     border: 1px solid #DDD;
     padding: 5px 15px;
     width: 50%;

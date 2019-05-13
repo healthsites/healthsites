@@ -19,11 +19,13 @@ define([
             'locality-ownership': {default: "..please define ownership status", attribute: "ownership"},
             'locality-inpatient-service': {default: "..please define number of full time/part time beds", attribute: "inpatient_service"},
             'locality-staff': {default: "..please define full time doctors and full time nurses", attribute: "staff"},
+            'other-tags-table': {default: "please use this field to define any additional services available from this location", attribute: null},
         },
         initialize: function () {
             this.listenTo(shared.dispatcher, 'show-locality-detail', this.showDetail);
             this.$sidebar = $('#locality-info');
             this.$completenees = $('.progress-bar');
+            this.$otherTagsSection = $('#other-tags-table');
         },
         showDetail: function (parameter) {
             $('.details').hide();
@@ -59,7 +61,7 @@ define([
         showInfo: function (identifire, data) {
             var self = this;
             var properties = data['properties'];
-            var attributes = properties['attributes'];
+            var attributes = jQuery.extend({}, properties['attributes']);
             var centroid = properties.centroid['coordinates'];
             attributes['coordinates'] = 'lat: ' + centroid[1] + ', long: ' + centroid[0];
             attributes['changeset_timestamp'] = getDateString(attributes['changeset_timestamp']);
@@ -71,8 +73,12 @@ define([
                 this.$completenees.text(properties['completeness'] + '% Complete');
             }
             $.each(this.attributes_and_element, function (key, value) {
-                self.insertIntoElement(key, attributes[value['attribute']]);
+                if (value['attribute']) {
+                    self.insertIntoElement(key, attributes[value['attribute']]);
+                    delete attributes[value['attribute']];
+                }
             });
+
             // zoom to map
             var name = 'No Name';
             if (attributes['name']) {
@@ -90,6 +96,20 @@ define([
 
             var geometry = data['geometry'];
             $APP.trigger('map.create-locality-polygon', geometry);
+
+            // SHOW OTHERS INFO
+            delete attributes['changeset_id'];
+            delete attributes['changeset_version'];
+            if (attributes) {
+                var otherHtml = '<table>';
+                $.each(Object.keys(attributes).sort(), function (index, key) {
+                    if (attributes[key]) {
+                        otherHtml += '<tr><td>' + key + '</td><td>' + attributes[key] + '</td></tr>';
+                    }
+                });
+                otherHtml += '</table>';
+                this.$otherTagsSection.html(otherHtml);
+            }
         },
 
     })
