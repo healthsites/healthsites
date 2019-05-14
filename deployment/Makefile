@@ -7,7 +7,7 @@ SHELL := /bin/bash
 #    P R O D U C T I O N     C O M M A N D S
 # ----------------------------------------------------------------------------
 default: web
-run: run-docker-osm build permissions web migrate collectstatic
+run: run-docker-osm build permissions web migrate collectstatic version
 
 deploy: run
 	@echo
@@ -301,6 +301,18 @@ renew-letsencrypt:
 	@echo "Renew letsencrypt"
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi certbot renew --dry-run
+
+# -----------
+# check-version
+# -----------
+
+version:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Recheck git version"
+	@echo "------------------------------------------------------------------"
+	@git describe > ../django_project/core/settings/version.txt
+
 
 # ----------
 # docker osm

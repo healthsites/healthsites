@@ -82,6 +82,7 @@ deployment/docker-osm-healthcare/settings
 deployment/static
 deployment/backups
 deployment/media
+django_project/core/settings/version.txt
 
 # OSX things
 *.DS_Store
