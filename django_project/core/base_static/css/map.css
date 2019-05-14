@@ -698,3 +698,7 @@ a.inner-navbar-brand:hover {
 #signInModal .modal-content {
     margin-top: 120px;
 }
+
+#fb-share {
+    cursor: pointer;
+}
