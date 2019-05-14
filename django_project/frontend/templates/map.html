@@ -86,46 +86,7 @@
         {% csrf_token %}
         <div class="location-info pad0x col-md-4">
             {# PROFILE SECTION #}
-            <div class="profile">
-                {% if user.is_authenticated %}
-                    <div class="person col-xs-8 pad0x">
-                        <div class="avatar-holder">
-                            <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
-                            {% if user.social_auth.get.provider == "openstreetmap" %}
-                                <img height="14" class="avatar-icon" src="{% static "img/osm-logo.png" %}" title="OpenStreetMap"/>
-                            {% elif user.social_auth.get.provider == "facebook" %}
-                                <i class="fa fa-facebook-square avatar-icon"></i>
-                            {% elif user.social_auth.get.provider == "twitter" %}
-                                <i class="fa fa-twitter-square avatar-icon"></i>
-                            {% endif %}
-                            {% if user.profile_picture == "" and not user.social_auth.get.extra_data.avatar %}
-                                <img src="{% static "img/no-profile-img.gif" %}" width="48" height="48"/>
-                            {% elif user.social_auth.get.extra_data.avatar %}
-                                <img src="{{ user.social_auth.get.extra_data.avatar }}" width="48" height="48"/>
-                            {% else %}
-                                <img src="{{ user.profile_picture }}" width="48" height="48"/>
-                            {% endif %}
-                        </div>
-
-                        <span class="name">
-                        <a href="{% url 'userprofilepage' %}{{ user }}">{{ user.screen_name }}</a>
-                    </span>
-                    </div>
-                    <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
-                            class="fa fa-sign-out"></i> sign out</a>
-                {% else %}
-                    <div class="person col-xs-8 pad0x">
-                <span class="name">
-                        You are not signed in
-                    </span>
-                    </div>
-                    <button id="signin-button" type="button" class="button col-xs-4 pad0x blue stroke" data-toggle="modal" data-target="#signInModal">
-                        <i class="fa fa-sign-in"></i> sign in
-                    </button>
-                {% endif %}
-
-                <div style="clear: both;"></div>
-            </div>
+            {% include "sections/map/profile.html" %}
             <div id="icons-nav">
                 Browse the map, <a class="search" href="#">search</a> or use <a id="geolocate" class="a-button">geolocate
                 me</a> to view
@@ -438,29 +399,7 @@
 <p id="alert"></p>
 
 <!-- Modal -->
-<div class="modal fade" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-          <h3 class="modal-title" id="signInModalLabel">Sign In</h3>
-      </div>
-      <div class="modal-body">
-        <h4>Please sign in with one of the account below.</h4>
-        <p class="text-warning">All feature under healthsites are using OpenStreetMap.
-                        It is used for user to be able to create/edit data into OpenStreetMap.</p>
-        <p class="text-warning"><b>Important!</b> Only OpenStreetMap account can add/edit data.</p>
-        <div class="social">
-          <a href="{% url 'social:begin' 'openstreetmap' %}?next=/map" class="btn btn-primary">OpenStreetMap</a>
-          <a href="{% url 'social:begin' 'twitter' %}?next=/map" class="btn btn-primary">Twitter</a>
-          <a href="{% url 'social:begin' 'facebook' %}?next=/map" class="btn btn-primary">Facebook</a>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+{% include "sections/map/sign-in-modal.html" %}
 
 </body>
 </html>
