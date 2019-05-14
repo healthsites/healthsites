@@ -2,6 +2,7 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '22/01/19'
 
 import json
+from django.contrib.gis.geos.error import GEOSException
 from rest_framework import serializers
 from rest_framework.serializers import (
     ModelSerializer, SerializerMethodField
@@ -36,7 +37,13 @@ class LocalityOSMBaseSerializer(object):
         return attributes
 
     def get_centroid(self, obj):
-        return json.loads(obj.geometry.centroid.geojson)
+        if obj.geometry:
+            try:
+                return json.loads(obj.geometry.centroid.geojson)
+            except GEOSException:
+                return None
+        else:
+            return None
 
 
 class LocalityOSMSerializer(LocalityOSMBaseSerializer,

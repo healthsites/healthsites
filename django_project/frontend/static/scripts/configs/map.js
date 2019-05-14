@@ -17,13 +17,15 @@ require([
     'static/scripts/views/statistic/view.js',
     'static/scripts/views/map-sidebar/country-list.js',
     'static/scripts/views/map-sidebar/locality-detail.js',
+    'static/scripts/views/map-sidebar/shapefile-downloader.js',
     'static/scripts/views/navbar/search.js'
-], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail, Search) {
+], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     var countryStatictic = new CountryStatistic();
     new CountryList();
     new LocalityDetail();
     new Search();
+    new ShapefileDownloader();
     var uuid = shared.hash();
     uuid = uuid.replace('/locality/', '');
     if (parameters['country']) {

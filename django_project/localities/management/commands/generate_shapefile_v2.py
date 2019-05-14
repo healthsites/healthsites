@@ -9,10 +9,10 @@ import json
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from localities.models import Country, Domain, Specification
-from localities_osm.models.locality import LocalityOSMView
-from localities_healthsites_osm.serializer.locality import (
-    LocalityHealthsitesOSMSerializer
+from localities.models import Country
+from localities_osm.models.locality import LocalityOSM, LocalityOSMView
+from localities_osm.serializer.locality_osm import (
+    LocalityOSMSerializer
 )
 
 directory_cache = settings.CLUSTER_CACHE_DIR
@@ -55,18 +55,9 @@ def country_data_into_shapefile(country):
         queryset = LocalityOSMView.objects.in_polygon(polygons).order_by('row')
 
     # get field that needs to be saved
-    domain = Domain.objects.get(name='Health')
-    specifications = Specification.objects.filter(domain=domain)
-    fields = [
-        u'uuid', u'upstream',
-        u'source', u'name', u'version',
-        u'date_modified', u'completeness',
-        u'source_url', u'raw-source']
-
-    for specification in specifications:
-        fields.append(specification.attribute.key)
+    fields = LocalityOSM._meta.get_all_field_names()
     insert_to_shapefile(
-        LocalityHealthsitesOSMSerializer(queryset, many=True).data, fields, country_name)
+        LocalityOSMSerializer(queryset, many=True).data, fields, country_name)
 
 
 def insert_to_shapefile(data, fields, shp_filename):
@@ -97,11 +88,14 @@ def insert_to_shapefile(data, fields, shp_filename):
     total = len(data)
     for index, healthsite in enumerate(data):
         values = []
+        # if centroid is None
+        if not healthsite['centroid']:
+            total -= 1
+            continue
+
         for field in fields:
             value = ''
-            if field in healthsite:
-                value = healthsite[field]
-            elif field in healthsite['attributes']:
+            if field in healthsite['attributes']:
                 value = healthsite['attributes'][field]
             try:
                 value = str(value.encode('utf8'))
@@ -109,8 +103,8 @@ def insert_to_shapefile(data, fields, shp_filename):
                 pass
             values.append(value)
         shp.point(
-            healthsite['geometry']['coordinates'][0],
-            healthsite['geometry']['coordinates'][1])
+            healthsite['centroid']['coordinates'][0],
+            healthsite['centroid']['coordinates'][1])
         shp.record(*values)
 
         # save the process
@@ -119,10 +113,10 @@ def insert_to_shapefile(data, fields, shp_filename):
             file.write(json.dumps({
                 'index': index + 1,
                 'total': total,
-                'row': healthsite['row']
+                'last': healthsite['osm_id']
             }))
             file.close()
-        except Exception:
+        except Exception as e:
             pass
     shp.close()
 
