@@ -20,7 +20,6 @@ from braces.views import FormMessagesMixin
 from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from localities.utils import (
-    get_country_statistic,
     search_locality_by_spec_data, search_locality_by_tag
 )
 from localities_osm.utilities import get_all_osm_query

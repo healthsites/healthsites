@@ -62,6 +62,7 @@ define([
                 header: "h3",
                 active: false,
             });
+            $('.ui-accordion-content').css('height', 'auto');
         },
         loadData: function (element) {
             var self = this;
