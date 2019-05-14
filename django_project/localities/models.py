@@ -319,13 +319,17 @@ class Locality(UpdateMixin, ChangesetMixin):
                 identifier = osm_whole_id[0]
                 osm_id = osm_whole_id[1:]
                 if identifier == 'n':
+                    dict['osm_type'] = 'node'
                     url = 'http://www.openstreetmap.org/node/' + osm_id
                 elif identifier == 'r':
+                    dict['osm_type'] = 'relation'
                     url = 'http://www.openstreetmap.org/relation/' + osm_id
                 elif identifier == 'w':
+                    dict['osm_type'] = 'way'
                     url = 'http://www.openstreetmap.org/way/' + osm_id
 
                 if url:
+                    dict['osm_id'] = osm_id
                     dict['source_url'] = url
         return dict
 
