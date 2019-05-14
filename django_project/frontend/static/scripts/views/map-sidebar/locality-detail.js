@@ -56,7 +56,7 @@ define([
                 if (id === 'uploader') {
                     $element.attr("href", "profile/" + value)
                 }
-                $element.html(value);
+                $element.html("@" + value);
             }
         },
         showInfo: function (identifire, data) {
@@ -73,7 +73,7 @@ define([
             attributes['coordinates'] = 'lat: ' + centroid[1] + ', long: ' + centroid[0];
             attributes['changeset_timestamp'] = getDateString(attributes['changeset_timestamp']);
             if (attributes['changeset_user']) {
-                attributes['changeset_user'] = "@" + attributes['changeset_user'];
+                attributes['changeset_user'] = attributes['changeset_user'];
             }
             if (properties['completeness']) {
                 this.$completenees.attr('style', 'width:' + properties['completeness'] + '%');
