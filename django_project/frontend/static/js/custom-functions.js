@@ -6,9 +6,8 @@ function mapcount() {
     var v_height = $(window).height();
     var s_height = $('.nav-searchbar').height();
     if ($('.nav-searchbar').is(":visible")) {
-        var h_height = $('.masthead').height() + s_height;
-    }
-    else {
+        var h_height = $('.masthead').height() + s_height - 22;
+    } else {
         var h_height = $('.masthead').height();
     }
     var s_width = $('.location-info').width();
@@ -28,8 +27,7 @@ function mapcount() {
             $('body').removeClass('search-focus');
         });
 
-    }
-    else {
+    } else {
         if ($('.select-country').length > 0) {
             var c_height = $('.country-data').css('height');
         }
