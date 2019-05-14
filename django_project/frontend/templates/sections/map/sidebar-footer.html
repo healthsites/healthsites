@@ -1,9 +1,19 @@
 <div class="buttons col-md-4 col-sm-12 col-xs-12">
+    {% if user.social_auth.get.provider == "twitter" %}
     <div class="button-wrapper col-xs-4">
         <a id="twitter_share_map" class="button share stroke blue">
             <i class="fa fa-twitter"></i> share
         </a>
     </div>
+    {% endif %}
+    {% if user.social_auth.get.provider == "facebook" %}
+    <div class="fb-share-button"
+         data-href="https://healthsites.io/map"
+         data-layout="button_count"
+         data-size="large">
+        </div>
+    {% endif %}
+    {% if user.social_auth.get.provider == "openstreetmap" %}
     <div class="button-wrapper col-xs-4" id="edit-button">
         <a class="button edit stroke blue"
            style="cursor: pointer"><i
@@ -33,4 +43,5 @@
                 class="fa fa-pencil"></i> cancel
         </a>
     </div>
+    {% endif %}
 </div>

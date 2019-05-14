@@ -70,6 +70,16 @@
         {% endif %}
     </script>
 <body class="map-page">
+
+<div id="fb-root"></div>
+  <script>(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));</script>
+
 {% include "sections/navbar.html" %}
 <section id="map-full" class="js-fullheight fluid-container">
     <form id="locality-form" action="localities/edit" method="post">
@@ -81,9 +91,17 @@
                     <div class="person col-xs-8 pad0x">
                         <div class="avatar-holder">
                             <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
-                            {% if user.profile_picture == "" %}
-                                <img src="https://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"
-                                     width="48" height="48"/>
+                            {% if user.social_auth.get.provider == "openstreetmap" %}
+                                <img height="14" class="avatar-icon" src="{% static "img/osm-logo.png" %}" title="OpenStreetMap"/>
+                            {% elif user.social_auth.get.provider == "facebook" %}
+                                <i class="fa fa-facebook-square avatar-icon"></i>
+                            {% elif user.social_auth.get.provider == "twitter" %}
+                                <i class="fa fa-twitter-square avatar-icon"></i>
+                            {% endif %}
+                            {% if user.profile_picture == "" and not user.social_auth.get.extra_data.avatar %}
+                                <img src="{% static "img/no-profile-img.gif" %}" width="48" height="48"/>
+                            {% elif user.social_auth.get.extra_data.avatar %}
+                                <img src="{{ user.social_auth.get.extra_data.avatar }}" width="48" height="48"/>
                             {% else %}
                                 <img src="{{ user.profile_picture }}" width="48" height="48"/>
                             {% endif %}
@@ -101,8 +119,9 @@
                         You are not signed in
                     </span>
                     </div>
-                    <a id="signin-button" class="button col-xs-4 pad0x blue stroke" style="cursor: pointer"><i
-                            class="fa fa-sign-in"></i> sign in</a>
+                    <button id="signin-button" type="button" class="button col-xs-4 pad0x blue stroke" data-toggle="modal" data-target="#signInModal">
+                        <i class="fa fa-sign-in"></i> sign in
+                    </button>
                 {% endif %}
 
                 <div style="clear: both;"></div>
@@ -147,8 +166,6 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<script type="text/javascript"
-        src="{% static 'libs/bootstrap/3.3.5/js/bootstrap.min.js' %} "></script>
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
@@ -419,5 +436,31 @@
 
 <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
 <p id="alert"></p>
+
+<!-- Modal -->
+<div class="modal fade" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+          <h3 class="modal-title" id="signInModalLabel">Sign In</h3>
+      </div>
+      <div class="modal-body">
+        <h4>Please sign in with one of the account below.</h4>
+        <p class="text-warning">All feature under healthsites are using OpenStreetMap.
+                        It is used for user to be able to create/edit data into OpenStreetMap.</p>
+        <p class="text-warning"><b>Important!</b> Only OpenStreetMap account can add/edit data.</p>
+        <div class="social">
+          <a href="{% url 'social:begin' 'openstreetmap' %}?next=/map" class="btn btn-primary">OpenStreetMap</a>
+          <a href="{% url 'social:begin' 'twitter' %}?next=/map" class="btn btn-primary">Twitter</a>
+          <a href="{% url 'social:begin' 'facebook' %}?next=/map" class="btn btn-primary">Facebook</a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
