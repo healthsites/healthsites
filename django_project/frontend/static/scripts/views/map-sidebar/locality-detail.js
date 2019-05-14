@@ -8,6 +8,7 @@ define([
             'last_update': {default: "-", attribute: 'changeset_timestamp'},
             'uploader': {default: "-", attribute: 'changeset_user'},
             'locality-amenity': {default: "needs information", attribute: 'amenity'},
+            'locality-nature-of-facility': {default: "needs information", attribute: 'nature_of_facility'},
             'locality-completeness': {default: "0% Complete", attribute: 'completeness'},
             'locality-coordinates': {default: "lat: n/a, long: n/a", attribute: 'coordinates'},
             'locality-physical-address': {default: "..please update address", attribute: "physical_address"},
@@ -68,7 +69,6 @@ define([
             if (attributes['name']) {
                 name = attributes['name'];
             }
-
             var centroid = properties.centroid['coordinates'];
             attributes['coordinates'] = 'lat: ' + centroid[1] + ', long: ' + centroid[0];
             attributes['changeset_timestamp'] = getDateString(attributes['changeset_timestamp']);
