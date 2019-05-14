@@ -55,8 +55,9 @@ define([
                 var $element = $('#' + id);
                 if (id === 'uploader') {
                     $element.attr("href", "profile/" + value)
+                    value = "@" + value;
                 }
-                $element.html("@" + value);
+                $element.html(value);
             }
         },
         showInfo: function (identifire, data) {
