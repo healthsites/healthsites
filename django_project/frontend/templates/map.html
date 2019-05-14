@@ -76,37 +76,7 @@
         {% csrf_token %}
         <div class="location-info pad0x col-md-4">
             {# PROFILE SECTION #}
-            <div class="profile">
-                {% if user.is_authenticated %}
-                    <div class="person col-xs-8 pad0x">
-                        <div class="avatar-holder">
-                            <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
-                            {% if user.profile_picture == "" %}
-                                <img src="https://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"
-                                     width="48" height="48"/>
-                            {% else %}
-                                <img src="{{ user.profile_picture }}" width="48" height="48"/>
-                            {% endif %}
-                        </div>
-
-                        <span class="name">
-                        <a href="{% url 'userprofilepage' %}{{ user }}">{{ user.screen_name }}</a>
-                    </span>
-                    </div>
-                    <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
-                            class="fa fa-sign-out"></i> sign out</a>
-                {% else %}
-                    <div class="person col-xs-8 pad0x">
-                <span class="name">
-                        You are not signed in
-                    </span>
-                    </div>
-                    <a id="signin-button" class="button col-xs-4 pad0x blue stroke" style="cursor: pointer"><i
-                            class="fa fa-sign-in"></i> sign in</a>
-                {% endif %}
-
-                <div style="clear: both;"></div>
-            </div>
+            {% include "sections/map/profile.html" %}
             <div id="icons-nav">
                 Browse the map, <a class="search" href="#">search</a> or use <a id="geolocate" class="a-button">geolocate
                 me</a> to view

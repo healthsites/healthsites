@@ -101,7 +101,7 @@ define([
             // SHOW OTHERS INFO
             delete attributes['changeset_id'];
             delete attributes['changeset_version'];
-            if (attributes) {
+            if (Object.keys(attributes).length >= 1) {
                 var otherHtml = '<table>';
                 $.each(Object.keys(attributes).sort(), function (index, key) {
                     if (attributes[key]) {
