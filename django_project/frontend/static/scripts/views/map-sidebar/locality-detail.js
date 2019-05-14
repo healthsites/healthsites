@@ -7,7 +7,7 @@ define([
             'locality-name': {default: "No Name", attribute: 'name'},
             'last_update': {default: "-", attribute: 'changeset_timestamp'},
             'uploader': {default: "-", attribute: 'changeset_user'},
-            'locality-nature-of-facility': {default: "needs information", attribute: 'nature_of_facility'},
+            'locality-amenity': {default: "needs information", attribute: 'amenity'},
             'locality-completeness': {default: "0% Complete", attribute: 'completeness'},
             'locality-coordinates': {default: "lat: n/a, long: n/a", attribute: 'coordinates'},
             'locality-physical-address': {default: "..please update address", attribute: "physical_address"},
@@ -62,6 +62,13 @@ define([
             var self = this;
             var properties = data['properties'];
             var attributes = jQuery.extend({}, properties['attributes']);
+
+            // zoom to map
+            var name = 'No Name';
+            if (attributes['name']) {
+                name = attributes['name'];
+            }
+
             var centroid = properties.centroid['coordinates'];
             attributes['coordinates'] = 'lat: ' + centroid[1] + ', long: ' + centroid[0];
             attributes['changeset_timestamp'] = getDateString(attributes['changeset_timestamp']);
@@ -78,12 +85,6 @@ define([
                     delete attributes[value['attribute']];
                 }
             });
-
-            // zoom to map
-            var name = 'No Name';
-            if (attributes['name']) {
-                name = attributes['name'];
-            }
             var html = '<p class="url"><i class="fa fa-link"></i><a href="https://www.openstreetmap.org/' + identifire + '"';
             html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">OpenStreetMap</a></p>';
             $('.url').html(html);

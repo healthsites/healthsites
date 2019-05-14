@@ -1,0 +1,29 @@
+<div id="locality-default" class="details" style="display: none">
+    <div style="padding: 20px;">
+        <p>
+            <span class="inner-navbar-brand">healthsites.io</span> invites you to help establish accurate
+            health
+            care location data.
+        </p>
+        <p>
+            We aim to provide a single point of reference for healthcare workers, aid agencies, government
+            agencies and citizens who need access to highly curated global dataset of healthcare
+            facilities.
+        </p>
+        <p>
+            Download all healthsite data in this
+            <span class="shapefile-downloader inner-navbar-brand" style="cursor: pointer"
+                  onclick="downloadShapefile('World')">shapefile</span>
+            <span class="shapefile-indicator inner-navbar-brand" style="display: none"></span>
+        </p>
+        <h2 class="sidebar-title "><span id="healthsites-count"><i style="opacity: 0.3">loading</i></span>
+            healthsites listed</h2>
+    </div>
+    <div id="countries-table">
+        <div class="block-header"><span class="col-xs-6">Country</span> <span
+                class="col-xs-3"># of sites</span>
+            <span class="col-xs-3">% complete</span></div>
+        <div id="accordion-country" class="accordion">
+        </div>
+    </div>
+</div>
