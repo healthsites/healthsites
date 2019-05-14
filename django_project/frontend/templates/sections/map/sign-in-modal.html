@@ -1,0 +1,23 @@
+<div class="modal fade" id="signInModal" tabindex="-1" role="dialog" aria-labelledby="signInModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+          <h3 class="modal-title" id="signInModalLabel">Sign In</h3>
+      </div>
+      <div class="modal-body">
+        <h4>Please sign in with one of the account below.</h4>
+        <p class="text-warning">All feature under healthsites are using OpenStreetMap.
+                        It is used for user to be able to create/edit data into OpenStreetMap.</p>
+        <p class="text-warning"><b>Important!</b> Only OpenStreetMap account can add/edit data.</p>
+        <div class="social">
+          <a href="{% url 'social:begin' 'openstreetmap' %}?next=/map" class="btn btn-primary">OpenStreetMap</a>
+          <a href="{% url 'social:begin' 'twitter' %}?next=/map" class="btn btn-primary">Twitter</a>
+          <a href="{% url 'social:begin' 'facebook' %}?next=/map" class="btn btn-primary">Facebook</a>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

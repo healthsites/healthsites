@@ -690,3 +690,15 @@ a.inner-navbar-brand:hover {
 .shapefile-indicator {
     opacity: 0.3;
 }
+
+.avatar-icon {
+    position: absolute;
+}
+
+#signInModal .modal-content {
+    margin-top: 120px;
+}
+
+#fb-share {
+    cursor: pointer;
+}
