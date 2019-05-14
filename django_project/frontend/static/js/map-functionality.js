@@ -303,7 +303,7 @@ window.MAP = (function () {
         _setupClusterLayer: function () {
             var self = this;
             this.clusterLayer = L.clusterLayer({
-                'url': '/localities.json'
+                'url': '/api/v2/facilities/cluster'
             });
             self.MAP.addLayer(this.clusterLayer);
         },

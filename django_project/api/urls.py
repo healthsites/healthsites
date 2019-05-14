@@ -11,6 +11,7 @@ from .views.locality_search import LocalitySearchApiView
 from .views.locality_synonym import LocalitySynonymApiView
 
 # API Version 2
+from api.api_views.v2.facilities.cluster import GetCluster
 from api.api_views.v2.facilities.detail import GetDetailFacility
 from api.api_views.v2.facilities.list import (
     GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
@@ -20,6 +21,7 @@ from api.api_views.v2.countries.search import Autocomplete as CountryAutocomplet
 
 facilities_api = patterns(
     '',
+    url(r'^cluster', GetCluster.as_view()),
     url(r'^count',
         GetFacilitiesCount.as_view()),
     url(r'^statistic',
