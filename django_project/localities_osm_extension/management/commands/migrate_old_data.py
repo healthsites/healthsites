@@ -2,6 +2,7 @@
 __author__ = 'Anita Hapsari <anita@kartoza.com>'
 __date__ = '14/05/19'
 
+import sys
 from django.core.management.base import BaseCommand
 from localities.models import Locality
 from localities_osm.utilities import (
@@ -19,9 +20,25 @@ class Command(BaseCommand):
 
     """
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--username',
+            dest='username',
+            help='Filter locality by username',
+        )
+
     def handle(self, *args, **options):
-        query = Locality.objects.all()
+        if not options['username']:
+            sys.exit(
+                'Please provide username parameter by adding '
+                '--username=<username>')
+
         print('Start migrating data.........')
+
+        query = Locality.objects.filter(
+            changeset__social_user__username=options['username']
+        )
+
         for locality in query:
             values = locality.repr_dict()
 
