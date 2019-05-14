@@ -301,13 +301,6 @@
             {% endif %}
             $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
         {% elif country %}
-            $("#country-shapefiles").show();
-            $("#country-shapefiles").html('' +
-                'Download all healthsite data from ' +
-                '<span class="shapefile-downloader inner-navbar-brand" style="cursor: pointer" ' +
-                'onclick="downloadShapefile(\'{{ country }}\')">shapefile</span> ' +
-                '<span class="shapefile-indicator inner-navbar-brand" style="display: none"></span>'
-            );
             $("#title-name").html("{{ country }}");
             $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
             // creating polygon
@@ -375,23 +368,6 @@
                 $("#title-statistic").html('Showing the closest five healthsites with <span class="inner-navbar-brand">' + attribute + '</span> to <span class="inner-navbar-brand">' + name + '</span><br>');
             }
         {% endif %}
-    }
-
-    function downloadShapefile(country) {
-        $('.shapefile-indicator').show();
-        $('.shapefile-indicator').html('<i>generating...</i>');
-        $('.shapefile-downloader').hide();
-        checkingShapefile(country);
-    }
-
-    function checkingShapefile(country) {
-        $.ajax({
-            url: "/api/v2/facilities/shapefile/process/" + country,
-            dataType: 'json',
-            success: function (data) {
-                window.location.href = '/data/shapefiles/' + country + '.zip';
-            }
-        });
     }
 </script>
 
