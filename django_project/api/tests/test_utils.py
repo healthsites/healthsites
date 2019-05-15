@@ -4,6 +4,7 @@ import os
 
 from django.test import TestCase
 
+from api.utils import validate_osm_data
 from ..utils import remap_dict, convert_to_osm_tag
 
 
@@ -48,3 +49,57 @@ class TestUtils(TestCase):
         self.assertEqual(
             convert_to_osm_tag(mapping_file_path, old_dict, 'way'),
             expected_dict)
+
+    def test_validate_osm_data(self):
+        # test invalid mandatory tags
+        data = {
+            'healthcare': 'clinic'
+        }
+        self.assertFalse(validate_osm_data(data))
+
+        # test valid mandatory tags
+        data = {
+            'amenity': 'clinic',
+            'healthcare': 'clinic'
+        }
+        self.assertTrue(validate_osm_data(data))
+
+        # test mandatory tags for amenity=pharmacy
+        data = {
+            'amenity': 'pharmacy',
+            'healthcare': 'clinic'
+        }
+        self.assertFalse(validate_osm_data(data))
+
+        data.update({'dispensing': True})
+        self.assertTrue(validate_osm_data(data))
+
+        # test invalid value
+        data = {
+            'amenity': 'not a clinic',
+            'healthcare': 'clinic'
+        }
+        self.assertFalse(validate_osm_data(data))
+
+        # test invalid value type
+        data = {
+            'amenity': 0,
+            'healthcare': 'clinic'
+        }
+        self.assertFalse(validate_osm_data(data))
+
+        # test invalid speciality
+        data = {
+            'amenity': 'clinic',
+            'healthcare': 'clinic',
+            'speciality': 'radiology'
+        }
+        self.assertFalse(validate_osm_data(data))
+
+        # test valid speciality
+        data = {
+            'amenity': 'clinic',
+            'healthcare': 'clinic',
+            'speciality': 'abortion'
+        }
+        self.assertTrue(validate_osm_data(data))
