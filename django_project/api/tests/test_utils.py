@@ -29,7 +29,7 @@ class TestUtils(TestCase):
         old_dict = {
             'speciality': 'healthsites specialty',
             'addr_full': 'healthsites street',
-            'contact_number': 'healthsotes phone number'
+            'contact_number': 'healthsites phone number'
         }
         expected_dict = {
             'healthcare:speciality': 'healthsites specialty',
