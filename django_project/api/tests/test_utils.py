@@ -4,7 +4,7 @@ import os
 
 from django.test import TestCase
 
-from api.utils import validate_osm_data
+from api.utils import validate_osm_tags
 from ..utils import remap_dict, convert_to_osm_tag
 
 
@@ -52,54 +52,78 @@ class TestUtils(TestCase):
 
     def test_validate_osm_data(self):
         # test invalid mandatory tags
-        data = {
+        tags = {
             'healthcare': 'clinic'
         }
-        self.assertFalse(validate_osm_data(data))
+        expected_message = 'Invalid OSM tags: amenity tag is missing.'
+        status, actual_message = validate_osm_tags(tags)
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
 
         # test valid mandatory tags
-        data = {
+        tags = {
             'amenity': 'clinic',
             'healthcare': 'clinic'
         }
-        self.assertTrue(validate_osm_data(data))
+        status, _ = validate_osm_tags(tags)
+        self.assertTrue(status)
 
         # test mandatory tags for amenity=pharmacy
-        data = {
+        tags = {
             'amenity': 'pharmacy',
             'healthcare': 'clinic'
         }
-        self.assertFalse(validate_osm_data(data))
+        status, actual_message = validate_osm_tags(tags)
+        expected_message = 'Invalid OSM tags: dispensing tag is missing.'
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
 
-        data.update({'dispensing': True})
-        self.assertTrue(validate_osm_data(data))
+        tags.update({'dispensing': True})
+        status, _ = validate_osm_tags(tags)
+        self.assertTrue(status)
 
         # test invalid value
-        data = {
+        tags = {
             'amenity': 'not a clinic',
             'healthcare': 'clinic'
         }
-        self.assertFalse(validate_osm_data(data))
+        status, actual_message = validate_osm_tags(tags)
+        expected_message = (
+            'Invalid value for key amenity: '
+            'not a clinic is not a valid option.')
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
 
         # test invalid value type
-        data = {
+        tags = {
             'amenity': 0,
             'healthcare': 'clinic'
         }
-        self.assertFalse(validate_osm_data(data))
+        status, actual_message = validate_osm_tags(tags)
+        expected_message = (
+            'Invalid value type for key amenity: '
+            'Expected type str, got int instead.')
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
 
         # test invalid speciality
-        data = {
+        tags = {
             'amenity': 'clinic',
             'healthcare': 'clinic',
             'speciality': 'radiology'
         }
-        self.assertFalse(validate_osm_data(data))
+        status, actual_message = validate_osm_tags(tags)
+        expected_message = (
+            'Invalid value for key speciality: '
+            'radiology is not a valid option.')
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
 
         # test valid speciality
-        data = {
+        tags = {
             'amenity': 'clinic',
             'healthcare': 'clinic',
             'speciality': 'abortion'
         }
-        self.assertTrue(validate_osm_data(data))
+        status, _ = validate_osm_tags(tags)
+        self.assertTrue(status)

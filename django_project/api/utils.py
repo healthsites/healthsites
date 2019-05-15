@@ -106,36 +106,48 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
     return remap_dict(data, mapping_dict)
 
 
-def validate_osm_data(data):
-    """Validate osm data using osm_tag_definitions.py as a reference.
+def validate_osm_tags(osm_tags):
+    """Validate osm tags using osm_tag_definitions.py as a reference.
 
-    :param data: Locality data.
-    :type data: dict
+    :param osm_tags: OSM tags.
+    :type osm_tags: dict
 
     :return: Validation status and message.
     :rtype: tuple
     """
-    # Mandatory tags check
-    mandatory_tags = get_mandatory_tags(data)
-    for mandatory_tag in mandatory_tags:
-        if mandatory_tag['key'] not in data.keys():
-            return False
 
-    # OSM data value check
-    for key, item in data.items():
+    message = 'OSM tags are valid.'
+
+    # Mandatory tags check
+    mandatory_tags = get_mandatory_tags(osm_tags)
+    for mandatory_tag in mandatory_tags:
+        if mandatory_tag['key'] not in osm_tags.keys():
+            message = 'Invalid OSM tags: {} tag is missing.'.format(
+                mandatory_tag['key'])
+            return False, message
+
+    # OSM tags value check
+    for key, item in osm_tags.items():
         tag_definition = get_definition(key, osm_tag_defintions)
-        tag_definition = update_tag_options(tag_definition, data)
+        tag_definition = update_tag_options(tag_definition, osm_tags)
 
         # Value type check
         if not isinstance(item, tag_definition.get('type')):
-            return False
+            message = (
+                'Invalid value type for key {}: '
+                'Expected type {}, got {} instead.').format(
+                key, tag_definition['type'].__name__, type(item).__name__)
+            return False, message
 
         # Value option check
         if tag_definition.get('options'):
             if item not in tag_definition.get('options'):
-                return False
+                message = (
+                    'Invalid value for key {}: '
+                    '{} is not a valid option.').format(key, item)
+                return False, message
 
-    return True
+    return True, message
 
 
 def create_osm_node(user, data):

@@ -146,17 +146,17 @@ ALL_TAGS = [
 MANDATORY_TAGS = [tag for tag in ALL_TAGS if tag.get('required')]
 
 
-def get_mandatory_tags(osm_data):
+def get_mandatory_tags(osm_tags):
     """Get special mandatory tags based on requested osm data.
 
-    :param osm_data: OSM data.
-    :type osm_data: dict
+    :param osm_tags: OSM tags.
+    :type osm_tags: dict
 
     :return: List of mandatory tags.
     :rtype: list
     """
     # Dispensing become mandatory if amenity is pharmacy
-    if osm_data.get('amenity') == 'pharmacy':
+    if osm_tags.get('amenity') == 'pharmacy':
         return MANDATORY_TAGS + [dispensing]
 
     return MANDATORY_TAGS
@@ -186,14 +186,14 @@ speciality_options = {
 }
 
 
-def update_tag_options(tag_definition, osm_data):
+def update_tag_options(tag_definition, osm_tags):
     """Update tag options in case of custom rule. e.g: speciality
 
     :param tag_definition: Definition of a tag.
     :type tag_definition: dict
 
-    :param osm_data: OSM data.
-    :type osm_data: dict
+    :param osm_tags: OSM tags.
+    :type osm_tags: dict
 
     :return: Updated definition.
     :rtype: dict
@@ -208,7 +208,7 @@ def update_tag_options(tag_definition, osm_data):
     for special_tag in tags_with_special_case:
         if not tag_definition['key'] == special_tag['tag']:
             continue
-        reference_data = osm_data.get(special_tag['reference'])
+        reference_data = osm_tags.get(special_tag['reference'])
         if reference_data and special_tag['options'].get(reference_data):
             tag_definition['options'] = special_tag['options'][reference_data]
 
