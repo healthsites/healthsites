@@ -227,11 +227,11 @@
                     var popup = L.popup()
                         .setContent(html);
                     var options =
-                    {
-                        'closeButton': false,
-                        'closeOnClick': false,
-                        'keepInView': false
-                    }
+                        {
+                            'closeButton': false,
+                            'closeOnClick': false,
+                            'keepInView': false
+                        }
                     mrk.bindPopup(popup, options);
                     mrk.on('mouseover', function (e) {
                         mrk.openPopup();
@@ -259,13 +259,16 @@
                 } else {
                     if (evt.target.data['count'] === 1) {
                         if (window.location.href.indexOf("map") > -1) {
-                            shared.dispatcher.trigger('show-locality-detail', {'uuid': evt.target.data['uuid']});
+                            var identifiers = evt.target.data['uuid'].split('/');
+                            shared.dispatcher.trigger(
+                                'show-locality-detail', {
+                                    'osm_type': identifiers[0], 'osm_id': identifiers[1]
+                                });
                             $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
                         } else {
                             window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
                         }
-                    }
-                    else {
+                    } else {
                         var bounds = L.latLngBounds(
                             L.latLng(evt.target.data['bbox'][1], evt.target.data['bbox'][2]),
                             L.latLng(evt.target.data['bbox'][3], evt.target.data['bbox'][0])
@@ -338,15 +341,15 @@
                 uuid = this.clickedPoint_uuid;
             }
             var url = this.options.url + L.Util.getParamString({
-                    'bbox': bb.toBBoxString(),
-                    'zoom': this._map.getZoom(),
-                    'iconsize': [48, 46],
-                    'geoname': geoname,
-                    'tag': tag,
-                    'spec': spec,
-                    'data': data,
-                    'uuid': uuid,
-                });
+                'bbox': bb.toBBoxString(),
+                'zoom': this._map.getZoom(),
+                'iconsize': [48, 46],
+                'geoname': geoname,
+                'tag': tag,
+                'spec': spec,
+                'data': data,
+                'uuid': uuid,
+            });
             // when using cached data we don't need to make any new requests
             // for example, this is useful when changing app contexts without changing map view
             if (use_cache) {
@@ -371,12 +374,10 @@
                 window.XMLHttpRequest = function () {
                     try {
                         return new ActiveXObject("Microsoft.XMLHTTP.6.0");
-                    }
-                    catch (e1) {
+                    } catch (e1) {
                         try {
                             return new ActiveXObject("Microsoft.XMLHTTP.3.0");
-                        }
-                        catch (e2) {
+                        } catch (e2) {
                             throw new Error("XMLHttpRequest is not supported");
                         }
                     }
