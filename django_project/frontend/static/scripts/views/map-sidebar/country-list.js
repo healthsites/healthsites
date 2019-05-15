@@ -73,8 +73,8 @@ define([
                 if (!$number.html()) {
                     $number.html('loading');
                     $complete.html('loading');
-                    self.request.getStatistic(country, function (data) {
-                        $number.html(data.localities);
+                    self.request.getCount(country, function (data) {
+                        $number.html(data);
                         $complete.html(0.0);
                     });
                 }

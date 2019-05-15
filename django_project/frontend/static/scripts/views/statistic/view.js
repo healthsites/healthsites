@@ -15,6 +15,9 @@ define([
             this.pie = new Pie('piechart', 220);
             this.request = new Request();
         },
+        getCount: function (country, successCallback, errorCallback) {
+            this.request.getCount(country, successCallback, errorCallback);
+        },
         getStatistic: function (country, successCallback, errorCallback) {
             this.request.getStatistic(country, successCallback, errorCallback);
         },

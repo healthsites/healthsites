@@ -43,8 +43,8 @@ require([
         if (uuid) {
             shared.dispatcher.trigger('show-locality-detail', {'uuid': uuid});
         } else {
-            countryStatictic.getStatistic("", function (data) {
-                $('#healthsites-count').html(data['localities']);
+            countryStatictic.getCount("", function (data) {
+                $('#healthsites-count').html(data);
             });
         }
     }

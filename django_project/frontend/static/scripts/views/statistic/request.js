@@ -2,10 +2,29 @@ define([
     'backbone',
     'jquery'], function (Backbone, $, Chart) {
     return Backbone.View.extend({
-        url: "/api/v2/facilities/statistic",
+        url: "/api/v2/facilities/",
         getStatistic: function (country, successCallback, errorCallback) {
             $.ajax({
-                url: this.url,
+                url: this.url + 'statistic',
+                dataType: 'json',
+                data: {
+                    country: country
+                },
+                success: function (data) {
+                    if (successCallback) {
+                        successCallback(data);
+                    }
+                },
+                error: function (error) {
+                    if (errorCallback) {
+                        errorCallback(error)
+                    }
+                }
+            });
+        },
+        getCount: function (country, successCallback, errorCallback) {
+            $.ajax({
+                url: this.url + 'count',
                 dataType: 'json',
                 data: {
                     country: country
