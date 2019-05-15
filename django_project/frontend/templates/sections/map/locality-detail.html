@@ -6,56 +6,43 @@
         <p class="sub" id="locality-amenity">first referral hospital</p>
     </div>
     <div class="info">
-        <div id="line-updates" class="line updates">
-            <div class="icon-holder">
-                <i class="fa fa-info-circle"></i>
-            </div>
-            <div class="data">
-                <div class="more" style="margin-bottom: 5px">
-                    <div>
-                        last update: <span id="last_update" class="date">11 may 2015 17:23:15</span>, by
-                        <span class="name">
+        <table style="width:100%">
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-info-circle"></i>
+                </td>
+                <td class="data updates">
+                    <div class="more" style="margin-bottom: 5px">
+                        <div>
+                            last update: <span id="last_update" class="date">11 may 2015 17:23:15</span>, by
+                            <span class="name">
                                     <a id="uploader" href="profile/sharehealthdata">@sharehealthdata</a>
                                 </span>
+                        </div>
+                        <div id="full-list">
+                        </div>
                     </div>
-                    <div id="full-list">
+
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
+                             aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
+                            90% Complete
+                        </div>
                     </div>
-                </div>
-
-                <div class="progress">
-                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
-                         aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
-                        90% Complete
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="line find">
-            <div class="icon-holder">
-                <i class="fa fa-map-marker"></i>
-            </div>
-            <div class="data">
-                <p class="address" id="locality-physical-address">54, Praed st, London, W2 NY<br/>
-                    Unighted Kingdom</p>
-                <input type="text" id="locality-physical-address-input" name="physical_address"
-                       placeholder="Physical Address" style="display: none; margin-bottom: 5px;"/>
-
-                <p class="coordinates" id="locality-coordinates">lat: 0, long: 0</p>
-
-                <p class="coordinates" id="locality-coordinates-input"
-                   style="display: none; margin-top: 5px;">
-                    lat: <input type="number"
-                                id="locality-coordinates-lat-input"
-                                style="width: 80px"
-                                min="-180" max="180" onchange="onChange(this)"/>,
-                    long: <input type="number"
-                                 id="locality-coordinates-long-input" style="width: 80px" min="-180"
-                                 max="180" onchange="onChange(this)"/></p>
-
-                <p>
-                    <i class="fa fa-phone"></i>
-                    <span id="locality-phone" class="call">0141 636 6116</span>
-                    <span id="locality-phone-input" style="display: none">+
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-map-marker"></i>
+                </td>
+                <td class="data find">
+                    <p class="address" id="locality-physical-address">54, Praed st, London, W2 NY<br/>
+                        Unighted Kingdom</p>
+                    <p class="coordinates" id="locality-coordinates">lat: 0, long: 0</p>
+                    <p>
+                        <i class="fa fa-phone"></i>
+                        <span id="locality-phone" class="call">0141 636 6116</span>
+                        <span id="locality-phone-input" style="display: none">+
                                     <input type="number"
                                            id="locality-phone-input-int"
                                            style="width: 50px; margin-right: 5px"
@@ -63,162 +50,93 @@
                                     <input type="number"
                                            id="locality-phone-input-number"/>
                                 </span>
-                </p>
-
-                <p id="locality-operating-hours-section">
-                    <i class="fa fa-clock-o"></i>
-                    <span id="locality-operating-hours" class="call">define operation</span>
-                </p>
-
-                <div id="locality-operating-hours-input"
-                     style="display: none;">
-                    <div style="border: 1px solid black; padding: 10px;">
-                        <div>
-                            <strong>OPERATING HOURS : </strong><span onclick="shortcutDefiningHour('24/7')"
-                                                                     style="cursor: pointer; margin-left: 10px;margin-right: 10px"><a>24/7</a></span><span
-                                onclick="shortcutDefiningHour('24/5')"
-                                style="cursor: pointer; margin-right: 10px"><a>24/5</a></span>
-                        </div>
-                        <hr>
-                        <table id="locality-operating-hours-input-table" style="width:100%"></table>
-                        <hr>
-                        <div>
-                            <strong>RESULT :</strong><br>
-                            <span id="locality-operating-hours-input-result"></span>
-                        </div>
-                    </div>
-                    <br>
-                </div>
-
-                <div id="locality-url">
-                    <p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href=""></a></span>
                     </p>
-                </div>
-            </div>
-        </div>
-        <div class="line services">
-            <div class="icon-holder">
-                <i class="fa fa-tags"></i>
-            </div>
-            <div class="data">
-                <div class="scope-of-service">
-                    <h3>scope of service</h3>
 
-                    <div id="locality-scope-of-service">
+                    <p id="locality-operating-hours-section">
+                        <i class="fa fa-clock-o"></i>
+                        <span id="locality-operating-hours" class="call">define operation</span>
+                    </p>
+                    <div id="locality-url">
+                        <p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href=""></a></span>
+                        </p>
                     </div>
-                    <div id="locality-scope-of-service-input"
-                         style="display: none; margin-bottom: 10px;">
-                    </div>
-                </div>
-                <div class="ancillary">
-                    <h3>ancillary services</h3>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-tags"></i>
+                </td>
+                <td class="data services">
+                    <div class="scope-of-service">
+                        <h3>scope of service</h3>
 
-                    <div id="locality-ancillary-service">
+                        <div id="locality-scope-of-service">
+                        </div>
                     </div>
-                    <div id="locality-ancillary-service-input"
-                         style="display: none; margin-bottom: 10px;">
-                    </div>
-                </div>
-                <div class="activities">
-                    <h3>activities</h3>
+                    <div class="ancillary">
+                        <h3>ancillary services</h3>
 
-                    <div id="locality-activities">
+                        <div id="locality-ancillary-service">
+                        </div>
                     </div>
-                    <div id="locality-activities-input"
-                         style="display: none; margin-bottom: 10px;">
+                    <div class="activities">
+                        <h3>activities</h3>
+
+                        <div id="locality-activities">
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="line beds">
-            <div class="icon-holder">
-                <i class="fa fa-bed"></i>
-            </div>
-            <div class="data">
-                <p id="locality-inpatient-service"></p>
-
-                <p id="locality-inpatient-service-input" style="display: none">
-                    <input type="number"
-                           id="locality-inpatient-service-full-input"
-                           min="0"
-                           style="width: 50px"/>
-                    full
-                    time beds,
-                    <input type="number" id="locality-inpatient-service-part-input" min="0"
-                           style="width: 50px"/>
-                    part time beds</p>
-            </div>
-        </div>
-        <div class="line note">
-            <div class="icon-holder">
-                <i class="fa fa-sticky-note"></i>
-            </div>
-            <div class="data" id="locality-notes">
-                <div><strong>Note: </strong><span id="locality-notes-text"> Outpatient consultation and in-patient hospitalization</span></div>
-            </div>
-            <div class="data" id="locality-notes-input"
-                 style="display: none; margin-bottom: 10px;">
-            </div>
-        </div>
-        <div class="line doctors">
-            <div class="icon-holder">
-                <i class="fa fa-user-md"></i>
-            </div>
-            <div class="data">
-                <div id="locality-staff"></div>
-                <p id="locality-staff-input" style="display: none">
-                    <input type="number"
-                           id="locality-staff-doctor-input"
-                           min="0"
-                           style="width: 50px"/>
-                    full time doctors,
-                    <input type="number" id="locality-staff-nurse-input"
-                           min="0"
-                           style="width: 50px"/>
-                    full time nurses</p>
-            </div>
-        </div>
-        <div class="line ownership">
-            <div class="icon-holder">
-                <i class="fa fa-briefcase"></i>
-            </div>
-            <div class="data">
-                <p><strong>Ownership:</strong>
-                    <span id="locality-ownership"></span>
-                    <select id="locality-ownership-input" name="ownership"
-                            style="display: none">
-                    </select></p>
-            </div>
-        </div>
-        <div id="tag" class="line services">
-            <div class="icon-holder">
-                <i class="fa fa-tag"></i>
-            </div>
-            <div class="data">
-                <ul id="tag-data"></ul>
-                <div id="tag-input-text" style="display: none">
-                    <input id="tag-input-text-box" type="text" placeholder="fill new tag"
-                           style="margin-bottom: 10px;"
-                           onkeyup="changeTag($(this).val())"/>
-                    <i id="tag-input-error-warning"
-                       style="margin-left: 10px; color: #f44a52; display: none">tag should be
-                        more than 2 letter</i>
-                </div>
-            </div>
-        </div>
-        <div id="others" class="line ">
-            <div class="icon-holder">
-                <i class="fa fa-circle"></i>
-            </div>
-            <div class="data">
-                <p id="others-add" onclick="addOthers()" style="display: none; cursor: pointer"><b>add new
-                    information</b></p>
-
-                <div id="other-tags-table">
-                </div>
-                <div id="others-data-input" style="display: none">
-                </div>
-            </div>
-        </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-bed"></i>
+                </td>
+                <td class="data beds">
+                    <div id="locality-inpatient-service"></div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-sticky-note"></i>
+                </td>
+                <td class="data note">
+                    <div><strong>Note: </strong><span id="locality-notes-text"> Outpatient consultation and in-patient hospitalization</span></div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-user-md"></i>
+                </td>
+                <td class="data doctors">
+                    <div id="locality-staff"></div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-briefcase"></i>
+                </td>
+                <td class="data ownership">
+                    <p><strong>Ownership:</strong>
+                        <span id="locality-ownership"></span></p>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-tag"></i>
+                </td>
+                <td class="data services">
+                    <ul id="tag-data"></ul>
+                </td>
+            </tr>
+            <tr id="others">
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-circle"></i>
+                </td>
+                <td class="data services">
+                    <div id="other-tags-table">
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 </div>
