@@ -22,7 +22,12 @@ require([
 
     // render country statistic view
     var countryStatictic = new CountryStatistic();
+    countryStatictic.getCount("", function (data) {
+        $('#healthsites-count').html(data);
+        $('#healthsites-count').css('opacity', 1);
+    });
     countryStatictic.showStatistic("");
+
 
     new CountrySearch();
     new Search();
