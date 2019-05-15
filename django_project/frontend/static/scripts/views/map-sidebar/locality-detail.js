@@ -17,7 +17,7 @@ define([
             'locality-scope-of-service': {default: "..please define scope of service", attribute: "scope_of_service"},
             'locality-ancillary-service': {default: "..please define ancillary services", attribute: "ancillary_services"},
             'locality-activities': {default: "..please define ancillary activities", attribute: "activities"},
-            'locality-ownership': {default: "..please define ownership status", attribute: "ownership"},
+            'locality-ownership': {default: "..please define ownership status", attribute: "operator_type"},
             'locality-inpatient-service': {default: "..please define number of full time/part time beds", attribute: "inpatient_service"},
             'locality-staff': {default: "..please define full time doctors and full time nurses", attribute: "staff"},
             'other-tags-table': {default: "please use this field to define any additional services available from this location", attribute: null},
@@ -32,7 +32,9 @@ define([
             $('.details').hide();
             this.$sidebar.show();
             this.showDefaultInfo();
-            this.getInfo(parameter['uuid']);
+            this.getInfo(
+                parameter['osm_type'], parameter['osm_id']
+            );
         },
         showDefaultInfo: function (evt) {
             var self = this;
@@ -40,13 +42,13 @@ define([
                 self.insertIntoElement(key, value['default']);
             })
         },
-        getInfo: function (identifire) {
+        getInfo: function (osm_type, osm_id) {
             var self = this;
             $.ajax({
-                url: this.url + identifire + "?output=geojson",
+                url: this.url + osm_type + '/' + osm_id + "?output=geojson",
                 dataType: 'json',
                 success: function (data) {
-                    self.showInfo(identifire, data);
+                    self.showInfo(osm_type, osm_id, data);
                 }
             });
         },
@@ -60,8 +62,9 @@ define([
                 $element.html(value);
             }
         },
-        showInfo: function (identifire, data) {
+        showInfo: function (osm_type, osm_id, data) {
             var self = this;
+            var identifier = osm_type + '/' + osm_id;
             var properties = data['properties'];
             var attributes = jQuery.extend({}, properties['attributes']);
 
@@ -80,17 +83,41 @@ define([
                 this.$completenees.attr('style', 'width:' + properties['completeness'] + '%');
                 this.$completenees.text(properties['completeness'] + '% Complete');
             }
+            if (attributes['staff_doctors'] || attributes['staff_nurses']) {
+                var staff = [];
+                if (attributes['staff_doctors']) {
+                    staff.push("<strong>" + attributes['staff_doctors'] + "</strong> full time doctors");
+                    delete attributes['staff_doctors'];
+                }
+                if (attributes['staff_nurses']) {
+                    staff.push("<strong>" + attributes['staff_nurses'] + "</strong> full time nurses");
+                    delete attributes['staff_nurses'];
+                }
+                attributes['staff'] = staff.join(',&nbsp');
+            }
+            if (attributes['beds'] || attributes['part_time_beds']) {
+                var beds = [];
+                if (attributes['beds']) {
+                    beds.push("<strong>" + attributes['beds'] + "</strong> full time beds");
+                    delete attributes['beds'];
+                }
+                if (attributes['part_time_beds']) {
+                    beds.push("<strong>" + attributes['part_time_beds'] + "</strong> part time beds");
+                    delete attributes['part_time_beds'];
+                }
+                attributes['inpatient_service'] = beds.join(',&nbsp');
+            }
             $.each(this.attributes_and_element, function (key, value) {
                 if (value['attribute']) {
                     self.insertIntoElement(key, attributes[value['attribute']]);
                     delete attributes[value['attribute']];
                 }
             });
-            var html = '<p class="url"><i class="fa fa-link"></i><a href="https://www.openstreetmap.org/' + identifire + '"';
+            var html = '<p class="url"><i class="fa fa-link"></i><a href="https://www.openstreetmap.org/' + identifier + '"';
             html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">OpenStreetMap</a></p>';
             $('.url').html(html);
             $APP.trigger('locality.info', {
-                'locality_uuid': identifire,
+                'locality_uuid': identifier,
                 'locality_name': name,
                 'geom': centroid,
                 'zoomto': true

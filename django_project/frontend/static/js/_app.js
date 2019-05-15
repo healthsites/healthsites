@@ -28,14 +28,16 @@ window.APP = (function () {
 
         _setupRouter: function () {
             //setup crossroads
-            crossroads.addRoute('/locality/{uuid}', function (uuid) {
-                $APP.trigger('locality.map.click', {'locality_uuid': uuid, 'zoomto': true});
-            });
-            //setup crossroads
-            crossroads.addRoute('/locality/{uuid}/{changeset}', function (uuid, changeset) {
-                $APP.trigger('locality.map.click', {'locality_uuid': uuid, 'zoomto': true, 'changeset': changeset});
-            });
+            crossroads.addRoute('/locality/{osm_type}/{osm_id}', function (osm_type, osm_id) {
+                console.log(osm_type);
+                try {
+                    shared.dispatcher.trigger('show-locality-detail', {
+                        'osm_type': osm_type, 'osm_id': osm_id
+                    });
+                } catch (e) {
 
+                }
+            });
             //setup hasher
             hasher.prependHash = '!';
             hasher.initialized.add(this._parseHash);

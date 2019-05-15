@@ -26,8 +26,6 @@ require([
     new LocalityDetail();
     new Search();
     new ShapefileDownloader();
-    var uuid = shared.hash();
-    uuid = uuid.replace('/locality/', '');
     if (parameters['country']) {
         $("#locality-statistic").show();
         $("#locality-info").hide();
@@ -40,8 +38,16 @@ require([
                 }
             });
     } else {
-        if (uuid) {
-            shared.dispatcher.trigger('show-locality-detail', {'uuid': uuid});
+        var identifier = shared.hash();
+        identifier = identifier.replace('/locality/', '');
+        if (identifier) {
+            var identifiers = identifier.split('/');
+            shared.dispatcher.trigger('show-locality-detail',
+                {
+                    'osm_type': identifiers[0],
+                    'osm_id': identifiers[1]
+                }
+            );
         } else {
             countryStatictic.getCount("", function (data) {
                 $('#healthsites-count').html(data);

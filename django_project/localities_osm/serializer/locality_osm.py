@@ -8,7 +8,10 @@ from rest_framework.serializers import (
     ModelSerializer, SerializerMethodField
 )
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from localities_osm.models.locality import LocalityOSM, LocalityOSMView
+from localities_osm.models.locality import (
+    LocalityOSM, LocalityOSMView,
+    LocalityOSMNode, LocalityOSMWay
+)
 from localities_osm_extension.models.extension import LocalityOSMExtension
 
 attributes_fields = LocalityOSM._meta.get_all_field_names()
@@ -25,9 +28,11 @@ class LocalityOSMBaseSerializer(object):
             if getattr(obj, attribute):
                 attributes[attribute] = getattr(obj, attribute)
         try:
+            osm_id = obj.osm_id
+            osm_type = self.get_osm_type(obj)
             extension = LocalityOSMExtension.objects.get(
-                osm_id=obj.osm_id,
-                osm_type=obj.osm_type
+                osm_id=osm_id,
+                osm_type=osm_type
             )
             for tag in extension.tag_set.all():
                 if tag.value:
@@ -44,6 +49,9 @@ class LocalityOSMBaseSerializer(object):
                 return None
         else:
             return None
+
+    def get_osm_type(self, obj):
+        return obj.osm_type
 
 
 class LocalityOSMSerializer(LocalityOSMBaseSerializer,
@@ -65,6 +73,68 @@ class LocalityOSMGeoSerializer(LocalityOSMBaseSerializer,
 
     class Meta:
         model = LocalityOSMView
+        geo_field = 'geometry'
+        fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
+
+
+class LocalityOSMNodeSerializer(LocalityOSMBaseSerializer,
+                                ModelSerializer):
+    attributes = SerializerMethodField()
+    centroid = SerializerMethodField()
+    completeness = SerializerMethodField()
+    osm_type = SerializerMethodField()
+
+    def get_osm_type(self, obj):
+        return 'node'
+
+    class Meta:
+        model = LocalityOSMNode
+        fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
+
+
+class LocalityOSMNodeGeoSerializer(LocalityOSMBaseSerializer,
+                                   GeoFeatureModelSerializer):
+    attributes = SerializerMethodField()
+    centroid = SerializerMethodField()
+    completeness = SerializerMethodField()
+    osm_type = SerializerMethodField()
+
+    def get_osm_type(self, obj):
+        return 'node'
+
+    class Meta:
+        model = LocalityOSMNode
+        geo_field = 'geometry'
+        fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
+
+
+class LocalityOSMWaySerializer(LocalityOSMBaseSerializer,
+                               ModelSerializer):
+    attributes = SerializerMethodField()
+    centroid = SerializerMethodField()
+    completeness = SerializerMethodField()
+    osm_type = SerializerMethodField()
+
+    def get_osm_type(self, obj):
+        return 'way'
+
+    class Meta:
+        model = LocalityOSMWay
+        fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
+
+
+class LocalityOSMWayGeoSerializer(LocalityOSMBaseSerializer,
+                                  GeoFeatureModelSerializer):
+    attributes = SerializerMethodField()
+    centroid = SerializerMethodField()
+    completeness = SerializerMethodField()
+    osm_type = SerializerMethodField()
+
+    def get_osm_type(self, obj):
+        return 'way'
+
+    class Meta:
+        model = LocalityOSMWay
         geo_field = 'geometry'
         fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
 
