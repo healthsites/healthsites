@@ -1,4 +1,4 @@
-#other-tags-table table{
+#other-tags-table table {
     width: 100%;
 }
 
@@ -6,4 +6,13 @@
     border: 1px solid #DDD;
     padding: 5px 15px;
     width: 50%;
+}
+
+.icon-holder {
+    width: 53px;
+    float: none !important;
+}
+
+#locality-info tr {
+    border-bottom: 1px solid #eff0f0;
 }
