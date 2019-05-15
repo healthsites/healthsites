@@ -4,17 +4,15 @@
         <div class="person col-xs-8 pad0x">
             <div class="avatar-holder">
                 <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
-                {% if user.social_auth.get.provider == "openstreetmap" %}
+                {% if user.provider == "openstreetmap" %}
                     <img height="14" class="avatar-icon" src="{% static "img/osm-logo.png" %}" title="OpenStreetMap"/>
-                {% elif user.social_auth.get.provider == "facebook" %}
+                {% elif user.provider == "facebook" %}
                     <i class="fa fa-facebook-square avatar-icon"></i>
-                {% elif user.social_auth.get.provider == "twitter" %}
+                {% elif user.provider == "twitter" %}
                     <i class="fa fa-twitter-square avatar-icon"></i>
                 {% endif %}
-                {% if user.profile_picture == "" and not user.social_auth.get.extra_data.avatar %}
+                {% if user.profile_picture == "" %}
                     <img src="{% static "img/no-profile-img.gif" %}" width="48" height="48"/>
-                {% elif user.social_auth.get.extra_data.avatar %}
-                    <img src="{{ user.social_auth.get.extra_data.avatar }}" width="48" height="48"/>
                 {% else %}
                     <img src="{{ user.profile_picture }}" width="48" height="48"/>
                 {% endif %}

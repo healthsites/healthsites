@@ -48,7 +48,7 @@ class ProfilePage(TemplateView):
 
         try:
             user = User.objects.get(username=kwargs['username'])
-            user = get_profile(user)
+            user = get_profile(user, self.request)
             osm_user = False
         except User.DoesNotExist:
             user = {
@@ -81,13 +81,6 @@ class LogoutUser(View):
 
 
 def save_profile(backend, user, response, *args, **kwargs):
-    url = None
-    if backend.name == 'facebook':
-        url = 'http://graph.facebook.com/%s/picture?type=large' % response['id']
-    if backend.name == 'twitter':
-        url = response.get('profile_image_url', '').replace('_normal', '')
-    if backend.name == 'google-oauth2':
-        url = response['image'].get('url')
     # get old user
     if kwargs['is_new']:
         if 'username' in kwargs['details']:
@@ -100,13 +93,23 @@ def save_profile(backend, user, response, *args, **kwargs):
                     User.objects.get(username=old_username).delete()
                 except User.DoesNotExist:
                     pass
-    try:
-        profile = Profile.objects.get(user=user)
-    except Profile.DoesNotExist:
-        profile = Profile(user=user)
-    if url:
-        profile.profile_picture = url
-    profile.save()
+
+    profile_picture = None
+    if backend.name == 'facebook':
+        profile_picture = 'http://graph.facebook.com/%s/picture?type=large' % response['id']
+    elif backend.name == 'twitter':
+        profile_picture = response.get('profile_image_url', '').replace('_normal', '')
+    elif backend.name == 'google-oauth2':
+        profile_picture = response['image'].get('url')
+    elif backend.name == 'openstreetmap':
+        profile_picture = response['avatar']
+
+    Profile.objects.get_or_create(user=user)
+    kwargs['request'].session['social_auth'] = {
+        'profile_picture': profile_picture,
+        'provider': backend.name
+    }
+
     return {'user': user}
 
 

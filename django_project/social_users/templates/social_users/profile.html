@@ -11,24 +11,19 @@
                 {% if user.social_auth.get.provider == "openstreetmap" %}
                     <img style="height: 40px" class="profile-image-icon" src="{% static "img/osm-logo.png" %}"/>
                 {% endif %}
-                {% if user.social %}
-                    {% for social in user.social %}
-                        {% if social.provider == "facebook" %}
-                            <a href="https://www.facebook.com/{{ social.user_link }}" target="_blank"><i
-                                    class="fa fa-facebook-square profile-image-icon"></i></a>
-                        {% endif %}
-                        {% if social.provider == "twitter" %}
-                            <a href="https://twitter.com/{{ social.uid }}" target="_blank"><i
-                                    class="fa fa-twitter-square profile-image-icon"></i></a>
-                        {% endif %}
-                    {% endfor %}
+                {% if user.provider %}
+                    {% if user.provider == "facebook" %}
+                        <a href="https://www.facebook.com/{{ social.user_link }}" target="_blank"><i
+                                class="fa fa-facebook-square profile-image-icon"></i></a>
+                    {% elif user.provider == "twitter" %}
+                        <a href="https://twitter.com/{{ social.uid }}" target="_blank"><i
+                                class="fa fa-twitter-square profile-image-icon"></i></a>
+                    {% endif %}
                 {% endif %}
-                {% if user.profile_picture == "" and not user.social_auth.get.extra_data.avatar %}
-                    <img class="profile-image" src="{% static "img/no-profile-img.gif" %}"/>
-                {% elif user.social_auth.get.extra_data.avatar %}
-                    <img class="profile-image" src="{{ user.social_auth.get.extra_data.avatar }}"/>
+                {% if user.profile_picture == "" %}
+                    <img src="{% static "img/no-profile-img.gif" %}" width="100%"/>
                 {% else %}
-                    <img class="profile-image" src="{{ user.profile_picture }}"/>
+                    <img src="{{ user.profile_picture }}" width="100%"/>
                 {% endif %}
             </div>
             <div class="name" style="font-size: 24px">

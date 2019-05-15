@@ -5,7 +5,7 @@ from social_users.models import TrustedUser
 from .models import Profile
 
 
-def get_profile(user):
+def get_profile(user, request=None):
     shared_links = []
     # check if the user has profile_picture
     # if not, just send empty string
@@ -24,8 +24,8 @@ def get_profile(user):
 
         supported_organisations = (
             trusted_user.organisations_supported
-            .all()
-            .filter(organisationsupported__is_staff=True)
+                .all()
+                .filter(organisationsupported__is_staff=True)
         )
 
         user.organisations = [
@@ -44,12 +44,22 @@ def get_profile(user):
     try:
         uid = user.social_auth.get(provider='twitter').uid
         user.social.append({'provider': 'twitter', 'uid': user.username})
-    except Exception:
+    except Exception as e:
         pass
 
     try:
-        uid = user.social_auth.get(provider='facebook').uid
-        user.social.append({'provider': 'facebook', 'uid': uid})
-    except Exception:
+        uid = user.social_auth.get(provider='openstreetmap').uid
+        user.social.append({'provider': 'openstreetmap', 'uid': uid})
+    except Exception as e:
         pass
+
+    # GET SOCIAL AUTH
+    user.provider = ''
+    if request:
+        try:
+            social_auth = request.session['social_auth']
+            user.profile_picture = social_auth['profile_picture']
+            user.provider = social_auth['provider']
+        except KeyError:
+            pass
     return user

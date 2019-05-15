@@ -111,7 +111,7 @@ def map(request):
     """View for request."""
     if request.user.is_authenticated():
         user = get_object_or_404(User, username=request.user)
-        request.user = get_profile(user)
+        request.user = get_profile(user, request)
 
     if request.method == 'POST':
         search_query = request.POST.get('q')
