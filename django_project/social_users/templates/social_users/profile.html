@@ -6,7 +6,13 @@
 
 {% block content %}
     {% if old_data_available and not data_migration_in_progress %}
-        <div class="migration-info">We are migrating all data into OSM data, thus your healthsites data will not be displayed on the map. Please migrate your data into OSM data by clicking on <button class="btn btn-primary btn-migrate" onclick="migrateClicked()">Migrate</button>.</div>
+        <div class="migration-info">We are migrating all data into OSM data, thus your healthsites data will not be displayed on the map. Please migrate your data into OSM data by clicking on
+            <button class="btn btn-primary btn-migrate" title="in development" disabled>Migrate</button>
+            .
+            <span class="pull-right" style="margin-right: 20px; cursor: pointer" onclick="$('.migration-info').remove()">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </span>
+        </div>
     {% endif %}
     <section class="white container">
         <div class="col-sm-4 user-profile">
@@ -109,13 +115,13 @@
     </section>
     {% if data_migration_in_progress or old_data_available %}
         <section>
-        <div id="migration-progress-bar-wrapper" class="container" style="display: none">
-            <h5>Data migration progress:</h5>
-            <div class="progress">
-                <div id="migration-progress-bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:0%">
-                0%
+            <div id="migration-progress-bar-wrapper" class="container" style="display: none">
+                <h5>Data migration progress:</h5>
+                <div class="progress">
+                    <div id="migration-progress-bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                        0%
+                    </div>
                 </div>
-            </div>
             </div>
         </section>
     {% endif %}
@@ -124,6 +130,7 @@
 {% block extra_js %}
     <script>
         var interval;
+
         function migrateClicked() {
             $('.loading-icon').show();
             $.ajax({
@@ -144,10 +151,10 @@
                     username: "{{ user.username }}"
                 },
                 success: function (data) {
-                    var progress = Math.round((data['count']/data['total']) * 100);
+                    var progress = Math.round((data['count'] / data['total']) * 100);
                     $('#migration-progress-bar').css('width', progress + '%').html(progress + '% Complete')
 
-                    if(progress === 100){
+                    if (progress === 100) {
                         clearInterval(interval)
                     }
                 },
@@ -158,7 +165,7 @@
         }
 
         $(document).ready(function () {
-            if('{{ data_migration_in_progress }}' === 'True'){
+            if ('{{ data_migration_in_progress }}' === 'True') {
                 $('#migration-progress-bar-wrapper').show();
             }
 
