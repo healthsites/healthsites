@@ -26,6 +26,10 @@ EXPOSE 49360
 
 ADD rpl-1.5.5.egg-info /usr/lib/pymodules/python2.7/
 
+ADD sources.list /etc/apt/sources.list.d/
+RUN apt-get update -y
+RUN apt-get install certbot python-certbot-nginx -t stretch-backports -y
+
 # You could put --protocol=http as a parameter (to test it directly)
 # when running e.g. docker run konektaz/healthsites --protocol=http
 # or any other wsgi parameters and they will be tagged on to the
