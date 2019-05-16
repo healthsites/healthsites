@@ -2,7 +2,10 @@
 __author__ = 'Anita Hapsari <anita@kartoza.com>'
 __date__ = '14/05/19'
 
+import json
+import os
 import sys
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from localities.models import Locality
 from localities_osm.utilities import (
@@ -33,13 +36,25 @@ class Command(BaseCommand):
                 'Please provide username parameter by adding '
                 '--username=<username>')
 
+        pathname = \
+            os.path.join(settings.CLUSTER_CACHE_DIR, 'data-migration-progress')
+        progress_file = \
+            os.path.join(pathname, '{}.txt'.format(options['username']))
+        progress_file_found = os.path.exists(progress_file)
+
+        if progress_file_found:
+            sys.exit(
+                'Data migration process for user {} '
+                'is already running.'.format(options['username']))
+
         print('Start migrating data.........')
 
         query = Locality.objects.filter(
             changeset__social_user__username=options['username']
         )
 
-        for locality in query:
+        total_query = query.count()
+        for idx, locality in enumerate(query):
             values = locality.repr_dict()
 
             if values.get('osm_id', None):
@@ -75,6 +90,24 @@ class Command(BaseCommand):
                     )
                     if created:
                         print('Tag {}: {} is created'.format(item, value))
+
                 print('')
+
+                locality.migrated = True
+                locality.save()
+
+            found = os.path.exists(pathname)
+
+            if not found:
+                os.makedirs(pathname)
+
+            data_counter = {
+                'count': idx + 1,
+                'total': total_query,
+            }
+            filename = os.path.join(pathname, '{}.txt'.format(options['username']))
+            f = open(filename, 'w+')
+            f.write(json.dumps(data_counter))
+            f.close()
 
         print('Migrating old data is finished.')

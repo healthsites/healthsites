@@ -5,6 +5,9 @@
 {% block title %}Healthsites{% endblock %}
 
 {% block content %}
+    {% if old_data_available and not data_migration_in_progress %}
+        <div class="migration-info">We are migrating all data into OSM data, thus your healthsites data will not be displayed on the map. Please migrate your data into OSM data by clicking on <button class="btn btn-primary btn-migrate" onclick="migrateClicked()">Migrate</button>.</div>
+    {% endif %}
     <section class="white container">
         <div class="col-sm-4 user-profile">
             <div class="profile-image-size">
@@ -109,11 +112,61 @@
                     next ></a></div>
         </div>
     </section>
+    {% if data_migration_in_progress or old_data_available %}
+        <section>
+        <div id="migration-progress-bar-wrapper" class="container" style="display: none">
+            <h5>Data migration progress:</h5>
+            <div class="progress">
+                <div id="migration-progress-bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                0%
+                </div>
+            </div>
+            </div>
+        </section>
+    {% endif %}
 {% endblock content %}
 
 {% block extra_js %}
     <script>
+        var interval;
+        function migrateClicked() {
+            $('.loading-icon').show();
+            $.ajax({
+                url: '{% url "migrate-user-data" user.username %}',
+                success: function (data) {
+                    $('.migration-info').hide();
+                    $('.migrate-btn-wrapper').hide();
+                    $('#migration-progress-bar-wrapper').show();
+                    interval = setInterval(getMigrationProgress, 250);
+                }
+            })
+        }
+
+        function getMigrationProgress() {
+            $.ajax({
+                url: '{% url "api_get_migration_progress" %}',
+                data: {
+                    username: "{{ user.username }}"
+                },
+                success: function (data) {
+                    var progress = Math.round((data['count']/data['total']) * 100);
+                    $('#migration-progress-bar').css('width', progress + '%').html(progress + '% Complete')
+
+                    if(progress === 100){
+                        clearInterval(interval)
+                    }
+                },
+                error: function (data) {
+                    clearInterval(interval)
+                }
+            })
+        }
+
         $(document).ready(function () {
+            if('{{ data_migration_in_progress }}' === 'True'){
+                $('#migration-progress-bar-wrapper').show();
+            }
+
             $.ajax({
                 url: "{% url 'user-updates' %}",
                 dataType: 'json',
@@ -163,6 +216,9 @@
                     }
                 }
             });
+
+            interval = setInterval(getMigrationProgress, 250);
+
         });
     </script>
 {% endblock extra_js %}

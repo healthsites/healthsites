@@ -155,6 +155,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     specifications = models.ManyToManyField('Specification', through='Value')
     name = models.TextField()
     source = models.TextField(default='healthsites.io')
+    migrated = models.BooleanField(default=False)
 
     # completeness is a big calculation
     # so it has to be an field
