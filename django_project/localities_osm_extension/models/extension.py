@@ -27,6 +27,7 @@ class LocalityOSMExtension(models.Model):
 
     class Meta:
         ordering = ('osm_id',)
+        unique_together = ('osm_id', 'osm_type')
 
     def save(self, *args, **kwargs):
         super(LocalityOSMExtension, self).save(*args, **kwargs)

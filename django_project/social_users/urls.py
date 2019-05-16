@@ -2,6 +2,7 @@
 from django.conf.urls import include, patterns, url
 
 from .views import LogoutUser, ProfilePage, UserProfilePage, UserSigninPage
+from localities_osm_extension.views import execute_migration
 
 urlpatterns = patterns(
     '',
@@ -11,6 +12,11 @@ urlpatterns = patterns(
     url(
         r'^profile/(?P<username>.*)/$', ProfilePage.as_view(),
         name='profile'
+    ),
+    url(
+        r'^migrate-data/(?P<username>[\w\-]+)/$',
+        execute_migration,
+        name='migrate-user-data'
     ),
     url(r'^logout/$', LogoutUser.as_view(), name='logout_user'),
     url(
