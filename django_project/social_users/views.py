@@ -64,8 +64,9 @@ class ProfilePage(TemplateView):
         context['osm_user'] = osm_user
 
         context['api_keys'] = None
-        if self.request.user == user:
 
+        if self.request.user == user:
+            # this is for checking avialability old data
             old_data = Locality.objects.filter(
                 changeset__social_user__username=user, migrated=False
             )
