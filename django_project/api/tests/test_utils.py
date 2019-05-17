@@ -3,7 +3,9 @@
 import os
 
 from django.test import TestCase
+from unittest import TestCase
 
+from api.utils import validate_osm_tags
 from ..utils import remap_dict, convert_to_osm_tag
 
 
@@ -29,7 +31,7 @@ class TestUtils(TestCase):
         old_dict = {
             'speciality': 'healthsites specialty',
             'addr_full': 'healthsites street',
-            'contact_number': 'healthsotes phone number'
+            'contact_number': 'healthsites phone number'
         }
         expected_dict = {
             'healthcare:speciality': 'healthsites specialty',
@@ -48,3 +50,102 @@ class TestUtils(TestCase):
         self.assertEqual(
             convert_to_osm_tag(mapping_file_path, old_dict, 'way'),
             expected_dict)
+
+    def test_validate_osm_data(self):
+        # test invalid mandatory tags
+        tags = {
+            'name': 'the name',
+            'source': 'test case',
+            'operator': 'the operator',
+            'healthcare': 'clinic'
+        }
+        expected_message = 'Invalid OSM tags: amenity tag is missing.'
+        status, actual_message = validate_osm_tags(tags)
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
+
+        # test valid mandatory tags
+        tags = {
+            'name': 'the name',
+            'source': 'test case',
+            'operator': 'the operator',
+            'amenity': 'clinic',
+            'healthcare': 'clinic'
+        }
+        status, _ = validate_osm_tags(tags)
+        self.assertTrue(status)
+
+        # test mandatory tags for amenity=pharmacy
+        tags = {
+            'name': 'the name',
+            'source': 'test case',
+            'operator': 'the operator',
+            'amenity': 'pharmacy',
+            'healthcare': 'clinic'
+        }
+        status, actual_message = validate_osm_tags(tags)
+        expected_message = 'Invalid OSM tags: dispensing tag is missing.'
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
+
+        tags.update({'dispensing': True})
+        status, _ = validate_osm_tags(tags)
+        self.assertTrue(status)
+
+        # test invalid value
+        tags = {
+            'name': 'the name',
+            'source': 'test case',
+            'operator': 'the operator',
+            'amenity': 'not a clinic',
+            'healthcare': 'clinic'
+        }
+        status, actual_message = validate_osm_tags(tags)
+        expected_message = (
+            'Invalid value for key amenity: '
+            'not a clinic is not a valid option.')
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
+
+        # test invalid value type
+        tags = {
+            'name': 'the name',
+            'source': 'test case',
+            'operator': 'the operator',
+            'amenity': 0,
+            'healthcare': 'clinic'
+        }
+        status, actual_message = validate_osm_tags(tags)
+        expected_message = (
+            'Invalid value type for key amenity: '
+            'Expected type str, got int instead.')
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
+
+        # test invalid speciality
+        tags = {
+            'name': 'the name',
+            'source': 'test case',
+            'operator': 'the operator',
+            'amenity': 'clinic',
+            'healthcare': 'clinic',
+            'speciality': 'radiology'
+        }
+        status, actual_message = validate_osm_tags(tags)
+        expected_message = (
+            'Invalid value for key speciality: '
+            'radiology is not a valid option.')
+        self.assertFalse(status)
+        self.assertEqual(actual_message, expected_message)
+
+        # test valid speciality
+        tags = {
+            'name': 'the name',
+            'source': 'test case',
+            'operator': 'the operator',
+            'amenity': 'clinic',
+            'healthcare': 'clinic',
+            'speciality': 'abortion'
+        }
+        status, _ = validate_osm_tags(tags)
+        self.assertTrue(status)

@@ -4,10 +4,53 @@ import yaml
 
 from os.path import exists
 
+from api import osm_tag_defintions
 from api.osm_api_client import OsmApiWrapper
+from api.osm_tag_defintions import get_mandatory_tags, update_tag_options
 from core.settings.base import OSM_API_URL, APP_NAME
 from core.settings.secret import SOCIAL_AUTH_OPENSTREETMAP_KEY, \
     SOCIAL_AUTH_OPENSTREETMAP_SECRET
+
+
+def get_definition(keyword, definition_library, key=None):
+    """Given a keyword and a key (optional), try to get a definition
+    dict for it.
+
+    :param keyword: A keyword key.
+    :type keyword: str
+
+    :param definition_library: A definition library/module.
+    :type definition_library: module
+
+    :param key: A specific key for a deeper search
+    :type key: str
+
+    :returns: A dictionary containing the matched key definition
+        from definitions, otherwise None if no match was found.
+    :rtype: dict, None
+    """
+
+    for item in dir(definition_library):
+        if not item.startswith("__"):
+            var = getattr(definition_library, item)
+            if isinstance(var, dict):
+                if var.get('key') == keyword or var.get(key) == keyword:
+                    return dict(var)
+    return None
+
+
+def get_oauth_token(user):
+    """Get OAuth token from social auth.
+
+    :param user: The user.
+    :type user: django.contrib.auth.models.User
+
+    :return: The oauth_token and oauth_token_secret
+    :rtype: tuple
+    """
+    social_auth = user.social_auth.get(provider='openstreetmap')
+    access_token = social_auth.extra_data['access_token']
+    return access_token['oauth_token'], access_token['oauth_token_secret']
 
 
 def remap_dict(old_dict, transform):
@@ -63,18 +106,48 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
     return remap_dict(data, mapping_dict)
 
 
-def get_oauth_token(user):
-    """Get OAuth token from social auth.
+def validate_osm_tags(osm_tags):
+    """Validate osm tags using osm_tag_definitions.py as a reference.
 
-    :param user: The user.
-    :type user: django.contrib.auth.models.User
+    :param osm_tags: OSM tags.
+    :type osm_tags: dict
 
-    :return: The oauth_token and oauth_token_secret
+    :return: Validation status and message.
     :rtype: tuple
     """
-    social_auth = user.social_auth.get(provider='openstreetmap')
-    access_token = social_auth.extra_data['access_token']
-    return access_token['oauth_token'], access_token['oauth_token_secret']
+
+    message = 'OSM tags are valid.'
+
+    # Mandatory tags check
+    mandatory_tags = get_mandatory_tags(osm_tags)
+    for mandatory_tag in mandatory_tags:
+        if mandatory_tag['key'] not in osm_tags.keys():
+            message = 'Invalid OSM tags: {} tag is missing.'.format(
+                mandatory_tag['key'])
+            return False, message
+
+    # OSM tags value check
+    for key, item in osm_tags.items():
+        tag_definition = get_definition(key, osm_tag_defintions)
+        tag_definition = update_tag_options(tag_definition, osm_tags)
+
+        # Value type check
+        if not isinstance(item, tag_definition.get('type')):
+            message = (
+                'Invalid value type for key {}: '
+                'Expected type {}, got {} instead.').format(
+                key, tag_definition['type'].__name__, type(item).__name__)
+            return False, message
+
+        # Value option check
+        if tag_definition.get('options'):
+            if item not in tag_definition.get('options'):
+                message = (
+                    'Invalid value for key {}: '
+                    '{} is not a valid option.').format(key, item)
+                return False, message
+
+    return True, message
 
 
 def create_osm_node(user, data):
