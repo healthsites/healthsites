@@ -2,6 +2,32 @@
 
 # Healthsites related tags
 
+# Mandatory tags - see https://github.com/healthsites/healthsites/issues/1129
+
+name = {
+    'key': 'name',
+    'name': 'name',
+    'description': '',
+    'required': True,
+    'type': str,
+}
+
+source = {
+    'key': 'source',
+    'name': 'source',
+    'description': '',
+    'required': True,
+    'type': str,
+}
+
+operator = {
+    'key': 'operator',
+    'name': 'operator',
+    'description': '',
+    'required': True,
+    'type': str,
+}
+
 amenity = {
     'key': 'amenity',
     'name': 'amenity',
@@ -25,6 +51,8 @@ healthcare = {
     'required': True,
     'type': str,
 }
+
+# Not mandatory tags
 
 speciality = {
     'key': 'speciality',
@@ -130,6 +158,9 @@ emergency = {
 }
 
 ALL_TAGS = [
+    name,
+    source,
+    operator,
     amenity,
     healthcare,
     operator_type,
