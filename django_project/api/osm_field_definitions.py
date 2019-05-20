@@ -29,3 +29,19 @@ tag = {
 }
 
 ALL_FIELDS = [latitude, longitude, tag]
+
+MANDATORY_FIELDS = [field for field in ALL_FIELDS if field.get('required')]
+
+
+def get_mandatory_fields(osm_fields):
+    """Get special mandatory fields based on requested osm data.
+
+    :param osm_fields: OSM tags.
+    :type osm_fields: dict
+
+    :return: List of mandatory tags.
+    :rtype: list
+    """
+    # Please define custom rule here if any.
+
+    return MANDATORY_FIELDS

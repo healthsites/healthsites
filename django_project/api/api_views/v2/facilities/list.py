@@ -15,6 +15,8 @@ from api.api_views.v2.utilities import BadRequestError
 from api.api_views.v2.facilities.base_api import (
     PaginationAPI
 )
+from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node
+from core.settings.utils import ABS_PATH
 from localities.models import Country, Locality
 from localities.utils import parse_bbox
 from localities_osm.models.locality import LocalityOSM
@@ -93,14 +95,24 @@ class GetFacilities(PaginationAPI, GetFacilitiesBaseAPI):
 
     def post(self, request):
         data = request.data
-        facility = Locality()
+        # Now, we post the data directly to OSM.
         try:
-            facility.update_data(data, request.user)
-            return Response(facility.uuid, status=status.HTTP_201_CREATED)
-        except KeyError as e:
-            return HttpResponseBadRequest('%s is required' % e)
-        except ValueError as e:
-            return HttpResponseBadRequest('%s' % e)
+            # Validate data
+            is_valid, message = validate_osm_data(data)
+            if not is_valid:
+                return HttpResponseBadRequest(message)
+
+            # Map Healthsites tags to OSM tags
+            mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
+            data['tag'] = convert_to_osm_tag(
+                mapping_file_path, data['tag'], 'node')
+
+            # Push data to OSM
+            user = request.user
+            response = create_osm_node(user, data)
+
+            return Response(response)
+
         except Exception as e:
             return HttpResponseBadRequest('%s' % e)
 
