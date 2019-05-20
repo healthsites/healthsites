@@ -1,7 +1,8 @@
+from api.utils import get_osm_schema
+
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-import json
 from coreapi import Field
 from coreschema import Integer, String
 from rest_framework.filters import BaseFilterBackend
@@ -95,6 +96,5 @@ class ApiSchemaBase(BaseFilterBackend):
 
 class SchemaView(APIView):
     def get(self, request):
-        schema = open('api/schema.json', 'rb')
-        schema = schema.read()
-        return Response(json.loads(schema))
+        schema = get_osm_schema()
+        return Response(schema)

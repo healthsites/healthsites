@@ -3,9 +3,9 @@
 import os
 
 from django.test import TestCase
-from unittest import TestCase
 
-from api.utils import validate_osm_tags
+from api.osm_field_definitions import ALL_FIELDS
+from api.utils import validate_osm_tags, get_osm_schema
 from ..utils import remap_dict, convert_to_osm_tag
 
 
@@ -149,3 +149,9 @@ class TestUtils(TestCase):
         }
         status, _ = validate_osm_tags(tags)
         self.assertTrue(status)
+
+    def test_get_osm_schema(self):
+        schema = get_osm_schema()
+        self.assertListEqual(
+            schema['facilities']['create']['fields'],
+            ALL_FIELDS)

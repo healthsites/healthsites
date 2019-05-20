@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import json
 import yaml
 
 from os.path import exists
 
 from api import osm_tag_defintions
 from api.osm_api_client import OsmApiWrapper
+from api.osm_field_definitions import ALL_FIELDS
 from api.osm_tag_defintions import get_mandatory_tags, update_tag_options
 from core.settings.base import OSM_API_URL, APP_NAME
 from core.settings.secret import SOCIAL_AUTH_OPENSTREETMAP_KEY, \
@@ -190,3 +192,15 @@ def create_osm_node(user, data):
     response = osm_api.create_node(data)
 
     return response
+
+
+def get_osm_schema():
+    """Get schema based on osm tag definitions.
+
+    :return: Defined OSM schema.
+    :rtype: dict
+    """
+    with open('api/schema.json') as json_file:
+        schema = json.load(json_file)
+        schema['facilities']['create']['fields'] = ALL_FIELDS
+        return schema
