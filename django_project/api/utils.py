@@ -7,11 +7,12 @@ from os.path import exists
 
 from api import osm_tag_defintions
 from api.osm_api_client import OsmApiWrapper
-from api.osm_field_definitions import ALL_FIELDS
+from api.osm_field_definitions import ALL_FIELDS, get_mandatory_fields
 from api.osm_tag_defintions import get_mandatory_tags, update_tag_options
 from core.settings.base import OSM_API_URL, APP_NAME
 from core.settings.secret import SOCIAL_AUTH_OPENSTREETMAP_KEY, \
     SOCIAL_AUTH_OPENSTREETMAP_SECRET
+from core.settings.utils import ABS_PATH
 
 
 def get_definition(keyword, definition_library, key=None):
@@ -108,6 +109,48 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
     return remap_dict(data, mapping_dict)
 
 
+def validate_osm_data(osm_data):
+    """Validate osm data based on osm field and tag definition.
+
+    :param osm_data: OSM data.
+    :type osm_data: dict
+
+    :return: Validation status and message.
+    :rtype: tuple
+    """
+    # Validate fields
+    is_valid, message = validate_osm_fields(osm_data)
+    if not is_valid:
+        return False, message
+
+    # Validate tags
+    is_valid, message = validate_osm_tags(osm_data['tag'])
+    if not is_valid:
+        return False, message
+
+    return True, 'OSM data are valid.'
+
+
+def validate_osm_fields(osm_fields):
+    """Validate osm fields using osm_field_definitions.py as a reference.
+
+    :param osm_fields: OSM fields.
+    :type osm_fields: dict
+
+    :return: Validation status and message.
+    :rtype: tuple
+    """
+    # Mandatory fields check
+    mandatory_fields = get_mandatory_fields(osm_fields)
+    for mandatory_field in mandatory_fields:
+        if mandatory_field['key'] not in osm_fields.keys():
+            message = 'Invalid OSM fields: {} field is missing.'.format(
+                mandatory_field['key'])
+            return False, message
+
+    return True, 'OSM fields are valid.'
+
+
 def validate_osm_tags(osm_tags):
     """Validate osm tags using osm_tag_definitions.py as a reference.
 
@@ -117,9 +160,6 @@ def validate_osm_tags(osm_tags):
     :return: Validation status and message.
     :rtype: tuple
     """
-
-    message = 'OSM tags are valid.'
-
     # Mandatory tags check
     mandatory_tags = get_mandatory_tags(osm_tags)
     for mandatory_tag in mandatory_tags:
@@ -149,7 +189,7 @@ def validate_osm_tags(osm_tags):
                     '{} is not a valid option.').format(key, item)
                 return False, message
 
-    return True, message
+    return True, 'OSM tags are valid.'
 
 
 def create_osm_node(user, data):
@@ -200,7 +240,8 @@ def get_osm_schema():
     :return: Defined OSM schema.
     :rtype: dict
     """
-    with open('api/schema.json') as json_file:
+    schema_template_file_path = ABS_PATH('api', 'fixtures', 'schema.json')
+    with open(schema_template_file_path) as json_file:
         schema = json.load(json_file)
         schema['facilities']['create']['fields'] = ALL_FIELDS
         return schema
