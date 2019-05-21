@@ -168,54 +168,42 @@
             if ('{{ data_migration_in_progress }}' === 'True') {
                 $('#migration-progress-bar-wrapper').show();
             }
-
+            var $updates99 = $("#updates-99");
+            var $updatesWrappeer = $("#updates-wrapper");
             $.ajax({
-                url: "{% url 'user-updates' %}",
+                url: "/api/v2/user/{{ user.username }}/changesets",
                 dataType: 'json',
-                data: {
-                    user: "{{ user.username }}"
-                },
                 success: function (data) {
-                    if ($("#updates-99").length > 0) {
-                        $("#updates-wrapper").html("");
+                    if ($updates99.length > 0 && data.length !== 0) {
+                        $updatesWrappeer.html("");
                     }
-                    if (data.last_update.length > 0) {
-                        for (var i = 0; i < data.last_update.length; i++) {
-                            var page = parseInt(i / 10);
-                            var wrapper = $("#updates-" + page);
-                            if (wrapper.length > 0) {
-
-                            } else {
-                                $("#updates-wrapper").append('<div id="updates-' + page + '" class="graph updates"></div>');
-                                wrapper = $("#updates-" + page);
-                                if (page != 0) {
-                                    wrapper.hide();
-                                }
+                    $.each(data, function (i, update) {
+                        var page = parseInt(i / 10);
+                        var $page = $("#updates-" + page);
+                        if ($page.length === 0) {
+                            $updatesWrappeer.append('<div id="updates-' + page + '" class="graph updates"></div>');
+                            $page = $("#updates-" + page);
+                            if (page !== 0) {
+                                $page.hide();
                             }
-                            var update = data.last_update[i];
-                            var html = "<div class=\"entry\">";
-                            html += "<div class=\"entry\">";
-                            html += "<span class=\"date\">" + getDateString(update.date_applied) + "</span> - ";
-                            html += "<span class=\"name\">";
-                            html += "<a href=\"/profile/" + update.author + "\">@" + update.author_nickname + "</a></span> - ";
-                            var mode = "";
-                            if (update.mode == 1) {
-                                mode = "added";
-                            } else {
-                                mode = "amended";
-                            }
-                            {# update the html #}
-                            if (update.data_count == 1) {
-                                html += "<a href=\"/map#!/locality/" + update.locality_uuid + "\" class=\"location-name\">" + data.last_update[i].locality + "</a>";
-                                html += "<span class=\"location-name\"> " + mode + " </span>";
-                            } else {
-                                html += "<span class=\"location-name\">" + data.last_update[i].data_count + " HS/" + mode + "</span>";
-                            }
-                            html += "</div>";
-                            wrapper.append(html);
                         }
-                        updateButton();
-                    }
+                        var html = "<div class=\"entry\">";
+                        html += "<div class=\"entry\">";
+                        html += "<span class=\"date\">" + getDateString(update.changeset_timestamp) + "</span> - ";
+                        html += "<span class=\"name\">";
+                        html += "<a href=\"profile/" + update.changeset_user + "\">@" + update.changeset_user + "</a></span> - ";
+                        var mode = "added";
+                        if (update.changeset_version > 1) {
+                            mode = "amended";
+                        }
+
+                        //{# update the html #}
+                        html += "<a href=\"/map#!/locality/" + update.uuid + "\" class=\"location-name\">" + update.name + "</a>";
+                        html += "<span class=\"location-name\"> " + mode + " </span>";
+                        html += "</div>";
+                        $page.append(html);
+                    });
+                    updateButton();
                 }
             });
 

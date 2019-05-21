@@ -16,6 +16,10 @@ shared['hash'] = function () {
     return window.location.hash.substr(2);
 };
 
+shared['currentID'] = function () {
+    return shared.hash().replace('/locality/', '')
+}
+
 // Styles
 var styles = {
     'locality-polygon': {
