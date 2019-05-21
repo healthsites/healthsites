@@ -31,16 +31,10 @@ require([
     function goToLocality() {
         if (identifier) {
             var identifiers = identifier.split('/');
-            shared.dispatcher.trigger('show-locality-detail',
-                {
-                    'osm_type': identifiers[0],
-                    'osm_id': identifiers[1]
-                }
-            );
+            shared.dispatcher.trigger('show-locality-detail', identifiers[0], identifiers[1]);
         }
     }
 
-    var identifier = shared.hash();
     if (parameters['country']) {
         $("#locality-statistic").show();
         $("#locality-info").hide();

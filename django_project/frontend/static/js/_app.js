@@ -29,7 +29,6 @@ window.APP = (function () {
         _setupRouter: function () {
             //setup crossroads
             crossroads.addRoute('/locality/{osm_type}/{osm_id}', function (osm_type, osm_id) {
-                console.log(osm_type);
                 try {
                     shared.dispatcher.trigger('show-locality-detail', osm_type, osm_id);
                 } catch (e) {
