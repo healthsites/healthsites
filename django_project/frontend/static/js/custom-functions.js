@@ -75,21 +75,18 @@ function renderCredit() {
 }
 
 function changePage(element) {
-    var childs = $("#updates-wrapper").children();
+    if ($(element).hasClass('opacity-7')) {
+        return;
+    }
     var activeChild = $("#updates-wrapper").children(".graph.updates:visible");
-    var activeindex = $(activeChild).attr('id').split("-")[1];
-    var newActiveIndex = parseInt(activeindex);
+    var activeindex = parseInt($(activeChild).attr('id').split("-")[1]);
     if ($(element).hasClass("prev")) {
-        if (activeindex > 0) {
-            newActiveIndex -= 1;
-        }
+        activeindex -= 1;
     } else if ($(element).hasClass("next")) {
-        if (activeindex + 1 < childs.length) {
-            newActiveIndex += 1;
-        }
+        activeindex += 1;
     }
     $(activeChild).hide();
-    $("#updates-" + newActiveIndex).show();
+    $("#updates-" + activeindex).show();
     updateButton();
     return false;
 }
@@ -97,13 +94,15 @@ function changePage(element) {
 function updateButton() {
     var childs = $("#updates-wrapper").children();
     var activeChild = $("#updates-wrapper").children(".graph.updates:visible");
-    var activeindex = $(activeChild).attr('id').split("-")[1];
-    $(".prev").removeClass("opacity-7");
-    $(".next").removeClass("opacity-7");
-    if (activeindex == 0) {
-        $(".prev").addClass("opacity-7");
+    var activeindex = parseInt($(activeChild).attr('id').split("-")[1]);
+    var $prevButton = $(".prev");
+    var $nextButton = $(".next");
+    $prevButton.removeClass("opacity-7");
+    $nextButton.removeClass("opacity-7");
+    if (activeindex === 0) {
+        $prevButton.addClass("opacity-7");
     }
     if (activeindex + 1 >= childs.length) {
-        $(".next").addClass("opacity-7");
+        $nextButton.addClass("opacity-7");
     }
 }

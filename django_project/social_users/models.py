@@ -18,7 +18,8 @@ class Profile(models.Model):
 
     user = models.OneToOneField(
         User, default=1)
-    profile_picture = models.CharField(default='', max_length=150, blank=True)
+    profile_picture = models.CharField(
+        default='', max_length=512, blank=True)
 
 
 class Organisation(models.Model):

@@ -31,13 +31,13 @@ class Command(BaseCommand):
             countries = Country.objects.all()
 
         # check the folder
-        if not os.path.exists(settings.CLUSTER_CACHE_DIR):
-            os.makedirs(settings.CLUSTER_CACHE_DIR)
+        if not os.path.exists(settings.STATISTIC_CACHE_DIR):
+            os.makedirs(settings.STATISTIC_CACHE_DIR)
 
         try:
             # write world cache
             filename = os.path.join(
-                settings.CLUSTER_CACHE_DIR,
+                settings.STATISTIC_CACHE_DIR,
                 'world_statistic')
             healthsites = get_heathsites_master().all()
             output = get_statistic(healthsites)
@@ -55,7 +55,7 @@ class Command(BaseCommand):
 
                 # write country cache
                 filename = os.path.join(
-                    settings.CLUSTER_CACHE_DIR,
+                    settings.STATISTIC_CACHE_DIR,
                     country.name + '_statistic'
                 )
                 healthsites = get_heathsites_master().in_polygon(

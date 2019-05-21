@@ -57,12 +57,12 @@ define([
                     self.$updateWrapper.html("");
                     $.each(data.last_update, function (i, update) {
                         var page = parseInt(i / 5);
-                        var wrapper = $("#updates-" + page);
-                        if (wrapper.length == 0) {
+                        var $page = $("#updates-" + page);
+                        if ($page.length === 0) {
                             self.$updateWrapper.append('<div id="updates-' + page + '" class="graph updates"></div>');
-                            wrapper = $("#updates-" + page);
-                            if (page != 0) {
-                                wrapper.hide();
+                            $page = $("#updates-" + page);
+                            if (page !== 0) {
+                                $page.hide();
                             }
                         }
                         var html = "<div class=\"entry\">";
@@ -76,10 +76,10 @@ define([
                         }
 
                         //{# update the html #}
-                        html += "<a href=\"map#!/locality/" + update.uuid + "\" class=\"location-name\">" + update.name + "</a>";
+                        html += "<a href=\"/map#!/locality/" + update.uuid + "\" class=\"location-name\">" + update.name + "</a>";
                         html += "<span class=\"location-name\"> " + mode + " </span>";
                         html += "</div>";
-                        wrapper.append(html);
+                        $page.append(html);
                     });
                     updateButton();
                 }

@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 '--username=<username>')
 
         pathname = \
-            os.path.join(settings.CLUSTER_CACHE_DIR, 'data-migration-progress')
+            os.path.join(settings.CACHE_DIR, 'data-migration-progress')
         progress_file = \
             os.path.join(pathname, '{}.txt'.format(options['username']))
         progress_file_found = os.path.exists(progress_file)

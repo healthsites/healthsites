@@ -22,24 +22,13 @@ require([
 ], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     var countryStatictic = new CountryStatistic();
+    var identifier = shared.currentID();
     new CountryList();
     new LocalityDetail();
     new Search();
     new ShapefileDownloader();
-    if (parameters['country']) {
-        $("#locality-statistic").show();
-        $("#locality-info").hide();
-        $("#locality-default").hide();
-        countryStatictic.showStatistic(
-            parameters['country'],
-            function () {
-                if (uuid) {
-                    shared.dispatcher.trigger('show-locality-detail', {'uuid': uuid});
-                }
-            });
-    } else {
-        var identifier = shared.hash();
-        identifier = identifier.replace('/locality/', '');
+
+    function goToLocality() {
         if (identifier) {
             var identifiers = identifier.split('/');
             shared.dispatcher.trigger('show-locality-detail',
@@ -48,6 +37,21 @@ require([
                     'osm_id': identifiers[1]
                 }
             );
+        }
+    }
+
+    if (parameters['country']) {
+        $("#locality-statistic").show();
+        $("#locality-info").hide();
+        $("#locality-default").hide();
+        countryStatictic.showStatistic(
+            parameters['country'],
+            function () {
+                goToLocality()
+            });
+    } else {
+        if (identifier) {
+            goToLocality();
         } else {
             countryStatictic.getCount("", function (data) {
                 $('#healthsites-count').html(data);

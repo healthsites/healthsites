@@ -5,7 +5,7 @@ import json
 import os
 from django.conf import settings
 from django.http.response import HttpResponseBadRequest
-from api.api_views.v2.base_api import BaseAPIWithAuth
+from api.api_views.v2.base_api import BaseAPI
 from rest_framework.response import Response
 from api.utilities.clustering import oms_view_cluster
 from api.utilities.geometry import parse_bbox
@@ -19,7 +19,7 @@ class ErrorParameter(Exception):
         self.errors = message
 
 
-class GetCluster(BaseAPIWithAuth):
+class GetCluster(BaseAPI):
     """
     Returns JSON representation of clustered points for the current map view
 

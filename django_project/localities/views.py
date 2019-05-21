@@ -104,7 +104,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             # if geoname and tag are not set we can return the cached layer
             # try to read localities from disk
             filename = os.path.join(
-                settings.CLUSTER_CACHE_DIR,
+                settings.CACHE_DIR,
                 '{}_{}_{}_localities.json'.format(zoom, *iconsize)
             )
 
@@ -138,7 +138,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                         # check the cache
                         # try to read localities from disk
                         filename = os.path.join(
-                            settings.CLUSTER_CACHE_DIR,
+                            settings.CACHE_DIR,
                             '{}_{}_{}_localities_{}.json'.format(
                                 zoom, iconsize[0], iconsize[1], country.name
                             )

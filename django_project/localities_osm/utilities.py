@@ -5,7 +5,7 @@ from localities_osm.models.locality import LocalityOSMView, LocalityOSM
 
 
 def get_all_osm_query():
-    return LocalityOSMView.objects.filter(osm_id__isnull=False).exclude(name='')
+    return LocalityOSMView.objects.filter(osm_id__isnull=False)
 
 
 def convert_into_osm_dict(locality):

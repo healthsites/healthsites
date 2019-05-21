@@ -144,7 +144,7 @@ def generate_shapefile():
 
 @app.task(bind=True)
 def country_data_into_shapefile_task(self, country):
-    from localities.management.commands.generate_shapefile_v2 import (
+    from api.management.commands.generate_shapefile_v2 import (
         country_data_into_shapefile
     )
     country_data_into_shapefile(country)
