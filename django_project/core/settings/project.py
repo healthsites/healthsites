@@ -6,6 +6,7 @@ Adjust these values as needed but don't commit passwords etc. to any public
 repository!
 """
 
+import os
 from django.utils.translation import ugettext_lazy as _
 
 from .celery_setting import *
@@ -121,7 +122,9 @@ PIPELINE_CSS['home'] = {
 }
 
 # Cache folder
-CLUSTER_CACHE_DIR = 'cache'
+CACHE_DIR = '/home/web/cache'
+CLUSTER_CACHE_DIR = os.path.join(CACHE_DIR, 'cluster')
+STATISTIC_CACHE_DIR = os.path.join(CACHE_DIR, 'statistic')
 CLUSTER_CACHE_MAX_ZOOM = 9
 
 # WHAT3WORDS API

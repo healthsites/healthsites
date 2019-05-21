@@ -89,6 +89,7 @@ services:
       - DOCKER_OSM_DATABASE_HOST=osm-db
     volumes:
       - ../django_project:/home/web/django_project
+      - ./cache:/home/web/cache
       - ./static:/home/web/static
       - ./media:/home/web/media
       - ./reports:/home/web/reports
@@ -123,6 +124,7 @@ services:
       - DOCKER_OSM_DATABASE_HOST=osm-db
     volumes:
       - ../django_project:/home/web/django_project
+      - ./cache:/home/web/cache
       - ./static:/home/web/static
       - ./media:/home/web/media
       - ./reports:/home/web/reports
@@ -165,6 +167,7 @@ services:
     volumes:
       - ./sites-enabled:/etc/nginx/conf.d:ro
       # I dont use volumes_from as I want to use the ro modifier
+      - ./cache:/home/web/cache:ro
       - ./static:/home/web/static:ro
       - ./media:/home/web/media:ro
       - ./logs:/var/log/nginx
@@ -198,6 +201,7 @@ services:
       - RABBITMQ_HOST=rabbitmq
     volumes:
       - ../django_project:/home/web/django_project
+      - ./cache:/home/web/cache
       - ./static:/home/web/static
       - ./media:/home/web/media
       - ./reports:/home/web/reports
