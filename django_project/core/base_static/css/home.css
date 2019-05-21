@@ -30,10 +30,20 @@
     font-family: "Raleway", sans-serif;
     min-height: 600px;
 }
+
+img {
+    max-width: 100%;
+}
+
  @media only screen and (max-width: 640px) {
 #tophome {
     padding-top: 53px;
 }
+
+.nav-updates {
+    font-size: 0.7em;
+}
+
 }
 .slideshow-container {
     margin: auto;
@@ -271,6 +281,7 @@ to {
 #map-home {
     height: 645px;
     position: relative;
+    margin: 0 auto;
 }
 .select-country {
     position: absolute;
