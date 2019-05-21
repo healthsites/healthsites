@@ -16,3 +16,41 @@
 #locality-info tr {
     border-bottom: 1px solid #eff0f0;
 }
+
+.buttons .button-wrapper .button {
+    cursor: pointer;
+}
+
+.buttons .button-wrapper .button:hover {
+    opacity: 0.8;
+}
+
+.buttons .button-wrapper.disabled .button {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.buttons .button-wrapper.disabled .button:hover {
+    opacity: 0.5;
+}
+
+#locality-info .data.empty {
+    font-style: italic;
+    opacity: 0.5;
+}
+
+#locality-info .services {
+    padding-bottom: 10px;
+}
+
+#location-info .data-wrapper {
+    padding: 5px 20px !important;
+}
+
+#locality-info .header div {
+    margin-bottom: 5px;
+}
+
+#locality-info .header .input {
+    width: 100%;
+}

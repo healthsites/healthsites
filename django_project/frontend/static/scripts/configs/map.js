@@ -16,7 +16,7 @@ require([
     'static/scripts/shared.js',
     'static/scripts/views/statistic/view.js',
     'static/scripts/views/map-sidebar/country-list.js',
-    'static/scripts/views/map-sidebar/locality-detail.js',
+    'static/scripts/views/map-sidebar/healthsite-detail/control.js',
     'static/scripts/views/map-sidebar/shapefile-downloader.js',
     'static/scripts/views/navbar/search.js'
 ], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search) {
@@ -40,6 +40,7 @@ require([
         }
     }
 
+    var identifier = shared.hash();
     if (parameters['country']) {
         $("#locality-statistic").show();
         $("#locality-info").hide();
