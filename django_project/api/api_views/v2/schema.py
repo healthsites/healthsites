@@ -95,6 +95,24 @@ class ApiSchemaBase(BaseFilterBackend):
 
 
 class SchemaView(APIView):
+    def change_type_into_string(self, type):
+        if type == float:
+            return 'float'
+        elif type == str:
+            return 'string'
+        elif type == bool:
+            return 'boolean'
+        elif type == dict:
+            return 'object'
+        elif type == int:
+            return 'integer'
+        return type
+
     def get(self, request):
         schema = get_osm_schema()
+        for field in schema['facilities']['create']['fields']:
+            field['type'] = self.change_type_into_string(field['type'])
+            if field['key'] == 'tag':
+                for tag in field['tags']:
+                    tag['type'] = self.change_type_into_string(tag['type'])
         return Response(schema)

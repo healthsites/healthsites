@@ -12,7 +12,7 @@ latitude = {
 }
 
 longitude = {
-    'key': 'long',
+    'key': 'lon',
     'name': 'longitude',
     'description': 'Longitude position of the healthsite.',
     'required': True,
