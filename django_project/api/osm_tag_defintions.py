@@ -4,34 +4,11 @@
 
 # Mandatory tags - see https://github.com/healthsites/healthsites/issues/1129
 
-name = {
-    'key': 'name',
-    'name': 'name',
-    'description': '',
-    'required': True,
-    'type': str,
-}
-
-source = {
-    'key': 'source',
-    'name': 'source',
-    'description': '',
-    'required': True,
-    'type': str,
-}
-
-operator = {
-    'key': 'operator',
-    'name': 'operator',
-    'description': '',
-    'required': True,
-    'type': str,
-}
 
 amenity = {
     'key': 'amenity',
     'name': 'amenity',
-    'description': '',
+    'description': 'For describing useful and important facilities for visitors and residents',
     'options': [
         'clinic', 'doctors', 'hospital', 'dentist', 'pharmacy'
     ],
@@ -42,7 +19,7 @@ amenity = {
 healthcare = {
     'key': 'healthcare',
     'name': 'healthcare',
-    'description': '',
+    'description': 'A key to tag all places that provide healthcare (are part of the healthcare sector)',
     'options': [
         'doctor', 'pharmacy', 'hospital', 'clinic', 'dentist',
         'physiotherapist', 'alternative', 'laboratory', 'optometrist',
@@ -52,12 +29,37 @@ healthcare = {
     'type': str,
 }
 
-# Not mandatory tags
+name = {
+    'key': 'name',
+    'name': 'name',
+    'description': 'The primary tag used for naming an element',
+    'required': True,
+    'type': str,
+}
 
+operator = {
+    'key': 'operator',
+    'name': 'operator',
+    'description': 'The operator tag is used to name a company, corporation, '
+                   'person or any other entity who is directly in charge of the current operation of a map object',
+    'required': True,
+    'type': str,
+}
+
+source = {
+    'key': 'source',
+    'name': 'source',
+    'description': 'Used to indicate the source of information (i.e. meta data) added to OpenStreetMap',
+    'required': True,
+    'type': str,
+}
+
+# Not mandatory tags
 speciality = {
     'key': 'speciality',
     'name': 'speciality',
-    'description': '',
+    'description': 'A key to detail the special services provided by a healthcare facility. '
+                   'To be used in conjuction with the \'healthcare=*\' tag. For example \'healthcare=laboratory\', and \'healthcare:speciality=blood_check\'',
     'options': [],
     'required': False,
     'type': str,
@@ -66,7 +68,7 @@ speciality = {
 operator_type = {
     'key': 'operator_type',
     'name': 'operator_type',
-    'description': '',
+    'description': 'This tag is used to give more information about the type of operator for a feature',
     'options': [
         'public', 'private', 'community', 'religious', 'government', 'ngo',
         'combination'
@@ -75,10 +77,26 @@ operator_type = {
     'type': str,
 }
 
+addr_full = {
+    'key': 'addr_full',
+    'name': 'addr_full',
+    'description': 'Used for a full-text, often multi-line, address for buildings and facilities',
+    'required': False,
+    'type': str,
+}
+
+contact_number = {
+    'key': 'contact_number',
+    'name': 'contact_number',
+    'description': 'The contact tag is the prefix for several contact:* keys to describe contacts',
+    'required': False,
+    'type': str,
+}
+
 operational_status = {
     'key': 'operational_status',
     'name': 'operational_status',
-    'description': '',
+    'description': 'Used to document an observation of the current functional status of a mapped feature',
     'options': [
         'operational', 'non_operational', 'unknown'
     ],
@@ -86,10 +104,43 @@ operational_status = {
     'type': str,
 }
 
+opening_hours = {
+    'key': 'opening_hours',
+    'name': 'opening_hours',
+    'description': 'Describes when something is open or closed. '
+                   'There is a specific standard format for this data https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification',
+    'required': False,
+    'type': str,
+}
+
+beds = {
+    'key': 'beds',
+    'name': 'beds',
+    'description': 'Indicates the number of beds in a hotel or hospital',
+    'required': False,
+    'type': int,
+}
+
+staff_doctors = {
+    'key': 'staff_doctors',
+    'name': 'staff_doctors',
+    'description': 'Indicates the number of doctors in a hospitall',
+    'required': False,
+    'type': int,
+}
+
+staff_nurses = {
+    'key': 'staff_nurses',
+    'name': 'staff_nurses',
+    'description': 'Indicates the number of nurses in a hospitall',
+    'required': False,
+    'type': int,
+}
+
 health_amenity_type = {
     'key': 'health_amenity_type',
     'name': 'health_amenity_type',
-    'description': '',
+    'description': 'Indicates what type of speciality medical equipment is available at the healthsite',
     'options': [
         'ultrasound', 'mri', 'x_ray', 'dialysis', 'operating_theater',
         'laboratory', 'imaging_equipment', 'intensive_care_unit',
@@ -99,10 +150,34 @@ health_amenity_type = {
     'type': str,
 }
 
-insurance_health = {
-    'key': 'insurance_health',
-    'name': 'insurance_health',
-    'description': '',
+dispensing = {
+    'key': 'dispensing',
+    'name': 'dispensing',
+    'description': 'Whether a pharmacy dispenses prescription drugs or not. Used to add information to something that is already tagged as amenity=pharmacy',
+    'required': False,
+    'type': bool,
+}
+
+wheelchair = {
+    'key': 'wheelchair',
+    'name': 'wheelchair',
+    'description': 'Used to mark places or ways that are suitable to be used with a wheelchair and a person with a disability who uses another mobility device (like a walker)',
+    'required': False,
+    'type': bool,
+}
+
+emergency = {
+    'key': 'emergency',
+    'name': 'emergency',
+    'description': 'This key describes various emergency services',
+    'required': False,
+    'type': bool,
+}
+
+insurance = {
+    'key': 'insurance',
+    'name': 'insurance',
+    'description': 'This key describes the type of health insurance accepted at the healthsite',
     'options': [
         'no', 'public', 'private', 'unknown'
     ],
@@ -113,7 +188,7 @@ insurance_health = {
 water_source = {
     'key': 'water_source',
     'name': 'water_source',
-    'description': '',
+    'description': 'Used to indicate the source of the water for features that provide or use water',
     'options': [
         'well', 'water_works', 'manual_pump', 'powered_pump',
         'groundwater', 'rain'
@@ -125,7 +200,7 @@ water_source = {
 electricity = {
     'key': 'electricity',
     'name': 'electricity',
-    'description': '',
+    'description': 'Used to indicate the source of the power generated',
     'options': [
         'grid', 'generator', 'solar', 'other', 'none'
     ],
@@ -133,45 +208,55 @@ electricity = {
     'type': str,
 }
 
-dispensing = {
-    'key': 'dispensing',
-    'name': 'dispensing',
-    'description': '',
+is_in_health_area = {
+    'key': 'is_in_health_area',
+    'name': 'is_in_health_area',
+    'description': 'Used to capture the health area a health facility falls within',
     'required': False,
-    'type': bool,
+    'type': str,
 }
 
-wheelchair = {
-    'key': 'wheelchair',
-    'name': 'wheelchair',
-    'description': '',
+is_in_health_zone = {
+    'key': 'is_in_health_zone',
+    'name': 'is_in_health_zone',
+    'description': 'Used to capture the health zone a health facility falls within',
     'required': False,
-    'type': bool,
+    'type': str,
 }
 
-emergency = {
-    'key': 'emergency',
-    'name': 'emergency',
-    'description': '',
+url = {
+    'key': 'url',
+    'name': 'url',
+    'description': 'Specifying a url related to a feature, in this case the url if available',
     'required': False,
-    'type': bool,
+    'type': str,
 }
 
 ALL_TAGS = [
-    name,
-    source,
-    operator,
     amenity,
     healthcare,
+    name,
+    operator,
+    source,
+    speciality,
     operator_type,
+    addr_full,
+    contact_number,
     operational_status,
+    opening_hours,
+    beds,
+    staff_doctors,
+    staff_nurses,
     health_amenity_type,
-    insurance_health,
-    water_source,
-    electricity,
     dispensing,
     wheelchair,
-    emergency
+    emergency,
+    insurance,
+    water_source,
+    electricity,
+    is_in_health_area,
+    is_in_health_zone,
+    url,
 ]
 
 MANDATORY_TAGS = [tag for tag in ALL_TAGS if tag.get('required')]

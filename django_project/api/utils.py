@@ -4,7 +4,7 @@ import json
 import yaml
 
 from os.path import exists
-
+from social_django.models import UserSocialAuth
 from api import osm_tag_defintions
 from api.osm_api_client import OsmApiWrapper
 from api.osm_field_definitions import ALL_FIELDS, get_mandatory_fields
@@ -51,9 +51,12 @@ def get_oauth_token(user):
     :return: The oauth_token and oauth_token_secret
     :rtype: tuple
     """
-    social_auth = user.social_auth.get(provider='openstreetmap')
-    access_token = social_auth.extra_data['access_token']
-    return access_token['oauth_token'], access_token['oauth_token_secret']
+    try:
+        social_auth = user.social_auth.get(provider='openstreetmap')
+        access_token = social_auth.extra_data['access_token']
+        return access_token['oauth_token'], access_token['oauth_token_secret']
+    except UserSocialAuth.DoesNotExist:
+        raise Exception('This user is not linked to openstreetmap yet')
 
 
 def remap_dict(old_dict, transform):
@@ -164,7 +167,7 @@ def validate_osm_tags(osm_tags):
     mandatory_tags = get_mandatory_tags(osm_tags)
     for mandatory_tag in mandatory_tags:
         if mandatory_tag['key'] not in osm_tags.keys():
-            message = 'Invalid OSM tags: {} tag is missing.'.format(
+            message = 'Invalid OSM tags: `{}` tag is missing.'.format(
                 mandatory_tag['key'])
             return False, message
 
@@ -174,9 +177,11 @@ def validate_osm_tags(osm_tags):
         tag_definition = update_tag_options(tag_definition, osm_tags)
 
         # Value type check
+        if tag_definition.get('type') == str:
+            item = str(item)
         if not isinstance(item, tag_definition.get('type')):
             message = (
-                'Invalid value type for key {}: '
+                'Invalid value type for key `{}`: '
                 'Expected type {}, got {} instead.').format(
                 key, tag_definition['type'].__name__, type(item).__name__)
             return False, message
@@ -185,7 +190,7 @@ def validate_osm_tags(osm_tags):
         if tag_definition.get('options'):
             if item not in tag_definition.get('options'):
                 message = (
-                    'Invalid value for key {}: '
+                    'Invalid value for key `{}`: '
                     '{} is not a valid option.').format(key, item)
                 return False, message
 
