@@ -8,6 +8,7 @@ import json
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.forms.models import fields_for_model
 
 from localities.models import Country
 from localities_osm.models.locality import LocalityOSM, LocalityOSMView
@@ -15,7 +16,7 @@ from localities_osm.serializer.locality_osm import (
     LocalityOSMSerializer
 )
 
-directory_cache = settings.CLUSTER_CACHE_DIR
+directory_cache = settings.CACHE_DIR
 directory_media = settings.MEDIA_ROOT + '/shapefiles'
 
 
@@ -55,7 +56,7 @@ def country_data_into_shapefile(country):
         queryset = LocalityOSMView.objects.in_polygon(polygons).order_by('row')
 
     # get field that needs to be saved
-    fields = LocalityOSM._meta.get_all_field_names()
+    fields = fields_for_model(LocalityOSM).keys()
     insert_to_shapefile(
         LocalityOSMSerializer(queryset, many=True).data, fields, country_name)
 
@@ -97,6 +98,9 @@ def insert_to_shapefile(data, fields, shp_filename):
             value = ''
             if field in healthsite['attributes']:
                 value = healthsite['attributes'][field]
+            elif field in healthsite:
+                value = healthsite[field]
+
             try:
                 value = str(value.encode('utf8'))
             except AttributeError:

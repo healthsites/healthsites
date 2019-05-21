@@ -17,7 +17,7 @@ class GetMigrationProgress(APIView):
         if username:
             pathname = \
                 os.path.join(
-                    settings.CLUSTER_CACHE_DIR, 'data-migration-progress')
+                    settings.CACHE_DIR, 'data-migration-progress')
             progress_file = \
                 os.path.join(pathname, '{}.txt'.format(username))
             found = os.path.exists(progress_file)

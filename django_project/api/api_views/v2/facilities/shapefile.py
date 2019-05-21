@@ -20,7 +20,7 @@ class GetFacilitiesShapefileProcess(APIView):
     def get(self, request, country_name):
         if country_name == 'world' or country_name == 'World':
             country_name = 'World'
-        country_cache = os.path.join(settings.CLUSTER_CACHE_DIR, country_name)
+        country_cache = os.path.join(settings.CACHE_DIR, country_name)
         metadata_file = os.path.join(country_cache, 'metadata')
         try:
             f = open(metadata_file, 'r')

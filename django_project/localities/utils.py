@@ -79,7 +79,7 @@ def get_country_statistic(query):
 
             # get cache
             filename = os.path.join(
-                settings.CLUSTER_CACHE_DIR,
+                settings.CACHE_DIR,
                 country.name + '_statistic'
             )
             try:
@@ -104,7 +104,7 @@ def get_country_statistic(query):
         else:
             # get cache
             filename = os.path.join(
-                settings.CLUSTER_CACHE_DIR,
+                settings.CACHE_DIR,
                 'world_statistic'
             )
             try:
@@ -113,8 +113,8 @@ def get_country_statistic(query):
                 output = json.loads(data)
             except IOError:
                 try:
-                    if not os.path.exists(settings.CLUSTER_CACHE_DIR):
-                        os.makedirs(settings.CLUSTER_CACHE_DIR)
+                    if not os.path.exists(settings.CACHE_DIR):
+                        os.makedirs(settings.CACHE_DIR)
 
                     # query for each of attribute
                     healthsites = get_heathsites_master()
