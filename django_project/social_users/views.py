@@ -8,9 +8,7 @@ from django.conf import settings
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Count, Max, Min
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.views.generic import TemplateView, View
 
 from braces.views import LoginRequiredMixin
@@ -49,46 +47,45 @@ class ProfilePage(TemplateView):
         *debug* toggles GoogleAnalytics support on the main page
         """
 
+        context = super(ProfilePage, self).get_context_data(*args, **kwargs)
         try:
             user = User.objects.get(username=kwargs['username'])
             user = get_profile(user, self.request)
             osm_user = False
+
+            if self.request.user == user:
+                # this is for checking availability old data
+                old_data = Locality.objects.filter(
+                    changeset__social_user__username=user, migrated=False
+                )
+
+                if old_data:
+                    context['old_data_available'] = True
+
+                pathname = \
+                    os.path.join(
+                        settings.CLUSTER_CACHE_DIR, 'data-migration-progress')
+                progress_file = \
+                    os.path.join(pathname, '{}.txt'.format(user))
+                found = os.path.exists(progress_file)
+
+                if found:
+                    context['data_migration_in_progress'] = True
+
+                autogenerate_api_key = False
+                if user.is_superuser:
+                    autogenerate_api_key = True
+                context['api_keys'] = UserApiKey.get_user_api_key(
+                    self.request.user, autogenerate=autogenerate_api_key)
         except User.DoesNotExist:
             user = {
                 'username': kwargs['username']
             }
             osm_user = True
 
-        context = super(ProfilePage, self).get_context_data(*args, **kwargs)
         context['user'] = user
         context['osm_user'] = osm_user
-
         context['api_keys'] = None
-
-        if self.request.user == user:
-            # this is for checking avialability old data
-            old_data = Locality.objects.filter(
-                changeset__social_user__username=user, migrated=False
-            )
-
-            if old_data:
-                context['old_data_available'] = True
-
-            pathname = \
-                os.path.join(
-                    settings.CLUSTER_CACHE_DIR, 'data-migration-progress')
-            progress_file = \
-                os.path.join(pathname, '{}.txt'.format(user))
-            found = os.path.exists(progress_file)
-
-            if found:
-                context['data_migration_in_progress'] = True
-
-            autogenerate_api_key = False
-            if user.is_superuser:
-                autogenerate_api_key = True
-            context['api_keys'] = UserApiKey.get_user_api_key(
-                self.request.user, autogenerate=autogenerate_api_key)
         return context
 
 

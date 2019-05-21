@@ -14,7 +14,7 @@ urlpatterns = patterns(
         name='profile'
     ),
     url(
-        r'^migrate-data/(?P<username>[\w\-]+)/$',
+        r'^migrate-data/(?P<username>.*)/$',
         execute_migration,
         name='migrate-user-data'
     ),
