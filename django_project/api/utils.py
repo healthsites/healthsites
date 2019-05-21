@@ -9,9 +9,7 @@ from api import osm_tag_defintions
 from api.osm_api_client import OsmApiWrapper
 from api.osm_field_definitions import ALL_FIELDS, get_mandatory_fields
 from api.osm_tag_defintions import get_mandatory_tags, update_tag_options
-from core.settings.base import OSM_API_URL, APP_NAME
-from core.settings.secret import SOCIAL_AUTH_OPENSTREETMAP_KEY, \
-    SOCIAL_AUTH_OPENSTREETMAP_SECRET
+from django.conf import settings
 from core.settings.utils import ABS_PATH
 
 
@@ -227,12 +225,12 @@ def create_osm_node(user, data):
     """
     oauth_token, oauth_token_secret = get_oauth_token(user)
     osm_api = OsmApiWrapper(
-        client_key=SOCIAL_AUTH_OPENSTREETMAP_KEY,
-        client_secret=SOCIAL_AUTH_OPENSTREETMAP_SECRET,
+        client_key=settings.SOCIAL_AUTH_OPENSTREETMAP_KEY,
+        client_secret=settings.SOCIAL_AUTH_OPENSTREETMAP_SECRET,
         oauth_token=oauth_token,
         oauth_token_secret=oauth_token_secret,
-        api=OSM_API_URL,
-        appid=APP_NAME
+        api=settings.OSM_API_URL,
+        appid=settings.APP_NAME
     )
     response = osm_api.create_node(data)
 
