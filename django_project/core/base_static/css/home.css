@@ -30,10 +30,33 @@
     font-family: "Raleway", sans-serif;
     min-height: 600px;
 }
+
+img {
+    max-width: 100%;
+}
+
  @media only screen and (max-width: 640px) {
 #tophome {
     padding-top: 53px;
 }
+
+.select-country {
+    left: auto !important;
+    margin-left: 0 !important;
+    width: 100% !important;
+    position: relative !important;
+    bottom: 0 !important;
+}
+
+.select-country-wrapper {
+    width: 100% !important;
+    position: absolute;
+    max-width: 100% !important;
+    padding-left: 90px !important;
+    padding-right: 10px !important;
+    bottom: 30px !important;
+}
+
 }
 .slideshow-container {
     margin: auto;
@@ -271,6 +294,7 @@ to {
 #map-home {
     height: 645px;
     position: relative;
+    margin: 0 auto;
 }
 .select-country {
     position: absolute;
