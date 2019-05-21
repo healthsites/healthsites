@@ -5,7 +5,9 @@ window.MAP = (function () {
     // constructor
     var module = function () {
         // create a map in the "map" div, set the view to a given place and zoom
-        this.MAP = L.map('map');
+        this.MAP = L.map('map', {
+            maxZoom: mapMaxZoom
+        });
 
         if (this._isCustomViewPort()) {
         } else if (!this._restoreMapContext()) {

@@ -37,7 +37,6 @@ class GetCluster(BaseAPI):
             zoom = int(request.GET.get('zoom'))
             icon_size = map(int, request.GET.get('iconsize').split(','))
             geoname = request.GET.get('geoname')
-            max_zoom = int(request.GET.get('maxZoom'))
         except Exception as e:
             raise ErrorParameter('%s is needed in parameters' % e)
 
@@ -46,11 +45,11 @@ class GetCluster(BaseAPI):
         if any((size < 0 for size in icon_size)):
             raise ErrorParameter('iconsize needs to be positive')
 
-        return (bbox_poly, zoom, max_zoom, icon_size, geoname)
+        return (bbox_poly, zoom, icon_size, geoname)
 
     def get(self, request, *args, **kwargs):
         try:
-            bbox, zoom, max_zoom, iconsize, geoname = self._parse_request_params(
+            bbox, zoom, iconsize, geoname = self._parse_request_params(
                 request
             )
         except ErrorParameter as e:
@@ -80,4 +79,4 @@ class GetCluster(BaseAPI):
             except Country.DoesNotExist:
                 pass
         return Response(
-            oms_view_cluster(localities, zoom, max_zoom, *iconsize))
+            oms_view_cluster(localities, zoom, *iconsize))
