@@ -123,6 +123,7 @@ PIPELINE_CSS['home'] = {
 # Cache folder
 CLUSTER_CACHE_DIR = 'cache'
 CLUSTER_CACHE_MAX_ZOOM = 9
+MAX_ZOOM = 18
 
 # WHAT3WORDS API
 WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'

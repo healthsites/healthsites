@@ -192,6 +192,8 @@ def map(request):
         if 'new_geom' in request.session:
             result['new_geom'] = request.session['new_geom']
             del request.session['new_geom']
+
+        result['map_max_zoom'] = settings.MAX_ZOOM
         return render_to_response(
             'map.html',
             result,

@@ -1,13 +1,14 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '14/05/19'
 
+from django.conf import settings
 from django.contrib.gis.geos.error import GEOSIndexError
 from api.utilities.geometry import (
     within_bbox, update_minbbox, overlapping_area
 )
 
 
-def oms_view_cluster(localites, zoom, max_zoom, pix_x, pix_y):
+def oms_view_cluster(localites, zoom, pix_x, pix_y):
     """
     Walk though a set of osm view and create point clusters
 
@@ -26,7 +27,7 @@ def oms_view_cluster(localites, zoom, max_zoom, pix_x, pix_y):
         except GEOSIndexError:
             continue
 
-        if zoom != max_zoom:
+        if zoom != settings.MAX_ZOOM:
             # check every point in cluster_points only when zoom is not max zoom.
             for pt in cluster_points:
                 if within_bbox(pt['bbox'], geomx, geomy):
