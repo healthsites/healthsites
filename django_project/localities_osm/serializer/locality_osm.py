@@ -152,7 +152,7 @@ class LocalityOSMBasicSerializer(ModelSerializer):
                   'changeset_timestamp', 'changeset_user']
 
 
-class LocalityOSMProfileSerializer(ModelSerializer):
+class LocalityOSMChangesetSerializer(ModelSerializer):
     changeset__social_user__username = serializers.SerializerMethodField()
     nickname = serializers.SerializerMethodField()
     locality_id = serializers.SerializerMethodField()

@@ -14,14 +14,9 @@ urlpatterns = patterns(
         name='profile'
     ),
     url(
-        r'^migrate-data/(?P<username>[\w\-]+)/$',
+        r'^migrate-data/(?P<username>.*)/$',
         execute_migration,
         name='migrate-user-data'
     ),
-    url(r'^logout/$', LogoutUser.as_view(), name='logout_user'),
-    url(
-        r'^user/updates/$',
-        'social_users.views.get_user_updates',
-        name='user-updates'
-    ),
+    url(r'^logout/$', LogoutUser.as_view(), name='logout_user')
 )

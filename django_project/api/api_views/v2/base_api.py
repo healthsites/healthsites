@@ -3,7 +3,7 @@ __date__ = '29/11/18'
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.views import APIView
-from api.authentication import APIKeyAuthentication\
+from api.authentication import APIKeyAuthentication
 
 
 class BaseAPI(APIView):
@@ -18,3 +18,4 @@ class BaseAPI(APIView):
 
 class BaseAPIWithAuth(BaseAPI):
     authentication_classes = (SessionAuthentication, BasicAuthentication, APIKeyAuthentication)
+

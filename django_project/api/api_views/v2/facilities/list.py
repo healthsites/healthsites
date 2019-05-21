@@ -3,7 +3,6 @@ __date__ = '29/11/18'
 
 from django.db.models import Count
 from django.http.response import HttpResponseBadRequest
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.api_views.v2.schema import (
@@ -12,12 +11,13 @@ from api.api_views.v2.schema import (
     Parameters
 )
 from api.api_views.v2.utilities import BadRequestError
-from api.api_views.v2.facilities.base_api import (
-    PaginationAPI
+from api.api_views.v2.pagination import (
+    PaginationAPI, LessThanOneException, NotANumberException
 )
+from api.api_views.v2.facilities.base_api import FacilitiesBaseAPIWithAuth
 from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node
 from core.settings.utils import ABS_PATH
-from localities.models import Country, Locality
+from localities.models import Country
 from localities.utils import parse_bbox
 from localities_osm.models.locality import LocalityOSM
 from localities_osm.serializer.locality_osm import LocalityOSMBasicSerializer
@@ -75,7 +75,7 @@ class GetFacilitiesBaseAPI(object):
         return queryset
 
 
-class GetFacilities(PaginationAPI, GetFacilitiesBaseAPI):
+class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -90,7 +90,11 @@ class GetFacilities(PaginationAPI, GetFacilitiesBaseAPI):
         if validation:
             return HttpResponseBadRequest(validation)
 
-        queryset = self.get_query_by_page(self.get_healthsites(request))
+        try:
+            queryset = self.get_query_by_page(self.get_healthsites(request))
+        except (LessThanOneException, NotANumberException) as e:
+            return HttpResponseBadRequest('%s' % e)
+
         return Response(self.serialize(queryset, many=True))
 
     def post(self, request):
@@ -140,7 +144,7 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
 
     def get(self, request):
         try:
-            healthsites = self.get_healthsites(request).order_by('-changeset_timestamp')
+            healthsites = self.get_healthsites(request)
             output = {
                 'localities': healthsites.count(),
                 'numbers': {},
@@ -162,7 +166,9 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
             }
 
             # last update
-            healthsites = healthsites.exclude(changeset_timestamp__isnull=True)[:10]
+            healthsites = healthsites.exclude(
+                changeset_timestamp__isnull=True).order_by(
+                '-changeset_timestamp')[:10]
             output['last_update'] = LocalityOSMBasicSerializer(healthsites, many=True).data
 
             country = request.GET.get('country', None)
