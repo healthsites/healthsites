@@ -27,27 +27,27 @@ def oms_view_cluster(localites, zoom, pix_x, pix_y):
         except GEOSIndexError:
             continue
 
-        if zoom != settings.MAX_ZOOM:
-            # check every point in cluster_points only when zoom is not max zoom.
-            for pt in cluster_points:
-                if within_bbox(pt['bbox'], geomx, geomy):
-                    # it's in the cluster 'catchment' area
-                    pt['count'] += 1
-                    pt['minbbox'] = update_minbbox((geomx, geomy), pt['minbbox'])
-                    break
+        # check every point in cluster_points
+        for pt in cluster_points:
+            if zoom != settings.MAX_ZOOM and within_bbox(pt['bbox'], geomx, geomy):
+                # it's in the cluster 'catchment' area
+                pt['count'] += 1
+                pt['minbbox'] = update_minbbox((geomx, geomy), pt['minbbox'])
+                break
 
-        # point is not in the catchment area of any cluster
-        x_range, y_range = overlapping_area(zoom, pix_x, pix_y, geomy)
-        bbox = (
-            geomx - x_range * 1.5, geomy - y_range * 1.5,
-            geomx + x_range * 1.5, geomy + y_range * 1.5
-        )
-        new_cluster = {
-            'uuid': '%s/%s' % (locality.osm_type, locality.osm_id),
-            'geom': (geomx, geomy),
-            'count': 1,
-            'bbox': bbox,
-            'minbbox': (geomx, geomy, geomx, geomy),
-        }
-        cluster_points.append(new_cluster)
+        else:
+            # point is not in the catchment area of any cluster
+            x_range, y_range = overlapping_area(zoom, pix_x, pix_y, geomy)
+            bbox = (
+                geomx - x_range * 1.5, geomy - y_range * 1.5,
+                geomx + x_range * 1.5, geomy + y_range * 1.5
+            )
+            new_cluster = {
+                'uuid': '%s/%s' % (locality.osm_type, locality.osm_id),
+                'geom': (geomx, geomy),
+                'count': 1,
+                'bbox': bbox,
+                'minbbox': (geomx, geomy, geomx, geomy),
+            }
+            cluster_points.append(new_cluster)
     return cluster_points
