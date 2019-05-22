@@ -34,6 +34,7 @@ class MainView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
+        context['map_max_zoom'] = settings.MAX_ZOOM
         if request.user.is_authenticated():
             if request.user.is_staff:
                 context['uploader'] = True
