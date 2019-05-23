@@ -4,6 +4,8 @@ import mock
 import os
 import sys
 
+from osmapi import ElementDeletedApiError
+
 from api.osm_api_client import OsmApiWrapper
 from core.settings.base import DEV_OSM_API_URL
 from core.settings.secret import (
@@ -152,7 +154,7 @@ class TestOsmApi(unittest.TestCase):
     @unittest.skipIf(
         condition=not (OAUTH_TOKEN and OAUTH_TOKEN_SECRET),
         reason='requires valid oauth token')
-    def test_push_osm_node(self):
+    def test_crud_osm_node(self):
         test_node = {
             'lat': 47.287,
             'lon': 8.765,
@@ -162,8 +164,38 @@ class TestOsmApi(unittest.TestCase):
             }
         }
 
+        # Creating osm node using osm api client.
         result = self.api.create_node(test_node)
+        node_id = result.get('id')
+        node_version = result.get('version')
+        self.assertIsNotNone(node_id)
+        self.assertEqual(1, node_version)
 
-        self.assertEquals(result['lat'], test_node['lat'])
-        self.assertEquals(result['lon'], test_node['lon'])
-        self.assertEquals(result['tag'], test_node['tag'])
+        # Read osm node using osm api client and check whether newly created
+        # osm node is exist in the osm instance.
+        result = self.api.NodeGet(node_id)
+        self.assertEqual(node_id, result.get('id'))
+
+        # Update/modify an osm node data using osm api client.
+        test_node['id'] = node_id
+        test_node['tag']['name'] = 'pastafarian church'
+        result = self.api.update_node(test_node)
+        node_name = result.get('tag', {}).get('name')
+        self.assertEqual(node_id, result.get('id'))
+        self.assertEqual(node_name, 'pastafarian church')
+
+        # Read osm node using osm api client and check whether newly updated
+        # osm node is exist. Latest version number should be increased.
+        result = self.api.NodeGet(node_id)
+        node_version = result.get('version')
+        self.assertEqual(node_id, result.get('id'))
+        self.assertEqual(2, node_version)
+
+        # Delete the latest version of an osm node using osm api client.
+        test_node['version'] = 2
+        _ = self.api.delete_node(test_node)
+
+        # Read osm node using osm api client and check if it raises
+        # ElementDeletedApiError since the osm node has been deleted.
+        self.assertRaises(
+            ElementDeletedApiError, self.api.delete_node, test_node)
