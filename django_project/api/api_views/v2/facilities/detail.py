@@ -78,6 +78,10 @@ class GetDetailFacility(FacilitiesBaseAPI):
                 response = update_osm_node(user, data)
 
                 return Response(response)
+            else:
+                # For now, we only support Node
+                return HttpResponseBadRequest(
+                    '%s is not supported as osm type' % osm_type)
 
         except Exception as e:
             return HttpResponseBadRequest('%s' % e)
