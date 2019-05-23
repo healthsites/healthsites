@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '14/05/19'
 
+from django.conf import settings
 from django.contrib.gis.geos.error import GEOSIndexError
 from api.utilities.geometry import (
     within_bbox, update_minbbox, overlapping_area
@@ -28,7 +29,7 @@ def oms_view_cluster(localites, zoom, pix_x, pix_y):
 
         # check every point in cluster_points
         for pt in cluster_points:
-            if within_bbox(pt['bbox'], geomx, geomy):
+            if zoom != settings.MAX_ZOOM and within_bbox(pt['bbox'], geomx, geomy):
                 # it's in the cluster 'catchment' area
                 pt['count'] += 1
                 pt['minbbox'] = update_minbbox((geomx, geomy), pt['minbbox'])

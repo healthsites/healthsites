@@ -348,7 +348,7 @@
                 'tag': tag,
                 'spec': spec,
                 'data': data,
-                'uuid': uuid,
+                'uuid': uuid
             });
             // when using cached data we don't need to make any new requests
             // for example, this is useful when changing app contexts without changing map view

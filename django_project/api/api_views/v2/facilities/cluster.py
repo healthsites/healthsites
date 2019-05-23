@@ -55,10 +55,13 @@ class GetCluster(BaseAPI):
         except ErrorParameter as e:
             return HttpResponseBadRequest('%s' % e)
 
-        if not all([geoname]) and zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
+        if zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
+            filename = '{}_{}_{}_localities.json'.format(zoom, *iconsize)
+            if geoname:
+                filename = '{}_{}_{}_localities_{}.json'.format(zoom, iconsize[0], iconsize[1], geoname)
             filename = os.path.join(
                 settings.CLUSTER_CACHE_DIR,
-                '{}_{}_{}_localities.json'.format(zoom, *iconsize)
+                filename
             )
 
             try:

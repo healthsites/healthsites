@@ -60,6 +60,7 @@
 
     </head>
     <script>
+        var mapMaxZoom = {{ map_max_zoom | safe }};
         var isLoggedIn = false;
         var isUserTrusted = false;
         {% if user.is_authenticated %}

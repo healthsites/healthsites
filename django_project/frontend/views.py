@@ -34,6 +34,7 @@ class MainView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
+        context['map_max_zoom'] = settings.MAX_ZOOM
         if request.user.is_authenticated():
             if request.user.is_staff:
                 context['uploader'] = True
@@ -192,6 +193,8 @@ def map(request):
         if 'new_geom' in request.session:
             result['new_geom'] = request.session['new_geom']
             del request.session['new_geom']
+
+        result['map_max_zoom'] = settings.MAX_ZOOM
         return render_to_response(
             'map.html',
             result,
