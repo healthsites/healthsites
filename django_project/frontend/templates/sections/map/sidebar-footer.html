@@ -1,48 +1,38 @@
 <div class="buttons col-md-4 col-sm-12 col-xs-12">
-    {% if user.social_auth.get.provider == "twitter" %}
     <div class="button-wrapper col-xs-4">
         <a id="twitter_share_map" class="button share stroke blue">
             <i class="fa fa-twitter"></i> share
         </a>
     </div>
-    {% endif %}
-    {% if user.social_auth.get.provider == "facebook" %}
-    <div class="button-wrapper col-xs-4">
-        <a id="fb-share" class="button share stroke blue" target="_blank"
-            href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fhealthsites.io%2Fmap&amp;src=sdkpreparse">
-            <i class="fa fa-facebook"></i> share
-        </a>
-    </div>
-    {% endif %}
-    {% if user.social_auth.get.provider == "openstreetmap" %}
-    <div class="button-wrapper col-xs-4" style="opacity: 0.7">
-        <a class="button edit stroke blue"
-           style="cursor: pointer"><i
-                class="fa fa-pencil"></i> edit
-        </a>
-    </div>
-    <div class="button-wrapper col-xs-4" style="display: none" disabled>
-        <a class="button edit stroke blue"
-           style="cursor: pointer"><i
-                class="fa fa-pencil"></i> save
-        </a>
-    </div>
-    <div class="button-wrapper col-xs-4" style="display: none" disabled>
-        <a class="button edit stroke blue"
-           style="cursor: pointer"><i
-                class="fa fa-pencil"></i> create
-        </a>
-    </div>
-    <div class="button-wrapper col-xs-4" style="opacity: 0.7">
-        <a class="button add" style="cursor: pointer">
-            <i class="fa fa-plus"></i> add new
-        </a>
-    </div>
-    <div class="button-wrapper col-xs-4" style="display: none" disabled>
-        <a class="button edit stroke blue"
-           style="cursor: pointer"><i
-                class="fa fa-pencil"></i> cancel
-        </a>
-    </div>
+    {% if user.provider == "openstreetmap" %}
+        <div class="button-wrapper col-xs-4" style="opacity: 0.7">
+            <a class="button edit stroke blue"
+               style="cursor: pointer"><i
+                    class="fa fa-pencil"></i> edit
+            </a>
+        </div>
+        <div class="button-wrapper col-xs-4" style="display: none" disabled>
+            <a class="button edit stroke blue"
+               style="cursor: pointer"><i
+                    class="fa fa-pencil"></i> save
+            </a>
+        </div>
+        <div class="button-wrapper col-xs-4" style="display: none" disabled>
+            <a class="button edit stroke blue"
+               style="cursor: pointer"><i
+                    class="fa fa-pencil"></i> create
+            </a>
+        </div>
+        <div class="button-wrapper col-xs-4" style="opacity: 0.7">
+            <a class="button add" style="cursor: pointer">
+                <i class="fa fa-plus"></i> add new
+            </a>
+        </div>
+        <div class="button-wrapper col-xs-4" style="display: none" disabled>
+            <a class="button edit stroke blue"
+               style="cursor: pointer"><i
+                    class="fa fa-pencil"></i> cancel
+            </a>
+        </div>
     {% endif %}
 </div>
