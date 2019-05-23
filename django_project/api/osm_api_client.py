@@ -199,6 +199,41 @@ class OsmApiWrapper(OsmApi, object):
 
         return changeset
 
+    def delete_node(self, data, comment=None):
+        """Delete OSM node data through OSM api.
+
+        :param data: OSM Node data.
+        :type data: dict
+            example: {
+                'id': id of node,
+                'lat': latitude of node,
+                'lon': longitude of node,
+                'version': version number of node,
+            }
+
+        :param comment: Changeset comment.
+        :type comment: str
+
+        :return: OSM changeset data.
+        :rtype: dict
+            example: {
+                'id': id of node,
+                'lat': latitude of node,
+                'lon': longitude of node,
+                'tag': dict of tags,
+                'changeset': id of changeset of last change,
+                'version': version number of node,
+                'user': username of last change,
+                'uid': id of user of last change,
+                'visible': True|False
+            }
+        """
+        self.ChangesetCreate(self.changeset_tags(comment))
+        changeset = self.NodeDelete(data)
+        self.ChangesetClose()
+
+        return changeset
+
     def create_way(self, data, comment=None):
         """Create OSM way data and push it to OSM instance through OSM api.
 
