@@ -24,4 +24,5 @@ raven
 pyshp
 pyyaml
 osmapi
+overpass
 requests_oauthlib

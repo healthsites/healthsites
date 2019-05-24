@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import overpass
 import yaml
 
 from os.path import exists
@@ -163,6 +164,11 @@ def validate_osm_data(osm_data):
     if not is_valid:
         return False, message
 
+    # Validate duplication
+    is_valid, message = validate_duplication(osm_data)
+    if not is_valid:
+        return False, message
+
     return True, 'OSM data are valid.'
 
 
@@ -277,6 +283,45 @@ def validate_osm_tags(osm_tags):
                 return False, message
 
     return True, 'OSM tags are valid.'
+
+
+def validate_duplication(osm_data):
+    """Validate if given osm data is already exist in osm instance.
+
+    :param osm_data: OSM data.
+    :type osm_data: dict
+
+    :return: Validation status and message.
+    :rtype: tuple
+    """
+    # We need to determine several scenarios for validating the duplication.
+    # At first, we will use Overpass QL to check whether node with given name
+    # is exist in the bounding box.
+
+    # create bounding box with delta = 0.001
+    radius = 10
+    lon = osm_data['lon']
+    lat = osm_data['lat']
+
+    op_api = overpass.API()
+    name = osm_data['tag']['name']
+    query = (
+        '('
+        'node["name"="{name}"](around:{radius}, {lat}, {lon});'
+        'node["name:en"="{name}"](around:{radius}, {lat}, {lon});'
+        ')'.format(
+            name=name,
+            radius=radius,
+            lon=lon,
+            lat=lat))
+    response = op_api.get(query)
+    if len(response.get('features', [])) > 0:
+        message = (
+            'Duplication detected. Node with `{name}` name was found '
+            'around the area.').format(name=name)
+        return False, message
+
+    return True, 'No duplication found.'
 
 
 def create_osm_node(user, data):
