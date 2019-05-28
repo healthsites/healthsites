@@ -175,3 +175,4 @@ Now project settings is setup, our next step is setup run configuration to run o
 6. Python interpreter= Select the one that we create, which has sentences `localhost:49363`
 7. Click OK and run!
 ```
+
