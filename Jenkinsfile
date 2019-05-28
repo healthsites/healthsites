@@ -6,6 +6,9 @@ pipeline {
             args '-u root:root'
         }
     }
+    environment {
+        RABBITMQ_HOST = '127.0.0.1'
+    }
     stages {
         stage('Test') {
             steps {
