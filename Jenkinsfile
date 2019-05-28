@@ -7,9 +7,8 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'pwd && ls -la && sleep 30'
-//                sh 'django_project/coverage run manage.py test'
-//                sh 'flake8'
+                sh 'cd /home/web/django_project/ && coverage run manage.py test'
+                sh 'cd /home/web/django_project/ && flake8'
             }
         }
     }
