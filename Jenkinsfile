@@ -7,7 +7,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'coverage run manage.py test'
+                sh 'django_project/coverage run manage.py test'
                 sh 'flake8'
             }
         }
