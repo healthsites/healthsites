@@ -7,8 +7,7 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'echo "OK"'
-                sh 'cd /home/web/ && coverage run manage.py test'
+                sh 'coverage run manage.py test'
                 sh 'flake8'
             }
         }
