@@ -2,9 +2,7 @@
 
 pipeline {
     agent {
-        dockerfile {
-            dir 'deployment/docker'
-        }
+        dockerfile true
     }
     stages {
         stage('Test') {
