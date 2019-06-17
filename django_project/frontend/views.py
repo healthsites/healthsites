@@ -153,8 +153,8 @@ def map(request):
     else:
         tag = request.GET.get('tag')
         country = request.GET.get('country')
-        place = request.GET.get('place')
         attribute = request.GET.get('attribute')
+        uuid = request.GET.get('uuid')
         result = {}
 
         if tag:
@@ -162,8 +162,6 @@ def map(request):
             result['tag'] = tag
         elif country:
             pass
-        elif place:
-            result = search_place(request, place)
         elif attribute:
             uuid = request.GET.get('uuid')
             result = search_locality_by_spec_data('attribute', attribute, uuid)
@@ -171,15 +169,7 @@ def map(request):
                 'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],
                 'location': result['location']
             }
-        elif len(request.GET) == 0:
-            result = search_place(request, place)
-            # get facilities shapefile size
-            result['shapefile_size'] = 0
-            filename = os.path.join(directory_media, 'facilities_shapefile.zip')
-            if (os.path.isfile(filename)):
-                result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
-        else:
-            uuid = request.GET.get('uuid')
+        elif uuid:
             for item in request.GET:
                 if item != 'uuid':
                     spec = item
@@ -189,6 +179,13 @@ def map(request):
                         'spec': spec, 'data': data, 'uuid': uuid,
                         'name': result['locality_name'], 'location': result['location']
                     }
+        else:
+            result = search_place(request, None)
+            # get facilities shapefile size
+            result['shapefile_size'] = 0
+            filename = os.path.join(directory_media, 'facilities_shapefile.zip')
+            if (os.path.isfile(filename)):
+                result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
 
         if 'new_geom' in request.session:
             result['new_geom'] = request.session['new_geom']
