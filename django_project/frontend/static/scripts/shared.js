@@ -18,7 +18,27 @@ shared['hash'] = function () {
 
 shared['currentID'] = function () {
     return shared.hash().replace('/locality/', '')
-}
+};
+
+shared['replaceGeonameSearch'] = function (geoname) {
+    var currentUrl = window.location;
+    if (!geoname) {
+        if (parameters['geoname']) {
+            currentUrl = currentUrl.replace(
+                'geoname=' + parameters['geoname'], '')
+        }
+    } else {
+        if (parameters['geoname']) {
+            currentUrl = currentUrl.replace(
+                parameters['geoname'], geoname)
+        } else {
+            var currentIndex = currentUrl.indexOf('#');
+            if (currentUrl.indexOf('#') === -1) {
+
+            }
+        }
+    }
+};
 
 // Styles
 var styles = {

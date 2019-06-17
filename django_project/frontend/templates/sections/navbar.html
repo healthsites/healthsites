@@ -49,7 +49,7 @@
         <!--/.nav-collapse -->
 
     </div>
-    <div class="nav-searchbar container-fluid" id="search-form">
+    <form class="nav-searchbar container-fluid" id="search-form">
         <div id="search-options" class="option-group">
             <div class="option">
                 <span></span>
@@ -59,11 +59,17 @@
             </div>
             <div class="option">
                 <span></span>
-                <input type="radio" name="option" id="radio-place" value="country">
+                <input type="radio" name="option" id="radio-country" value="country">
                 <span></span>
-                <label class="option" for="radio-healthsite">country</label>
+                <label class="option" for="radio-country">country</label>
+            </div>
+            <div class="option">
+                <span></span>
+                <input type="radio" name="option" id="radio-place" value="place">
+                <span></span>
+                <label class="option" for="radio-place">place</label>
             </div>
         </div>
         <input id="search-box" type="search" name="q" placeholder="search...">
-    </div>
+    </form>
 </nav>
