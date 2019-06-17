@@ -6,7 +6,7 @@ define([
         autocomplete_localities: "/api/v2/facilities/autocomplete/",
         autocomplete_country: "/api/v2/countries/autocomplete/e",
         autocomplete_url: '',
-        ggeoname_search: "/api/v2/gmaps/search/geoname",
+        geoname_search: "/api/v2/gmaps/search/geoname",
         initialize: function () {
             var self = this;
             this.currentSearch = 'healthsite';
@@ -17,7 +17,7 @@ define([
 
             this.el.submit(function () {
                 if (!self.autocomplete_url) {
-                    self.placeSearch();
+                    self.placeSearch(self.$searchbox.val());
                     return false;
                 }
                 return false;
@@ -91,17 +91,28 @@ define([
             this.$searchbox.css("cursor", "");
             this.$searchbox.addClass('error');
         },
-        placeSearch: function () {
+        placeSearchInit: function (geoname) {
+            $('#radio-place').click();
+            this.$searchbox.val(geoname);
+            this.placeSearch(geoname);
+        },
+        placeSearch: function (geoname) {
             var self = this;
             if (this.searchAjax) {
                 this.searchAjax.abort()
             }
-            if (this.$searchbox.val().length < 3) {
+            if (geoname.length < 3) {
                 self.searchBoxError();
                 return;
             }
+            // redirect into map if not map
+            if (window.location.pathname !== '/map') {
+                window.location = '/map?geoname=' + geoname;
+                return false;
+            }
+            this.searchBoxSubmitted();
             this.searchAjax = $.ajax({
-                url: this.ggeoname_search + '?q=',
+                url: this.geoname_search,
                 dataType: 'json',
                 data: {
                     q: this.$searchbox.val()
@@ -116,7 +127,6 @@ define([
                     });
                 },
                 error: function (error) {
-                    console.log(error);
                     self.searchBoxError()
                 }
             });

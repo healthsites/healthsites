@@ -25,7 +25,11 @@ require([
     var identifier = shared.currentID();
     new CountryList();
     new LocalityDetail();
-    new Search();
+    var search = new Search();
+    if (parameters['geoname']) {
+        shared.replaceGeonameSearch('');
+        search.placeSearchInit(parameters['geoname']);
+    }
     new ShapefileDownloader();
 
     function goToLocality() {

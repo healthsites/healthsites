@@ -21,7 +21,7 @@ shared['currentID'] = function () {
 };
 
 shared['replaceGeonameSearch'] = function (geoname) {
-    var currentUrl = window.location;
+    var currentUrl = window.location.toString();
     if (!geoname) {
         if (parameters['geoname']) {
             currentUrl = currentUrl.replace(
@@ -31,13 +31,9 @@ shared['replaceGeonameSearch'] = function (geoname) {
         if (parameters['geoname']) {
             currentUrl = currentUrl.replace(
                 parameters['geoname'], geoname)
-        } else {
-            var currentIndex = currentUrl.indexOf('#');
-            if (currentUrl.indexOf('#') === -1) {
-
-            }
         }
     }
+    window.history.pushState({}, document.title, currentUrl);
 };
 
 // Styles
