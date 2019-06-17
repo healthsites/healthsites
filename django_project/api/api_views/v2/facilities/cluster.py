@@ -72,6 +72,11 @@ class GetCluster(BaseAPI):
                 pass
 
         localities = get_all_osm_query().in_bbox(bbox)
+        uuid = request.GET.get('uuid', None)
+        if uuid:
+            uuid = uuid.split('/')
+            if len(uuid) == 2:
+                localities = localities.exclude(osm_type=uuid[0], osm_id=uuid[1])
         if geoname:
             try:
                 # getting country's polygon
