@@ -131,20 +131,34 @@ def regenerate_cache(self, changeset_pk, locality_pk):
         print e
 
 
+@shared_task(name='localities.tasks.generate_shapefile')
+def generate_shapefile():
+    management.call_command('generate_shapefile_countries')
+
+
+# TODO: Below is used by Version 2
+# TODO: The above tasks will be deprecated
+# TODO: Move this into API app
+
 @app.task(bind=True)
 def regenerate_cache_cluster(self):
     from django.core.management import call_command
-    call_command('gen_cluster_cache', 48, 46)
-
-
-@shared_task(name='localities.tasks.generate_shapefile')
-def generate_shapefile():
-    management.call_command('generate_shapefile_v2')
+    call_command('generate_cluster_cache')
 
 
 @app.task(bind=True)
 def country_data_into_shapefile_task(self, country):
-    from api.management.commands.generate_shapefile_v2 import (
+    from api.management.commands.generate_shapefile_countries import (
         country_data_into_shapefile
     )
     country_data_into_shapefile(country)
+
+
+@app.task(bind=True)
+def country_data_into_statistic_task(self, extent, country):
+    from django.core.management import call_command
+    if not extent:
+        extent = ''
+    if not country:
+        country = ''
+    call_command('generate_statistic_countries', extent=extent, country=country)

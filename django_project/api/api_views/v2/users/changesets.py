@@ -8,12 +8,12 @@ from api.api_views.v2.pagination import (
 )
 from localities_osm.models.locality import LocalityOSMView
 from localities_osm.serializer.locality_osm import LocalityOSMBasicSerializer
-from localities_osm.utilities import get_all_osm_query
+from localities_osm.queries import all_locality
 
 
 class GetChangesets(PaginationAPI):
     def get(self, request, username):
-        updates_osm = get_all_osm_query().filter(
+        updates_osm = all_locality().filter(
             changeset_user=username).exclude(
             changeset_timestamp__isnull=True).order_by(
             '-changeset_timestamp')

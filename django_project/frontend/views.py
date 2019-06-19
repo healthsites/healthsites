@@ -22,7 +22,6 @@ from localities.models import Country, DataLoaderPermission, Locality, Value
 from localities.utils import (
     search_locality_by_spec_data, search_locality_by_tag
 )
-from localities_osm.utilities import get_all_osm_query
 from social_users.utils import get_profile
 
 LOG = logging.getLogger(__name__)

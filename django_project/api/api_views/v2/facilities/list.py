@@ -1,7 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from django.db.models import Count
+import json
 from django.http.response import HttpResponseBadRequest
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,12 +16,10 @@ from api.api_views.v2.pagination import (
 )
 from api.api_views.v2.facilities.base_api import FacilitiesBaseAPIWithAuth
 from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node
+from api.utilities.statistic import get_statistic, get_statistic_with_cache
 from core.settings.utils import ABS_PATH
 from localities.models import Country
-from localities.utils import parse_bbox
-from localities_osm.models.locality import LocalityOSM
-from localities_osm.serializer.locality_osm import LocalityOSMBasicSerializer
-from localities_osm.utilities import get_all_osm_query
+from localities_osm.queries import filter_locality
 
 
 class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
@@ -52,26 +50,15 @@ class GetFacilitiesBaseAPI(object):
         return country
 
     def get_healthsites(self, request):
+        extent = request.GET.get('extent', None)
+        country = request.GET.get('country', None)
 
         # check extent data
-        extent = request.GET.get('extent', None)
-        queryset = get_all_osm_query()
-        if extent:
-            try:
-                polygon = parse_bbox(request.GET.get('extent'))
-            except (ValueError, IndexError):
-                raise BadRequestError('extent is incorrect format')
-            queryset = queryset.in_polygon(polygon)
-
-        # check by country
-        country = request.GET.get('country', None)
         try:
-            country = self.get_country(country)
-            if country:
-                polygons = country.polygon_geometry
-                queryset = queryset.in_polygon(polygons)
-        except Country.DoesNotExist:
-            raise BadRequestError('%s is not found or not a country.' % country)
+            queryset = filter_locality(
+                extent=extent, country=country)
+        except Exception as e:
+            raise BadRequestError('%s' % e)
         return queryset
 
 
@@ -130,8 +117,13 @@ class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):
 
     def get(self, request):
         try:
-            return Response(self.get_healthsites(request).count())
-        except BadRequestError as e:
+            country = request.GET.get('country', None)
+            extent = request.GET.get('extent', None)
+
+            # get cache data
+            output = get_statistic_with_cache(extent, country)
+            return Response(output['localities'])
+        except Exception as e:
             return HttpResponseBadRequest('%s' % e)
 
 
@@ -144,37 +136,14 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
 
     def get(self, request):
         try:
-            healthsites = self.get_healthsites(request)
-            output = {
-                'localities': healthsites.count(),
-                'numbers': {},
-                'last_update': []
-            }
-            numbers = healthsites.values(
-                'amenity').annotate(total=Count('amenity')).order_by('-total')
-            for number in numbers[:5]:
-                type = number['amenity']
-                if type:
-                    output['numbers'][type] = number['total']
-
-            # get completeness
-            basic = LocalityOSM.get_count_of_basic(healthsites)
-            complete = LocalityOSM.get_count_of_complete(healthsites)
-            output['completeness'] = {
-                'basic': basic,
-                'complete': complete
-            }
-
-            # last update
-            healthsites = healthsites.exclude(
-                changeset_timestamp__isnull=True).order_by(
-                '-changeset_timestamp')[:10]
-            output['last_update'] = LocalityOSMBasicSerializer(healthsites, many=True).data
-
             country = request.GET.get('country', None)
-            country = self.get_country(country)
+            extent = request.GET.get('extent', None)
+
+            # get cache data
+            output = get_statistic_with_cache(extent, country)
             if country:
+                country = self.get_country(country)
                 output['geometry'] = country.polygon_geometry.geojson
             return Response(output)
-        except BadRequestError as e:
+        except Exception as e:
             return HttpResponseBadRequest('%s' % e)

@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 from api.utilities.clustering import oms_view_cluster
 from api.utilities.geometry import parse_bbox
 from localities.models import Country
-from localities_osm.utilities import get_all_osm_query
+from localities_osm.queries import all_locality
 
 
 class Command(BaseCommand):
@@ -49,7 +49,7 @@ class Command(BaseCommand):
         if not os.path.exists(settings.CLUSTER_CACHE_DIR):
             os.makedirs(settings.CLUSTER_CACHE_DIR)
 
-        osm_query = get_all_osm_query()
+        osm_query = all_locality()
         for zoom in range(settings.CLUSTER_CACHE_MAX_ZOOM + 1):
             filename = os.path.join(
                 settings.CLUSTER_CACHE_DIR,
