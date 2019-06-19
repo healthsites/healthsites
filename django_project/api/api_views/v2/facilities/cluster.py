@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from api.utilities.clustering import oms_view_cluster
 from api.utilities.geometry import parse_bbox
 from localities.models import Country
-from localities_osm.utilities import get_all_osm_query
+from localities_osm.queries import all_locality
 
 
 class ErrorParameter(Exception):
@@ -71,7 +71,7 @@ class GetCluster(BaseAPI):
             except IOError:
                 pass
 
-        localities = get_all_osm_query().in_bbox(bbox)
+        localities = all_locality().in_bbox(bbox)
         uuid = request.GET.get('uuid', None)
         if uuid:
             uuid = uuid.split('/')
