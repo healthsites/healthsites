@@ -30,6 +30,24 @@ ADD sources.list /etc/apt/sources.list.d/
 RUN apt-get update -y
 RUN apt-get install certbot python-certbot-nginx -t stretch-backports -y
 
+# Install Node js
+RUN curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
+RUN bash nodesource_setup.sh
+RUN apt-get -y --force-yes install nodejs
+RUN npm -g install yuglify
+
+# Debian is messed up and aliases node as nodejs
+# So when yuglify is installed it references the wrong node binary...
+# lets fix that here...
+
+RUN rpl "env node" "env nodejs" /usr/lib/node_modules/yuglify/bin/yuglify
+
+# Install grunt
+RUN npm install -g grunt-cli
+ADD package.json /package.json
+ADD Gruntfile.js /Gruntfile.js
+RUN cd / && npm install
+
 # You could put --protocol=http as a parameter (to test it directly)
 # when running e.g. docker run konektaz/healthsites --protocol=http
 # or any other wsgi parameters and they will be tagged on to the
