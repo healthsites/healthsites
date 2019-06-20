@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '19/06/19'
 
+import os
 import logging
 import json
 from django.core.management.base import BaseCommand
@@ -38,6 +39,20 @@ class Command(BaseCommand):
         filename = get_statistic_cache_filename(
             extent=extent, country=country
         )
+        # create already run indicator
+        dirname = os.path.dirname(filename)
+        is_run_file = os.path.join(dirname, 'is_run')
+        if os.path.exists(filename):
+            if os.path.exists(is_run_file):
+                print '%s statistic generation already run' % country
+                LOG.info('%s statistic generation already run' % country)
+                return
+            try:
+                file = open(is_run_file, 'w+')
+                file.close()
+            except Exception as e:
+                pass
+
         cache_data = get_statistic_cache(extent, country)
         healthsites = filter_locality(
             extent=extent, country=country)
@@ -45,6 +60,7 @@ class Command(BaseCommand):
         if cache_data:
             if cache_data['localities'] == healthsites.count():
                 LOG.info('%s statistic generated skipped' % country)
+                os.remove(is_run_file)  # remove run indicator
                 return
 
         statistic = get_statistic(healthsites)
@@ -55,5 +71,6 @@ class Command(BaseCommand):
             file = open(filename, 'w+')
             file.write(json.dumps(statistic))
             file.close()
+            os.remove(is_run_file)  # remove run indicator
         except Exception as e:
-            pass
+            print e
