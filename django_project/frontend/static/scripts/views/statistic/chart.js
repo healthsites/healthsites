@@ -3,7 +3,7 @@ define([
     'jquery',
     'jquery-ui',
     'c3',
-    'd3',], function (Backbone, $, JqueryUI, d3Library) {
+    'd3'], function (Backbone, $, JqueryUI, c3, d3) {
     return Backbone.View.extend({
         url: '/countries',
         chart: null,

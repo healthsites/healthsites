@@ -11,12 +11,12 @@ module.exports = function(grunt) {
                     out: function(text, sourceMapText) {
                         var UglifyJS = require('uglify-es'),
                         uglified = UglifyJS.minify(text);
-                        grunt.file.write('/home/web/django_project/frontend/static/js/optimized.js', uglified.code);
+                        grunt.file.write('/home/web/django_project/frontend/static/scripts/configs/optimized.js', uglified.code);
                     },
-                    baseUrl: '/home/web/django_project/frontend/static',
-                    mainConfigFile: '/home/web/django_project/frontend/static/scripts/configs/app.js',
-                    name: 'libs/almond/almond',
-                    include: ['scripts/configs/app.js'],
+                    baseUrl: '/home/web/django_project/frontend',
+                    mainConfigFile: '/home/web/django_project/frontend/static/scripts/configs/index.js',
+                    name: 'static/libs/almond/almond',
+                    include: ['static/scripts/configs/index.js'],
                 }
             }
         }

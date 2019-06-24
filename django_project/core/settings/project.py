@@ -131,3 +131,17 @@ MAX_ZOOM = 18
 # WHAT3WORDS API
 WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'
 DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
+
+# Grunt and require js
+REQUIRE_JS_PATH = '/static/libs/require.js/2.3.6/require.min.js'
+
+GRUNT_MODULES = {
+    'landing_page': {
+        'main': 'scripts/configs/index',
+        'optimized': 'js/optimized.js',
+    },
+    'map_view': {
+        'main': 'scripts/configs/map',
+        'optimized': 'js/optimized.js',
+    }
+}
