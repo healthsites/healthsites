@@ -10,7 +10,10 @@ from api.osm_api_client import OsmApiWrapper
 from api.osm_field_definitions import ALL_FIELDS, get_mandatory_fields
 from api.osm_tag_defintions import get_mandatory_tags, update_tag_options
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
 from core.settings.utils import ABS_PATH
+from social_users.models import TrustedUser, Organisation
 
 
 def get_definition(keyword, definition_library, key=None):
@@ -55,6 +58,36 @@ def get_oauth_token(user):
         return access_token['oauth_token'], access_token['oauth_token_secret']
     except UserSocialAuth.DoesNotExist:
         raise Exception('This user is not linked to openstreetmap yet')
+
+
+def is_organizer(user):
+    """Check whether the user is an organizer or not.
+
+    :param user: The user.
+    :type user: django.contrib.auth.models.User
+
+    :return: Boolean indicator
+    :rtype: bool
+    """
+    try:
+        return Organisation.organizer.filter(user=user).exists()
+    except Organisation.DoesNotExist:
+        return False
+
+
+def is_trusted_user(user):
+    """Check whether the user is a trusted user or not.
+
+    :param user: The user.
+    :type user: django.contrib.auth.models.User
+
+    :return: Boolean indicator
+    :rtype: bool
+    """
+    try:
+        return TrustedUser.filter(user=user).exists()
+    except TrustedUser.DoesNotExist:
+        return False
 
 
 def remap_dict(old_dict, transform):
@@ -119,6 +152,11 @@ def validate_osm_data(osm_data):
     :return: Validation status and message.
     :rtype: tuple
     """
+    # Verify username
+    is_valid, message = verify_username(osm_data['username'])
+    if not is_valid:
+        return False, message
+
     # Validate fields
     is_valid, message = validate_osm_fields(osm_data)
     if not is_valid:
@@ -130,6 +168,22 @@ def validate_osm_data(osm_data):
         return False, message
 
     return True, 'OSM data are valid.'
+
+
+def verify_username(username):
+    """Verify username whether he/she is a trusted user or not.
+
+    :param username: The username
+    :return: str
+
+    :return: Verification status and message.
+    :rtype: tuple
+    """
+    user = get_object_or_404(User, username=username)
+    if not is_trusted_user(user):
+        return False, 'User is not a trusted user.'
+
+    return True, 'User is a trusted user.'
 
 
 def validate_osm_fields(osm_fields):

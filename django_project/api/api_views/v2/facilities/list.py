@@ -1,7 +1,10 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from django.http.response import HttpResponseBadRequest
+import json
+
+from django.db.models import Count
+from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.api_views.v2.schema import (
@@ -14,7 +17,8 @@ from api.api_views.v2.pagination import (
     PaginationAPI, LessThanOneException, NotANumberException
 )
 from api.api_views.v2.facilities.base_api import FacilitiesBaseAPIWithAuth
-from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node
+from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node, \
+    is_organizer
 from api.utilities.statistic import get_statistic_with_cache
 from core.settings.utils import ABS_PATH
 from localities.models import Country
@@ -87,9 +91,14 @@ class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseA
         return Response(self.serialize(queryset, many=True))
 
     def post(self, request):
+        user = request.user
         data = request.data
         # Now, we post the data directly to OSM.
         try:
+            # Verify uploader
+            if not is_organizer(user):
+                return HttpResponseForbidden()
+
             # Validate data
             osm_attr, locality_attr = split_osm_and_extension_attr(
                 data['tag'])
@@ -105,7 +114,6 @@ class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseA
                 mapping_file_path, data['tag'], 'node')
 
             # Push data to OSM
-            user = request.user
             response = create_osm_node(user, data)
 
             # create pending index
