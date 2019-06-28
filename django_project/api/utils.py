@@ -11,6 +11,7 @@ from api.osm_field_definitions import ALL_FIELDS, get_mandatory_fields
 from api.osm_tag_defintions import get_mandatory_tags, update_tag_options
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from core.settings.utils import ABS_PATH
 from social_users.models import TrustedUser, Organisation
@@ -70,7 +71,7 @@ def is_organizer(user):
     :rtype: bool
     """
     try:
-        return Organisation.organizer.filter(user=user).exists()
+        return len(Organisation.objects.filter(organizer=user)) > 0
     except Organisation.DoesNotExist:
         return False
 
@@ -85,7 +86,7 @@ def is_trusted_user(user):
     :rtype: bool
     """
     try:
-        return TrustedUser.filter(user=user).exists()
+        return len(TrustedUser.objects.filter(user=user)) > 0
     except TrustedUser.DoesNotExist:
         return False
 
@@ -152,11 +153,6 @@ def validate_osm_data(osm_data):
     :return: Validation status and message.
     :rtype: tuple
     """
-    # Verify username
-    is_valid, message = verify_username(osm_data['username'])
-    if not is_valid:
-        return False, message
-
     # Validate fields
     is_valid, message = validate_osm_fields(osm_data)
     if not is_valid:
@@ -170,20 +166,36 @@ def validate_osm_data(osm_data):
     return True, 'OSM data are valid.'
 
 
-def verify_username(username):
-    """Verify username whether he/she is a trusted user or not.
+def verify_user(uploader, creator):
+    """Verify user.
+    
+    Uploader has to be organizer of an organisation and the creator has to be
+    a trusted user in that particular organisation.
 
-    :param username: The username
-    :return: str
+    :param uploader: The data uploader
+    :type uploader: str or User object
+
+    :param creator: The data creator/owner
+    :type creator: str or User object
 
     :return: Verification status and message.
     :rtype: tuple
     """
-    user = get_object_or_404(User, username=username)
-    if not is_trusted_user(user):
-        return False, 'User is not a trusted user.'
+    uploader = get_object_or_404(User, username=uploader)
+    creator = get_object_or_404(User, username=creator)
 
-    return True, 'User is a trusted user.'
+    try:
+        organisation = get_object_or_404(Organisation, organizer=uploader)
+    except Http404:
+        return False, 'User %s is not organizer of an organisation.' % uploader
+
+    if creator not in (
+            [trusted_user.user for trusted_user in TrustedUser.objects.filter(
+                organisation=organisation)]):
+        return False, 'User %s is not a trusted user.' % creator
+
+    return True, (
+        'Data uploader is an organizer and creator/owner is a trusted user.')
 
 
 def validate_osm_fields(osm_fields):

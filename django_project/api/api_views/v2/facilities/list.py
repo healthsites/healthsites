@@ -1,9 +1,6 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-import json
-
-from django.db.models import Count
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,7 +15,7 @@ from api.api_views.v2.pagination import (
 )
 from api.api_views.v2.facilities.base_api import FacilitiesBaseAPIWithAuth
 from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node, \
-    is_organizer
+    verify_user
 from api.utilities.statistic import get_statistic_with_cache
 from core.settings.utils import ABS_PATH
 from localities.models import Country
@@ -68,6 +65,60 @@ class GetFacilitiesBaseAPI(object):
         return queryset
 
 
+class BulkUpload(FacilitiesBaseAPIWithAuth):
+    """
+    post:
+    Upload multiple healthsites/facilities data.
+    """
+    filter_backends = (ApiSchema,)
+
+    def get(self, request):
+        """FOR TESTING ONLY"""
+        user = request.user
+        data = request.data
+        facilities_data = data['healthsites']
+        response = {}
+        for facility_data in facilities_data:
+            # Verify data owner/collector
+            is_valid, message = verify_user(user, facility_data['username'])
+            response[facility_data['username']] = is_valid
+
+        return Response(response)
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        # Now, we post the data directly to OSM.
+        try:
+            responses = []
+            facilities_data = data['healthsites']
+            for facility_data in facilities_data:
+                # Verify data uploader and owner/collector
+                is_valid, message = verify_user(user, facility_data['username'])
+                if not is_valid:
+                    return HttpResponseForbidden(message)
+
+                # Validate data
+                is_valid, message = validate_osm_data(facility_data)
+                if not is_valid:
+                    return HttpResponseBadRequest(message)
+
+            for facility_data in facilities_data:
+                # Map Healthsites tags to OSM tags
+                mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
+                facility_data['tag'] = convert_to_osm_tag(
+                    mapping_file_path, facility_data['tag'], 'node')
+
+                # Push data to OSM
+                response = create_osm_node(user, facility_data)
+                responses.append(response)
+
+            return Response(responses)
+
+        except Exception as e:
+            return HttpResponseBadRequest('%s' % e)
+
+
 class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):
     """
     get:
@@ -95,10 +146,6 @@ class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseA
         data = request.data
         # Now, we post the data directly to OSM.
         try:
-            # Verify uploader
-            if not is_organizer(user):
-                return HttpResponseForbidden()
-
             # Validate data
             osm_attr, locality_attr = split_osm_and_extension_attr(
                 data['tag'])

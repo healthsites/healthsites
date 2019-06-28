@@ -40,7 +40,7 @@ admin.site.register(TrustedUser, TrustedUserAdmin)
 
 
 class OrganisationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'site', 'contact', 'list_trusted_user')
+    list_display = ('name', 'site', 'contact', 'organizer', 'list_trusted_user')
 
     def list_trusted_user(self, obj):
         template_format = '<span><a href="/admin/social_users/trusteduser/%s">%s</a></span>'
