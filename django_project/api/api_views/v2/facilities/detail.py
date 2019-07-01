@@ -89,6 +89,10 @@ class GetDetailFacility(FacilitiesBaseAPI):
 
                 create_pending('node', response['id'], data['tag']['name'], user, response['version'])
                 return Response(response)
+            else:
+                # For now, we only support Node
+                return HttpResponseBadRequest(
+                    '%s is not supported as osm type' % osm_type)
 
         except KeyError as e:
             return HttpResponseBadRequest('%s is needed' % e)

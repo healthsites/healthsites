@@ -24,7 +24,7 @@ class OSMQuerySet(GeoQuerySet):
         """
 
         LOG.debug('Filtering Localities using bbox: %s', bbox.wkt)
-        return self.filter(geometry__contained=bbox)
+        return self.filter(geometry__bboverlaps=bbox)
 
     def in_polygon(self, polygon):
         """

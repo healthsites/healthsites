@@ -15,6 +15,7 @@ from localities_osm.models.locality import LocalityOSM, LocalityOSMView
 from localities_osm.serializer.locality_osm import (
     LocalityOSMSerializer
 )
+from localities_osm.queries import filter_locality
 
 directory_cache = settings.CACHE_DIR
 directory_media = settings.MEDIA_ROOT + '/shapefiles'
@@ -39,21 +40,18 @@ def getWKT_PRJ(epsg_code):
     return output
 
 
-def country_data_into_shapefile(country):
+def country_data_into_shapefile(country=None):
     """ Convert country osm data into shapefile
 
     :param country_name: Country name
     :type: str
     """
+    queryset = filter_locality(
+        extent=None,
+        country=country).order_by('row')
     country_name = 'World'
-    if country == 'World':
-        queryset = LocalityOSMView.objects.all().order_by('row')
-    else:
-        country = Country.objects.get(
-            name__iexact=country)
-        country_name = country.name
-        polygons = country.polygon_geometry
-        queryset = LocalityOSMView.objects.in_polygon(polygons).order_by('row')
+    if country:
+        country_name = country
 
     # get field that needs to be saved
     fields = fields_for_model(LocalityOSM).keys()
@@ -66,7 +64,7 @@ def insert_to_shapefile(data, fields, shp_filename):
     :param data: data that will be inserted
     :param shp_filename: shapefile name
     """
-    dir_cache = os.path.join(directory_cache, shp_filename)
+    dir_cache = os.path.join(directory_cache, 'shapefiles', shp_filename)
     dir_shapefile = os.path.join(dir_cache, 'output')
     metadata_file = os.path.join(dir_cache, 'metadata')
 
@@ -162,4 +160,4 @@ class Command(BaseCommand):
             country_data_into_shapefile(country.name)
 
         # generate shapefiles for all country
-        country_data_into_shapefile('World')
+        country_data_into_shapefile()

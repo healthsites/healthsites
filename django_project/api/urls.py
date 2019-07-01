@@ -11,17 +11,23 @@ from .views.locality_search import LocalitySearchApiView
 from .views.locality_synonym import LocalitySynonymApiView
 
 # API Version 2
+from api.api_views.v2.countries.search import Autocomplete as CountryAutocomplete
 from api.api_views.v2.facilities.cluster import GetCluster
 from api.api_views.v2.facilities.detail import GetDetailFacility
 from api.api_views.v2.facilities.list import (
     GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
 from api.api_views.v2.facilities.shapefile import GetFacilitiesShapefileProcess
 from api.api_views.v2.facilities.search import Autocomplete
-from api.api_views.v2.countries.search import Autocomplete as CountryAutocomplete
+from api.api_views.v2.googlemaps.search import SearchByGeoname
 from api.api_views.v2.get_migration_progress import GetMigrationProgress
 from api.api_views.v2.users.changesets import GetChangesets
 from api.api_views.v2.users.pending import GetPending
 
+countries_api = patterns(
+    '',
+    url(r'^autocomplete',
+        CountryAutocomplete.as_view())
+)
 facilities_api = patterns(
     '',
     url(r'^cluster', GetCluster.as_view()),
@@ -38,10 +44,10 @@ facilities_api = patterns(
     url(r'^',
         GetFacilities.as_view())
 )
-countries_api = patterns(
+gmaps_api = patterns(
     '',
-    url(r'^autocomplete',
-        CountryAutocomplete.as_view())
+    url(r'^search/geoname',
+        SearchByGeoname.as_view())
 )
 user_api = patterns(
     '',
@@ -52,8 +58,9 @@ user_api = patterns(
 )
 api_v2 = patterns(
     '',
-    url(r'facilities/', include(facilities_api)),
     url(r'countries/', include(countries_api)),
+    url(r'facilities/', include(facilities_api)),
+    url(r'gmaps/', include(gmaps_api)),
     url(r'user/(?P<username>.*)/', include(user_api)),
     url(r'migration-progress/',
         GetMigrationProgress.as_view(), name='api_get_migration_progress')

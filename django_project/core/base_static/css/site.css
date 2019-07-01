@@ -442,7 +442,7 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
 .nav-searchbar {
     display: none;
     background: #dadddf;
-    height: 55px;
+    height: 75px;
     position: fixed;
     top: 53px;
     width: 100%;
@@ -526,6 +526,11 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
     margin-top: 4px;
     margin-right: 10px;
     width: 350px;
+}
+
+.nav-searchbar input[type="search"].error, .nav-searchbar input[type="search"].error:focus, .nav-searchbar input[type="search"].error:active {
+    border: 1px solid #dc3545;
+    outline: none;
 }
 
 .nav-searchbar input[type="submit"] {
