@@ -27,14 +27,17 @@ def validate_pending(osm_type, osm_id):
     try:
         pending = PendingState.objects.get(
             extension__osm_type=osm_type, extension__osm_id=osm_id)
-        osm = LocalityOSMView.objects.get(
-            osm_type=osm_type,
-            osm_id=osm_id
-        )
-        if pending.version == osm.changeset_version:
-            pending.delete()
-            return False
+        try:
+            osm = LocalityOSMView.objects.get(
+                osm_type=osm_type,
+                osm_id=osm_id
+            )
+            if pending.version == osm.changeset_version:
+                pending.delete()
+                return False
+        except LocalityOSMView.DoesNotExist:
+            pass
         return True
-    except (PendingState.DoesNotExist, LocalityOSMView.DoesNotExist):
+    except PendingState.DoesNotExist:
         pass
     return False
