@@ -226,12 +226,15 @@ define([
         toSaveMode: function () {
             /** Asking form to push the data on form **/
             var self = this;
+            this.disabled(this.$saveButton);
             this.form.save(
                 function (data) {
                     self.toDefaultMode();
                     self.showDetail('node', data['id']);
+                    self.enabled(self.$saveButton);
                 }, function (error) {
                     self.localityError('Error when uploading.<br>' + error['responseText']);
+                    self.enabled(self.$saveButton);
                 }
             );
         },
