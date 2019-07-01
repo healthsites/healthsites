@@ -221,7 +221,7 @@
                 url: "/api/v2/user/{{ user.username }}/pending",
                 dataType: 'json',
                 success: function (data) {
-                    if (data) {
+                    if (data.length > 0) {
                         $('#pending').show();
                         var $wrapper = $('#pending').find('.graph');
                         $.each(data, function (index, value) {

@@ -47,6 +47,8 @@ class GetDetailFacility(FacilitiesBaseAPI):
             return HttpResponseBadRequest(validation)
 
         pending = validate_pending(osm_type, osm_id)
+        if pending:
+            return HttpResponseBadRequest('Still in pending')
 
         if osm_type == 'node':
             self.JSONSerializer = LocalityOSMNodeSerializer
@@ -60,8 +62,6 @@ class GetDetailFacility(FacilitiesBaseAPI):
         try:
             return Response(self.serialize(self.getLocalityOsm(osm_type, osm_id)))
         except (LocalityOSMNode.DoesNotExist, LocalityOSMNode.DoesNotExist):
-            if pending:
-                return HttpResponseBadRequest('Still in pending')
             raise Http404()
 
     def post(self, request, osm_type, osm_id):

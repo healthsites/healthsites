@@ -4,6 +4,7 @@ __date__ = '01/07/19'
 from django.contrib.auth.models import User
 from django.http.response import Http404, HttpResponseForbidden
 from rest_framework.views import APIView, Response
+from api.utilities.pending import create_pending, validate_pending
 from localities_osm_extension.models.pending_state import PendingState
 
 
@@ -24,12 +25,13 @@ class GetPending(APIView):
 
         output = []
         for pending in pendings:
-            output.append({
-                'osm_id': pending.extension.osm_id,
-                'osm_type': pending.extension.osm_type,
-                'uploader': pending.uploader.username,
-                'time_uploaded': pending.time_uploaded,
-                'osm_name': pending.name,
-                'version': pending.version
-            })
+            if validate_pending(pending.extension.osm_type, pending.extension.osm_id):
+                output.append({
+                    'osm_id': pending.extension.osm_id,
+                    'osm_type': pending.extension.osm_type,
+                    'uploader': pending.uploader.username,
+                    'time_uploaded': pending.time_uploaded,
+                    'osm_name': pending.name,
+                    'version': pending.version
+                })
         return Response(output)

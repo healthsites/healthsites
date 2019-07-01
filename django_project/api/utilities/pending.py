@@ -34,6 +34,7 @@ def validate_pending(osm_type, osm_id):
         if pending.version == osm.changeset_version:
             pending.delete()
             return False
+        return True
     except (PendingState.DoesNotExist, LocalityOSMView.DoesNotExist):
         pass
-    return True
+    return False

@@ -360,16 +360,16 @@ window.MAP = (function () {
         },
 
         _createPolygonLocality: function (geojsonFeature) {
+            if (this.localityPolygon) {
+                this.localityPolygon.clearLayers();
+            } else {
+                this.localityPolygon = new L.GeoJSON([], {
+                    style: function (feature) {
+                        return styles['locality-polygon'];
+                    }
+                }).addTo(this.MAP);
+            }
             if (geojsonFeature.type !== "Point") {
-                if (this.localityPolygon) {
-                    this.localityPolygon.clearLayers()
-                } else {
-                    this.localityPolygon = new L.GeoJSON([], {
-                        style: function (feature) {
-                            return styles['locality-polygon'];
-                        }
-                    }).addTo(this.MAP);
-                }
                 this.localityPolygon.addData(geojsonFeature);
             }
         },

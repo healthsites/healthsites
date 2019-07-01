@@ -111,13 +111,16 @@ define([
                     self.detail.showInfo(osm_type, osm_id, data);
                     self.detail_info = data;
                     self.toDetailMode();
+                    if (osm_type !== 'node') {
+                        self.disabled(self.$editButton);
+                    }
                 },
                 error: function (error) {
                     self.detail.showTags({});
                     if (error['status'] === 400) {
 
                         self.localityError(
-                            'Locality is still in pending in Healthsites server..<br>' +
+                            'Locality is still in pending in Healthsites server.<br>' +
                             'Please check this locality in openstreetmap with this ' +
                             '<a href="' + osmAPI + '/' + osm_type + '/' + osm_id + '">link</a>')
                     } else {

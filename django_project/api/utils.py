@@ -175,9 +175,6 @@ def validate_osm_tags(osm_tags):
         tag_definition = update_tag_options(tag_definition, osm_tags)
 
         # Value type check
-        if tag_definition.get('type') == 'string':
-            tag_definition['type'] = str
-
         if tag_definition.get('type') == str:
             item = str(item)
         elif tag_definition.get('type') == int:
