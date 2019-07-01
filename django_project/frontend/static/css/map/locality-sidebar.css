@@ -13,8 +13,42 @@
     float: none !important;
 }
 
+.location-info {
+    padding-bottom: 0 !important;
+}
+
+
 #locality-info tr {
     border-bottom: 1px solid #eff0f0;
+}
+
+#locality-info .input {
+    width: 150px;
+}
+
+#locality-info .data.empty {
+    font-style: italic;
+    opacity: 0.5;
+}
+
+.location-info .data-wrapper {
+    padding: 10px 20px !important;
+}
+
+#locality-info .header div {
+    margin-bottom: 5px;
+}
+
+#locality-info .header .input {
+    width: 100%;
+}
+
+#locality-info .input[type="checkbox"] {
+    width: auto !important;
+}
+
+#other-tags-table input, #other-tags-table select {
+    width: 100% !important;
 }
 
 .buttons .button-wrapper .button {
@@ -34,23 +68,32 @@
     opacity: 0.5;
 }
 
-#locality-info .data.empty {
-    font-style: italic;
-    opacity: 0.5;
+.coordinates {
+    margin-top: 5px;
 }
 
-#locality-info .services {
-    padding-bottom: 10px;
+.full-address input, .note input, .ownership input, .tags input {
+    width: 100% !important;
 }
 
-#location-info .data-wrapper {
-    padding: 5px 20px !important;
+.tags ul {
+    padding-left: 0;
 }
 
-#locality-info .header div {
-    margin-bottom: 5px;
+[data-required="true"] .tag-key {
+    font-weight: 600;
 }
 
-#locality-info .header .input {
-    width: 100%;
+.tags .fa-info-circle {
+    cursor: pointer;
+    display: none;
+    opacity: 0.7;
+}
+
+#locality-error {
+    padding: 20px;
+    display: none;
+    text-align: center;
+    padding-top: 100px;
+    font-size: 14px;
 }

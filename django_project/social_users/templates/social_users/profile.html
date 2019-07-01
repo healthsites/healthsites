@@ -111,6 +111,15 @@
             <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< view previous</a>
                 <a class="next opacity-7" onclick="changePage(this)">view
                     next ></a></div>
+            <br>
+            <div id="pending" style="display: none">
+                <h3>Pending updates</h3>
+
+                <div id="pending-wrapper">
+                    <div class="graph updates">
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
     {% if data_migration_in_progress or old_data_available %}
@@ -130,6 +139,7 @@
 {% block extra_js %}
     <script>
         var interval;
+        var osmURL = "{{ osm_API }}";
 
         function migrateClicked() {
             $('.loading-icon').show();
@@ -204,6 +214,28 @@
                         $page.append(html);
                     });
                     updateButton();
+                }
+            });
+
+            $.ajax({
+                url: "/api/v2/user/{{ user.username }}/pending",
+                dataType: 'json',
+                success: function (data) {
+                    if (data) {
+                        $('#pending').show();
+                        var $wrapper = $('#pending').find('.graph');
+                        $.each(data, function (index, value) {
+                            var html = "<div class=\"entry\">";
+                            html += "<div class=\"entry\">";
+                            html += "<span class=\"date\">" + getDateString(value.time_uploaded) + "</span> - ";
+                            html += "<span class=\"name\">";
+                            html += "<a href=\"profile/" + value.uploader + "\">@" + value.uploader + "</a></span> - ";
+                            html += "<a href='" + osmURL + "/" + value.osm_type + "/" + value.osm_id + "'>" + value.osm_name + "</a>";
+                            html += "</div>";
+                            $wrapper.append(html);
+                        });
+                    }
+
                 }
             });
 

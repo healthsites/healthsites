@@ -22,6 +22,7 @@ from localities.utils import parse_bbox
 from localities_osm.models.locality import LocalityOSM
 from localities_osm.serializer.locality_osm import LocalityOSMBasicSerializer
 from localities_osm.utilities import get_all_osm_query
+from api.utilities.pending import create_pending
 
 
 class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
@@ -115,6 +116,8 @@ class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseA
             user = request.user
             response = create_osm_node(user, data)
 
+            # create pending index
+            create_pending('node', response['id'], data['tag']['name'], user, response['version'])
             return Response(response)
 
         except Exception as e:

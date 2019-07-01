@@ -6,7 +6,6 @@ from rest_framework.views import Response
 from api.api_views.v2.pagination import (
     PaginationAPI, LessThanOneException, NotANumberException
 )
-from localities_osm.models.locality import LocalityOSMView
 from localities_osm.serializer.locality_osm import LocalityOSMBasicSerializer
 from localities_osm.utilities import get_all_osm_query
 

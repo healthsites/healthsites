@@ -7,19 +7,21 @@ define([
             'name': 'No Name',
             'amenity': 'needs information',
             'completeness': '0% Complete',
-            'physical_address': '..please update address',
-            'phone': '..please update phone number',
+            'addr_full': '..please update address',
+            'contact_number': '..please update phone number',
             'source_html': 'No url found',
             'operator_type': '..please define ownership status',
             'notes': '..please define notes hospitalisation and outpatient consultation',
             'opening_hours': '..please define operating hours',
             'tag': '..please add comma separated tags'
         },
-        initialize: function () {
+        initialize: function (definitions) {
             this.$completenees = $('.progress-bar');
             this.$otherTagsSection = $('#other-tags-table');
+            this.definitions = definitions;
         },
         showDefaultInfo: function (evt) {
+            /** Showing default information, especially for empty value **/
             var self = this;
             $('.data').html('-');
             $.each(this.tag_and_default, function (key, value) {
@@ -27,8 +29,9 @@ define([
             })
         },
         insertIntoElement(id, value, isDefault) {
+            /** Insert value into element **/
             if (value) {
-                var $element = $($('*[data-tag="' + id + '"]').find('.data'));
+                var $element = $($('*[data-tag="' + id + '"]').find('.data,.uneditable-data'));
                 if ($element.length === 0) {
                     return false;
                 }
@@ -37,6 +40,8 @@ define([
                     value = "@" + value;
                 }
                 $element.html(value);
+
+                // use class empty if it is default
                 if (isDefault) {
                     $element.addClass('empty');
                 } else {
@@ -45,13 +50,53 @@ define([
             }
             return true;
         },
-        showInfo: function (osm_type, osm_id, data) {
+        showTags: function (attributes) {
+            // SHOW OTHERS INFO
+            var otherHtml = '';
             var self = this;
+            this.$otherTagsSection.html('');
+            $.each(Object.keys(this.definitions).sort(), function (index, key) {
+                var $element = $('*[data-tag="' + key + '"]');
+                var definition = self.definitions[key];
+                if (definition['required']) {
+                    definition ['description'] = '[REQUIRED] ' + definition['description'];
+                }
+                if ($element.length === 0) {
+                    var value = '';
+                    if (attributes[key]) {
+                        value = attributes[key];
+                        delete attributes[key];
+                    }
+                    otherHtml += '<tr data-tag="' + key + '"  data-hasvalue="' + (value !== '') + '" data-required="' + definition['required'] + '">' +
+                        '<td class="tag-key">' + key + ' <i class="fa fa-info-circle" aria-hidden="true" title="' + definition['description'] + '"></i></td>' +
+                        '<td><div class="data">' + value + '</div></td>' +
+                        '</tr>';
+                }
+            });
+            if (Object.keys(attributes).length >= 1) {
+                $.each(Object.keys(attributes).sort(), function (index, key) {
+                    if (attributes[key]) {
+                        if (!self.insertIntoElement(key, attributes[key])) {
+                            otherHtml += '<tr data-tag="' + key + '">' +
+                                '<td>' + key + '</td>' +
+                                '<td><div class="data">' + attributes[key] + '</div></td>' +
+                                '</tr>';
+
+                        }
+                    }
+                });
+            }
+            if (otherHtml) {
+                this.$otherTagsSection.html('<table>' + otherHtml + '</table>');
+            }
+        },
+        showInfo: function (osm_type, osm_id, data) {
+            /** SHOWING INFORMATION TAGS OF HEALHTSITE **/
             var identifier = osm_type + '/' + osm_id;
             var properties = data['properties'];
             var attributes = jQuery.extend({}, properties['attributes']);
 
-            // zoom to map
+            // name of attribute
             var name = 'No Name';
             if (attributes['name']) {
                 name = attributes['name'];
@@ -60,24 +105,9 @@ define([
             attributes['latitude'] = centroid[1];
             attributes['longitude'] = centroid[0];
             attributes['changeset_timestamp'] = getDateString(attributes['changeset_timestamp']);
-            if (attributes['changeset_user']) {
-                attributes['changeset_user'] = attributes['changeset_user'];
-            }
             if (properties['completeness']) {
                 this.$completenees.attr('style', 'width:' + properties['completeness'] + '%');
                 this.$completenees.text(properties['completeness'] + '% Complete');
-            }
-            if (attributes['beds'] || attributes['part_time_beds']) {
-                var beds = [];
-                if (attributes['beds']) {
-                    beds.push("<strong>" + attributes['beds'] + "</strong> full time beds");
-                    delete attributes['beds'];
-                }
-                if (attributes['part_time_beds']) {
-                    beds.push("<strong>" + attributes['part_time_beds'] + "</strong> part time beds");
-                    delete attributes['part_time_beds'];
-                }
-                attributes['inpatient_service'] = beds.join(',&nbsp');
             }
             // source url
             var html = '<a href="https://www.openstreetmap.org/' + identifier + '"';
@@ -96,22 +126,7 @@ define([
 
             delete attributes['changeset_id'];
             delete attributes['changeset_version'];
-            // SHOW OTHERS INFO
-            var otherHtml = '';
-            if (Object.keys(attributes).length >= 1) {
-                $.each(Object.keys(attributes).sort(), function (index, key) {
-                    if (attributes[key]) {
-                        if (!self.insertIntoElement(key, attributes[key])) {
-                            otherHtml += '<tr><td>' + key + '</td><td>' + attributes[key] + '</td></tr>';
-
-                        }
-                    }
-                });
-            }
-            if (otherHtml) {
-                otherHtml += '';
-                this.$otherTagsSection.html('<table>' + otherHtml + '</table>');
-            }
+            this.showTags(attributes);
         },
 
     })

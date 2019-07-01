@@ -16,7 +16,7 @@ ADMINS = (
 APP_NAME = 'Healthsites.io'
 
 # OSM API endpoint
-OSM_API_URL = 'https://api.openstreetmap.org'
+OSM_API_URL = 'https://master.apis.dev.openstreetmap.org'
 DEV_OSM_API_URL = 'https://api06.dev.openstreetmap.org'
 
 # This should be done in prod rather

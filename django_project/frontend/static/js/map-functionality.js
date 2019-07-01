@@ -175,7 +175,7 @@ window.MAP = (function () {
 
             $APP.on('locality.create', function (evt, payload) {
                 var geom = self.MAP.getCenter();
-                $APP.trigger('locality.map.move', {'latlng': geom});
+                shared.dispatcher.trigger('form:update-coordinates', {'latlng': geom});
                 self.pointLayer.setLatLng(geom);
                 self.MAP.addLayer(self.pointLayer);
                 self.MAP.panTo(geom);
@@ -294,7 +294,7 @@ window.MAP = (function () {
             });
 
             this.pointLayer.on('dragend', function (evt) {
-                $APP.trigger('locality.map.move', {'latlng': evt.target._latlng});
+                shared.dispatcher.trigger('form:update-coordinates', {'latlng': evt.target._latlng});
             });
 
             this.historyLayer = L.marker([0, 0], {
@@ -360,18 +360,17 @@ window.MAP = (function () {
         },
 
         _createPolygonLocality: function (geojsonFeature) {
-            if (this.localityPolygon) {
-                this.localityPolygon.clearLayers()
-            } else {
-                this.localityPolygon = new L.GeoJSON([], {
-                    style: function (feature) {
-                        return styles['locality-polygon'];
-                    }
-                }).addTo(this.MAP);
-            }
             if (geojsonFeature.type !== "Point") {
+                if (this.localityPolygon) {
+                    this.localityPolygon.clearLayers()
+                } else {
+                    this.localityPolygon = new L.GeoJSON([], {
+                        style: function (feature) {
+                            return styles['locality-polygon'];
+                        }
+                    }).addTo(this.MAP);
+                }
                 this.localityPolygon.addData(geojsonFeature);
-                this.MAP.fitBounds(this.localityPolygon.getBounds());
             }
         },
 

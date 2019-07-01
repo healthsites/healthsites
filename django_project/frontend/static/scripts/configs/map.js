@@ -42,12 +42,14 @@ require([
         countryStatictic.showStatistic(
             parameters['country'],
             function () {
+                $("#locality-info").hide();
                 goToLocality()
             });
     } else {
         if (identifier) {
             goToLocality();
         } else {
+            $("#locality-info").hide();
             countryStatictic.getCount("", function (data) {
                 $('#healthsites-count').html(data);
             });

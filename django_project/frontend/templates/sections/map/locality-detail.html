@@ -9,22 +9,22 @@
     </div>
     <div class="info">
         <table style="width:100%">
-            <tr>
+            <tr id="info-wrapper">
                 <td valign="top" class="icon-holder">
                     <i class="fa fa-info-circle"></i>
                 </td>
                 <td class="data-wrapper updates">
                     <div class="more" style="margin-bottom: 5px">
                         <div>
-                            last update: <span data-tag="changeset_timestamp"><span class="date data"></span></span>, by
-                            <span data-tag="changeset_user" class="name"><a class="data"></a></span>
+                            last update: <span data-tag="changeset_timestamp"><span class="date uneditable-data"></span></span>, by
+                            <span data-tag="changeset_user" class="name"><a class="uneditable-data"></a></span>
                         </div>
                     </div>
 
                     <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
-                             aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
-                            90% Complete
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0"
+                             aria-valuemin="0" aria-valuemax="100" style="width:0" id="locality-completeness">
+                            0% Complete
                         </div>
                     </div>
                 </td>
@@ -34,7 +34,7 @@
                     <i class="fa fa-map-marker"></i>
                 </td>
                 <td class="data-wrapper find">
-                    <div data-tag="physical_address">
+                    <div class="full-address" data-tag="addr_full">
                         <p class="address data"></p>
                     </div>
                     <div class="coordinates">
@@ -48,7 +48,7 @@
                     <i class="fa fa-phone"></i>
                 </td>
                 <td class="data-wrapper find">
-                    <div data-tag="phone">
+                    <div data-tag="contact_number">
                         <span class="data">-</span>
                     </div>
                 </td>
@@ -77,7 +77,7 @@
                 <td valign="top" class="icon-holder">
                     <i class="fa fa-tags"></i>
                 </td>
-                <td class="data-wrapper services">
+                <td class="data-wrapper tags">
                     <table id="other-tags-table" style="width: 100%"></table>
                 </td>
             </tr>
@@ -109,16 +109,6 @@
             </tr>
             <tr>
                 <td valign="top" class="icon-holder">
-                    <i class="fa fa-sticky-note"></i>
-                </td>
-                <td class="data-wrapper note">
-                    <div data-tag="notes">
-                        <div class="data"></div>
-                    </div>
-                </td>
-            </tr>
-            <tr>
-                <td valign="top" class="icon-holder">
                     <i class="fa fa-briefcase"></i>
                 </td>
                 <td class="data-wrapper ownership">
@@ -129,14 +119,26 @@
             </tr>
             <tr>
                 <td valign="top" class="icon-holder">
-                    <i class="fa fa-tag"></i>
+                    <i class="fa fa-sticky-note"></i>
                 </td>
-                <td class="data-wrapper services">
-                    <div data-tag="tag">
-                        <ul class="data"></ul>
+                <td class="data-wrapper note">
+                    <div data-tag="notes">
+                        <div class="data"></div>
                     </div>
                 </td>
             </tr>
+
+            {#            // TODO: We will fix this#}
+            {#            <tr>#}
+            {#                <td valign="top" class="icon-holder">#}
+            {#                    <i class="fa fa-tag"></i>#}
+            {#                </td>#}
+            {#                <td class="data-wrapper tags">#}
+            {#                    <div data-tag="tag">#}
+            {#                        <ul class="data"></ul>#}
+            {#                    </div>#}
+            {#                </td>#}
+            {#            </tr>#}
         </table>
     </div>
 </div>

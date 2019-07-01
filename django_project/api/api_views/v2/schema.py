@@ -94,8 +94,8 @@ class ApiSchemaBase(BaseFilterBackend):
         return schemas
 
 
-class SchemaView(APIView):
-    def change_type_into_string(self, type):
+class Schema(object):
+    def _change_type_into_string(self, type):
         if type == float:
             return 'float'
         elif type == str:
@@ -108,11 +108,17 @@ class SchemaView(APIView):
             return 'integer'
         return type
 
-    def get(self, request):
+    def get_schema(self):
         schema = get_osm_schema()
         for field in schema['facilities']['create']['fields']:
-            field['type'] = self.change_type_into_string(field['type'])
+            field['type'] = self._change_type_into_string(field['type'])
             if field['key'] == 'tag':
                 for tag in field['tags']:
-                    tag['type'] = self.change_type_into_string(tag['type'])
+                    tag['type'] = self._change_type_into_string(tag['type'])
+        return schema
+
+
+class SchemaView(APIView):
+    def get(self, request):
+        schema = Schema().get_schema()
         return Response(schema)
