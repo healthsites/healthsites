@@ -20,6 +20,8 @@ from core.settings.utils import ABS_PATH
 from localities.models import Country
 from api.utilities.pending import create_pending
 from localities_osm.queries import filter_locality
+from localities_osm.utilities import split_osm_and_extension_attr
+from localities_osm_extension.utils import save_extensions
 
 
 class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
@@ -89,6 +91,10 @@ class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseA
         # Now, we post the data directly to OSM.
         try:
             # Validate data
+            osm_attr, locality_attr = split_osm_and_extension_attr(
+                data['tag'])
+            data['tag'] = osm_attr
+
             is_valid, message = validate_osm_data(data)
             if not is_valid:
                 return HttpResponseBadRequest(message)
@@ -104,6 +110,8 @@ class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseA
 
             # create pending index
             create_pending('node', response['id'], data['tag']['name'], user, response['version'])
+
+            save_extensions('node', response['id'], locality_attr)
             return Response(response)
 
         except Exception as e:

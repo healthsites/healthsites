@@ -82,6 +82,7 @@ define([
             this.toMapMode();
             this.detail = new Detail(self.definitions);
             this.form = new Form(self.definitions);
+            this.$latestUI = $('.details:visible');
         },
         localityError: function (message) {
             this.$el.hide();
@@ -93,6 +94,9 @@ define([
         },
         showDetail: function (osm_type, osm_id) {
             /** Showing detail with parameter as osm_type and osm_id **/
+            // TODO : remove below
+            this.disabled(this.$editButton);
+
             $('.details').hide();
             this.$sidebar.show();
             this.detail.showDefaultInfo();
@@ -108,6 +112,8 @@ define([
                 url: this.currentAPI + "?output=geojson",
                 dataType: 'json',
                 success: function (data) {
+                    $APP.trigger('locality.cancel');
+                    self.$latestUI = self.$el;
                     self.detail.showInfo(osm_type, osm_id, data);
                     self.detail_info = data;
                     self.toDetailMode();
@@ -118,10 +124,10 @@ define([
                 error: function (error) {
                     self.detail.showTags({});
                     if (error['status'] === 400) {
-
+                        $APP.trigger('locality.cancel');
                         self.localityError(
-                            'Locality is still in pending in Healthsites server.<br>' +
-                            'Please check this locality in openstreetmap with this ' +
+                            'Locality is still in pending in Healthsites server for 2-5 minutes.<br>' +
+                            'Please wait or please check this locality in openstreetmap by click this ' +
                             '<a href="' + osmAPI + '/' + osm_type + '/' + osm_id + '">link</a>')
                     } else {
                         self.localityError(
@@ -159,7 +165,7 @@ define([
         toDetailMode: function () {
             /** This when detail is opened **/
             this.toDefaultMode();
-            this.enabled(this.$editButton);
+            // TODO : this.enabled(this.$editButton);
             this.$el.find('.data').show();
             this.$el.find('.input').hide();
             this.$el.find('tr').show();
@@ -174,6 +180,9 @@ define([
         },
         toFormMode: function () {
             /** This is when form show **/
+            $("#locality-statistic").hide();
+            $("#locality-default").hide();
+
             this.toDefaultMode();
             this.$editButton.hide();
             this.$createButton.hide();
@@ -190,6 +199,7 @@ define([
         toCreateMode: function () {
             /** This is when edit form enabled **/
             /** Asking form to render in default inputs **/
+            this.detail.showTags({});
             this.$el.find('.input').remove();
             this.form.renderForm(null, this.url);
             this.toFormMode();
@@ -229,6 +239,11 @@ define([
             /** Asking form to cancel the form **/
             this.toDetailMode();
             $APP.trigger('locality.cancel');
+            if (this.$latestUI !== this.$el) {
+                this.$latestUI.show();
+                this.$el.hide();
+                this.$elError.hide();
+            }
         }
     })
 });
