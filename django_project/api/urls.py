@@ -21,6 +21,7 @@ from api.api_views.v2.facilities.search import Autocomplete
 from api.api_views.v2.googlemaps.search import SearchByGeoname
 from api.api_views.v2.get_migration_progress import GetMigrationProgress
 from api.api_views.v2.users.changesets import GetChangesets
+from api.api_views.v2.users.pending import GetPending
 
 countries_api = patterns(
     '',
@@ -51,7 +52,9 @@ gmaps_api = patterns(
 user_api = patterns(
     '',
     url(r'^changesets',
-        GetChangesets.as_view())
+        GetChangesets.as_view()),
+    url(r'^pending',
+        GetPending.as_view())
 )
 api_v2 = patterns(
     '',

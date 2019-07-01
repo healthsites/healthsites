@@ -1,32 +1,30 @@
 <div id="locality-info" class="details" style="display: none">
     <div class="header">
-        <h1>
-            <span id="locality-name">No Name</span>
-        </h1>
-        <p class="sub" id="locality-amenity">first referral hospital</p>
+        <div data-tag="name">
+            <h1 class="data"></h1>
+        </div>
+        <div data-tag="amenity">
+            <span class="sub data"></span>
+        </div>
     </div>
     <div class="info">
         <table style="width:100%">
-            <tr>
+            <tr id="info-wrapper">
                 <td valign="top" class="icon-holder">
                     <i class="fa fa-info-circle"></i>
                 </td>
-                <td class="data updates">
+                <td class="data-wrapper updates">
                     <div class="more" style="margin-bottom: 5px">
                         <div>
-                            last update: <span id="last_update" class="date">11 may 2015 17:23:15</span>, by
-                            <span class="name">
-                                    <a id="uploader" href="profile/sharehealthdata">@sharehealthdata</a>
-                                </span>
-                        </div>
-                        <div id="full-list">
+                            last update: <span data-tag="changeset_timestamp"><span class="date uneditable-data"></span></span>, by
+                            <span data-tag="changeset_user" class="name"><a class="uneditable-data"></a></span>
                         </div>
                     </div>
 
                     <div class="progress">
-                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
-                             aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
-                            90% Complete
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0"
+                             aria-valuemin="0" aria-valuemax="100" style="width:0" id="locality-completeness">
+                            0% Complete
                         </div>
                     </div>
                 </td>
@@ -35,30 +33,43 @@
                 <td valign="top" class="icon-holder">
                     <i class="fa fa-map-marker"></i>
                 </td>
-                <td class="data find">
-                    <p class="address" id="locality-physical-address">54, Praed st, London, W2 NY<br/>
-                        Unighted Kingdom</p>
-                    <p class="coordinates" id="locality-coordinates">lat: 0, long: 0</p>
-                    <p>
-                        <i class="fa fa-phone"></i>
-                        <span id="locality-phone" class="call">0141 636 6116</span>
-                        <span id="locality-phone-input" style="display: none">+
-                                    <input type="number"
-                                           id="locality-phone-input-int"
-                                           style="width: 50px; margin-right: 5px"
-                                           onkeypress="onKeyPress(this)"/>
-                                    <input type="number"
-                                           id="locality-phone-input-number"/>
-                                </span>
-                    </p>
-
-                    <p id="locality-operating-hours-section">
-                        <i class="fa fa-clock-o"></i>
-                        <span id="locality-operating-hours" class="call">define operation</span>
-                    </p>
-                    <div id="locality-url">
-                        <p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href=""></a></span>
-                        </p>
+                <td class="data-wrapper find">
+                    <div class="full-address" data-tag="addr_full">
+                        <p class="address data"></p>
+                    </div>
+                    <div class="coordinates">
+                        lat: <span data-tag="latitude"><span class="data"></span></span>,
+                        long: <span data-tag="longitude"><span class="data"></span></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-phone"></i>
+                </td>
+                <td class="data-wrapper find">
+                    <div data-tag="contact_number">
+                        <span class="data">-</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-clock-o"></i>
+                </td>
+                <td class="data-wrapper find">
+                    <div data-tag="opening_hours">
+                        <span class="data">-</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-link"></i>
+                </td>
+                <td class="data-wrapper find">
+                    <div data-tag="source_html" class="url">
+                        <span class="data">-</span>
                     </div>
                 </td>
             </tr>
@@ -66,77 +77,68 @@
                 <td valign="top" class="icon-holder">
                     <i class="fa fa-tags"></i>
                 </td>
-                <td class="data services">
-                    <div class="scope-of-service">
-                        <h3>scope of service</h3>
-
-                        <div id="locality-scope-of-service">
-                        </div>
-                    </div>
-                    <div class="ancillary">
-                        <h3>ancillary services</h3>
-
-                        <div id="locality-ancillary-service">
-                        </div>
-                    </div>
-                    <div class="activities">
-                        <h3>activities</h3>
-
-                        <div id="locality-activities">
-                        </div>
-                    </div>
+                <td class="data-wrapper tags">
+                    <table id="other-tags-table" style="width: 100%"></table>
                 </td>
             </tr>
             <tr>
                 <td valign="top" class="icon-holder">
                     <i class="fa fa-bed"></i>
                 </td>
-                <td class="data beds">
-                    <div id="locality-inpatient-service"></div>
-                </td>
-            </tr>
-            <tr>
-                <td valign="top" class="icon-holder">
-                    <i class="fa fa-sticky-note"></i>
-                </td>
-                <td class="data note">
-                    <div><strong>Note: </strong><span id="locality-notes-text"> Outpatient consultation and in-patient hospitalization</span></div>
+                <td class="data-wrapper beds">
+                    <span data-tag="beds">
+                        <strong class="data">-</strong>
+                    </span> full time beds,&nbsp;
+                    <span data-tag="part_time_beds">
+                        <strong class="data">0</strong>
+                    </span> part time beds
                 </td>
             </tr>
             <tr>
                 <td valign="top" class="icon-holder">
                     <i class="fa fa-user-md"></i>
                 </td>
-                <td class="data doctors">
-                    <div id="locality-staff"></div>
+                <td class="data-wrapper doctors">
+                    <span data-tag="staff_doctors">
+                        <strong class="data">-</strong>
+                    </span> full time doctors,&nbsp;
+                    <span data-tag="staff_nurses">
+                        <strong class="data">0</strong>
+                    </span> full time nurses
                 </td>
             </tr>
             <tr>
                 <td valign="top" class="icon-holder">
                     <i class="fa fa-briefcase"></i>
                 </td>
-                <td class="data ownership">
-                    <p><strong>Ownership:</strong>
-                        <span id="locality-ownership"></span></p>
+                <td class="data-wrapper ownership">
+                    <div data-tag="operator_type">
+                        <div class="data"></div>
+                    </div>
                 </td>
             </tr>
             <tr>
                 <td valign="top" class="icon-holder">
-                    <i class="fa fa-tag"></i>
+                    <i class="fa fa-sticky-note"></i>
                 </td>
-                <td class="data services">
-                    <ul id="tag-data"></ul>
-                </td>
-            </tr>
-            <tr id="others">
-                <td valign="top" class="icon-holder">
-                    <i class="fa fa-circle"></i>
-                </td>
-                <td class="data services">
-                    <div id="other-tags-table">
+                <td class="data-wrapper note">
+                    <div data-tag="notes">
+                        <div class="data"></div>
                     </div>
                 </td>
             </tr>
+
+            {#            // TODO: We will fix this#}
+            {#            <tr>#}
+            {#                <td valign="top" class="icon-holder">#}
+            {#                    <i class="fa fa-tag"></i>#}
+            {#                </td>#}
+            {#                <td class="data-wrapper tags">#}
+            {#                    <div data-tag="tag">#}
+            {#                        <ul class="data"></ul>#}
+            {#                    </div>#}
+            {#                </td>#}
+            {#            </tr>#}
         </table>
     </div>
 </div>

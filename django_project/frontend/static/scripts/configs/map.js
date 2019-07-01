@@ -16,7 +16,7 @@ require([
     'static/scripts/shared.js',
     'static/scripts/views/statistic/view.js',
     'static/scripts/views/map-sidebar/country-list.js',
-    'static/scripts/views/map-sidebar/locality-detail.js',
+    'static/scripts/views/map-sidebar/healthsite-detail/control.js',
     'static/scripts/views/map-sidebar/shapefile-downloader.js',
     'static/scripts/views/navbar/search.js'
 ], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search) {
@@ -35,12 +35,7 @@ require([
     function goToLocality() {
         if (identifier) {
             var identifiers = identifier.split('/');
-            shared.dispatcher.trigger('show-locality-detail',
-                {
-                    'osm_type': identifiers[0],
-                    'osm_id': identifiers[1]
-                }
-            );
+            shared.dispatcher.trigger('show-locality-detail', identifiers[0], identifiers[1]);
         }
     }
 
@@ -51,12 +46,14 @@ require([
         countryStatictic.showStatistic(
             parameters['country'],
             function () {
+                $("#locality-info").hide();
                 goToLocality()
             });
     } else {
         if (identifier) {
             goToLocality();
         } else {
+            $("#locality-info").hide();
             countryStatictic.getCount("", function (data) {
                 $('#healthsites-count').html(data);
             });

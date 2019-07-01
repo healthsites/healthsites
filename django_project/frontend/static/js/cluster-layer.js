@@ -261,9 +261,8 @@
                         if (window.location.href.indexOf("map") > -1) {
                             var identifiers = evt.target.data['uuid'].split('/');
                             shared.dispatcher.trigger(
-                                'show-locality-detail', {
-                                    'osm_type': identifiers[0], 'osm_id': identifiers[1]
-                                });
+                                'show-locality-detail', identifiers[0], identifiers[1]
+                            );
                             $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
                         } else {
                             window.location.href = "/map#!/locality/" + evt.target.data['uuid'];

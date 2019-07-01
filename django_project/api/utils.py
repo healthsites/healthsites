@@ -175,8 +175,26 @@ def validate_osm_tags(osm_tags):
         tag_definition = update_tag_options(tag_definition, osm_tags)
 
         # Value type check
+        if tag_definition.get('type') == 'string':
+            tag_definition['type'] = str
+        elif tag_definition.get('type') == 'integer':
+            tag_definition['type'] = int
+        elif tag_definition.get('type') == 'float':
+            tag_definition['type'] = float
+        elif tag_definition.get('type') == 'boolean':
+            tag_definition['type'] = bool
+        elif tag_definition.get('type') == 'boolean':
+            tag_definition['type'] = bool
+
         if tag_definition.get('type') == str:
             item = str(item)
+        elif tag_definition.get('type') == int:
+            item = int(item)
+        elif tag_definition.get('type') == bool:
+            if item == 'False':
+                item = False
+            elif item == 'True':
+                item = True
         if not isinstance(item, tag_definition.get('type')):
             message = (
                 'Invalid value type for key `{}`: '
