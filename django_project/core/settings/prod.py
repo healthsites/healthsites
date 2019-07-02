@@ -2,6 +2,10 @@
 
 """Project level settings."""
 from .project import *  # noqa
+try:
+    from .secret import SENTRY_KEY
+except ImportError:
+    SENTRY_KEY = None
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -19,21 +23,25 @@ DEBUG = TEMPLATE_DEBUG = False
 
 
 # Logging
-if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
+if 'raven.contrib.django.raven_compat' in INSTALLED_APPS and SENTRY_KEY:
     # noinspection PyUnresolvedReferences
     import raven  # noqa
+    try:
+        release = raven.fetch_git_sha(os.path.dirname(os.pardir))
+    except:
+        release = 'unknown'
 
     RAVEN_CONFIG = {
         # Hosted sentry
         # 'dsn': 'https://02127c0444ca42b3a7d3275118d74177:'
         # '2e7a9aa7b77240bd8804f95057991875@app.getsentry.com/55597',
         # Self hosted sentry
-        'dsn': 'http://b318bf6d392b479da15e5fdcc4deb1a3:3a0c87ea79fb4d4a98a67902a87c3343@sentry.kartoza.com/23',
+        'dsn': SENTRY_KEY,
         # If you are using git, you can also automatically configure the
         # release based on the git info.
         # Note from Tim: This won't work since we don't mount the root
         # of the git project into the docker container...
-        'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
+        'release': release,
     }
 
     MIDDLEWARE_CLASSES = (
@@ -69,9 +77,18 @@ if 'raven.contrib.django.raven_compat' in INSTALLED_APPS:
                 'level': 'DEBUG',
                 'class': 'logging.StreamHandler',
                 'formatter': 'verbose'
-            }
+            },
+            'null': {
+                'class': 'django.utils.log.NullHandler',
+            },
         },
         'loggers': {
+            # Special rules to not bother logging when host is
+            # not allowed otherwise we get lots of mail spam....
+            'django.security.DisallowedHost': {
+                'handlers': ['null'],
+                'propagate': False,
+            },
             'django.db.backends': {
                 'level': 'ERROR',
                 'handlers': ['console'],
