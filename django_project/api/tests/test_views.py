@@ -119,3 +119,7 @@ class TestViews(TestCase):
         )
 
         self.assertEqual(resp.status_code, 404)
+
+    @skip('skip')
+    def test_bulk_upload(self):
+        pass

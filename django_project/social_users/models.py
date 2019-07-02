@@ -30,6 +30,7 @@ class Organisation(models.Model):
     name = models.CharField(blank=False, max_length=64)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, default=None)
     contact = models.CharField(default='', blank=True, max_length=64)
+    organizer = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
     trusted_users = models.ManyToManyField(
         'TrustedUser', through='OrganisationSupported', blank=True
     )

@@ -15,7 +15,7 @@ from api.api_views.v2.countries.search import Autocomplete as CountryAutocomplet
 from api.api_views.v2.facilities.cluster import GetCluster
 from api.api_views.v2.facilities.detail import GetDetailFacility
 from api.api_views.v2.facilities.list import (
-    GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
+    BulkUpload, GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
 from api.api_views.v2.facilities.shapefile import GetFacilitiesShapefileProcess
 from api.api_views.v2.facilities.search import Autocomplete
 from api.api_views.v2.googlemaps.search import SearchByGeoname
@@ -39,10 +39,11 @@ facilities_api = patterns(
         Autocomplete.as_view()),
     url(r'^shapefile/process/(?P<country_name>[\w\+%_& ]+)',
         GetFacilitiesShapefileProcess.as_view()),
+    url(r'^bulk/create', BulkUpload.as_view()),
     url(r'^(?P<osm_type>\w+)/(?P<osm_id>-?\d+)',
         GetDetailFacility.as_view()),
     url(r'^',
-        GetFacilities.as_view())
+        GetFacilities.as_view()),
 )
 gmaps_api = patterns(
     '',
