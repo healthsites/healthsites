@@ -30,9 +30,9 @@
                 You are not signed in
             </span>
         </div>
-        <button id="signin-button" type="button" class="button col-xs-4 pad0x blue stroke" data-toggle="modal" data-target="#signInModal">
+        <a href="{% url 'social:begin' 'openstreetmap' %}?next=/map" id="signin-button" type="button" class="button col-xs-4 pad0x blue stroke" data-toggle="modal">
             <i class="fa fa-sign-in"></i> sign in
-        </button>
+        </a>
     {% endif %}
 
     <div style="clear: both;"></div>

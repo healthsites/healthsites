@@ -269,6 +269,22 @@
                 }
             }
         }
+
+        $('.btn-share-icon').click(function () {
+            $(this).toggleClass('share-icon-click')
+            $('.dropup-content').toggle()
+        });
+
+        $('#facebook_share_map').click(function (){
+
+            // For testing on local
+            var url = window.location.href;
+            if(url.indexOf('localhost') > -1){
+                url = url.replace('http://localhost:49362/', 'https://staging.healthsites.io/')
+            }
+            url = url.replace('#!/', '%23%21%2F');
+            $(this).attr('href', 'https://www.facebook.com/sharer/sharer.php?u=' + url + '&amp;src=sdkpreparse')
+        })
     });
 
     function changeToDefault() {
