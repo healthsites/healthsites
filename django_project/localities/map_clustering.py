@@ -73,7 +73,7 @@ def cluster(query_set, zoom, pix_x, pix_y, localities_is_needed=False):
     localites = query_set.get_lnglat().values(
         'id', 'name', 'uuid', 'lnglat', 'changeset__created'
     )
-    number = localites.count()
+
     index = 1
     for locality in localites.iterator():
         index += 1

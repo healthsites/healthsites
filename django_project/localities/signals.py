@@ -124,7 +124,6 @@ def values_updated_handler(sender, instance, **kwargs):
     """
     *SIG_locality_values_updated* triggered LocalityIndex update for a Locality
     """
-    from api.serializer.locality import LocalitySerializer
     LOG.debug('Updating LocalityIndex for Locality: %s', instance.pk)
 
     # retrieve ranked attribute values for a Locality
@@ -140,4 +139,3 @@ def values_updated_handler(sender, instance, **kwargs):
     locind.rankd = loc_fts.get('D', '')
 
     locind.save()
-

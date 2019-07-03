@@ -1,3 +1,4 @@
+
 # -*- coding: utf-8 -*-
 
 # Healthsites related tags
@@ -8,7 +9,9 @@
 amenity = {
     'key': 'amenity',
     'name': 'amenity',
-    'description': 'For describing useful and important facilities for visitors and residents',
+    'description':
+        'For describing useful and important facilities '
+        'for visitors and residents',
     'options': [
         'clinic', 'doctors', 'hospital', 'dentist', 'pharmacy'
     ],
@@ -19,7 +22,9 @@ amenity = {
 healthcare = {
     'key': 'healthcare',
     'name': 'healthcare',
-    'description': 'A key to tag all places that provide healthcare (are part of the healthcare sector)',
+    'description':
+        'A key to tag all places that provide healthcare '
+        '(are part of the healthcare sector)',
     'options': [
         'doctor', 'pharmacy', 'hospital', 'clinic', 'dentist',
         'physiotherapist', 'alternative', 'laboratory', 'optometrist',
@@ -40,8 +45,10 @@ name = {
 operator = {
     'key': 'operator',
     'name': 'operator',
-    'description': 'The operator tag is used to name a company, corporation, '
-                   'person or any other entity who is directly in charge of the current operation of a map object',
+    'description':
+        'The operator tag is used to name a company, corporation, '
+        'person or any other entity who is directly in charge of '
+        'the current operation of a map object',
     'required': True,
     'type': str,
 }
@@ -49,7 +56,9 @@ operator = {
 source = {
     'key': 'source',
     'name': 'source',
-    'description': 'Used to indicate the source of information (i.e. meta data) added to OpenStreetMap',
+    'description':
+        'Used to indicate the source of information '
+        '(i.e. meta data) added to OpenStreetMap',
     'required': True,
     'type': str,
 }
@@ -58,8 +67,12 @@ source = {
 speciality = {
     'key': 'speciality',
     'name': 'speciality',
-    'description': 'A key to detail the special services provided by a healthcare facility. '
-                   'To be used in conjuction with the \'healthcare=*\' tag. For example \'healthcare=laboratory\', and \'healthcare:speciality=blood_check\'',
+    'description':
+        'A key to detail the special services provided by '
+        'a healthcare facility. '
+        'To be used in conjuction with the \'healthcare=*\' tag. '  # noqa
+        'For example \'healthcare=laboratory\', '  # noqa
+        'and \'healthcare:speciality=blood_check\'',  # noqa
     'options': [],
     'required': False,
     'type': str,
@@ -68,7 +81,9 @@ speciality = {
 operator_type = {
     'key': 'operator_type',
     'name': 'operator_type',
-    'description': 'This tag is used to give more information about the type of operator for a feature',
+    'description':
+        'This tag is used to give more information about '
+        'the type of operator for a feature',
     'options': [
         'public', 'private', 'community', 'religious', 'government', 'ngo',
         'combination'
@@ -80,7 +95,9 @@ operator_type = {
 addr_full = {
     'key': 'addr_full',
     'name': 'addr_full',
-    'description': 'Used for a full-text, often multi-line, address for buildings and facilities',
+    'description':
+        'Used for a full-text, often multi-line, '
+        'address for buildings and facilities',
     'required': False,
     'type': str,
 }
@@ -88,7 +105,9 @@ addr_full = {
 contact_number = {
     'key': 'contact_number',
     'name': 'contact_number',
-    'description': 'The contact tag is the prefix for several contact:* keys to describe contacts',
+    'description':
+        'The contact tag is the prefix for several contact:* '
+        'keys to describe contacts',
     'required': False,
     'type': str,
 }
@@ -96,7 +115,9 @@ contact_number = {
 operational_status = {
     'key': 'operational_status',
     'name': 'operational_status',
-    'description': 'Used to document an observation of the current functional status of a mapped feature',
+    'description':
+        'Used to document an observation of the current '
+        'functional status of a mapped feature',
     'options': [
         'operational', 'non_operational', 'unknown'
     ],
@@ -107,8 +128,10 @@ operational_status = {
 opening_hours = {
     'key': 'opening_hours',
     'name': 'opening_hours',
-    'description': 'Describes when something is open or closed. '
-                   'There is a specific standard format for this data https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification',
+    'description':
+        'Describes when something is open or closed. '
+        'There is a specific standard format for this data '
+        'https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification',
     'required': False,
     'type': str,
 }
@@ -140,7 +163,9 @@ staff_nurses = {
 health_amenity_type = {
     'key': 'health_amenity_type',
     'name': 'health_amenity_type',
-    'description': 'Indicates what type of speciality medical equipment is available at the healthsite',
+    'description':
+        'Indicates what type of speciality medical equipment '
+        'is available at the healthsite',
     'options': [
         'ultrasound', 'mri', 'x_ray', 'dialysis', 'operating_theater',
         'laboratory', 'imaging_equipment', 'intensive_care_unit',
@@ -153,7 +178,10 @@ health_amenity_type = {
 dispensing = {
     'key': 'dispensing',
     'name': 'dispensing',
-    'description': 'Whether a pharmacy dispenses prescription drugs or not. Used to add information to something that is already tagged as amenity=pharmacy',
+    'description':
+        'Whether a pharmacy dispenses prescription drugs or not. '
+        'Used to add information to something that is already '
+        'tagged as amenity=pharmacy',
     'required': False,
     'type': bool,
 }
@@ -161,7 +189,10 @@ dispensing = {
 wheelchair = {
     'key': 'wheelchair',
     'name': 'wheelchair',
-    'description': 'Used to mark places or ways that are suitable to be used with a wheelchair and a person with a disability who uses another mobility device (like a walker)',
+    'description':
+        'Used to mark places or ways that are suitable to be used '
+        'with a wheelchair and a person with a disability who uses '
+        'another mobility device (like a walker)',
     'required': False,
     'type': bool,
 }
@@ -177,7 +208,9 @@ emergency = {
 insurance = {
     'key': 'insurance',
     'name': 'insurance',
-    'description': 'This key describes the type of health insurance accepted at the healthsite',
+    'description':
+        'This key describes the type of health '
+        'insurance accepted at the healthsite',
     'options': [
         'no', 'public', 'private', 'unknown'
     ],
@@ -188,7 +221,9 @@ insurance = {
 water_source = {
     'key': 'water_source',
     'name': 'water_source',
-    'description': 'Used to indicate the source of the water for features that provide or use water',
+    'description':
+        'Used to indicate the source of the water for '
+        'features that provide or use water',
     'options': [
         'well', 'water_works', 'manual_pump', 'powered_pump',
         'groundwater', 'rain'
@@ -211,7 +246,8 @@ electricity = {
 is_in_health_area = {
     'key': 'is_in_health_area',
     'name': 'is_in_health_area',
-    'description': 'Used to capture the health area a health facility falls within',
+    'description':
+        'Used to capture the health area a health facility falls within',
     'required': False,
     'type': str,
 }
@@ -219,7 +255,8 @@ is_in_health_area = {
 is_in_health_zone = {
     'key': 'is_in_health_zone',
     'name': 'is_in_health_zone',
-    'description': 'Used to capture the health zone a health facility falls within',
+    'description':
+        'Used to capture the health zone a health facility falls within',
     'required': False,
     'type': str,
 }
@@ -227,7 +264,9 @@ is_in_health_zone = {
 url = {
     'key': 'url',
     'name': 'url',
-    'description': 'Specifying a url related to a feature, in this case the url if available',
+    'description':
+        'Specifying a url related to a feature, '
+        'in this case the url if available',
     'required': False,
     'type': str,
 }

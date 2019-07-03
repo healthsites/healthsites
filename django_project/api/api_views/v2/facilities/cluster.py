@@ -58,7 +58,9 @@ class GetCluster(BaseAPI):
         if zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
             filename = '{}_{}_{}_localities.json'.format(zoom, *iconsize)
             if geoname:
-                filename = '{}_{}_{}_localities_{}.json'.format(zoom, iconsize[0], iconsize[1], geoname)
+                filename = \
+                    '{}_{}_{}_localities_{}.json'.format(
+                        zoom, iconsize[0], iconsize[1], geoname)
             filename = os.path.join(
                 settings.CLUSTER_CACHE_DIR,
                 filename

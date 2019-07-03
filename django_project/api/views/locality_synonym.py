@@ -45,7 +45,7 @@ class LocalitySynonymApiView(ApiView):
             locality = Locality.objects.get(uuid=uuid)
         except Locality.DoesNotExist:
             return self.api_response(
-                {'error': 'facility isn\'t found'}
+                {'error': 'facility is not found'}
             )
 
         synonyms = SynonymLocalities.objects.filter(locality=locality)

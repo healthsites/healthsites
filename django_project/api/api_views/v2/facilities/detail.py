@@ -57,7 +57,8 @@ class GetDetailFacility(FacilitiesBaseAPI):
             self.JSONSerializer = LocalityOSMWaySerializer
             self.GEOJSONSerializer = LocalityOSMWayGeoSerializer
         else:
-            return HttpResponseBadRequest('%s is not recognized as osm type' % osm_type)
+            return HttpResponseBadRequest(
+                '%s is not recognized as osm type' % osm_type)
 
         try:
             return Response(self.serialize(self.getLocalityOsm(osm_type, osm_id)))
@@ -87,7 +88,13 @@ class GetDetailFacility(FacilitiesBaseAPI):
                 user = request.user
                 response = update_osm_node(user, data)
 
-                create_pending('node', response['id'], data['tag']['name'], user, response['version'])
+                create_pending(
+                    'node',
+                    response['id'],
+                    data['tag']['name'],
+                    user,
+                    response['version']
+                )
                 return Response(response)
             else:
                 # For now, we only support Node

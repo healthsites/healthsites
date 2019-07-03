@@ -13,7 +13,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         Country.objects.all().delete()
-        data_source = DataSource('localities/data/ne_10m_admin_0_countries.shp')
+        data_source = DataSource(
+            'localities/data/ne_10m_admin_0_countries.shp')
         layer = data_source[0]
         for feature in layer:
             country_name = feature['NAME'].value
@@ -29,14 +30,16 @@ class Command(BaseCommand):
                 'Central African Rep.', 'Central African Republic'
             )
             country_name = country_name.replace('Curaçao', 'Curacao')
-            country_name = country_name.replace('Côte d\'Ivoire', 'Ivory Coast')
+            country_name = country_name.replace('Côte d\'Ivoire', 'Ivory Coast')  # noqa
             country_name = country_name.replace(
-                'Cyprus U.N. Buffer Zone', 'United Nations Buffer Zone in Cyprus'
+                'Cyprus U.N. Buffer Zone',
+                'United Nations Buffer Zone in Cyprus'
             )
             country_name = country_name.replace(
                 'Dem. Rep. Congo', 'Democratic Republic of the Congo'
             )
-            country_name = country_name.replace('Dem. Rep. Korea', 'North Korea')
+            country_name = country_name.replace(
+                'Dem. Rep. Korea', 'North Korea')
             country_name = country_name.replace('Eq.', 'Equatorial')
             country_name = country_name.replace(
                 'Fr. S. Antarctic Lands', 'French Southern and Antarctic Lands'
@@ -52,8 +55,10 @@ class Command(BaseCommand):
             country_name = country_name.replace('U.S.', 'United States')
             country_name = country_name.replace('S.', 'South')
             country_name = country_name.replace('Sandw.', 'Sandwich')
-            country_name = country_name.replace('São Tomé and Principe', 'Sao Tome and Principe')
-            country_name = country_name.replace('St-Barthélemy', 'Saint Barthelemy')
+            country_name = country_name.replace(
+                'São Tomé and Principe', 'Sao Tome and Principe')
+            country_name = country_name.replace(
+                'St-Barthélemy', 'Saint Barthelemy')
             country_name = country_name.replace('St.', 'Saint')
             country_name = country_name.replace('St-', 'Saint ')
             country_name = country_name.replace('Ter.', 'Territory')
@@ -69,17 +74,23 @@ class Command(BaseCommand):
             try:
                 country = Country.objects.get(name=country_name)
                 if 'MultiPolygon' not in geometry.geojson:
-                    polygons = [Polygon(coords) for coords in country.geometry.coords[0]]
+                    polygons = \
+                        [Polygon(coords)
+                         for coords in country.geometry.coords[0]]
                     polygons += [Polygon(geometry.coords[0])]
                     geometry = MultiPolygon(polygons).geojson
                 else:
-                    polygons = [Polygon(coords) for coords in country.geometry.coords[0]]
-                    polygons += [Polygon(coords) for coords in geometry.coords[0]]
+                    polygons = \
+                        [Polygon(coords)
+                         for coords in country.geometry.coords[0]]
+                    polygons += \
+                        [Polygon(coords) for coords in geometry.coords[0]]
                     geometry = MultiPolygon(polygons).geojson
                 country.polygon_geometry = geometry
             except Exception:
                 if 'MultiPolygon' not in geometry.geojson:
-                    geometry = MultiPolygon(Polygon(geometry.coords[0])).geojson
+                    geometry = \
+                        MultiPolygon(Polygon(geometry.coords[0])).geojson
                 else:
                     geometry = geometry.geojson
                 country = Country(name=country_name)

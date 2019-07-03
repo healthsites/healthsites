@@ -8,7 +8,8 @@ from localities_osm.models.locality import (
 
 
 class LocalityOSMAdmin(admin.ModelAdmin):
-    list_display = ('osm_id', 'amenity', 'name', 'changeset_timestamp', 'changeset_user')
+    list_display = (
+        'osm_id', 'amenity', 'name', 'changeset_timestamp', 'changeset_user')
     list_filter = ('healthcare',)
     ordering = ('name',)
     search_fields = ('name', 'osm_id')
@@ -17,7 +18,8 @@ class LocalityOSMAdmin(admin.ModelAdmin):
 
 class LocalityOSMViewAdmin(LocalityOSMAdmin):
     list_display = (
-        'osm_id', 'amenity', 'name', 'osm_type', 'changeset_timestamp', 'changeset_user', 'operator')
+        'osm_id', 'amenity', 'name', 'osm_type', 'changeset_timestamp',
+        'changeset_user', 'operator')
     list_filter = ('amenity', 'osm_type')
     readonly_fields = ('osm_id', 'row', 'osm_type')
 

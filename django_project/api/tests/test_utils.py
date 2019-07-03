@@ -59,7 +59,7 @@ class TestUtils(TestCase):
             'operator': 'the operator',
             'healthcare': 'clinic'
         }
-        expected_message = 'Invalid OSM tags: amenity tag is missing.'
+        expected_message = 'Invalid OSM tags: `amenity` tag is missing.'
         status, actual_message = validate_osm_tags(tags)
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
@@ -84,7 +84,7 @@ class TestUtils(TestCase):
             'healthcare': 'clinic'
         }
         status, actual_message = validate_osm_tags(tags)
-        expected_message = 'Invalid OSM tags: dispensing tag is missing.'
+        expected_message = 'Invalid OSM tags: `dispensing` tag is missing.'
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
 
@@ -102,7 +102,7 @@ class TestUtils(TestCase):
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
-            'Invalid value for key amenity: '
+            'Invalid value for key `amenity`: '
             'not a clinic is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
@@ -117,8 +117,7 @@ class TestUtils(TestCase):
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
-            'Invalid value type for key amenity: '
-            'Expected type str, got int instead.')
+            'Invalid value for key `amenity`: 0 is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
 
@@ -133,7 +132,7 @@ class TestUtils(TestCase):
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
-            'Invalid value for key speciality: '
+            'Invalid value for key `speciality`: '
             'radiology is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)

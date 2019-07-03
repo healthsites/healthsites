@@ -94,7 +94,8 @@ class BulkUpload(FacilitiesBaseAPIWithAuth):
             facilities_data = data['healthsites']
             for facility_data in facilities_data:
                 # Verify data uploader and owner/collector
-                is_valid, message = verify_user(user, facility_data['username'])
+                is_valid, message = \
+                    verify_user(user, facility_data['username'])
                 if not is_valid:
                     return HttpResponseForbidden(message)
 
@@ -119,7 +120,8 @@ class BulkUpload(FacilitiesBaseAPIWithAuth):
             return HttpResponseBadRequest('%s' % e)
 
 
-class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):
+class GetFacilities(
+        PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -164,7 +166,9 @@ class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseA
             response = create_osm_node(user, data)
 
             # create pending index
-            create_pending('node', response['id'], data['tag']['name'], user, response['version'])
+            create_pending(
+                'node', response['id'],
+                data['tag']['name'], user, response['version'])
 
             save_extensions('node', response['id'], locality_attr)
             return Response(response)
