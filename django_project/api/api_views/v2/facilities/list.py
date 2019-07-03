@@ -121,7 +121,7 @@ class BulkUpload(FacilitiesBaseAPIWithAuth):
 
 
 class GetFacilities(
-    PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):
+        PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):
     """
     get:
     Returns a list of facilities with some filtering parameters.

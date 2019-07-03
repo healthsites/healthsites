@@ -23,11 +23,10 @@ class LocalityOSM(LocalityOSMBase):
         help_text='amenity=clinic,doctors,hospital,dentist,pharmacy')
     healthcare = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text=
-        'healthcare=doctor,pharmacy,hospital,clinic,'
-        'dentist,physiotherapist,alternative'
-        ',laboratory,optometrist,rehabilitation,'
-        'blood_donation,birthing_center')
+        help_text='healthcare=doctor,pharmacy,hospital,clinic,'
+                  'dentist,physiotherapist,alternative'
+                  ',laboratory,optometrist,rehabilitation,'
+                  'blood_donation,birthing_center')
     name = models.CharField(
         max_length=512, blank=True, null=True,
         help_text='name')

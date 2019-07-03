@@ -70,9 +70,9 @@ speciality = {
     'description':
         'A key to detail the special services provided by '
         'a healthcare facility. '
-        'To be used in conjuction with the \'healthcare=*\' tag. '
-        'For example \'healthcare=laboratory\', '
-        'and \'healthcare:speciality=blood_check\'',
+        'To be used in conjuction with the \'healthcare=*\' tag. '  # noqa
+        'For example \'healthcare=laboratory\', '  # noqa
+        'and \'healthcare:speciality=blood_check\'',  # noqa
     'options': [],
     'required': False,
     'type': str,
