@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Healthsites
+{% endblock %}
+
+{% block content %}
+
+    {% if not user.is_authenticated %}
+        <script>
+            window.location.href = "{% url "map" %}";
+        </script>
+    {% endif %}
+
+    <section class="white container">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="" id="google-play">
+                        <a href='https://play.google.com/store/apps/details?id=org.odk.collect.android&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'><img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png'/></a>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 social">
+                    <div class="" id="qrcode" style="margin: auto">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+    {% if user.is_authenticated %}
+        <script>
+            <!-- QR Code generation starts here -->
+            var generateQRCode = (function() {
+                var qrInput = "eNqrVi8tTi3KS8xNVbdSUM8qzStW11FQL0gsLi7PL0oBiSUWp6SBxIDKylKL4kuLckCiGamJOSUZxZklqcV6mfnqtQBy8RiR";
+                var qrContainer = document.getElementById('qrcode');
+                var qrCode = new QRCode(qrContainer, qrInput);
+                function generateQRCode() {
+                    qrCode.clear();
+                    qrCode.makeCode(qrInput.value)
+                }
+                return generateQRCode;
+    }())
+        </script>
+    {% else %}
+        <script>
+            window.location.href = "{% url "map" %}";
+        </script>
+    {% endif %}
+{% endblock %}
