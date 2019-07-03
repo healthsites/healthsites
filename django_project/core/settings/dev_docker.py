@@ -32,7 +32,7 @@ OSM_API_URL = 'https://master.apis.dev.openstreetmap.org'
 try:
     SOCIAL_AUTH_OPENSTREETMAP_KEY = SOCIAL_AUTH_OPENSTREETMAP_STAGING_KEY
     SOCIAL_AUTH_OPENSTREETMAP_SECRET = SOCIAL_AUTH_OPENSTREETMAP_STAGING_SECRET
-except ImportError:
+except (ImportError, NameError):
     pass
 
 AUTHENTICATION_BACKENDS = (
