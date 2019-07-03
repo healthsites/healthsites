@@ -20,79 +20,81 @@ class LocalityOSM(LocalityOSMBase):
     osm_id = models.BigIntegerField()
     amenity = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="amenity=clinic,doctors,hospital,dentist,pharmacy")
+        help_text='amenity=clinic,doctors,hospital,dentist,pharmacy')
     healthcare = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="healthcare=doctor,pharmacy,hospital,clinic,dentist,physiotherapist,alternative"
-                  ",laboratory,optometrist,rehabilitation,blood_donation,birthing_center")
+        help_text='healthcare=doctor,pharmacy,hospital,clinic,'
+                  'dentist,physiotherapist,alternative'
+                  ',laboratory,optometrist,rehabilitation,'
+                  'blood_donation,birthing_center')
     name = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="name")
+        help_text='name')
     operator = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="operator")
+        help_text='operator')
     source = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="source")
+        help_text='source')
 
     # OPTIONAL
     speciality = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="healthcare:speciality")
+        help_text='healthcare:speciality')
     operator_type = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="operator:type=public,private,community,religious,government,ngo")
+        help_text='operator:type=public,private,community,religious,government,ngo')
     addr_full = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="addr:full")
+        help_text='addr:full')
     contact_number = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="contact:phone")
+        help_text='contact:phone')
     operational_status = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="operational_status")
+        help_text='operational_status')
     opening_hours = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="opening_hours")
+        help_text='opening_hours')
     beds = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="beds")
+        help_text='beds')
     staff_doctors = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="staff_count:doctors")
+        help_text='staff_count:doctors')
     staff_nurses = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="staff_count:nurses")
+        help_text='staff_count:nurses')
     health_amenity_type = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="health_amenity:type")
+        help_text='health_amenity:type')
     dispensing = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="dispensing (boolean value)")
+        help_text='dispensing (boolean value)')
     wheelchair = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="wheelchair (boolean value)")
+        help_text='wheelchair (boolean value)')
     emergency = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="emergency (boolean value)")
+        help_text='emergency (boolean value)')
     insurance = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="insurance:health")
+        help_text='insurance:health')
     water_source = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="water_source")
+        help_text='water_source')
     electricity = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="electricity")
+        help_text='electricity')
     is_in_health_area = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="is_in:health_area")
+        help_text='is_in:health_area')
     is_in_health_zone = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="is_in:health_zone")
+        help_text='is_in:health_zone')
     url = models.CharField(
         max_length=512, blank=True, null=True,
-        help_text="url")
+        help_text='url')
 
     # changesets
     changeset_id = models.IntegerField(blank=True, null=True)
@@ -121,7 +123,9 @@ class LocalityOSM(LocalityOSMBase):
     @staticmethod
     def get_count_of_complete(queryset):
         for field in LocalityOSM._meta.get_all_field_names():
-            if field in ['osm_id', 'changeset_id', 'changeset_version', 'changeset_timestamp', 'changeset_user']:
+            if field in [
+                'osm_id', 'changeset_id', 'changeset_version',
+                    'changeset_timestamp', 'changeset_user']:
                 continue
             queryset = queryset.exclude(**{'%s' % field: ''})
         return queryset.count()

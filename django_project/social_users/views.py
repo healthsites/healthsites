@@ -76,6 +76,7 @@ class ProfilePage(TemplateView):
         context['user'] = user
         context['osm_user'] = osm_user
         context['api_keys'] = None
+        context['osm_API'] = settings.OSM_API_URL
         return context
 
 

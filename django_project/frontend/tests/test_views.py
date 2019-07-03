@@ -2,32 +2,26 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import Client, TestCase
+from mock import patch, MagicMock
 
 
 class TestViews(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_home_view(self):
+    @patch('localities_osm.models.locality.LocalityOSMView')
+    def test_home_view(self, mock_locality_osm):  # noqa
+        mock_locality_osm = MagicMock()  # noqa
         resp = self.client.get(reverse('home'))
 
         self.assertEqual(resp.status_code, 200)
 
         self.assertEqual(resp.context['debug'], False)
 
-        self.assertListEqual(
-            [tmpl.name for tmpl in resp.templates], [
-                'index.html', u'pipeline/css.html', u'pipeline/css.html', u'pipeline/css.html',
-                u'pipeline/css.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html'
-            ]
-        )
+    @patch('localities_osm.models.locality.LocalityOSMView')
+    def test_home_view_no_googleanalytics(self, mock_locality_osm):  # noqa
+        mock_locality_osm = MagicMock()  # noqa
 
-    def test_home_view_no_googleanalytics(self):
         # specifically set DEBUG to True
         settings.DEBUG = True
 
@@ -37,19 +31,10 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.context['debug'], True)
         self.assertTrue(resp.content.find('GoogleAnalyticsObject') == -1)
-        self.assertListEqual(
-            [tmpl.name for tmpl in resp.templates], [
-                'index.html', u'pipeline/css.html', u'pipeline/css.html', u'pipeline/css.html',
-                u'pipeline/css.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html'
-            ]
-        )
 
-    def test_about_view(self):
+    @patch('localities_osm.models.locality.LocalityOSMView')
+    def test_about_view(self, mock_locality_osm):  # noqa
+        mock_locality_osm = MagicMock()  # noqa
         resp = self.client.get(reverse('about'))
 
         self.assertEqual(resp.status_code, 200)
@@ -59,7 +44,9 @@ class TestViews(TestCase):
             ]
         )
 
-    def test_help_view(self):
+    @patch('localities_osm.models.locality.LocalityOSMView')
+    def test_help_view(self, mock_locality_osm):  # noqa
+        mock_locality_osm = MagicMock()  # noqa
         resp = self.client.get(reverse('help'))
 
         self.assertEqual(resp.status_code, 200)

@@ -10,7 +10,11 @@ from api.osm_api_client import OsmApiWrapper
 from api.osm_field_definitions import ALL_FIELDS, get_mandatory_fields
 from api.osm_tag_defintions import get_mandatory_tags, update_tag_options
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from core.settings.utils import ABS_PATH
+from social_users.models import TrustedUser, Organisation
 
 
 def get_definition(keyword, definition_library, key=None):
@@ -32,7 +36,7 @@ def get_definition(keyword, definition_library, key=None):
     """
 
     for item in dir(definition_library):
-        if not item.startswith("__"):
+        if not item.startswith('__'):
             var = getattr(definition_library, item)
             if isinstance(var, dict):
                 if var.get('key') == keyword or var.get(key) == keyword:
@@ -55,6 +59,36 @@ def get_oauth_token(user):
         return access_token['oauth_token'], access_token['oauth_token_secret']
     except UserSocialAuth.DoesNotExist:
         raise Exception('This user is not linked to openstreetmap yet')
+
+
+def is_organizer(user):
+    """Check whether the user is an organizer or not.
+
+    :param user: The user.
+    :type user: django.contrib.auth.models.User
+
+    :return: Boolean indicator
+    :rtype: bool
+    """
+    try:
+        return len(Organisation.objects.filter(organizer=user)) > 0
+    except Organisation.DoesNotExist:
+        return False
+
+
+def is_trusted_user(user):
+    """Check whether the user is a trusted user or not.
+
+    :param user: The user.
+    :type user: django.contrib.auth.models.User
+
+    :return: Boolean indicator
+    :rtype: bool
+    """
+    try:
+        return len(TrustedUser.objects.filter(user=user)) > 0
+    except TrustedUser.DoesNotExist:
+        return False
 
 
 def remap_dict(old_dict, transform):
@@ -104,7 +138,7 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
             mapping_dict.update({
                 column['name']: column['key']
             })
-        except:
+        except:  # noqa
             pass
 
     return remap_dict(data, mapping_dict)
@@ -130,6 +164,38 @@ def validate_osm_data(osm_data):
         return False, message
 
     return True, 'OSM data are valid.'
+
+
+def verify_user(uploader, creator):
+    """Verify user.
+
+    Uploader has to be organizer of an organisation and the creator has to be
+    a trusted user in that particular organisation.
+
+    :param uploader: The data uploader
+    :type uploader: str or User object
+
+    :param creator: The data creator/owner
+    :type creator: str or User object
+
+    :return: Verification status and message.
+    :rtype: tuple
+    """
+    uploader = get_object_or_404(User, username=uploader)
+    creator = get_object_or_404(User, username=creator)
+
+    try:
+        organisation = get_object_or_404(Organisation, organizer=uploader)
+    except Http404:
+        return False, 'User %s is not organizer of an organisation.' % uploader
+
+    if creator not in (
+            [trusted_user.user for trusted_user in TrustedUser.objects.filter(
+                organisation=organisation)]):
+        return False, 'User %s is not a trusted user.' % creator
+
+    return True, (
+        'Data uploader is an organizer and creator/owner is a trusted user.')
 
 
 def validate_osm_fields(osm_fields):
@@ -175,8 +241,26 @@ def validate_osm_tags(osm_tags):
         tag_definition = update_tag_options(tag_definition, osm_tags)
 
         # Value type check
+        if tag_definition.get('type') == 'string':
+            tag_definition['type'] = str
+        elif tag_definition.get('type') == 'integer':
+            tag_definition['type'] = int
+        elif tag_definition.get('type') == 'float':
+            tag_definition['type'] = float
+        elif tag_definition.get('type') == 'boolean':
+            tag_definition['type'] = bool
+        elif tag_definition.get('type') == 'boolean':
+            tag_definition['type'] = bool
+
         if tag_definition.get('type') == str:
             item = str(item)
+        elif tag_definition.get('type') == int:
+            item = int(item)
+        elif tag_definition.get('type') == bool:
+            if item == 'False':
+                item = False
+            elif item == 'True':
+                item = True
         if not isinstance(item, tag_definition.get('type')):
             message = (
                 'Invalid value type for key `{}`: '

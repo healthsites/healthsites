@@ -1,8 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from django.db.models import Count
-from django.http.response import HttpResponseBadRequest
+from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.api_views.v2.schema import (
@@ -15,13 +14,15 @@ from api.api_views.v2.pagination import (
     PaginationAPI, LessThanOneException, NotANumberException
 )
 from api.api_views.v2.facilities.base_api import FacilitiesBaseAPIWithAuth
-from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node
+from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node, \
+    verify_user
+from api.utilities.statistic import get_statistic_with_cache
 from core.settings.utils import ABS_PATH
 from localities.models import Country
-from localities.utils import parse_bbox
-from localities_osm.models.locality import LocalityOSM
-from localities_osm.serializer.locality_osm import LocalityOSMBasicSerializer
-from localities_osm.utilities import get_all_osm_query
+from api.utilities.pending import create_pending
+from localities_osm.queries import filter_locality
+from localities_osm.utilities import split_osm_and_extension_attr
+from localities_osm_extension.utils import save_extensions
 
 
 class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
@@ -52,30 +53,75 @@ class GetFacilitiesBaseAPI(object):
         return country
 
     def get_healthsites(self, request):
+        extent = request.GET.get('extent', None)
+        country = request.GET.get('country', None)
 
         # check extent data
-        extent = request.GET.get('extent', None)
-        queryset = get_all_osm_query()
-        if extent:
-            try:
-                polygon = parse_bbox(request.GET.get('extent'))
-            except (ValueError, IndexError):
-                raise BadRequestError('extent is incorrect format')
-            queryset = queryset.in_polygon(polygon)
-
-        # check by country
-        country = request.GET.get('country', None)
         try:
-            country = self.get_country(country)
-            if country:
-                polygons = country.polygon_geometry
-                queryset = queryset.in_polygon(polygons)
-        except Country.DoesNotExist:
-            raise BadRequestError('%s is not found or not a country.' % country)
+            queryset = filter_locality(
+                extent=extent, country=country)
+        except Exception as e:
+            raise BadRequestError('%s' % e)
         return queryset
 
 
-class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):
+class BulkUpload(FacilitiesBaseAPIWithAuth):
+    """
+    post:
+    Upload multiple healthsites/facilities data.
+    """
+    filter_backends = (ApiSchema,)
+
+    def get(self, request):
+        """FOR TESTING ONLY"""
+        user = request.user
+        data = request.data
+        facilities_data = data['healthsites']
+        response = {}
+        for facility_data in facilities_data:
+            # Verify data owner/collector
+            is_valid, message = verify_user(user, facility_data['username'])
+            response[facility_data['username']] = is_valid
+
+        return Response(response)
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        # Now, we post the data directly to OSM.
+        try:
+            responses = []
+            facilities_data = data['healthsites']
+            for facility_data in facilities_data:
+                # Verify data uploader and owner/collector
+                is_valid, message = \
+                    verify_user(user, facility_data['username'])
+                if not is_valid:
+                    return HttpResponseForbidden(message)
+
+                # Validate data
+                is_valid, message = validate_osm_data(facility_data)
+                if not is_valid:
+                    return HttpResponseBadRequest(message)
+
+            for facility_data in facilities_data:
+                # Map Healthsites tags to OSM tags
+                mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
+                facility_data['tag'] = convert_to_osm_tag(
+                    mapping_file_path, facility_data['tag'], 'node')
+
+                # Push data to OSM
+                response = create_osm_node(user, facility_data)
+                responses.append(response)
+
+            return Response(responses)
+
+        except Exception as e:
+            return HttpResponseBadRequest('%s' % e)
+
+
+class GetFacilities(
+        PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -98,10 +144,15 @@ class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseA
         return Response(self.serialize(queryset, many=True))
 
     def post(self, request):
+        user = request.user
         data = request.data
         # Now, we post the data directly to OSM.
         try:
             # Validate data
+            osm_attr, locality_attr = split_osm_and_extension_attr(
+                data['tag'])
+            data['tag'] = osm_attr
+
             is_valid, message = validate_osm_data(data)
             if not is_valid:
                 return HttpResponseBadRequest(message)
@@ -112,9 +163,14 @@ class GetFacilities(PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseA
                 mapping_file_path, data['tag'], 'node')
 
             # Push data to OSM
-            user = request.user
             response = create_osm_node(user, data)
 
+            # create pending index
+            create_pending(
+                'node', response['id'],
+                data['tag']['name'], user, response['version'])
+
+            save_extensions('node', response['id'], locality_attr)
             return Response(response)
 
         except Exception as e:
@@ -130,8 +186,13 @@ class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):
 
     def get(self, request):
         try:
-            return Response(self.get_healthsites(request).count())
-        except BadRequestError as e:
+            country = request.GET.get('country', None)
+            extent = request.GET.get('extent', None)
+
+            # get cache data
+            output = get_statistic_with_cache(extent, country)
+            return Response(output['localities'])
+        except Exception as e:
             return HttpResponseBadRequest('%s' % e)
 
 
@@ -144,37 +205,14 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
 
     def get(self, request):
         try:
-            healthsites = self.get_healthsites(request)
-            output = {
-                'localities': healthsites.count(),
-                'numbers': {},
-                'last_update': []
-            }
-            numbers = healthsites.values(
-                'amenity').annotate(total=Count('amenity')).order_by('-total')
-            for number in numbers[:5]:
-                type = number['amenity']
-                if type:
-                    output['numbers'][type] = number['total']
-
-            # get completeness
-            basic = LocalityOSM.get_count_of_basic(healthsites)
-            complete = LocalityOSM.get_count_of_complete(healthsites)
-            output['completeness'] = {
-                'basic': basic,
-                'complete': complete
-            }
-
-            # last update
-            healthsites = healthsites.exclude(
-                changeset_timestamp__isnull=True).order_by(
-                '-changeset_timestamp')[:10]
-            output['last_update'] = LocalityOSMBasicSerializer(healthsites, many=True).data
-
             country = request.GET.get('country', None)
-            country = self.get_country(country)
+            extent = request.GET.get('extent', None)
+
+            # get cache data
+            output = get_statistic_with_cache(extent, country)
             if country:
+                country = self.get_country(country)
                 output['geometry'] = country.polygon_geometry.geojson
             return Response(output)
-        except BadRequestError as e:
+        except Exception as e:
             return HttpResponseBadRequest('%s' % e)

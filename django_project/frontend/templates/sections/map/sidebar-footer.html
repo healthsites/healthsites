@@ -5,33 +5,24 @@
         </a>
     </div>
     {% if user.provider == "openstreetmap" %}
-        <div class="button-wrapper col-xs-4" style="opacity: 0.7">
-            <a class="button edit stroke blue"
-               style="cursor: pointer"><i
-                    class="fa fa-pencil"></i> edit
+        <div id="edit-healthsite" class="button-wrapper col-xs-4">
+            <a class="button edit stroke blue">
+                <i class="fa fa-pencil"></i> edit
             </a>
         </div>
-        <div class="button-wrapper col-xs-4" style="display: none" disabled>
-            <a class="button edit stroke blue"
-               style="cursor: pointer"><i
-                    class="fa fa-pencil"></i> save
-            </a>
-        </div>
-        <div class="button-wrapper col-xs-4" style="display: none" disabled>
-            <a class="button edit stroke blue"
-               style="cursor: pointer"><i
-                    class="fa fa-pencil"></i> create
-            </a>
-        </div>
-        <div class="button-wrapper col-xs-4" style="opacity: 0.7">
-            <a class="button add" style="cursor: pointer">
+        <div id="create-healthsite" class="button-wrapper col-xs-4">
+            <a class="button add">
                 <i class="fa fa-plus"></i> add new
             </a>
         </div>
-        <div class="button-wrapper col-xs-4" style="display: none" disabled>
-            <a class="button edit stroke blue"
-               style="cursor: pointer"><i
-                    class="fa fa-pencil"></i> cancel
+        <div id="save-healthsite" class="button-wrapper col-xs-4" style="display: none">
+            <a class="button edit stroke blue">
+                <i class="fa fa-floppy-o" aria-hidden="true"></i> save
+            </a>
+        </div>
+        <div id="cancel-healthsite" class="button-wrapper col-xs-4" style="display: none">
+            <a class="button edit stroke blue">
+                <i class="fa fa-pencil"></i> cancel
             </a>
         </div>
     {% endif %}

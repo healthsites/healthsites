@@ -13,7 +13,7 @@ window.APP = (function () {
         _MAP = new MAP();
 
         // init localitySidebar
-        this.$sidebar = new LocalitySidebar();
+        // this.$sidebar = new LocalitySidebar();
 
         this._initAPPEvents();
 
@@ -29,11 +29,8 @@ window.APP = (function () {
         _setupRouter: function () {
             //setup crossroads
             crossroads.addRoute('/locality/{osm_type}/{osm_id}', function (osm_type, osm_id) {
-                console.log(osm_type);
                 try {
-                    shared.dispatcher.trigger('show-locality-detail', {
-                        'osm_type': osm_type, 'osm_id': osm_id
-                    });
+                    shared.dispatcher.trigger('show-locality-detail', osm_type, osm_id);
                 } catch (e) {
 
                 }

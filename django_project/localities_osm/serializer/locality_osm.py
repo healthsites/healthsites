@@ -147,7 +147,7 @@ class LocalityOSMBasicSerializer(ModelSerializer):
         if obj.name:
             return obj.name
         else:
-            return "<i>No Name</i>"
+            return'<i>No Name</i>'
 
     def get_uuid(self, obj):
         return '%s/%s' % (obj.osm_type, obj.osm_id)

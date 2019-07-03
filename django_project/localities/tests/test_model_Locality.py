@@ -17,8 +17,9 @@ class TestModelLocality(TestCase):
     def test_Locality_fields(self):
         self.assertListEqual(
             [fld.name for fld in Locality._meta.fields], [
-                u'id', 'changeset', 'version', 'domain', 'uuid', 'upstream_id', 'geom', 'name',
-                'source', 'completeness', 'is_master'
+                u'id', 'changeset', 'version', 'domain', 'uuid', 'upstream_id',
+                'geom', 'name', 'source', 'migrated', 'completeness',
+                'is_master'
             ]
         )
 

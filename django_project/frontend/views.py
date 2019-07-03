@@ -2,10 +2,12 @@
 import logging
 import os
 
+import json
 import googlemaps
 from envelope.views import ContactView
 from hurry.filesize import size
 
+from api.api_views.v2.schema import Schema
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -22,7 +24,6 @@ from localities.models import Country, DataLoaderPermission, Locality, Value
 from localities.utils import (
     search_locality_by_spec_data, search_locality_by_tag
 )
-from localities_osm.utilities import get_all_osm_query
 from social_users.utils import get_profile
 
 LOG = logging.getLogger(__name__)
@@ -191,7 +192,9 @@ def map(request):
             result['new_geom'] = request.session['new_geom']
             del request.session['new_geom']
 
+        result['osm_API'] = settings.OSM_API_URL
         result['map_max_zoom'] = settings.MAX_ZOOM
+        result['schema'] = json.dumps(Schema().get_schema())
         return render_to_response(
             'map.html',
             result,

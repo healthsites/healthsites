@@ -5,10 +5,15 @@ __date__ = '26/04/19'
 from django.contrib import admin
 from .models.extension import LocalityOSMExtension
 from .models.tag import Tag
+from .models.pending_state import PendingState
 
 
 class TagInline(admin.TabularInline):
     model = Tag
+
+
+class PendingStateInline(admin.TabularInline):
+    model = PendingState
 
 
 class LocalityOSMExtensionAdmin(admin.ModelAdmin):
@@ -17,7 +22,7 @@ class LocalityOSMExtensionAdmin(admin.ModelAdmin):
     search_fields = ['osm_id']
     ordering = ('osm_id', 'osm_type',)
 
-    inlines = [TagInline]
+    inlines = [TagInline, PendingStateInline]
 
 
 admin.site.register(LocalityOSMExtension, LocalityOSMExtensionAdmin)

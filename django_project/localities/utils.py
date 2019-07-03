@@ -28,7 +28,9 @@ def get_what_3_words(geom):
     from requests import Timeout, ConnectionError
     try:
         what3words_api_key = settings.WHAT3WORDS_API_KEY
-        api_url = settings.WHAT3WORDS_API_POS_TO_WORDS % (what3words_api_key, geom.y, geom.x)
+        api_url = \
+            settings.WHAT3WORDS_API_POS_TO_WORDS % (
+                what3words_api_key, geom.y, geom.x)
         request = requests.get(api_url, stream=True)
         response = ''.join([line for line in request.iter_lines()])
         response = response.replace(' ', '').replace('\n', '')
@@ -58,13 +60,14 @@ def extract_updates(updates):
         else:
             update['mode'] = 1
 
-        last_updates.append({'author': update['changeset__social_user__username'],
-                             'author_nickname': update['nickname'],
-                             'date_applied': update['changeset__created'],
-                             'mode': update['mode'],
-                             'locality': update['locality'],
-                             'locality_uuid': update['locality_uuid'],
-                             'data_count': update['edit_count']})
+        last_updates.append({
+            'author': update['changeset__social_user__username'],
+            'author_nickname': update['nickname'],
+            'date_applied': update['changeset__created'],
+            'mode': update['mode'],
+            'locality': update['locality'],
+            'locality_uuid': update['locality_uuid'],
+            'data_count': update['edit_count']})
     return last_updates
 
 
@@ -95,7 +98,9 @@ def get_country_statistic(query):
                     output = json.dumps(output, cls=DjangoJSONEncoder)
                     file = open(filename, 'w')
                     file.write(output)  # python will convert \n to os.linesep
-                    file.close()  # you can omit in most cases as the destructor will call it
+
+                    # you can omit in most cases as the destructor will call it
+                    file.close()
                     output = json.loads(output)
                 except Exception:
                     pass
@@ -123,7 +128,9 @@ def get_country_statistic(query):
 
                     file = open(filename, 'w')
                     file.write(output)  # python will convert \n to os.linesep
-                    file.close()  # you can omit in most cases as the destructor will call it
+
+                    # you can omit in most cases as the destructor will call it
+                    file.close()
                     output = json.loads(output)
                 except Exception:
                     pass
@@ -139,7 +146,8 @@ def get_heathsites_master():
 
 def get_json_from_request(request):
     # special request:
-    special_request = ['name', 'source', 'long', 'lat', 'csrfmiddlewaretoken', 'uuid']
+    special_request = [
+        'name', 'source', 'long', 'lat', 'csrfmiddlewaretoken', 'uuid']
 
     mstring = []
     json = {}
@@ -185,7 +193,8 @@ def get_json_from_request(request):
 
     if is_valid:
         domain = Domain.objects.get(name='Health')
-        attributes = Specification.objects.filter(domain=domain).filter(required=True)
+        attributes = \
+            Specification.objects.filter(domain=domain).filter(required=True)
         for attribute in attributes:
             try:
                 if len(json[attribute.attribute.key]) == 0:
@@ -228,7 +237,8 @@ def get_locality_detail(locality, changes):
     for val in UnconfirmedSynonym.objects.filter(locality_id=locality.id):
         synonym_uuid = val.synonym.uuid
         synonym_name = val.synonym.name
-        unconfirmed_synonyms.append({'name': synonym_name, 'uuid': synonym_uuid})
+        unconfirmed_synonyms.append({
+            'name': synonym_name, 'uuid': synonym_uuid})
 
     obj_repr[u'masters'] = masters
     obj_repr[u'synonyms'] = synonyms
@@ -239,10 +249,11 @@ def get_locality_detail(locality, changes):
         updates = []
         last_updates = locality_updates(locality.id, datetime.now())
         for last_update in last_updates:
-            updates.append({'last_update': last_update['changeset__created'],
-                            'uploader': last_update['changeset__social_user__username'],
-                            'nickname': last_update['nickname'],
-                            'changeset_id': last_update['changeset']})
+            updates.append({
+                'last_update': last_update['changeset__created'],
+                'uploader': last_update['changeset__social_user__username'],
+                'nickname': last_update['nickname'],
+                'changeset_id': last_update['changeset']})
         obj_repr.update({'updates': updates})
     except Exception:
         pass
@@ -256,13 +267,16 @@ def get_locality_detail(locality, changes):
         obj_repr['updates'][0]['uploader'] = changeset.social_user.username
         obj_repr['updates'][0]['changeset_id'] = changes
         # get profile name
-        profile = get_profile(User.objects.get(username=changeset.social_user.username))
+        profile = \
+            get_profile(
+                User.objects.get(username=changeset.social_user.username))
         obj_repr['updates'][0]['nickname'] = profile.screen_name
 
         # check archive
         try:
             localityArchives = (
-                LocalityArchive.objects.filter(changeset=changes).filter(uuid=obj_repr['uuid'])
+                LocalityArchive.objects.filter(
+                    changeset=changes).filter(uuid=obj_repr['uuid'])
             )
             for archive in localityArchives:
                 obj_repr['geom'] = (archive.geom.x, archive.geom.y)
@@ -272,12 +286,15 @@ def get_locality_detail(locality, changes):
 
         try:
             localityArchives = (
-                ValueArchive.objects.filter(changeset=changes).filter(locality_id=locality.id)
+                ValueArchive.objects.filter(
+                    changeset=changes).filter(locality_id=locality.id)
             )
             for archive in localityArchives:
                 try:
-                    specification = Specification.objects.get(id=archive.specification_id)
-                    obj_repr['values'][specification.attribute.key] = archive.data
+                    specification = \
+                        Specification.objects.get(id=archive.specification_id)
+                    obj_repr['values'][specification.attribute.key] = \
+                        archive.data
                     obj_repr['history'] = True
                 except Specification.DoesNotExist:
                     pass
@@ -319,10 +336,14 @@ def locality_create(request):
                 regenerate_cache.delay(tmp_changeset.pk, loc.pk)
                 regenerate_cache_cluster.delay()
 
-                return {'success': json_request['is_valid'], 'uuid': tmp_uuid, 'reason': ''}
+                return {
+                    'success': json_request['is_valid'],
+                    'uuid': tmp_uuid, 'reason': ''}
             else:
-                return {'success': json_request['is_valid'],
-                        'reason': json_request['invalid_key'] + ' can not be empty'}
+                return {
+                    'success': json_request['is_valid'],
+                    'reason': json_request['invalid_key'] + ' can not be empty'
+                }
         else:
             return {'success': False, 'reason': 'Not Login Yet'}
 
@@ -338,7 +359,8 @@ def locality_edit(request):
                 locality = Locality.objects.get(uuid=json_request['uuid'])
                 old_geom = [locality.geom.x, locality.geom.y]
 
-                locality.set_geom(float(json_request['long']), float(json_request['lat']))
+                locality.set_geom(
+                    float(json_request['long']), float(json_request['lat']))
                 locality.name = json_request['name']
 
                 # there are some changes so create a new changeset
@@ -358,12 +380,15 @@ def locality_edit(request):
                 regenerate_cache.delay(tmp_changeset.id, locality.pk)
 
                 return {
-                    'success': json_request['is_valid'], 'uuid': json_request['uuid'],
+                    'success': json_request['is_valid'],
+                    'uuid': json_request['uuid'],
                     'reason': ''
                 }
             else:
-                return {'success': json_request['is_valid'],
-                        'reason': json_request['invalid_key'] + ' can not be empty'}
+                return {
+                    'success': json_request['is_valid'],
+                    'reason': json_request['invalid_key'] + ' can not be empty'
+                }
         else:
             return {'success': False, 'reason': 'Not Login Yet'}
     return {'success': False, 'reason': 'There is error occured'}
@@ -388,7 +413,9 @@ def get_statistic(healthsites):
     # count completeness based attributes
     # this make long waiting, need to more good query
     complete = healthsites.filter(completeness=100).count()
-    partial = healthsites.filter(completeness__gt=30).filter(completeness__lt=100).count()
+    partial = \
+        healthsites.filter(
+            completeness__gt=30).filter(completeness__lt=100).count()
     basic = healthsites.filter(completeness__lte=30).count()
 
     output = {
@@ -397,7 +424,8 @@ def get_statistic(healthsites):
             'medical_clinic': medical_clinic_number,
             'orthopaedic_clinic': orthopaedic_clinic_number
         },
-        'completeness': {'complete': complete, 'partial': partial, 'basic': basic},
+        'completeness': {
+            'complete': complete, 'partial': partial, 'basic': basic},
         'localities': healthsites_number
     }
     # updates
@@ -413,7 +441,7 @@ def get_update_detail(update):
                 username=update['changeset__social_user__username'])
         profile = get_profile(user)
         update['nickname'] = profile.screen_name
-    except (User.DoesNotExist, KeyError) as e:
+    except (User.DoesNotExist, KeyError) as e:  # noqa
         pass
     return update
 
@@ -430,7 +458,10 @@ def localities_updates(locality_ids):
         .filter(object_id__in=locality_ids)
         .filter(id__in=ids)
         .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .values(
+            'changeset',
+            'changeset__created',
+            'changeset__social_user__username', 'version')
         .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))
     )
     changesets = []
@@ -443,7 +474,10 @@ def localities_updates(locality_ids):
         locality_ids
         .exclude(changeset__in=changesets)
         .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
+        .values(
+            'changeset',
+            'changeset__created',
+            'changeset__social_user__username', 'version')
         .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:15]
     )
     for update in updates_temp:
@@ -458,7 +492,8 @@ def locality_updates(locality_id, date):
     updatestemp = LocalityArchive.objects.filter(object_id=locality_id).filter(
         changeset__created__lt=date).order_by(
         '-changeset__created').values(
-        'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+        'changeset', 'changeset__created',
+        'changeset__social_user__username').annotate(
         edit_count=Count('changeset'))[:10]
     changesets = []
     for update in updatestemp:
@@ -467,7 +502,8 @@ def locality_updates(locality_id, date):
 
     # get from locality if not in Locality Archive yet
     updatestemp = Locality.objects.filter(id=locality_id).values(
-        'changeset', 'changeset__created', 'changeset__social_user__username').annotate(
+        'changeset', 'changeset__created',
+        'changeset__social_user__username').annotate(
         edit_count=Count('changeset'))
     for update in updatestemp:
         if not update['changeset'] in changesets:
@@ -491,7 +527,8 @@ def get_locality_by_spec_data(spec, data, uuid):
         if spec == 'attribute':
             if uuid:
                 localities = Value.objects.filter(
-                    data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                    data__icontains=data
+                ).filter(locality__in=localities).values('locality')[:5]
             else:
                 localities = Value.objects.filter(
                     data__icontains=data).values('locality')
@@ -499,7 +536,8 @@ def get_locality_by_spec_data(spec, data, uuid):
             if uuid:
                 localities = Value.objects.filter(
                     specification__attribute__key=spec).filter(
-                    data__icontains=data).filter(locality__in=localities).values('locality')[:5]
+                    data__icontains=data
+                ).filter(locality__in=localities).values('locality')[:5]
             else:
                 localities = Value.objects.filter(
                     specification__attribute__key=spec).filter(
@@ -520,7 +558,8 @@ def search_locality_by_spec_data(spec, data, uuid):
             locality = Locality.objects.get(uuid=uuid)
             locality_name = locality.name
             output['locality_name'] = locality_name
-            output['location'] = {'x': '%f' % locality.geom.x, 'y': '%f' % locality.geom.y}
+            output['location'] = {
+                'x': '%f' % locality.geom.x, 'y': '%f' % locality.geom.y}
         except Locality.DoesNotExist:
             pass
     output = json.dumps(output, cls=DjangoJSONEncoder)
