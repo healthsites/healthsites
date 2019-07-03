@@ -23,13 +23,13 @@ def get_profile(user, request=None):
         user.is_trusted_user = True
 
         supported_organisations = (
-            trusted_user.organisations_supported
-                .all()
-                .filter(organisationsupported__is_staff=True)
+            trusted_user.organisations_supported.all().filter(
+                organisationsupported__is_staff=True)
         )
 
         user.organisations = [
-            {'name': org.name, 'website': org.clean_website()} for org in supported_organisations
+            {'name': org.name,
+             'website': org.clean_website()} for org in supported_organisations
         ]
         user.organisations_supported = [
             {'name': org.name, 'website': org.clean_website()}
@@ -44,13 +44,13 @@ def get_profile(user, request=None):
     try:
         uid = user.social_auth.get(provider='twitter').uid
         user.social.append({'provider': 'twitter', 'uid': user.username})
-    except Exception as e:
+    except Exception as e:  # noqa
         pass
 
     try:
         uid = user.social_auth.get(provider='openstreetmap').uid
         user.social.append({'provider': 'openstreetmap', 'uid': uid})
-    except Exception as e:
+    except Exception as e:  # noqa
         pass
 
     # GET SOCIAL AUTH

@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from django.forms.models import fields_for_model
 
 from localities.models import Country
-from localities_osm.models.locality import LocalityOSM, LocalityOSMView
+from localities_osm.models.locality import LocalityOSM
 from localities_osm.serializer.locality_osm import (
     LocalityOSMSerializer
 )
@@ -34,7 +34,10 @@ def zipdir(path, ziph):
 # funtion to generate a .prj file
 def getWKT_PRJ(epsg_code):
     import urllib
-    wkt = urllib.urlopen('http://spatialreference.org/ref/epsg/{0}/prettywkt/'.format(epsg_code))
+    wkt = \
+        urllib.urlopen(
+            'http://spatialreference.org/ref/epsg/{0}/prettywkt/'.format(
+                epsg_code))
     remove_spaces = wkt.read().replace(' ', '')
     output = remove_spaces.replace('\n', '')
     return output
@@ -118,7 +121,7 @@ def insert_to_shapefile(data, fields, shp_filename):
                 'last': healthsite['osm_id']
             }))
             file.close()
-        except Exception as e:
+        except Exception as e:  # noqa
             pass
     shp.close()
 

@@ -11,7 +11,9 @@ def create_pending(osm_type, osm_id, osm_name, uploader, version):
         PendingState.objects.get(extension__osm_type=osm_type, extension__osm_id=osm_id)
         raise Exception('This osm already in pending.')
     except PendingState.DoesNotExist:
-        osm_extension, created = LocalityOSMExtension.objects.get_or_create(osm_type=osm_type, osm_id=osm_id)
+        osm_extension, created = \
+            LocalityOSMExtension.objects.get_or_create(
+                osm_type=osm_type, osm_id=osm_id)
         pending = PendingState()
         pending.extension = osm_extension
         pending.name = osm_name
