@@ -1,5 +1,8 @@
 {% extends 'base.html' %}
 
+{% load pipeline %}
+{% load static %}
+
 {% block title %}
     Healthsites
 {% endblock %}
@@ -31,24 +34,27 @@
         </div>
     </section>
 
+{% endblock %}
+
+{% block extra_js %}
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
     {% if user.is_authenticated %}
         <script>
             <!-- QR Code generation starts here -->
-            var generateQRCode = (function() {
-                var qrInput = "eNqrVi8tTi3KS8xNVbdSUM8qzStW11FQL0gsLi7PL0oBiSUWp6SBxIDKylKL4kuLckCiGamJOSUZxZklqcV6mfnqtQBy8RiR";
-                var qrContainer = document.getElementById('qrcode');
-                var qrCode = new QRCode(qrContainer, qrInput);
-                function generateQRCode() {
-                    qrCode.clear();
-                    qrCode.makeCode(qrInput.value)
+            $.ajax({
+                url: "/api/v2/gather/enrollment",
+                dataType: 'json',
+                success: function (data) {
+                    var qrContainer = document.getElementById('qrcode');
+                    var qrCode = new QRCode(qrContainer, data);
                 }
-                return generateQRCode;
-    }())
+            })
         </script>
     {% else %}
         <script>
             window.location.href = "{% url "map" %}";
         </script>
     {% endif %}
-{% endblock %}
+
+{% endblock extra_js %}
