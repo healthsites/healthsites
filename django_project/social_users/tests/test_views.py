@@ -17,16 +17,6 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertListEqual(
-            [tmpl.name for tmpl in resp.templates], [
-                'social_users/signinpage.html', u'base.html', u'pipeline/css.html',
-                u'pipeline/css.html', u'pipeline/css.html', u'pipeline/css.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html'
-            ]
-        )
-
     @skip('skip')
     def test_profile_view(self):
         user = UserF(username='test1', password='test1')

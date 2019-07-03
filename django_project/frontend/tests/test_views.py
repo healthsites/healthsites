@@ -31,18 +31,6 @@ class TestViews(TestCase):
 
         self.assertEqual(resp.context['debug'], True)
         self.assertTrue(resp.content.find('GoogleAnalyticsObject') == -1)
-        self.assertListEqual(
-            [tmpl.name for tmpl in resp.templates], [
-                'index.html', u'pipeline/css.html', u'pipeline/css.html',
-                u'pipeline/css.html',
-                u'pipeline/css.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html', u'pipeline/js.html', u'pipeline/js.html',
-                u'pipeline/js.html'
-            ]
-        )
 
     @patch('localities_osm.models.locality.LocalityOSMView')
     def test_about_view(self, mock_locality_osm):  # noqa
