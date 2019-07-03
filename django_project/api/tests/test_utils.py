@@ -102,7 +102,7 @@ class TestUtils(TestCase):
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
-            'Invalid value for key amenity: '
+            'Invalid value for key `amenity`: '
             'not a clinic is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
@@ -117,7 +117,7 @@ class TestUtils(TestCase):
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
-            'Invalid value type for key amenity: '
+            'Invalid value type for key `amenity`: '
             'Expected type str, got int instead.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
@@ -133,7 +133,7 @@ class TestUtils(TestCase):
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
-            'Invalid value for key speciality: '
+            'Invalid value for key `speciality`: '
             'radiology is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
