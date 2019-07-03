@@ -59,7 +59,7 @@ class TestUtils(TestCase):
             'operator': 'the operator',
             'healthcare': 'clinic'
         }
-        expected_message = 'Invalid OSM tags: amenity tag is missing.'
+        expected_message = 'Invalid OSM tags: `amenity` tag is missing.'
         status, actual_message = validate_osm_tags(tags)
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
