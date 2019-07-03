@@ -16,7 +16,7 @@ from .secret import *  # NOQA
 INSTALLED_APPS += (
     'localities',
     'localities_osm',
-    'localities_healthsites_osm',
+    'localities_osm_extension',
     'frontend',
     'social_users',
     'api',
@@ -92,6 +92,7 @@ PIPELINE_CSS['project'] = {
     'source_filenames': (
         'css/site.css',
         'css/profile.css',
+        'css/map/locality-sidebar.css',
         'css/jquery.cookiebar.css'
     ),
     'output_filename': 'css/project.css',

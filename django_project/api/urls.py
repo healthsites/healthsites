@@ -15,21 +15,33 @@ from api.api_views.v2.facilities.detail import GetDetailFacility
 from api.api_views.v2.facilities.list import (
     GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
 from api.api_views.v2.facilities.shapefile import GetFacilitiesShapefileProcess
+from api.api_views.v2.facilities.search import Autocomplete
+from api.api_views.v2.countries.search import Autocomplete as CountryAutocomplete
 
+facilities_api = patterns(
+    '',
+    url(r'^count',
+        GetFacilitiesCount.as_view()),
+    url(r'^statistic',
+        GetFacilitiesStatistic.as_view()),
+    url(r'^autocomplete/',
+        Autocomplete.as_view()),
+    url(r'^shapefile/process/(?P<country_name>[\w\+%_& ]+)',
+        GetFacilitiesShapefileProcess.as_view()),
+    url(r'^(?P<osm_type>\w+)/(?P<osm_id>-?\d+)',
+        GetDetailFacility.as_view()),
+    url(r'^',
+        GetFacilities.as_view())
+)
+countries_api = patterns(
+    '',
+    url(r'^autocomplete',
+        CountryAutocomplete.as_view())
+)
 api_v2 = patterns(
     '',
-    url(r'^facilities/count',
-        GetFacilitiesCount.as_view(), name='api_v2_facility_count'),
-    url(r'^facilities/statistic',
-        GetFacilitiesStatistic.as_view(), name='api_v2_facility_statistic'),
-    url(r'^facilities/shapefile/process/(?P<country_name>[\w\+%_& ]+)',
-        GetFacilitiesShapefileProcess.as_view(), name='api_v2_facility_list'),
-    url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
-        GetDetailFacility.as_view(), name='api_v2_facility_detail'),
-    url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
-        GetDetailFacility.as_view(), name='api_v2_facility_detail'),
-    url(r'^facilities',
-        GetFacilities.as_view(), name='api_v2_facility_list'),
+    url(r'facilities/', include(facilities_api)),
+    url(r'countries/', include(countries_api))
 )
 
 urlpatterns = patterns(

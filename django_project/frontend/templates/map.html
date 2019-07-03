@@ -126,20 +126,22 @@
 
     </div>
 
-    <div class="nav-searchbar container-fluid">
-        <form action="map" method="POST">
-            <div class="option-group">
-                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite" checked><span></span><label class="option"
-                                                                                                       for="radio-healthsite">healthsite</label>
-                </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
-                                                        value="place"><span></span><label class="option"
-                                                                                          for="radio-healthsite">place</label>
-                </div>
+    <div class="nav-searchbar container-fluid" id="search-form">
+        <div id="search-options" class="option-group">
+            <div class="option">
+                <span></span>
+                <input type="radio" name="option" id="radio-healthsite" value="healthsite" checked>
+                <span></span>
+                <label class="option" for="radio-healthsite">healthsite</label>
             </div>
-            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
-        </form>
+            <div class="option">
+                <span></span>
+                <input type="radio" name="option" id="radio-place" value="country">
+                <span></span>
+                <label class="option" for="radio-healthsite">country</label>
+            </div>
+        </div>
+        <input id="search-box" type="search" name="q" placeholder="search...">
     </div>
 </nav>
 
@@ -183,7 +185,7 @@
                 me</a> to view
                 healthsites close to your location.
             </div><!-- #icons-nav -->
-            <div id="locality-default" style="display: none">
+            <div id="locality-default" class="details" style="display: none">
                 <div style="padding: 20px;">
                     <p>
                         <span class="inner-navbar-brand">healthsites.io</span> invites you to help establish accurate
@@ -212,7 +214,7 @@
                     </div>
                 </div>
             </div>
-            <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
+            <div id="locality-statistic" class="details" style="display: none">
                 <div id="title-statistic" class="header" style="font-size: 24px; padding-bottom: 10px;">
                     <strong id="title">Loading</strong> -
                     <span id="locality-number" style="margin-left: 5px; margin-right: 5px">Loading</span>
@@ -269,11 +271,6 @@
                     </p>
                 </div>
                 <div class="info">
-                    <div class="line">
-                        <div id="locality-master">
-                            <div id="locality-master-indicator" class="master">MASTER</div>
-                        </div>
-                    </div>
                     <div id="line-updates" class="line updates">
                         <div class="icon-holder">
                             <i class="fa fa-info-circle"></i>
@@ -288,10 +285,6 @@
                                 </div>
                                 <div id="full-list">
 
-                                </div>
-                                <div>
-                                    <a id="see-more-list" class="more-list">see more list <i
-                                            class="fa fa-angle-down"></i></a>
                                 </div>
                             </div>
 
@@ -490,7 +483,7 @@
                             <p id="others-add" onclick="addOthers()" style="display: none; cursor: pointer"><b>add new
                                 information</b></p>
 
-                            <div id="others-data">
+                            <div id="other-tags-table">
                             </div>
                             <div id="others-data-input" style="display: none">
                             </div>
@@ -702,7 +695,7 @@
                 }
             } else if (type == 'edit') {
                 var uuid = getCookie("uuid");
-                if (uuid != "") {
+                if (uuid !== "" && uuid !== "undefined") {
                     $APP.trigger('locality.map.click', {'locality_uuid': uuid});
                     $APP.trigger('set.hash.silent', {'locality': uuid});
                     {# cookie will be reseted if already loaded the uuid #}

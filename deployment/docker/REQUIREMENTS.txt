@@ -23,3 +23,5 @@ pytz
 raven
 pyshp
 mock
+osmapi
+requests_oauthlib

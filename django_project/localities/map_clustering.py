@@ -76,8 +76,6 @@ def cluster(query_set, zoom, pix_x, pix_y, localities_is_needed=False):
     number = localites.count()
     index = 1
     for locality in localites.iterator():
-        if localities_is_needed:
-            print '%s/%s' % (index, number)
         index += 1
         geomx, geomy = map(float, locality['lnglat'].split(','))
 
@@ -148,7 +146,7 @@ def oms_view_cluster(localites, zoom, pix_x, pix_y, localities_is_needed=False):
                 geomx + x_range * 1.5, geomy + y_range * 1.5
             )
             new_cluster = {
-                'uuid': locality.row,
+                'uuid': '%s/%s' % (locality.osm_type, locality.osm_id),
                 'geom': (geomx, geomy),
                 'count': 1,
                 'bbox': bbox,

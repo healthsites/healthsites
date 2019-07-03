@@ -26,8 +26,8 @@ from .utils import (
 )
 
 from localities_osm.models.locality import LocalityOSMView
-from localities_healthsites_osm.serializer.locality import (
-    LocalityHealthsitesOSMSerializer
+from localities_osm.serializer.locality_osm import (
+    LocalityOSMSerializer
 )
 
 LOG = logging.getLogger(__name__)
@@ -215,7 +215,7 @@ class LocalityInfo(JSONResponseMixin, View):
         except Locality.DoesNotExist:
             try:
                 osm_view = LocalityOSMView.objects.get(row=uuid)
-                data = LocalityHealthsitesOSMSerializer(osm_view).data
+                data = LocalityOSMSerializer(osm_view).data
                 try:
                     data['values'] = data['attributes']
                     data['geom'] = [
