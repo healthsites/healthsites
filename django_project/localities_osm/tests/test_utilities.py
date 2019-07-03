@@ -37,8 +37,8 @@ class AttributeConverterUtilityTest(TestCase):
             val2__specification__attribute=self.attr2,
             val3__data='5|7',
             val3__specification__attribute=self.attr3,
-            val4__data=
-            'specialized care|general acute care|rehabilitation care|',
+            val4__data='specialized care|'
+                       'general acute care|rehabilitation care|',
             val4__specification__attribute=self.attr4,
         )
 
@@ -139,8 +139,7 @@ class AttributeConverterUtilityTest(TestCase):
                 'nature_of_facility', 'ownership', 'name',
                 'staff_nurses', 'changeset_user', 'changeset_version',
                 'dispensing', 'power_source', 'beds'
-            ] for key in osm_attr.keys())
-)
+            ] for key in osm_attr.keys()))
 
         osm_fields = LocalityOSM._meta.get_all_field_names()
         self.assertTrue(any(key in osm_fields for key in osm_attr.keys()))

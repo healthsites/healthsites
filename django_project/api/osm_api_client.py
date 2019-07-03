@@ -4,7 +4,7 @@ import logging
 import time
 
 from osmapi import (
-    OsmApi, OsmApiError, ApiError,
+    OsmApi, ApiError,
     ResponseEmptyApiError, ElementDeletedApiError)
 from requests_oauthlib import OAuth1
 

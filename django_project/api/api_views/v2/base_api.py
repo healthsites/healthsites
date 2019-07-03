@@ -18,4 +18,3 @@ class BaseAPI(APIView):
 
 class BaseAPIWithAuth(BaseAPI):
     authentication_classes = (SessionAuthentication, BasicAuthentication, APIKeyAuthentication)
-

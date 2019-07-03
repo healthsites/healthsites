@@ -59,9 +59,8 @@ def get_statistic_cache(extent, country):
         cached_locs = open(get_statistic_cache_filename(
             extent, country), 'rb')
         cached_data = json.loads(cached_locs.read())
-        localities = cached_data['localities']
         return cached_data
-    except (IOError, ValueError, KeyError) as e:
+    except (IOError, ValueError, KeyError) as e:  # noqa
         return None
 
 

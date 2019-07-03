@@ -30,7 +30,7 @@ class Command(BaseCommand):
                 'Central African Rep.', 'Central African Republic'
             )
             country_name = country_name.replace('Curaçao', 'Curacao')
-            country_name = country_name.replace('Côte d\'Ivoire', 'Ivory Coast')  #noqa
+            country_name = country_name.replace('Côte d\'Ivoire', 'Ivory Coast')  # noqa
             country_name = country_name.replace(
                 'Cyprus U.N. Buffer Zone',
                 'United Nations Buffer Zone in Cyprus'

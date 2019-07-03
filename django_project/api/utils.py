@@ -36,7 +36,7 @@ def get_definition(keyword, definition_library, key=None):
     """
 
     for item in dir(definition_library):
-        if not item.startswith("__"):
+        if not item.startswith('__'):
             var = getattr(definition_library, item)
             if isinstance(var, dict):
                 if var.get('key') == keyword or var.get(key) == keyword:
@@ -138,7 +138,7 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
             mapping_dict.update({
                 column['name']: column['key']
             })
-        except:
+        except:  # noqa
             pass
 
     return remap_dict(data, mapping_dict)
@@ -168,7 +168,7 @@ def validate_osm_data(osm_data):
 
 def verify_user(uploader, creator):
     """Verify user.
-    
+
     Uploader has to be organizer of an organisation and the creator has to be
     a trusted user in that particular organisation.
 

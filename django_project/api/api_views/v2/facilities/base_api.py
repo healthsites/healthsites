@@ -26,4 +26,3 @@ class FacilitiesBaseAPI(BaseAPI):
 
 class FacilitiesBaseAPIWithAuth(FacilitiesBaseAPI):
     authentication_classes = (SessionAuthentication, BasicAuthentication, APIKeyAuthentication)
-
