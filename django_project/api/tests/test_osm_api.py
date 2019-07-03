@@ -8,8 +8,14 @@ from osmapi import ElementDeletedApiError
 
 from api.osm_api_client import OsmApiWrapper
 from core.settings.base import DEV_OSM_API_URL
-from core.settings.secret import (
-    SOCIAL_AUTH_OPENSTREETMAP_KEY, SOCIAL_AUTH_OPENSTREETMAP_SECRET)
+
+try:
+    from core.settings.secret import (
+        SOCIAL_AUTH_OPENSTREETMAP_KEY,
+        SOCIAL_AUTH_OPENSTREETMAP_SECRET)
+except ImportError:
+    SOCIAL_AUTH_OPENSTREETMAP_KEY = ''
+    SOCIAL_AUTH_OPENSTREETMAP_SECRET = ''
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
