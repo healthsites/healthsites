@@ -25,3 +25,4 @@ pyshp
 pyyaml
 osmapi
 requests_oauthlib
+mock
