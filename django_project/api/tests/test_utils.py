@@ -117,8 +117,7 @@ class TestUtils(TestCase):
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
-            'Invalid value type for key `amenity`: '
-            'Expected type str, got int instead.')
+            'Invalid value for key `amenity`: 0 is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
 
