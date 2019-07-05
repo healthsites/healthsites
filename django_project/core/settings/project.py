@@ -79,10 +79,7 @@ PIPELINE_JS['project'] = {
 }
 PIPELINE_JS['map'] = {
     'source_filenames': (
-        'js/cluster-layer.js',
         'js/locality-sidebar.js',
-        'js/map-functionality.js',
-        'js/_app.js',
     ),
     'output_filename': 'js/map.js',
 }
