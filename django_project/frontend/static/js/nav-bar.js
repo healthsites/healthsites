@@ -23,11 +23,12 @@ $(document).ready(function () {
         });
     }
 
-    $('#navbar a').click(function () {
-        var match = jQuery(this).attr('href').match(/#\S+/);
-        if (match) {
-            console.log(match);
-            ga('send', 'pageview', location.pathname + match[0]);
-        }
-    });
+    // TODO: Please fix this
+    // $('#navbar a').click(function () {
+        // var match = jQuery(this).attr('href').match(/#\S+/);
+        // if (match) {
+        //     console.log(match);
+        //     ga('send', 'pageview', location.pathname + match[0]);
+        // }
+    // });
 })

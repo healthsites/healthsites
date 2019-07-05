@@ -22,41 +22,56 @@ require([
 ], function (Backbone, _, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     var countryStatictic = new CountryStatistic();
-    var identifier = shared.currentID();
     new CountryList();
     new LocalityDetail();
     var search = new Search();
-    if (parameters['geoname']) {
-        shared.replaceGeonameSearch('');
-        search.placeSearchInit(parameters['geoname']);
-    }
     new ShapefileDownloader();
 
-    function goToLocality() {
-        if (identifier) {
-            var identifiers = identifier.split('/');
-            shared.dispatcher.trigger('show-locality-detail', identifiers[0], identifiers[1]);
+    // 1st step
+    function goToCountry() {
+        $("#locality-info").hide();
+        if (parameters.get('country')) {
+            $("#locality-statistic").show();
+            $("#locality-info").hide();
+            $("#locality-default").hide();
+            countryStatictic.showStatistic(
+                parameters.get('country'),
+                function () {
+                    $("#locality-info").hide();
+                    goToPlace();
+                }, function () {
+                    $("#locality-info").hide();
+                    goToPlace();
+                });
+        } else {
+            goToPlace();
         }
     }
 
-    if (parameters['country']) {
-        $("#locality-statistic").show();
-        $("#locality-info").hide();
-        $("#locality-default").hide();
-        countryStatictic.showStatistic(
-            parameters['country'],
-            function () {
-                $("#locality-info").hide();
-                goToLocality()
-            });
-    } else {
-        if (identifier) {
-            goToLocality();
-        } else {
-            $("#locality-info").hide();
-            countryStatictic.getCount("", function (data) {
-                $('#healthsites-count').html(data);
-            });
+    // 2rd step
+    function goToPlace() {
+        setTimeout(function () {
+            if (parameters.get('place')) {
+                search.placeSearchInit(
+                    parameters.get('place'), function () {
+                        goToLocality();
+                    }, function () {
+                        goToLocality();
+                    });
+            } else {
+                goToPlace()
+            }
+        }, 100);
+    }
+
+    // 3rd step
+    function goToLocality() {
+        if (shared.currentID()) {
+            var identifiers = shared.currentID().split('/');
+            shared.dispatcher.trigger(
+                'show-locality-detail', identifiers[0], identifiers[1]);
         }
     }
+
+    goToCountry();
 });
