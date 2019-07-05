@@ -1,7 +1,7 @@
 class Parameters {
-    _parameters = {};
 
     constructor() {
+        this._parameters = {};
         var sPageURL = window.location.search.substring(1),
             sURLVariables = sPageURL.split('&'),
             sParameterName,
