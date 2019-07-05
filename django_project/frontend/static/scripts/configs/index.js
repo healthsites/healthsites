@@ -9,7 +9,7 @@ require.config({
         "d3": "libs/d3/3.5.7/d3.min",
         "c3": "libs/c3/0.6.14/c3.min",
         "leaflet": "libs/leaflet/0.7.7/leaflet-src",
-        'map-functionality': 'scripts/views/map-functionality',
+        'map-functionality': 'scripts/views/map',
         'leafletDraw': 'libs/leaflet.draw/0.2.3/leaflet.draw-src'
     },
     shim: {
@@ -42,12 +42,15 @@ require([
     'leaflet',
     'static/scripts/views/cluster.js',
     'map-functionality',
+    'static/scripts/parameters.js',
     'static/scripts/shared.js',
     'static/scripts/views/statistic/search.js',
     'static/scripts/views/statistic/view.js',
     'static/scripts/views/navbar/search.js',
     'static/scripts/views/app.js',
-], function ($, Backbone, _, L, Cluster, MAP, Shared, CountrySearch, CountryStatistic, Search, App) {
+], function ($, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountrySearch, CountryStatistic, Search, App) {
+    var parameters = new Parameters();
+
     var APP;
     if (typeof APP === 'undefined') {
         APP = {};
