@@ -85,7 +85,7 @@
 }
 
 .tags .fa-info-circle {
-    cursor: pointer;
+    cursor: default;
     display: none;
     opacity: 0.7;
 }

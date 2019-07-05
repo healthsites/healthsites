@@ -58,20 +58,6 @@ window.MAP = (function () {
         $('.leaflet-control-zoom').addClass('hidden-xs');
         $('.leaflet-control-zoom').addClass('hidden-sm');
 
-
-        // activate share
-        $('#twitter_share_map').on('click', function (evt) {
-            // twitter share
-            var name = $("#locality-name").text();
-            if (name == "No Name") {
-                name = "";
-            } else {
-                name = "See " + name + " ";
-            }
-            var nowURL = hasher.getURL().replace("#", "%23");
-            javascript:window.open('https://twitter.com/intent/tweet?text=' + name + nowURL, 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
-        });
-
         // making control for sateloite/osm
         var that = this;
         L.Control.Command = L.Control.extend({

@@ -319,6 +319,7 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
     font-size: 18px;
     padding-top: 5px;
     padding-bottom: 20px;
+    cursor: pointer;
 }
 
 .searchbar-active .navbar-nav > li > .navbar-search {

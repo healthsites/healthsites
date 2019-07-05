@@ -21,7 +21,7 @@ define([
         getStatistic: function (country, successCallback, errorCallback) {
             this.request.getStatistic(country, successCallback, errorCallback);
         },
-        showStatistic: function (country, successCallback) {
+        showStatistic: function (country, successCallback, errorCallback) {
             var self = this;
             this.getStatistic(country, function (data) {
                 $APP.trigger('map.update-geoname', {'geoname': country});
@@ -114,7 +114,7 @@ define([
                 if (successCallback) {
                     successCallback(data);
                 }
-            });
+            }, errorCallback);
         }
     })
 });
