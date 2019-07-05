@@ -91,12 +91,12 @@ define([
             this.$searchbox.css("cursor", "");
             this.$searchbox.addClass('error');
         },
-        placeSearchInit: function (geoname) {
+        placeSearchInit: function (geoname, successCallback, errorCallback) {
             $('#radio-place').click();
             this.$searchbox.val(geoname);
-            this.placeSearch(geoname);
+            this.placeSearch(geoname, successCallback, errorCallback);
         },
-        placeSearch: function (geoname) {
+        placeSearch: function (geoname, successCallback, errorCallback) {
             var self = this;
             if (this.searchAjax) {
                 this.searchAjax.abort()
@@ -107,8 +107,10 @@ define([
             }
             // redirect into map if not map
             if (window.location.pathname !== '/map') {
-                window.location = '/map?geoname=' + geoname;
+                window.location = '/map?place=' + geoname;
                 return false;
+            } else {
+                parameters.set('place', geoname);
             }
             this.searchBoxSubmitted();
             this.searchAjax = $.ajax({
@@ -125,9 +127,15 @@ define([
                         'northeast_lat': data['northeast']['lat'],
                         'northeast_lng': data['northeast']['lng']
                     });
+                    if (successCallback) {
+                        successCallback(data);
+                    }
                 },
                 error: function (error) {
                     self.searchBoxError()
+                    if (errorCallback) {
+                        errorCallback(error)
+                    }
                 }
             });
         }

@@ -152,6 +152,20 @@
     var schema = JSON.parse("{{ schema | escapejs }}");
     var osmAPI = "{{ osm_API }}";
     $(document).ready(function () {
+        // activate share
+        function getContentShare() {
+            var nowURL = window.location.toString();
+            nowURL = nowURL.replaceAll("#", "%23");
+            nowURL = nowURL.replaceAll('&', '%26');
+            return 'See ' + nowURL;
+        }
+
+        $('#twitter_share_map').on('click', function (evt) {
+            javascript:window.open('https://twitter.com/intent/tweet?text=See ' + getContentShare(), 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
+        });
+        $('#facebook_share_map').click(function () {
+            $(this).attr('href', 'https://www.facebook.com/sharer/sharer.php?u=' + getContentShare() + '&amp;src=sdkpreparse')
+        })
 
         {# ----------- #}
         prerender_popup();
@@ -263,6 +277,11 @@
                 }
             }
         }
+
+        $('.btn-share-icon').click(function () {
+            $(this).toggleClass('share-icon-click')
+            $('.dropup-content').toggle()
+        });
     });
 
     function changeToDefault() {
