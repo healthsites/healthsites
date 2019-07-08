@@ -98,7 +98,7 @@ require([
                         goToLocality();
                     });
             } else {
-                goToPlace()
+                goToLocality()
             }
         }, 100);
     }
