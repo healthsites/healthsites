@@ -50,22 +50,15 @@ require([
     'static/scripts/views/app.js',
 ], function ($, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountrySearch, CountryStatistic, Search, App) {
     var parameters = new Parameters();
+    shared.dispatcher = _.extend({}, Backbone.Events);
 
-    var APP;
-    if (typeof APP === 'undefined') {
-        APP = {};
-        $APP = $(APP);
-    }
-
-    APP = new App();
+    var APP = new App();
     L.clusterLayer = new Cluster();
 
     $(document).ready(function () {
         var map = new MAP();
         renderCredit();
     });
-
-    shared.dispatcher = _.extend({}, Backbone.Events);
 
     // render country statistic view
     var countryStatictic = new CountryStatistic();

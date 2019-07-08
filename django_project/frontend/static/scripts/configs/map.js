@@ -52,20 +52,14 @@ require([
     'static/scripts/views/app.js',
 ], function ($, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App) {
     var parameters = new Parameters();
+    shared.dispatcher = _.extend({}, Backbone.Events);
 
-    var APP;
-    if (typeof APP == 'undefined') {
-        APP = {};
-        $APP = $(APP);
-    }
-
-    APP = new App();
+    var APP = new App();
     var map = new MAP();
     renderCredit();
 
     L.clusterLayer = new Cluster();
 
-    shared.dispatcher = _.extend({}, Backbone.Events);
     var countryStatictic = new CountryStatistic();
     new CountryList();
     new LocalityDetail();

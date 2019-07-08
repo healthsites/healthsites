@@ -53,7 +53,7 @@ define([
         _bindExternalEvents: function () {
             var self = this;
 
-            $APP.on('locality.info', function (evt, payload) {
+            shared.dispatcher.on('locality.info', function (payload) {
                 self.editMode = false;
                 self.clickedPoint_uuid = payload.locality_uuid;
                 self.clickedPoint_name = payload.locality_name;
@@ -65,19 +65,19 @@ define([
                 }
             });
 
-            $APP.on('locality.edit', function (evt) {
+            shared.dispatcher.on('locality.edit', function () {
                 self.editMode = true;
                 self.localitySaved = false;
                 self.update(true);
             });
 
-            $APP.on('locality.cancel', function (evt) {
+            shared.dispatcher.on('locality.cancel', function () {
                 self.editMode = false;
                 self.localitySaved = false;
                 self.update(true);
             });
 
-            $APP.on('locality.save', function (evt) {
+            shared.dispatcher.on('locality.save', function () {
                 self.editMode = false;
                 self.update();
                 // as locality was recently saved and the map was updated, we need
@@ -264,7 +264,7 @@ define([
                             shared.dispatcher.trigger(
                                 'show-locality-detail', identifiers[0], identifiers[1]
                             );
-                            $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
+                            shared.dispatcher.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
                         } else {
                             window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
                         }

@@ -158,14 +158,14 @@ define([
         _bindExternalEvents: function () {
             var self = this;
 
-            $APP.on('locality.coordinate-changed', function (evt, payload) {
+            shared.dispatcher.on('locality.coordinate-changed', function (payload) {
                 if (!isNaN(parseInt(payload.geom[0])) && !isNaN(parseInt(payload.geom[1]))) {
                     self.pointLayer.setLatLng([payload.geom[1], payload.geom[0]]);
                     self.MAP.panTo([payload.geom[1], payload.geom[0]]);
                 }
             });
 
-            $APP.on('locality.create', function (evt, payload) {
+            shared.dispatcher.on('locality.create', function (payload) {
                 var geom = self.MAP.getCenter();
                 shared.dispatcher.trigger('form:update-coordinates', {'latlng': geom});
                 self.pointLayer.setLatLng(geom);
@@ -173,37 +173,37 @@ define([
                 self.MAP.panTo(geom);
             });
 
-            $APP.on('locality.edit', function (evt, payload) {
+            shared.dispatcher.on('locality.edit', function (payload) {
                 self.pointLayer.setLatLng(self.original_marker_position);
                 self.MAP.addLayer(self.pointLayer);
                 self.MAP.panTo(self.original_marker_position);
 
             });
 
-            $APP.on('locality.cancel', function (evt) {
+            shared.dispatcher.on('locality.cancel', function () {
                 // user clicked cancel while updating Locality
                 self.MAP.removeLayer(self.pointLayer);
                 self.pointLayer.setLatLng([0, 0]);
             });
 
-            $APP.on('locality.save', function (evt) {
+            shared.dispatcher.on('locality.save', function () {
                 // user clicked save while updating Locality
                 self.MAP.removeLayer(self.pointLayer);
                 self.pointLayer.setLatLng([0, 0]);
             });
 
-            $APP.on('locality.history-show', function (evt, payload) {
+            shared.dispatcher.on('locality.history-show', function (payload) {
                 self.MAP.addLayer(self.historyLayer);
                 self.historyLayer.setLatLng([payload.geom[1], payload.geom[0]]);
             });
 
-            $APP.on('locality.history-hide', function (evt, payload) {
+            shared.dispatcher.on('locality.history-hide', function (payload) {
                 self.MAP.removeLayer(self.historyLayer);
                 self.historyLayer.setLatLng([0, 0]);
             });
 
 
-            $APP.on('locality.info', function (evt, payload) {
+            shared.dispatcher.on('locality.info', function (payload) {
                 // remove edit marker if it exists
                 if (self.pointLayer) {
                     self.MAP.removeLayer(self.pointLayer);
@@ -219,39 +219,39 @@ define([
                 }
             });
 
-            $APP.on('map.update-geoname', function (evt, payload) {
+            shared.dispatcher.on('map.update-geoname', function (payload) {
                 self._updateGeoname(payload.geoname);
             });
 
-            $APP.on('map.update-tag', function (evt, payload) {
+            shared.dispatcher.on('map.update-tag', function (payload) {
                 self._updateTag(payload.tag);
                 self.clusterLayer.isInit = true;
                 self.clusterLayer.usingLines = true;
             });
 
-            $APP.on('map.map.update-spec', function (evt, payload) {
+            shared.dispatcher.on('map.map.update-spec', function (payload) {
                 self._updateSpec(payload.spec);
                 self.clusterLayer.isInit = true;
                 self.clusterLayer.usingLines = true;
             });
 
-            $APP.on('map.update-bound', function (evt, payload) {
+            shared.dispatcher.on('map.update-bound', function (payload) {
                 self._setFitBound(payload.southwest_lat, payload.southwest_lng, payload.northeast_lat, payload.northeast_lng);
             });
 
-            $APP.on('map.create-polygon', function (evt, payload) {
+            shared.dispatcher.on('map.create-polygon', function (payload) {
                 self._createPolygon(payload.polygon);
             });
 
-            $APP.on('map.create-locality-polygon', function (evt, coordinates) {
+            shared.dispatcher.on('map.create-locality-polygon', function (coordinates) {
                 self._createPolygonLocality(coordinates);
             });
 
-            $APP.on('map.pan', function (evt, payload) {
+            shared.dispatcher.on('map.pan', function (payload) {
                 self._moveTo(payload.location, payload.zoom);
             });
 
-            $APP.on('map.rerender', function (evt, payload) {
+            shared.dispatcher.on('map.rerender', function (payload) {
                 self.MAP.invalidateSize();
             });
         },

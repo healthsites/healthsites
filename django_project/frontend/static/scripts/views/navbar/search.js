@@ -121,7 +121,7 @@ define([
                 },
                 success: function (data) {
                     self.searchBoxFinished();
-                    $APP.trigger('map.update-bound', {
+                    shared.dispatcher.trigger('map.update-bound', {
                         'southwest_lat': data['southwest']['lat'],
                         'southwest_lng': data['southwest']['lng'],
                         'northeast_lat': data['northeast']['lat'],
