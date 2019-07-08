@@ -9,14 +9,14 @@ require.config({
         'd3': 'libs/d3/3.5.7/d3.min',
         'c3': 'libs/c3/0.6.14/c3.min',
         'leaflet': 'libs/leaflet/0.7.7/leaflet-src',
-        'map-functionality': 'scripts/views/map',
+        'map-functionality': 'scripts/views/map/map',
         'leafletDraw': 'libs/leaflet.draw/0.2.3/leaflet.draw-src'
     },
     shim: {
         leaflet : {
             exports: ['L']
         },
-        'static/scripts/views/cluster.js': {
+        'static/scripts/views/map/cluster.js': {
             deps : [ 'leaflet'],
         },
         leafletDraw : {
@@ -40,7 +40,7 @@ require([
     'backbone',
     'underscore',
     'leaflet',
-    'static/scripts/views/cluster.js',
+    'static/scripts/views/map/cluster.js',
     'map-functionality',
     'static/scripts/parameters.js',
     'static/scripts/shared.js',
@@ -49,7 +49,7 @@ require([
     'static/scripts/views/map-sidebar/healthsite-detail/control.js',
     'static/scripts/views/map-sidebar/shapefile-downloader.js',
     'static/scripts/views/navbar/search.js',
-    'static/scripts/views/app.js',
+    'static/scripts/views/map/app.js',
 ], function ($, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App) {
     var parameters = new Parameters();
     shared.dispatcher = _.extend({}, Backbone.Events);

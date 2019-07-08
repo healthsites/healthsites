@@ -151,6 +151,7 @@
 
     var schema = JSON.parse("{{ schema | escapejs }}");
     var osmAPI = "{{ osm_API }}";
+    var countries = [];
     $(document).ready(function () {
         // activate share
         function getContentShare() {
@@ -168,7 +169,6 @@
         })
 
         {# ----------- #}
-        prerender_popup();
         // Set viewport if exist
         {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
             sessionStorage.setItem('northeast_lat', {{ northeast_lat }});

@@ -1,7 +1,7 @@
 define([
     'backbone',
     'jquery',
-    'scripts/views/cluster',
+    'scripts/views/map/cluster',
 ], function (Backbone, $, Cluster) {
     return Backbone.View.extend({
         initialize: function () {
