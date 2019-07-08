@@ -8,16 +8,16 @@ from localities.models import Country
 
 
 class Command(BaseCommand):
-    help = 'Import Localities from CSV file'
+    help = 'Generate country boundaries from SHP file'
     non_countries = ['Scarborough Reef']
 
     def handle(self, *args, **options):
         Country.objects.all().delete()
         data_source = DataSource(
-            'localities/data/ne_10m_admin_0_countries.shp')
+            'localities/data/osm_boundaries/country_boundaries.shp')
         layer = data_source[0]
         for feature in layer:
-            country_name = feature['NAME'].value
+            country_name = feature['name'].value
             country_name = country_name.encode('utf-8')
 
             # -------------------------------------------------
@@ -66,6 +66,7 @@ class Command(BaseCommand):
             country_name = country_name.replace('W.', 'Western')
 
             country_name = country_name.strip()
+            print "generate %s" % country_name
             # -------------------------------------------------
             # FINISH
             # -------------------------------------------------
