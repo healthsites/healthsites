@@ -66,6 +66,7 @@ class Command(BaseCommand):
             country_name = country_name.replace('W.', 'Western')
 
             country_name = country_name.strip()
+            print "generate %s" % country_name
             # -------------------------------------------------
             # FINISH
             # -------------------------------------------------
