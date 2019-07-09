@@ -32,11 +32,11 @@ osm_user = {
     'key': 'osm_user',
     'name': 'osm_user',
     'description': 'Username of an OSM account.',
-    'required': True,
+    'required': False,
     'type': float
 }
 
-ALL_FIELDS = [latitude, longitude, tag]
+ALL_FIELDS = [latitude, longitude, tag, osm_user]
 
 MANDATORY_FIELDS = [field for field in ALL_FIELDS if field.get('required')]
 

@@ -1,7 +1,10 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+from django.contrib.auth.models import User
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.api_views.v2.schema import (
@@ -152,6 +155,20 @@ class GetFacilities(
             osm_attr, locality_attr = split_osm_and_extension_attr(
                 data['tag'])
             data['tag'] = osm_attr
+
+            # Verify data uploader and owner/collector if the API is being used
+            # for uploading data from other osm user.
+            if data.get('osm_user'):
+                is_valid, message = verify_user(user, data['osm_user'])
+                if not is_valid:
+                    return HttpResponseForbidden(message)
+                else:
+                    try:
+                        user = get_object_or_404(
+                            User, username=data['osm_user'])
+                    except Http404:
+                        message = 'User %s is not exist.' % data['osm_user']
+                        return HttpResponseForbidden(message)
 
             is_valid, message = validate_osm_data(data)
             if not is_valid:

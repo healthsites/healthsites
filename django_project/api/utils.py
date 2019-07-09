@@ -7,8 +7,7 @@ from os.path import exists
 from social_django.models import UserSocialAuth
 from api import osm_tag_defintions
 from api.osm_api_client import OsmApiWrapper
-from api.osm_field_definitions import ALL_FIELDS, get_mandatory_fields, \
-    osm_user
+from api.osm_field_definitions import ALL_FIELDS, get_mandatory_fields
 from api.osm_tag_defintions import get_mandatory_tags, update_tag_options
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -419,6 +418,4 @@ def get_osm_schema():
     with open(schema_template_file_path) as json_file:
         schema = json.load(json_file)
         schema['facilities']['create']['fields'] = ALL_FIELDS
-        schema['facilities']['bulk']['fields']['items'] = (
-            [osm_user] + ALL_FIELDS)
         return schema
