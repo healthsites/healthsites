@@ -64,7 +64,7 @@
                 new QRCode(qrContainer, data);
             },
             error: function (error) {
-                $('#qrcode').html('<i>error when fetching QR Code, please refresh</i>');
+                $('#qrcode').html('<i>error when fetching QR Code : ' + error['responseText'] + '</i>');
             }
         })
     </script>

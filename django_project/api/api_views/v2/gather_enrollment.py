@@ -60,6 +60,8 @@ class GatherEnrollment(BaseAPIWithAuth):
                 gather_user.gather_id = content['id']
                 gather_user.gather_password = password
                 gather_user.save()
+            else:
+                return HttpResponseBadRequest(r.text)
 
         data = {
             'general': {
