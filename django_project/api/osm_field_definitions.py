@@ -28,6 +28,14 @@ tag = {
     'tags': ALL_TAGS
 }
 
+osm_user = {
+    'key': 'osm_user',
+    'name': 'osm_user',
+    'description': 'Username of an OSM account.',
+    'required': True,
+    'type': float
+}
+
 ALL_FIELDS = [latitude, longitude, tag]
 
 MANDATORY_FIELDS = [field for field in ALL_FIELDS if field.get('required')]

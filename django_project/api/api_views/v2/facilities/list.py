@@ -95,7 +95,7 @@ class BulkUpload(FacilitiesBaseAPIWithAuth):
             for facility_data in facilities_data:
                 # Verify data uploader and owner/collector
                 is_valid, message = \
-                    verify_user(user, facility_data['username'])
+                    verify_user(user, facility_data['osm_user'])
                 if not is_valid:
                     return HttpResponseForbidden(message)
 
