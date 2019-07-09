@@ -110,7 +110,10 @@ class Schema(object):
 
     def get_schema(self):
         schema = get_osm_schema()
-        for field in schema['facilities']['create']['fields']:
+        fields = (
+            schema['facilities']['create']['fields'] +
+            schema['facilities']['bulk']['fields']['items'])
+        for field in fields:
             field['type'] = self._change_type_into_string(field['type'])
             if field['key'] == 'tag':
                 for tag in field['tags']:

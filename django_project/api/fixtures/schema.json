@@ -12,6 +12,20 @@
       "encoding": "application/json",
       "description": "Create new facility.",
       "fields": []
+    },
+    "bulk": {
+      "type": "link",
+      "url": "/api/v2/facilities/bulk/create",
+      "action": "post",
+      "encoding": "application/json",
+      "description": "Create new facilities.",
+      "fields": {
+        "name": "healthsites",
+        "required": true,
+        "description": "List of healthsite facilities.",
+        "type": "array",
+        "items": []
+      }
     }
   }
 }
