@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% load pipeline %}
+{% load static %}
+
+{% block title %}
+    Healthsites
+{% endblock %}
+
+{% block content %}
+    {% if not user.is_authenticated %}
+        <script>
+            window.location.href = "{% url "map" %}";
+        </script>
+    {% endif %}
+
+    <section class="white container">
+        <div class="container">
+            <div>
+                This is page to guide you how to gather data using odk android app.
+                You can gather data on field using gather odk app and everything that you gather will be saved into osm and can be checked in healthsite.io
+            </div>
+            <h3 style="font-weight: 600">Step 1</h3>
+            <div>Please download this app on android app</div>
+            <div>
+                <a href='https://play.google.com/store/apps/details?id=org.odk.collect.android&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                    <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' style="width: 200px;"/>
+                </a>
+            </div>
+            <h3 style="font-weight: 600">Step 2</h3>
+            <div>On application, go to Admin Settings > Import/Export settings.
+                It will be looked like this
+            </div>
+            <br>
+            <div>
+                <img src="https://opendatakit.org/assets/wp-content/uploads/2017/06/Screenshot_1496350807.png" style="width: 200px;">
+            </div>
+            <br>
+            <div>And click <b>Scan code from other device</b>.
+                This will show a QR code scanner and you can scan QR code below.
+            </div>
+
+            <h3 style="font-weight: 600">Step 3</h3>
+            <div>Scan this QR Code and you are ready.</div>
+            <br>
+            <div class="" id="qrcode" style="margin: auto">
+                <i>Loading QR Code</i>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+    <script>
+        <!-- QR Code generation starts here -->
+        $.ajax({
+            url: "/api/v2/gather/enrollment",
+            dataType: 'json',
+            success: function (data) {
+                $('#qrcode').html('');
+                var qrContainer = document.getElementById('qrcode');
+                new QRCode(qrContainer, data);
+            },
+            error: function (error) {
+                $('#qrcode').html('<i>error when fetching QR Code : ' + error['responseText'] + '</i>');
+            }
+        })
+    </script>
+{% endblock extra_js %}
