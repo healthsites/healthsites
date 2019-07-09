@@ -1,7 +1,8 @@
-(function () {
-
-    L.ClusterLayer = L.FeatureGroup.extend({
-
+define([
+    'backbone',
+    'jquery'
+], function (Backbone, $) {
+    return L.FeatureGroup.extend({
         includes: L.Mixin.Events,
         options: {
             url: ''
@@ -52,7 +53,7 @@
         _bindExternalEvents: function () {
             var self = this;
 
-            $APP.on('locality.info', function (evt, payload) {
+            shared.dispatcher.on('locality.info', function (payload) {
                 self.editMode = false;
                 self.clickedPoint_uuid = payload.locality_uuid;
                 self.clickedPoint_name = payload.locality_name;
@@ -64,19 +65,19 @@
                 }
             });
 
-            $APP.on('locality.edit', function (evt) {
+            shared.dispatcher.on('locality.edit', function () {
                 self.editMode = true;
                 self.localitySaved = false;
                 self.update(true);
             });
 
-            $APP.on('locality.cancel', function (evt) {
+            shared.dispatcher.on('locality.cancel', function () {
                 self.editMode = false;
                 self.localitySaved = false;
                 self.update(true);
             });
 
-            $APP.on('locality.save', function (evt) {
+            shared.dispatcher.on('locality.save', function () {
                 self.editMode = false;
                 self.update();
                 // as locality was recently saved and the map was updated, we need
@@ -263,7 +264,7 @@
                             shared.dispatcher.trigger(
                                 'show-locality-detail', identifiers[0], identifiers[1]
                             );
-                            $APP.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
+                            shared.dispatcher.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
                         } else {
                             window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
                         }
@@ -314,51 +315,54 @@
                 this.localitySaved = false;
                 return;
             }
-            var bb = this._map.getBounds();
 
-            if (this._curReq && this._curReq.abort)
-                this._curReq.abort();       //prevent parallel requests
-            var geoname = "";
-            var tag = "";
-            var spec = "";
-            var data = "";
-            var uuid = "";
-            if (this.geoname) {
-                geoname = this.geoname;
-            }
-            if (this.tag) {
-                tag = this.tag;
-            }
-            if (this.spec) {
-                spec = this.spec['spec'];
-                data = this.spec['data'];
-                if (this.spec['uuid'] && this.spec['uuid'] != "None") {
-                    uuid = this.spec['uuid'];
+            if(this._map) {
+                var bb = this._map.getBounds();
+
+                if (this._curReq && this._curReq.abort)
+                    this._curReq.abort();       //prevent parallel requests
+                var geoname = "";
+                var tag = "";
+                var spec = "";
+                var data = "";
+                var uuid = "";
+                if (this.geoname) {
+                    geoname = this.geoname;
                 }
-            }
-            if (this.clickedPoint_uuid) {
-                uuid = this.clickedPoint_uuid;
-            }
-            var url = this.options.url + L.Util.getParamString({
-                'bbox': bb.toBBoxString(),
-                'zoom': this._map.getZoom(),
-                'iconsize': [48, 46],
-                'geoname': geoname,
-                'tag': tag,
-                'spec': spec,
-                'data': data,
-                'uuid': uuid
-            });
-            // when using cached data we don't need to make any new requests
-            // for example, this is useful when changing app contexts without changing map view
-            if (use_cache) {
-                self._render_map(self.ajax_response);
-            } else {
-                this._curReq = this.getAjax(url, function (response) {
-                    self._render_map(response);
-                    // cache response
-                    self.ajax_response = response;
+                if (this.tag) {
+                    tag = this.tag;
+                }
+                if (this.spec) {
+                    spec = this.spec['spec'];
+                    data = this.spec['data'];
+                    if (this.spec['uuid'] && this.spec['uuid'] != "None") {
+                        uuid = this.spec['uuid'];
+                    }
+                }
+                if (this.clickedPoint_uuid) {
+                    uuid = this.clickedPoint_uuid;
+                }
+                var url = this.options.url + L.Util.getParamString({
+                    'bbox': bb.toBBoxString(),
+                    'zoom': this._map.getZoom(),
+                    'iconsize': [48, 46],
+                    'geoname': geoname,
+                    'tag': tag,
+                    'spec': spec,
+                    'data': data,
+                    'uuid': uuid
                 });
+                // when using cached data we don't need to make any new requests
+                // for example, this is useful when changing app contexts without changing map view
+                if (use_cache) {
+                    self._render_map(self.ajax_response);
+                } else {
+                    this._curReq = this.getAjax(url, function (response) {
+                        self._render_map(response);
+                        // cache response
+                        self.ajax_response = response;
+                    });
+                }
             }
         },
 
@@ -419,13 +423,7 @@
                 this.clickedPoint_name = spec.name;
                 this.geom = spec.geom;
             }
-        },
+        }
 
     });
-
-    L.clusterLayer = function (options) {
-        return new L.ClusterLayer(options);
-    };
-
-}).call(this);
-
+});

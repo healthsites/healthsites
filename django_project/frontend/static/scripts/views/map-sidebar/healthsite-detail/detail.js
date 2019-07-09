@@ -114,7 +114,7 @@ define([
             html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">OpenStreetMap</a>';
             attributes['source_html'] = html;
 
-            $APP.trigger('locality.info', {
+            shared.dispatcher.trigger('locality.info', {
                 'locality_uuid': identifier,
                 'locality_name': name,
                 'geom': centroid,
@@ -122,7 +122,7 @@ define([
             });
 
             var geometry = data['geometry'];
-            $APP.trigger('map.create-locality-polygon', geometry);
+            shared.dispatcher.trigger('map.create-locality-polygon', geometry);
 
             delete attributes['changeset_id'];
             delete attributes['changeset_version'];
