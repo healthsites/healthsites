@@ -83,6 +83,14 @@ class AttributionsView(TemplateView):
     template_name = 'attributions.html'
 
 
+class GatherEnrollmentView(TemplateView):
+    template_name = 'how_to_gather.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(GatherEnrollmentView, self).get_context_data(**kwargs)
+        return context
+
+
 def search_place(request, place):
     # getting country's polygon
     result = {}
