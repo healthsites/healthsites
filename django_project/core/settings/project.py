@@ -126,3 +126,7 @@ MAX_ZOOM = 18
 # WHAT3WORDS API
 WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'
 DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
+
+# TODO: MOVE IT AS ADMIN SETTING
+GATHER_API_URL = 'http://gather.staging.healthsites.io/dev/'
+GATHER_API_URL_ODK = 'http://gather.staging.healthsites.io:8443/dev/odk'
