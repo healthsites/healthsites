@@ -6,7 +6,6 @@ __date__ = '03/07/19'
 import json
 import requests
 import random
-import re
 import string
 import zlib
 
@@ -49,7 +48,7 @@ class GatherEnrollment(BaseAPIWithAuth):
             r = session.head(server_url)
             csrf_token = r.cookies.get('csrftoken')
 
-            headers = {"X-csrftoken": csrf_token}
+            headers = {'X-csrftoken': csrf_token}
             r = session.post(server_url, json=payload, headers=headers)
             if r.status_code == 201 or r.status_code == 200:
                 content = json.loads(r.content)
@@ -63,12 +62,12 @@ class GatherEnrollment(BaseAPIWithAuth):
                 gather_user.save()
 
         data = {
-            "general": {
-                "server_url": settings.GATHER_API_URL_ODK,
-                "username": request.user.username,
-                "password": password,
+            'general': {
+                'server_url': settings.GATHER_API_URL_ODK,
+                'username': request.user.username,
+                'password': password,
             },
-            "admin": {}}
+            'admin': {}}
 
         # create as trusted user
         try:
