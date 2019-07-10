@@ -33,7 +33,7 @@ osm_user = {
     'name': 'osm_user',
     'description': 'Username of an OSM account.',
     'required': False,
-    'type': float
+    'type': str
 }
 
 ALL_FIELDS = [latitude, longitude, tag, osm_user]
