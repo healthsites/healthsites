@@ -10,8 +10,9 @@ def save_extensions(osm_type, osm_id, extension):
         osm_type=osm_type
     )
     for item, value in extension.items():
-        tag, created = Tag.objects.get_or_create(
-            extension=locality_extension,
-            name=item,
-            value=value
-        )
+        if value:
+            Tag.objects.get_or_create(
+                extension=locality_extension,
+                name=item,
+                value=value
+            )

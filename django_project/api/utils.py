@@ -138,6 +138,10 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
             mapping_dict.update({
                 column['name']: column['key']
             })
+            if isinstance(data[column['name']], bool):
+                data[column['name']] = 'True' if data[column['name']] else 'False'
+            elif isinstance(data[column['name']], int) or isinstance(data[column['name']], float):
+                data[column['name']] = '%s' % data[column['name']]
         except:  # noqa
             pass
 
@@ -238,6 +242,8 @@ def validate_osm_tags(osm_tags):
     # OSM tags value check
     for key, item in osm_tags.items():
         tag_definition = get_definition(key, osm_tag_defintions)
+        if not tag_definition:
+            continue
         tag_definition = update_tag_options(tag_definition, osm_tags)
 
         # Value type check
@@ -247,8 +253,6 @@ def validate_osm_tags(osm_tags):
             tag_definition['type'] = int
         elif tag_definition.get('type') == 'float':
             tag_definition['type'] = float
-        elif tag_definition.get('type') == 'boolean':
-            tag_definition['type'] = bool
         elif tag_definition.get('type') == 'boolean':
             tag_definition['type'] = bool
 
