@@ -13,7 +13,7 @@ from django.conf import settings
 from django.http.response import HttpResponseBadRequest
 from api.api_views.v2.base_api import BaseAPIWithAuth
 from rest_framework.views import Response
-from social_users.models import Organisation, OrganisationSupported, TrustedUser, GatherUser
+from social_users.models import Organisation, OrganisationSupported, TrustedUser
 
 GATHER_USERNAME = ''
 GATHER_PASSWORD = ''
@@ -61,8 +61,8 @@ class GatherEnrollment(BaseAPIWithAuth):
         return r
 
     def get(self, request):
-        password_characters = string.ascii_letters + \
-                              string.digits + string.punctuation
+        password_characters = string.ascii_letters + string.digits + string.punctuation
+        username = request.user.username
         # generate payload
         password = ''.join(random.choice(password_characters) for i in range(10))
         payload = {
@@ -77,8 +77,7 @@ class GatherEnrollment(BaseAPIWithAuth):
             # ALREADY EXIST
             # CHANGE THE PASSWORD
             # SEARCH USER ID
-            server_url = (settings.GATHER_API_URL +
-                          'odk/surveyors/?search=%s' % request.user.username)
+            server_url = settings.GATHER_API_URL + 'odk/surveyors/?search=' + username
             response = self.get_gather(server_url)
             content = json.loads(response.content)
             if response.status_code == 201 or response.status_code == 200:
@@ -86,7 +85,8 @@ class GatherEnrollment(BaseAPIWithAuth):
                     if result['username'] == request.user.username:
                         # IF USERNAME FOUND RESET PASSWORD
                         response = self.put_gather(
-                            settings.GATHER_API_URL + 'odk/surveyors/%s/' % result['id'], payload)
+                            settings.GATHER_API_URL + 'odk/surveyors/%s/' % result['id'],
+                            payload)
                         if response.status_code == 201 or response.status_code == 200:
                             pass
                         else:
