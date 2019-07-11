@@ -140,7 +140,8 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
             })
             if isinstance(data[column['name']], bool):
                 data[column['name']] = 'True' if data[column['name']] else 'False'
-            elif isinstance(data[column['name']], int) or isinstance(data[column['name']], float):
+            elif isinstance(data[column['name']], int) \
+                    or isinstance(data[column['name']], float):
                 data[column['name']] = '%s' % data[column['name']]
             elif isinstance(data[column['name']], list):
                 data[column['name']] = '%s' % ';'.join(data[column['name']])

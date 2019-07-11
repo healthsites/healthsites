@@ -368,6 +368,6 @@ def update_tag_options(tag_definition, osm_tags):
 
         for value in reference_data:
             if value and special_tag['options'].get(value):
-                tag_definition['options'].update(special_tag['options'][value])
+                tag_definition['options'].extend(special_tag['options'][value])
 
     return tag_definition

@@ -70,7 +70,7 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'clinic',
-            'healthcare': 'clinic'
+            'healthcare': ['clinic']
         }
         status, _ = validate_osm_tags(tags)
         self.assertTrue(status)
@@ -81,7 +81,7 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'pharmacy',
-            'healthcare': 'clinic'
+            'healthcare': ['clinic']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = 'Invalid OSM tags: `dispensing` tag is missing.'
@@ -98,7 +98,7 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'not a clinic',
-            'healthcare': 'clinic'
+            'healthcare': ['clinic']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
@@ -113,7 +113,7 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 0,
-            'healthcare': 'clinic'
+            'healthcare': ['clinic']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
@@ -127,8 +127,8 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'clinic',
-            'healthcare': 'clinic',
-            'speciality': 'radiology'
+            'healthcare': ['clinic'],
+            'speciality': ['radiology']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
@@ -143,8 +143,8 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'clinic',
-            'healthcare': 'clinic',
-            'speciality': 'abortion'
+            'healthcare': ['clinic'],
+            'speciality': ['abortion']
         }
         status, _ = validate_osm_tags(tags)
         self.assertTrue(status)
