@@ -59,7 +59,7 @@ def get_profile(user, request=None):
     if not profile_picture:
         try:
             profile_picture = user.social_auth.get(provider='openstreetmap').extra_data['avatar']
-        except KeyError:
+        except Exception:
             pass
 
     user.profile_picture = profile_picture
