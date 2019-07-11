@@ -11,6 +11,9 @@ def save_extensions(osm_type, osm_id, extension):
     )
     for item, value in extension.items():
         if value:
+            if isinstance(value, list):
+                value = ';'.join(value)
+            value = '%s' % value
             Tag.objects.get_or_create(
                 extension=locality_extension,
                 name=item,

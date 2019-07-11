@@ -106,6 +106,8 @@ class Schema(object):
             return 'object'
         elif type == int:
             return 'integer'
+        elif type == list:
+            return 'list'
         return type
 
     def get_schema(self):

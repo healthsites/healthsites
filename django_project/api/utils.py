@@ -142,6 +142,8 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
                 data[column['name']] = 'True' if data[column['name']] else 'False'
             elif isinstance(data[column['name']], int) or isinstance(data[column['name']], float):
                 data[column['name']] = '%s' % data[column['name']]
+            elif isinstance(data[column['name']], list):
+                data[column['name']] = '%s' % ';'.join(data[column['name']])
         except:  # noqa
             pass
 
@@ -255,6 +257,8 @@ def validate_osm_tags(osm_tags):
             tag_definition['type'] = float
         elif tag_definition.get('type') == 'boolean':
             tag_definition['type'] = bool
+        elif tag_definition.get('type') == 'list':
+            tag_definition['type'] = list
 
         if tag_definition.get('type') == str:
             item = str(item)
@@ -274,11 +278,15 @@ def validate_osm_tags(osm_tags):
 
         # Value option check
         if tag_definition.get('options'):
-            if item not in tag_definition.get('options'):
-                message = (
-                    'Invalid value for key `{}`: '
-                    '{} is not a valid option.').format(key, item)
-                return False, message
+            current_item = item
+            if not isinstance(current_item, list):
+                current_item = [current_item]
+            for row in current_item:
+                if row not in tag_definition.get('options'):
+                    message = (
+                        'Invalid value for key `{}`: '
+                        '{} is not a valid option.').format(key, row)
+                    return False, message
 
     return True, 'OSM tags are valid.'
 
