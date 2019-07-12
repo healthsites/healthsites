@@ -294,6 +294,9 @@ def validate_osm_tags(osm_tags):
                 item = False
             elif item == 'True':
                 item = True
+        if tag_definition['type'] == list:
+            if not isinstance(item, list):
+                item = [item]
         if not isinstance(item, tag_definition.get('type')):
             message = (
                 'Invalid value type for key `{}`: '
