@@ -94,15 +94,17 @@ function changePage(element) {
 function updateButton() {
     var childs = $("#updates-wrapper").children();
     var activeChild = $("#updates-wrapper").children(".graph.updates:visible");
-    var activeindex = parseInt($(activeChild).attr('id').split("-")[1]);
-    var $prevButton = $(".prev");
-    var $nextButton = $(".next");
-    $prevButton.removeClass("opacity-7");
-    $nextButton.removeClass("opacity-7");
-    if (activeindex === 0) {
-        $prevButton.addClass("opacity-7");
-    }
-    if (activeindex + 1 >= childs.length) {
-        $nextButton.addClass("opacity-7");
+    if (activeChild.length > 0) {
+        var activeindex = parseInt($(activeChild).attr('id').split("-")[1]);
+        var $prevButton = $(".prev");
+        var $nextButton = $(".next");
+        $prevButton.removeClass("opacity-7");
+        $nextButton.removeClass("opacity-7");
+        if (activeindex === 0) {
+            $prevButton.addClass("opacity-7");
+        }
+        if (activeindex + 1 >= childs.length) {
+            $nextButton.addClass("opacity-7");
+        }
     }
 }

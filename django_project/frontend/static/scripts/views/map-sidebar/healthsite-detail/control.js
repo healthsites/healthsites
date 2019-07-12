@@ -82,6 +82,9 @@ define([
             this.toMapMode();
             this.detail = new Detail(self.definitions);
             this.form = new Form(self.definitions);
+            this.checkLatestUI();
+        },
+        checkLatestUI: function () {
             this.$latestUI = $('.details:visible');
         },
         localityError: function (message) {
@@ -119,6 +122,8 @@ define([
                     self.toDetailMode();
                     if (osm_type !== 'node') {
                         self.disabled(self.$editButton);
+                    } else {
+                        self.enabled(self.$editButton);
                     }
                 },
                 error: function (error) {
@@ -242,6 +247,7 @@ define([
             /** Asking form to cancel the form **/
             this.toDetailMode();
             shared.dispatcher.trigger('locality.cancel');
+            console.log(this.$el)
             if (this.$latestUI !== this.$el) {
                 this.$latestUI.show();
                 this.$el.hide();

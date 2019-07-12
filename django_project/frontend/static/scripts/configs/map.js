@@ -13,25 +13,25 @@ require.config({
         'leafletDraw': 'libs/leaflet.draw/0.2.3/leaflet.draw-src'
     },
     shim: {
-        leaflet : {
+        leaflet: {
             exports: ['L']
         },
         'static/scripts/views/map/cluster.js': {
-            deps : [ 'leaflet'],
+            deps: ['leaflet'],
         },
-        leafletDraw : {
-            deps : [ 'leaflet'],
+        leafletDraw: {
+            deps: ['leaflet'],
             exports: 'LeafletDraw'
         },
-        signals : {
-            exports: [ 'signals' ]
+        signals: {
+            exports: ['signals']
         },
         crossroads: {
             deps: ['backbone', 'jquery', 'signals'],
             exports: ['crossroads']
         },
         'map-functionality': {
-            deps : [ 'leaflet', 'leafletDraw' ]
+            deps: ['leaflet', 'leafletDraw']
         },
     }
 });
@@ -51,11 +51,11 @@ require([
     'static/scripts/views/navbar/search.js',
     'static/scripts/views/map/app.js',
 ], function ($, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App) {
-    var parameters = new Parameters();
     shared.dispatcher = _.extend({}, Backbone.Events);
+    parameters = new Parameters();
+    map = new MAP();
 
-    var APP = new App();
-    var map = new MAP();
+    new App();
     renderCredit();
 
     L.clusterLayer = new Cluster();
@@ -83,6 +83,10 @@ require([
                     goToPlace();
                 });
         } else {
+            countryStatictic.getCount("", function (data) {
+                $('#healthsites-count').html(data);
+                $('#healthsites-count').css('opacity', 1);
+            });
             goToPlace();
         }
     }
@@ -113,4 +117,18 @@ require([
     }
 
     goToCountry();
+
+
+    // geolocate
+    function returnPosition(position) {
+        shared.dispatcher.trigger('map.pan', {'location': [position.coords.latitude, position.coords.longitude]});
+    }
+
+    $('#geolocate').click(function () {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(returnPosition);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    });
 });

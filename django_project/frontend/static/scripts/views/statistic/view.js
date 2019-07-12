@@ -22,6 +22,7 @@ define([
             this.request.getStatistic(country, successCallback, errorCallback);
         },
         showStatistic: function (country, successCallback, errorCallback) {
+            console.log(country)
             var self = this;
             this.getStatistic(country, function (data) {
                 shared.dispatcher.trigger('map.update-geoname', {'geoname': country});

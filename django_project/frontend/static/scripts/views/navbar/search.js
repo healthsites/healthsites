@@ -43,6 +43,14 @@ define([
                 mapcount();
             });
 
+            $('#search-text').click(function () {
+                if (!$("#search-form").is(":visible")) {
+                    $("body").toggleClass("searchbar-active");
+                    $navbarSearch.find('i').toggleClass("fa-search fa-times");
+                    mapcount();
+                }
+            });
+
             // search autocomplete
             this.$searchbox.autocomplete({
                 source: function (request, response) {
