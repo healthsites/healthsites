@@ -264,7 +264,7 @@ define([
                             shared.dispatcher.trigger(
                                 'show-locality-detail', identifiers[0], identifiers[1]
                             );
-                            shared.dispatcher.trigger('set.hash.silent', {'locality': evt.target.data['uuid']});
+                            shared.dispatcher.trigger('set.hash.silent', '/locality/' + evt.target.data['uuid']);
                         } else {
                             window.location.href = "/map#!/locality/" + evt.target.data['uuid'];
                         }

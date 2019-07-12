@@ -43,18 +43,20 @@ def get_profile(user, request=None):
     # GET SOCIAL AUTH
     profile_picture = ''
     provider = ''
+
+    # get profile picture
+    if request and user == request.user:
+        try:
+            social_auth = request.session['social_auth']
+            profile_picture = social_auth['profile_picture']
+            provider = social_auth['provider']
+        except KeyError:
+            pass
     try:
         user_detail = Profile.objects.get(user=user)
         profile_picture = user_detail.profile_picture
     except Profile.DoesNotExist:
-        # get profile picture
-        if request and user == request.user:
-            try:
-                social_auth = request.session['social_auth']
-                profile_picture = social_auth['profile_picture']
-                provider = social_auth['provider']
-            except KeyError:
-                pass
+        pass
 
     if not profile_picture:
         try:
