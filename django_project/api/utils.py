@@ -169,6 +169,10 @@ def validate_osm_data(data_owner, osm_data, duplication_check=True):
     :return: Validation status and message.
     :rtype: tuple
     """
+    try:
+        osm_data['tag']['source'] = 'healthsites.io'
+    except KeyError:
+        pass
     osm_name = osm_data.get('tag', {}).get('name', 'no name')
 
     # Validate fields

@@ -59,6 +59,10 @@ define([
                 if (data && data[tag]) {
                     $input.val(data[tag]);
                 }
+                if (tag === "source") {
+                    $input.val("healthsites.io");
+                    $input.prop('disabled', true);
+                }
             });
             this.$latInput = $('*[data-tag="latitude"] input');
             this.$lonInput = $('*[data-tag="longitude"] input');
