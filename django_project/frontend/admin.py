@@ -33,5 +33,6 @@ class CustomFlatPageAdmin(FlatPageAdmin):
                  'gather_password')}),
     )
 
+
 admin.site.unregister(FlatPage)
 admin.site.register(CustomFlatPage, CustomFlatPageAdmin)

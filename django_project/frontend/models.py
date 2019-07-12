@@ -1,7 +1,6 @@
 # coding=utf-8
 from django.contrib.gis.db import models
 from django.contrib.flatpages.models import FlatPage
-from django.utils.translation import ugettext_lazy as _
 
 
 class CustomFlatPage(FlatPage):
