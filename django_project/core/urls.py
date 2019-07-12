@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.conf.urls import include, patterns, url
 from django.contrib import admin
+from frontend.models import CustomFlatPage
 
 urlpatterns = patterns(
     '',
@@ -22,7 +23,7 @@ urlpatterns = patterns(
             'document_root': settings.MEDIA_ROOT,
             'show_indexes': True
         }),
-
+    url(r'^enrollment/', include('django.contrib.flatpages.urls')),
 )
 
 # expose static files and uploded media if DEBUG is active

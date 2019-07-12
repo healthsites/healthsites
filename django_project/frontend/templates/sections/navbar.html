@@ -41,7 +41,15 @@
                 <li><a href="/#share-data">Share data</a></li>
                 <li><a href="/#partners">Partners</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="/how-to-gather" target="_blank">How to gather</a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Enrollment
+                        <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            {% for enrollment in enrollments %}
+                                <li><a href="/enrollment{{ enrollment.url }}">{{ enrollment.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
                 {% endif %}
                 <li class="nav-search-wrap"><a class="navbar-search"><i class="fa fa-search"></i></a></li>
                 <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i

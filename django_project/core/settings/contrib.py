@@ -16,7 +16,8 @@ INSTALLED_APPS += (
     'celery',
     'rest_framework',
     'rest_framework_gis',
-    'django.contrib.gis'
+    'django.contrib.gis',
+    'django.contrib.flatpages',
 )
 
 STOP_WORDS = (

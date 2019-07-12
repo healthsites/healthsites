@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% load pipeline %}
+{% load static %}
+
+{% block title %}
+    Healthsites
+{% endblock %}
+
+{% block content %}
+    <section class="white container">
+    <div class="container">
+        <h1>{{ flatpage.customflatpage.enrollment_title }}</h1>
+        <p>Gather url: {{ flatpage.customflatpage.gather_url }}</p>
+        <p>Gather username: {{ flatpage.customflatpage.gather_username }}</p>
+        <p>Gather password: {{ flatpage.customflatpage.gather_password }}</p>
+    </div>
+    <div class="container">
+        {{ flatpage.content }}
+    </div>
+    </section>
+{% endblock %}
