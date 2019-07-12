@@ -5,7 +5,7 @@ __date__ = '26/04/19'
 from django.contrib import admin
 from .models.extension import LocalityOSMExtension
 from .models.tag import Tag
-from .models.pending_state import PendingState
+from .models.pending_state import PendingUpdate
 
 
 class TagInline(admin.TabularInline):
@@ -13,7 +13,7 @@ class TagInline(admin.TabularInline):
 
 
 class PendingStateInline(admin.TabularInline):
-    model = PendingState
+    model = PendingUpdate
 
 
 class LocalityOSMExtensionAdmin(admin.ModelAdmin):

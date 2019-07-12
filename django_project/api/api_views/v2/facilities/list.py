@@ -22,7 +22,7 @@ from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node, \
 from api.utilities.statistic import get_statistic_with_cache
 from core.settings.utils import ABS_PATH
 from localities.models import Country
-from api.utilities.pending import create_pending
+from api.utilities.pending import create_pending_update
 from localities_osm.queries import filter_locality
 from localities_osm.utilities import split_osm_and_extension_attr
 from localities_osm_extension.utils import save_extensions
@@ -170,7 +170,7 @@ class GetFacilities(
                         message = 'User %s is not exist.' % data['osm_user']
                         return HttpResponseForbidden(message)
 
-            is_valid, message = validate_osm_data(data)
+            is_valid, message = validate_osm_data(user, data)
             if not is_valid:
                 return HttpResponseBadRequest(message)
 
@@ -183,7 +183,7 @@ class GetFacilities(
             response = create_osm_node(user, data)
 
             # create pending index
-            create_pending(
+            create_pending_update(
                 'node', response['id'],
                 data['tag']['name'], user, response['version'])
 
