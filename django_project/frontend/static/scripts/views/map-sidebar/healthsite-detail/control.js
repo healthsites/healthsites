@@ -238,7 +238,7 @@ define([
                     self.showDetail('node', data['id']);
                     self.enabled(self.$saveButton);
                 }, function (error) {
-                    self.localityError('Error when uploading.<br>' + error['responseText']);
+                    alert('Error when uploading. ' + error['responseText']);
                     self.enabled(self.$saveButton);
                 }
             );
@@ -247,7 +247,6 @@ define([
             /** Asking form to cancel the form **/
             this.toDetailMode();
             shared.dispatcher.trigger('locality.cancel');
-            console.log(this.$el)
             if (this.$latestUI !== this.$el) {
                 this.$latestUI.show();
                 this.$el.hide();
