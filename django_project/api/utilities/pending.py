@@ -45,7 +45,7 @@ def validate_pending_update(osm_type, osm_id):
                 osm_type=osm_type,
                 osm_id=osm_id
             )
-            if pending.version == osm.changeset_version:
+            if pending.version <= osm.changeset_version:
                 pending.delete()
                 return False
         except LocalityOSMView.DoesNotExist:
