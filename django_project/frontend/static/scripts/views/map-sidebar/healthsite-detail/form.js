@@ -38,6 +38,14 @@ define([
                         });
                         inputHtml += "</select>";
                         break;
+                    case 'list':
+                        inputHtml = "<div class='input multiselect'>";
+                        options = options.sort();
+                        $.each(options, function (index, key) {
+                            inputHtml += '<input type="checkbox" value="' + key + '" style="width: auto!important;">' + key.replaceAll('_', ' ') + '<br>';
+                        });
+                        inputHtml += "</div>";
+                        break;
                 }
                 var $element = $('*[data-tag="' + tag + '"]');
                 if ($element.length > 0) {
@@ -50,6 +58,10 @@ define([
                 // assign value to form
                 if (data && data[tag]) {
                     $input.val(data[tag]);
+                }
+                if (tag === "source") {
+                    $input.val("healthsites.io");
+                    $input.prop('disabled', true);
                 }
             });
             this.$latInput = $('*[data-tag="latitude"] input');
@@ -64,9 +76,17 @@ define([
             var tags = {};
             $('*[data-tag]').each(function (index) {
                 var key = $(this).data('tag');
-                var value = $(this).find('input,select').val();
+                var $element = $(this).find('input,select');
+                var value = $element.val();
                 if (value) {
                     tags[key] = value
+                }
+                var $inputWrapper = $($(this).find('.input'));
+                if ($inputWrapper.hasClass('multiselect')) {
+                    tags[key] = [];
+                    $.each($inputWrapper.find("input:checked"), function () {
+                        tags[key].push($(this).val());
+                    });
                 }
             });
             var payload = {

@@ -86,7 +86,8 @@ def split_osm_and_extension_attr(locality_attr):
 
     osm_attr = {}
     for field in osm_fields:
-        if locality_attr.get(field, None):
+        value = locality_attr.get(field, None)
+        if (isinstance(value, bool) and value is not None) or value:
             osm_attr[field] = locality_attr[field]
             del locality_attr[field]
 

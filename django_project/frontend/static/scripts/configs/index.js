@@ -13,25 +13,25 @@ require.config({
         'leafletDraw': 'libs/leaflet.draw/0.2.3/leaflet.draw-src'
     },
     shim: {
-        leaflet : {
+        leaflet: {
             exports: ['L']
         },
         'static/scripts/views/map/cluster.js': {
-            deps : [ 'leaflet'],
+            deps: ['leaflet'],
         },
-        leafletDraw : {
-            deps : [ 'leaflet'],
+        leafletDraw: {
+            deps: ['leaflet'],
             exports: 'LeafletDraw'
         },
-        signals : {
-            exports: [ 'signals' ]
+        signals: {
+            exports: ['signals']
         },
         crossroads: {
             deps: ['backbone', 'jquery', 'signals'],
             exports: ['crossroads']
         },
         'map-functionality': {
-            deps : [ 'leaflet', 'leafletDraw' ]
+            deps: ['leaflet', 'leafletDraw']
         },
     }
 });
@@ -49,14 +49,14 @@ require([
     'static/scripts/views/navbar/search.js',
     'static/scripts/views/map/app.js',
 ], function ($, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountrySearch, CountryStatistic, Search, App) {
-    var parameters = new Parameters();
     shared.dispatcher = _.extend({}, Backbone.Events);
+    parameters = new Parameters();
+    map = new MAP();
 
-    var APP = new App();
+    new App();
     L.clusterLayer = new Cluster();
 
     $(document).ready(function () {
-        var map = new MAP();
         renderCredit();
     });
 

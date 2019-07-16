@@ -112,10 +112,19 @@
                 <a class="next opacity-7" onclick="changePage(this)">view
                     next ></a></div>
             <br>
-            <div id="pending" style="display: none">
+            <div id="pending-update" class="pending" style="display: none">
                 <h3>Pending updates</h3>
 
-                <div id="pending-wrapper">
+                <div class="pending-wrapper">
+                    <div class="graph updates">
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div id="pending-review" class="pending" style="display: none">
+                <h3>Pending review</h3>
+
+                <div class="pending-wrapper">
                     <div class="graph updates">
                     </div>
                 </div>
@@ -221,21 +230,39 @@
                 url: "/api/v2/user/{{ user.username }}/pending",
                 dataType: 'json',
                 success: function (data) {
-                    if (data.length > 0) {
-                        $('#pending').show();
-                        var $wrapper = $('#pending').find('.graph');
-                        $.each(data, function (index, value) {
+                    // Show pending updates
+                    let pendingUpdates = data['pending_update'];
+                    if (pendingUpdates.length > 0) {
+                        $('#pending-update').show();
+                        var $wrapper = $('#pending-update').find('.graph');
+                        $.each(pendingUpdates, function (index, value) {
                             var html = "<div class=\"entry\">";
                             html += "<div class=\"entry\">";
                             html += "<span class=\"date\">" + getDateString(value.time_uploaded) + "</span> - ";
                             html += "<span class=\"name\">";
-                            html += "<a href=\"profile/" + value.uploader + "\">@" + value.uploader + "</a></span> - ";
+                            html += "<a href=\"/profile/" + value.uploader + "\">@" + value.uploader + "</a></span> - ";
                             html += "<a href='" + osmURL + "/" + value.osm_type + "/" + value.osm_id + "'>" + value.osm_name + "</a>";
                             html += "</div>";
                             $wrapper.append(html);
                         });
                     }
-
+                    // Show pending reviews
+                    let pendingReviews = data['pending_review'];
+                    if (pendingReviews.length > 0) {
+                        $('#pending-review').show();
+                        var $wrapper = $('#pending-review').find('.graph');
+                        $.each(pendingReviews, function (index, value) {
+                            var html = "<div class=\"entry\">";
+                            html += "<div class=\"entry\">";
+                            html += "<span class=\"date\">" + getDateString(value.time_uploaded) + "</span> - ";
+                            html += "<span class=\"name\">";
+                            html += "<a href=\"/profile/" + value.uploader + "\">@" + value.uploader + "</a></span> - ";
+                            html += "<a>" + value.osm_name + "</a> - ";
+                            html += value.reason;
+                            html += "</div>";
+                            $wrapper.append(html);
+                        });
+                    }
                 }
             });
 

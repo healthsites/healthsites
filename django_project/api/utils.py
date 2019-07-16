@@ -14,6 +14,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+
+from api.utilities.pending import create_pending_review
 from core.settings.utils import ABS_PATH
 from social_users.models import TrustedUser, Organisation
 
@@ -124,7 +126,7 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
         return data
 
     document = open(mapping_file_path, 'r')
-    mapping_data = yaml.load(document)
+    mapping_data = yaml.load(document, Loader=yaml.BaseLoader)
 
     mapping_table_reference = 'healthcare_facilities_{}'.format(osm_type)
     mapping_data_reference = mapping_data.get(
@@ -152,29 +154,45 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
     return remap_dict(data, mapping_dict)
 
 
-def validate_osm_data(osm_data):
+def validate_osm_data(data_owner, osm_data, duplication_check=True):
     """Validate osm data based on osm field and tag definition.
+
+    :param data_owner: The owner of the data.
+    :type data_owner: django.contrib.auth.models.User
 
     :param osm_data: OSM data.
     :type osm_data: dict
 
+    :param duplication_check: Flag indicating to use duplication validation.
+    :type duplication_check: bool
+
     :return: Validation status and message.
     :rtype: tuple
     """
+    try:
+        osm_data['tag']['source'] = 'healthsites.io'
+    except KeyError:
+        pass
+    osm_name = osm_data.get('tag', {}).get('name', 'no name')
+
     # Validate fields
     is_valid, message = validate_osm_fields(osm_data)
     if not is_valid:
+        create_pending_review(data_owner, osm_name, osm_data, message)
         return False, message
 
     # Validate tags
-    is_valid, message = validate_osm_tags(osm_data['tag'])
+    is_valid, message = validate_osm_tags(osm_data.get('tag', {}))
     if not is_valid:
+        create_pending_review(data_owner, osm_name, osm_data, message)
         return False, message
 
-    # Validate duplication
-    is_valid, message = validate_duplication(osm_data)
-    if not is_valid:
-        return False, message
+    if duplication_check:
+        # Validate duplication
+        is_valid, message = validate_duplication(osm_data)
+        if not is_valid:
+            create_pending_review(data_owner, osm_name, osm_data, message)
+            return False, message
 
     return True, 'OSM data are valid.'
 
@@ -276,6 +294,9 @@ def validate_osm_tags(osm_tags):
                 item = False
             elif item == 'True':
                 item = True
+        if tag_definition['type'] == list:
+            if not isinstance(item, list):
+                item = [item]
         if not isinstance(item, tag_definition.get('type')):
             message = (
                 'Invalid value type for key `{}`: '

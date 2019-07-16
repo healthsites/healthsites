@@ -1,10 +1,14 @@
-from api.utils import validate_osm_data, convert_to_osm_tag, update_osm_node
+from api.utils import validate_osm_data, convert_to_osm_tag, update_osm_node, \
+    verify_user
 from core.settings.utils import ABS_PATH
 
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from django.http.response import Http404, HttpResponseBadRequest
+from django.contrib.auth.models import User
+from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from api.api_views.v2.facilities.base_api import (
     FacilitiesBaseAPI
@@ -19,7 +23,7 @@ from localities_osm.serializer.locality_osm import (
     LocalityOSMWaySerializer,
     LocalityOSMWayGeoSerializer
 )
-from api.utilities.pending import create_pending, validate_pending
+from api.utilities.pending import create_pending_update, validate_pending_update
 
 
 class GetDetailFacility(FacilitiesBaseAPI):
@@ -46,7 +50,7 @@ class GetDetailFacility(FacilitiesBaseAPI):
         if validation:
             return HttpResponseBadRequest(validation)
 
-        pending = validate_pending(osm_type, osm_id)
+        pending = validate_pending_update(osm_type, osm_id)
         if pending:
             return HttpResponseBadRequest('Still in pending')
 
@@ -67,6 +71,7 @@ class GetDetailFacility(FacilitiesBaseAPI):
 
     def post(self, request, osm_type, osm_id):
         data = request.data.copy()
+        user = request.user
         # Now, we post the data directly to OSM.
         try:
             if osm_type == 'node':
@@ -74,8 +79,24 @@ class GetDetailFacility(FacilitiesBaseAPI):
                 data['version'] = locality.changeset_version
                 data['id'] = osm_id
 
+                # Verify data uploader and owner/collector if the API is being
+                # used for uploading data from other osm user.
+                if data.get('osm_user'):
+                    is_valid, message = verify_user(user, data['osm_user'])
+                    if not is_valid:
+                        return HttpResponseForbidden(message)
+                    else:
+                        try:
+                            user = get_object_or_404(
+                                User, username=data['osm_user'])
+                        except Http404:
+                            message = 'User %s is not exist.' % data[
+                                'osm_user']
+                            return HttpResponseForbidden(message)
+
                 # Validate data
-                is_valid, message = validate_osm_data(data)
+                is_valid, message = validate_osm_data(
+                    user, data, duplication_check=False)
                 if not is_valid:
                     return HttpResponseBadRequest(message)
 
@@ -85,10 +106,9 @@ class GetDetailFacility(FacilitiesBaseAPI):
                     mapping_file_path, data['tag'], 'node')
 
                 # Push data to OSM
-                user = request.user
                 response = update_osm_node(user, data)
 
-                create_pending(
+                create_pending_update(
                     'node',
                     response['id'],
                     data['tag']['name'],

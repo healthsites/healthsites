@@ -82,6 +82,9 @@ define([
             this.toMapMode();
             this.detail = new Detail(self.definitions);
             this.form = new Form(self.definitions);
+            this.checkLatestUI();
+        },
+        checkLatestUI: function () {
             this.$latestUI = $('.details:visible');
         },
         localityError: function (message) {
@@ -119,6 +122,8 @@ define([
                     self.toDetailMode();
                     if (osm_type !== 'node') {
                         self.disabled(self.$editButton);
+                    } else {
+                        self.enabled(self.$editButton);
                     }
                 },
                 error: function (error) {
@@ -233,7 +238,7 @@ define([
                     self.showDetail('node', data['id']);
                     self.enabled(self.$saveButton);
                 }, function (error) {
-                    self.localityError('Error when uploading.<br>' + error['responseText']);
+                    alert('Error when uploading. ' + error['responseText']);
                     self.enabled(self.$saveButton);
                 }
             );

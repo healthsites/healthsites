@@ -41,10 +41,10 @@
             </div>
 
             <h3 style="font-weight: 600">Step 3</h3>
-            <div>Please scan this QR Code and you are ready to gather.</div>
+            <div>Generate QR Code by clicking bottom below. Note that generated QR Code <b>must be scanned</b>.</div>
             <br>
             <div class="" id="qrcode" style="margin: auto">
-                <i>Loading QR Code</i>
+                <button id="qr-code-generator">Generate QR Code</button>
             </div>
             <h3 style="font-weight: 600">Step 4 (How to gather on odk app)</h3>
             <div>
@@ -81,17 +81,20 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
     <script>
         <!-- QR Code generation starts here -->
-        $.ajax({
-            url: "/api/v2/gather/enrollment",
-            dataType: 'json',
-            success: function (data) {
-                $('#qrcode').html('');
-                var qrContainer = document.getElementById('qrcode');
-                new QRCode(qrContainer, data);
-            },
-            error: function (error) {
-                $('#qrcode').html('<i>error when fetching QR Code : ' + error['responseText'] + '</i>');
-            }
+        $('#qr-code-generator').click(function () {
+            $('#qrcode').html('<i>Please wait....</a>');
+            $.ajax({
+                url: "/api/v2/gather/enrollment",
+                dataType: 'json',
+                success: function (data) {
+                    $('#qrcode').html('');
+                    var qrContainer = document.getElementById('qrcode');
+                    new QRCode(qrContainer, data);
+                },
+                error: function (error) {
+                    $('#qrcode').html('<i>error when fetching QR Code : ' + error['responseText'] + '</i>');
+                }
+            })
         })
     </script>
 {% endblock extra_js %}
