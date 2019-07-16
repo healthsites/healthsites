@@ -20,7 +20,7 @@ class Command(BaseCommand):
             'grunt',
             '--gruntfile=/Gruntfile.js',
             '--base=/'],
-                shell=True)
+            shell=True)
 
         self.stdout.write('>>> Collectstatic')
         call_command('collectstatic',
