@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from localities_osm_extension.models.extension import LocalityOSMExtension
 
 
-class PendingState(models.Model):
+class PendingUpdate(models.Model):
     """ Model for telling pending create/update."""
 
     extension = models.OneToOneField(
@@ -16,3 +16,13 @@ class PendingState(models.Model):
     time_uploaded = models.DateTimeField(auto_now_add=True, blank=True)
     name = models.CharField(max_length=512)
     version = models.IntegerField()
+
+
+class PendingReview(models.Model):
+    """Model for telling pending review caused by possibly data duplication."""
+
+    uploader = models.ForeignKey(User)
+    name = models.CharField(max_length=512)
+    reason = models.TextField(null=True, blank=True, default='')
+    payload = models.TextField(null=True, blank=True, default='')
+    time_uploaded = models.DateTimeField(auto_now_add=True, blank=True)

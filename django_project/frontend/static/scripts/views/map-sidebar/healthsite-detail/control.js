@@ -82,6 +82,9 @@ define([
             this.toMapMode();
             this.detail = new Detail(self.definitions);
             this.form = new Form(self.definitions);
+            this.checkLatestUI();
+        },
+        checkLatestUI: function () {
             this.$latestUI = $('.details:visible');
         },
         localityError: function (message) {
@@ -112,19 +115,21 @@ define([
                 url: this.currentAPI + "?output=geojson",
                 dataType: 'json',
                 success: function (data) {
-                    $APP.trigger('locality.cancel');
+                    shared.dispatcher.trigger('locality.cancel');
                     self.$latestUI = self.$el;
                     self.detail.showInfo(osm_type, osm_id, data);
                     self.detail_info = data;
                     self.toDetailMode();
                     if (osm_type !== 'node') {
                         self.disabled(self.$editButton);
+                    } else {
+                        self.enabled(self.$editButton);
                     }
                 },
                 error: function (error) {
                     self.detail.showTags({});
                     if (error['status'] === 400) {
-                        $APP.trigger('locality.cancel');
+                        shared.dispatcher.trigger('locality.cancel');
                         self.localityError(
                             'Locality is still in pending in Healthsites server for 2-5 minutes.<br>' +
                             'Please wait or please check this locality in openstreetmap by click this ' +
@@ -203,7 +208,7 @@ define([
             this.$el.find('.input').remove();
             this.form.renderForm(null, this.url);
             this.toFormMode();
-            $APP.trigger('locality.create');
+            shared.dispatcher.trigger('locality.create');
             this.$infoWrapper.hide();
         },
         toEditMode: function () {
@@ -221,7 +226,7 @@ define([
             }
             this.form.renderForm(attributes, this.currentAPI);
             this.toFormMode();
-            $APP.trigger('locality.edit');
+            shared.dispatcher.trigger('locality.edit');
         },
         toSaveMode: function () {
             /** Asking form to push the data on form **/
@@ -233,7 +238,7 @@ define([
                     self.showDetail('node', data['id']);
                     self.enabled(self.$saveButton);
                 }, function (error) {
-                    self.localityError('Error when uploading.<br>' + error['responseText']);
+                    alert('Error when uploading. ' + error['responseText']);
                     self.enabled(self.$saveButton);
                 }
             );
@@ -241,7 +246,7 @@ define([
         toCancelMode: function () {
             /** Asking form to cancel the form **/
             this.toDetailMode();
-            $APP.trigger('locality.cancel');
+            shared.dispatcher.trigger('locality.cancel');
             if (this.$latestUI !== this.$el) {
                 this.$latestUI.show();
                 this.$el.hide();

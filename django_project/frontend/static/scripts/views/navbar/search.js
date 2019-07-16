@@ -43,6 +43,14 @@ define([
                 mapcount();
             });
 
+            $('#search-text').click(function () {
+                if (!$("#search-form").is(":visible")) {
+                    $("body").toggleClass("searchbar-active");
+                    $navbarSearch.find('i').toggleClass("fa-search fa-times");
+                    mapcount();
+                }
+            });
+
             // search autocomplete
             this.$searchbox.autocomplete({
                 source: function (request, response) {
@@ -91,12 +99,12 @@ define([
             this.$searchbox.css("cursor", "");
             this.$searchbox.addClass('error');
         },
-        placeSearchInit: function (geoname) {
+        placeSearchInit: function (geoname, successCallback, errorCallback) {
             $('#radio-place').click();
             this.$searchbox.val(geoname);
-            this.placeSearch(geoname);
+            this.placeSearch(geoname, successCallback, errorCallback);
         },
-        placeSearch: function (geoname) {
+        placeSearch: function (geoname, successCallback, errorCallback) {
             var self = this;
             if (this.searchAjax) {
                 this.searchAjax.abort()
@@ -107,8 +115,10 @@ define([
             }
             // redirect into map if not map
             if (window.location.pathname !== '/map') {
-                window.location = '/map?geoname=' + geoname;
+                window.location = '/map?place=' + geoname;
                 return false;
+            } else {
+                parameters.set('place', geoname);
             }
             this.searchBoxSubmitted();
             this.searchAjax = $.ajax({
@@ -119,15 +129,21 @@ define([
                 },
                 success: function (data) {
                     self.searchBoxFinished();
-                    $APP.trigger('map.update-bound', {
+                    shared.dispatcher.trigger('map.update-bound', {
                         'southwest_lat': data['southwest']['lat'],
                         'southwest_lng': data['southwest']['lng'],
                         'northeast_lat': data['northeast']['lat'],
                         'northeast_lng': data['northeast']['lng']
                     });
+                    if (successCallback) {
+                        successCallback(data);
+                    }
                 },
                 error: function (error) {
                     self.searchBoxError()
+                    if (errorCallback) {
+                        errorCallback(error)
+                    }
                 }
             });
         }

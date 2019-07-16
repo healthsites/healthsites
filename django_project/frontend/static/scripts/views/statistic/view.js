@@ -25,10 +25,11 @@ define([
         getStatistic: function (country, successCallback, errorCallback) {
             this.request.getStatistic(country, successCallback, errorCallback);
         },
-        showStatistic: function (country, successCallback) {
+        showStatistic: function (country, successCallback, errorCallback) {
+            console.log(country)
             var self = this;
             this.getStatistic(country, function (data) {
-                $APP.trigger('map.update-geoname', {'geoname': country});
+                shared.dispatcher.trigger('map.update-geoname', {'geoname': country});
 
                 //{# default #}
                 self.$localityNumber.html(0);
@@ -94,7 +95,7 @@ define([
                 if (polygon_raw) {
                     var polygon_json = JSON.parse(polygon_raw);
                     var polygon = polygon_json['coordinates'];
-                    $APP.trigger('map.create-polygon', {'polygon': polygon});
+                    shared.dispatcher.trigger('map.create-polygon', {'polygon': polygon});
                 }
                 if (data.viewport) {
                     var northeast_lat = parseFloat(data.viewport.northeast_lat);
@@ -103,7 +104,7 @@ define([
                     var southwest_lng = parseFloat(data.viewport.southwest_lng);
                     if (southwest_lat !== 0.0 && southwest_lng !== 0.0 && northeast_lat !== 0.0 && northeast_lng) {
                         map._setFitBound(southwest_lat, southwest_lng, northeast_lat, northeast_lng);
-                        $APP.trigger('map.update-bound', {
+                        shared.dispatcher.trigger('map.update-bound', {
                             'southwest_lat': southwest_lat,
                             'southwest_lng': southwest_lng,
                             'northeast_lat': northeast_lat,
@@ -112,13 +113,13 @@ define([
                     }
                 }
                 mapcount();
-                $APP.trigger('map.rerender');
+                shared.dispatcher.trigger('map.rerender');
 
                 // call callback
                 if (successCallback) {
                     successCallback(data);
                 }
-            });
+            }, errorCallback);
         }
     })
 });

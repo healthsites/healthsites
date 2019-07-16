@@ -19,8 +19,8 @@ define([
         },
         checkingShapefile: function () {
             var self = this;
-            var country = parameters['country'];
-            if (!parameters['country']) {
+            var country = parameters.get('country');
+            if (!parameters.get('country')) {
                 country = 'World';
             }
             $.ajax({

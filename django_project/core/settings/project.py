@@ -57,8 +57,6 @@ PIPELINE_JS['home'] = {
 }
 PIPELINE_JS['map.js'] = {
     'source_filenames': (
-        'js/map-page.js',
-        # this is new using require
         'libs/require.js/2.3.6/require.min.js',
         'scripts/configs/map.js'
     ),
@@ -79,10 +77,7 @@ PIPELINE_JS['project'] = {
 }
 PIPELINE_JS['map'] = {
     'source_filenames': (
-        'js/cluster-layer.js',
         'js/locality-sidebar.js',
-        'js/map-functionality.js',
-        'js/_app.js',
     ),
     'output_filename': 'js/map.js',
 }
@@ -125,7 +120,7 @@ PIPELINE_CSS['home'] = {
 CACHE_DIR = '/home/web/cache'
 CLUSTER_CACHE_DIR = os.path.join(CACHE_DIR, 'cluster')
 STATISTIC_CACHE_DIR = os.path.join(CACHE_DIR, 'statistic')
-CLUSTER_CACHE_MAX_ZOOM = 9
+CLUSTER_CACHE_MAX_ZOOM = 5
 MAX_ZOOM = 18
 
 # WHAT3WORDS API
@@ -145,3 +140,7 @@ GRUNT_MODULES = {
         'optimized': 'js/optimized.js',
     }
 }
+
+# TODO: MOVE IT AS ADMIN SETTING
+GATHER_API_URL = 'http://gather.staging.healthsites.io/dev/'
+GATHER_API_URL_ODK = 'http://gather.staging.healthsites.io:8443/dev/odk'

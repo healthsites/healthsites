@@ -115,7 +115,8 @@ def save_profile(backend, user, response, *args, **kwargs):
         profile_picture = response['avatar']
 
     profile, created = Profile.objects.get_or_create(user=user)
-    profile.profile_picture = profile_picture
+    if profile_picture:
+        profile.profile_picture = profile_picture
     profile.save()
 
     kwargs['request'].session['social_auth'] = {

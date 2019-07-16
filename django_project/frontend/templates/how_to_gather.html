@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% load pipeline %}
+{% load static %}
+
+{% block title %}
+    Healthsites
+{% endblock %}
+
+{% block content %}
+    {% if not user.is_authenticated %}
+        <script>
+            window.location.href = "{% url "map" %}";
+        </script>
+    {% endif %}
+
+    <section class="white container">
+        <div class="container">
+            <div>
+                This page is a guide for users wanting to gather data in the field. You can use the ‘Gather ODK’ Android app with a custom form to collect <a href="Healthsites.io">Healthsites.io</a> data on an Android mobile phone or
+                tablet. Everything you record on
+                the Gather ODK app will be pushed to Healthsites.io and then OSM when you are online and submit your work from the app
+            </div>
+            <h3 style="font-weight: 600">Step 1</h3>
+            <div>Please download the app from the Android App Store by clicking the image below.</div>
+            <div>
+                <a href='https://play.google.com/store/apps/details?id=org.odk.collect.android&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1'>
+                    <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' style="width: 200px;"/>
+                </a>
+            </div>
+            <h3 style="font-weight: 600">Step 2</h3>
+            <div>Once you have the application installed, open it and then go to Admin Settings > Import/Export settings. You should see a page like this:</div>
+            <br>
+            <div>
+                <img src="https://opendatakit.org/assets/wp-content/uploads/2017/06/Screenshot_1496350807.png" style="width: 200px;">
+            </div>
+            <br>
+            <div>Now click <b>Scan code from other device</b>. This will show a QR code scanner and you can scan QR code *below* (don’t use the one above, it is an example). This QR code is customised for you and should not be shared with
+                other
+                users.
+            </div>
+
+            <h3 style="font-weight: 600">Step 3</h3>
+            <div>Generate QR Code by clicking bottom below. Note that generated QR Code <b>must be scanned</b>.</div>
+            <br>
+            <div class="" id="qrcode" style="margin: auto">
+                <button id="qr-code-generator">Generate QR Code</button>
+            </div>
+            <h3 style="font-weight: 600">Step 4 (How to gather on odk app)</h3>
+            <div>
+                1. The main menu is like this. Go to "Get Blank Form"
+            </div>
+            <br>
+            <img src="/static/img/how-to-gather_1.png" style="width: 200px;">
+            <div>
+                2. On "Get Blank Form", select a form that show and click "Get Selected"
+            </div>
+            <br>
+            <img src="/static/img/how-to-gather_2.png" style="width: 200px;">
+            <div>
+                3. After that go to "Fill blank form" and select the form before on the list. It will show form until you finish it like this.
+            </div>
+            <br>
+            <img src="/static/img/how-to-gather_3.png" style="width: 200px;">
+            <div>
+                4. After that go "Send finalized form" and select form that you finished before like below. Select the form ans click "Send selected"
+            </div>
+            <br>
+            <img src="/static/img/how-to-gather_4.png" style="width: 200px;">
+            <div>
+                5. Your form will be sent into gather and the message will look like this.
+            </div>
+            <br>
+            <img src="/static/img/how-to-gather_5.png" style="width: 200px;">
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+    <script>
+        <!-- QR Code generation starts here -->
+        $('#qr-code-generator').click(function () {
+            $('#qrcode').html('<i>Please wait....</a>');
+            $.ajax({
+                url: "/api/v2/gather/enrollment",
+                dataType: 'json',
+                success: function (data) {
+                    $('#qrcode').html('');
+                    var qrContainer = document.getElementById('qrcode');
+                    new QRCode(qrContainer, data);
+                },
+                error: function (error) {
+                    $('#qrcode').html('<i>error when fetching QR Code : ' + error['responseText'] + '</i>');
+                }
+            })
+        })
+    </script>
+{% endblock extra_js %}

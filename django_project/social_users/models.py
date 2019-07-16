@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.sites.models import Site
@@ -20,6 +20,20 @@ class Profile(models.Model):
         User, default=1)
     profile_picture = models.CharField(
         default='', max_length=512, blank=True)
+
+
+class GatherUser(models.Model):
+    """
+    This is gather user information
+    """
+
+    user = models.OneToOneField(
+        User, default=1)
+    gather_id = models.IntegerField()
+    gather_password = models.CharField(max_length=512)
+
+    def __unicode__(self):
+        return u'%s' % self.user
 
 
 class Organisation(models.Model):
@@ -64,7 +78,7 @@ class OrganisationSupported(models.Model):
         verbose_name='Is Staff',
         default=False
     )
-    date_added = models.DateField()
+    date_added = models.DateField(default=datetime.now)
 
 
 def trusted_user_deleted(sender, instance, **kwargs):

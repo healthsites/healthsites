@@ -4,4 +4,4 @@ __date__ = '26/04/19'
 
 from .extension import LocalityOSMExtension  # noqa
 from .tag import Tag  # noqa
-from .pending_state import PendingState  # noqa
+from .pending_state import PendingUpdate, PendingReview  # noqa

@@ -19,6 +19,7 @@ from api.api_views.v2.facilities.list import (
 from api.api_views.v2.facilities.shapefile import GetFacilitiesShapefileProcess
 from api.api_views.v2.facilities.search import Autocomplete
 from api.api_views.v2.googlemaps.search import SearchByGeoname
+from api.api_views.v2.gather_enrollment import GatherEnrollment
 from api.api_views.v2.get_migration_progress import GetMigrationProgress
 from api.api_views.v2.users.changesets import GetChangesets
 from api.api_views.v2.users.pending import GetPending
@@ -57,11 +58,17 @@ user_api = patterns(
     url(r'^pending',
         GetPending.as_view())
 )
+gather_api = patterns(
+    '',
+    url(r'enrollment/',
+        GatherEnrollment.as_view(), name='api_gather_enrollment'),
+)
 api_v2 = patterns(
     '',
     url(r'countries/', include(countries_api)),
     url(r'facilities/', include(facilities_api)),
     url(r'gmaps/', include(gmaps_api)),
+    url(r'gather/', include(gather_api)),
     url(r'user/(?P<username>.*)/', include(user_api)),
     url(r'migration-progress/',
         GetMigrationProgress.as_view(), name='api_get_migration_progress')

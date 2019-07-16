@@ -40,7 +40,10 @@
                 <li><a href="/#lifecycle">How it works</a></li>
                 <li><a href="/#share-data">Share data</a></li>
                 <li><a href="/#partners">Partners</a></li>
-                <li class="nav-search-wrap"><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="/how-to-gather" target="_blank">How to gather</a></li>
+                {% endif %}
+                <li class="nav-search-wrap"><a class="navbar-search"><i class="fa fa-search"></i></a></li>
                 <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i
                         class="fa fa-comments"></i></a></li>
             </ul>

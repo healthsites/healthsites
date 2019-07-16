@@ -88,7 +88,7 @@
         {# PROFILE SECTION #}
         {% include "sections/map/profile.html" %}
         <div id="icons-nav">
-            Browse the map, <a class="search" href="#">search</a> or use <a id="geolocate" class="a-button">geolocate
+            Browse the map, <a id="search-text" class="a-button">search</a> or use <a id="geolocate" class="a-button">geolocate
             me</a> to view
             healthsites close to your location.
         </div>
@@ -122,13 +122,11 @@
         </div>
     </div>
 </section>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet-src.js"></script>
+
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
 <script type="text/javascript"
@@ -150,13 +148,27 @@
             }
         }
     }
-    var APP;
+
     var schema = JSON.parse("{{ schema | escapejs }}");
     var osmAPI = "{{ osm_API }}";
+    var countries = [];
     $(document).ready(function () {
+        // activate share
+        function getContentShare() {
+            var nowURL = window.location.toString();
+            nowURL = nowURL.replaceAll("#", "%23");
+            nowURL = nowURL.replaceAll('&', '%26');
+            return 'See ' + nowURL;
+        }
+
+        $('#twitter_share_map').on('click', function (evt) {
+            javascript:window.open('https://twitter.com/intent/tweet?text=See ' + getContentShare(), 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
+        });
+        $('#facebook_share_map').click(function () {
+            $(this).attr('href', 'https://www.facebook.com/sharer/sharer.php?u=' + getContentShare() + '&amp;src=sdkpreparse')
+        })
 
         {# ----------- #}
-        prerender_popup();
         // Set viewport if exist
         {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
             sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
@@ -164,10 +176,6 @@
             sessionStorage.setItem('southwest_lat', {{ southwest_lat }});
             sessionStorage.setItem('southwest_lng', {{ southwest_lng }});
         {% endif %}
-
-        // initialize the app
-        APP = new APP();
-        renderCredit();
 
         // set share url
         var baseURL = location.protocol + "//" + location.hostname + "/";
@@ -191,7 +199,7 @@
             latitude = parseFloat(latitude);
             var longitude = "{{ location.x }}";
             longitude = parseFloat(longitude);
-            $APP.trigger('map.pan', {'location': [latitude, longitude]});
+            shared.dispatcher.trigger('map.pan', {'location': [latitude, longitude]});
         {% endif %}
 
         {% if viewport %}
@@ -200,7 +208,7 @@
             var southwest_lat = parseFloat("{{ viewport.southwest_lat }}");
             var southwest_lng = parseFloat("{{ viewport.southwest_lng }}");
             if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
-                $APP.trigger('map.update-bound', {
+                shared.dispatcher.trigger('map.update-bound', {
                     'southwest_lat': southwest_lat,
                     'southwest_lng': southwest_lng,
                     'northeast_lat': northeast_lat,
@@ -240,35 +248,40 @@
         // check cookie for create mode from request
         {% if new_geom %}
             var new_geom = "{{ new_geom }}".split(",");
-            $APP.trigger('map.pan', {'location': [new_geom[0], new_geom[1]], 'zoom': 10});
+            shared.dispatcher.trigger('map.pan', {'location': [new_geom[0], new_geom[1]], 'zoom': 10});
             $('#add-button').click();
         {% endif %}
         // check cookie for create mode
-        if (isLoggedIn) {
-            var type = getCookie("type");
-            if (type == 'create') {
-                var center = getCookie("center");
-                if (center != "") {
-                    center = center.split(",");
-                    if (center.length > 0) {
-                        var zoom = getCookie("zoom");
-                        if (zoom != "") {
-                            $APP.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});
-                            $('#add-button').click();
-                        }
-                    }
-                    {# reset cookie because it is done #}
-                    resetCookies();
-                }
-            } else if (type == 'edit') {
-                var uuid = getCookie("uuid");
-                if (uuid !== "" && uuid !== "undefined") {
-                    $APP.trigger('locality.map.click', {'locality_uuid': uuid});
-                    $APP.trigger('set.hash.silent', {'locality': uuid});
-                    {# cookie will be reseted if already loaded the uuid #}
-                }
-            }
-        }
+        // TODO : fix this
+        {#if (isLoggedIn) {#}
+        {#    var type = getCookie("type");#}
+        {#    if (type == 'create') {#}
+        {#        var center = getCookie("center");#}
+        {#        if (center != "") {#}
+        {#            center = center.split(",");#}
+        {#            if (center.length > 0) {#}
+        {#                var zoom = getCookie("zoom");#}
+        {#                if (zoom != "") {#}
+        {#                    shared.dispatcher.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});#}
+        {#                    $('#add-button').click();#}
+        {#                }#}
+        {#            }#}
+        {# reset cookie because it is done #}
+        {#            resetCookies();#}
+        {#        }#}
+        {#    } else if (type == 'edit') {#}
+        {#        var uuid = getCookie("uuid");#}
+        {#        if (uuid !== "" && uuid !== "undefined") {#}
+        {#            shared.dispatcher.trigger('locality.map.click', {'locality_uuid': uuid});#}
+        {#            shared.dispatcher.trigger('set.hash.silent', '/locality/' + uuid);#}
+        {# cookie will be reseted if already loaded the uuid #}
+        {#        }#}
+        {#    }#}
+
+        $('.btn-share-icon').click(function () {
+            $(this).toggleClass('share-icon-click')
+            $('.dropup-content').toggle()
+        });
     });
 
     function changeToDefault() {
@@ -297,15 +310,15 @@
                 var longitude = "{{ spec.location.x }}";
                 geom[0] = parseFloat(longitude);
             {% endif %}
-            $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
+            shared.dispatcher.trigger('map.update-tag', {'tag': "{{ tag }}"});
         {% elif country %}
             $("#title-name").html("{{ country }}");
-            $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
+            shared.dispatcher.trigger('map.update-geoname', {'geoname': "{{ country }}"});
             // creating polygon
             var polygon_raw = '{{ polygon|safe }}';
             var polygon_json = JSON.parse(polygon_raw);
             var polygon = polygon_json['coordinates'];
-            $APP.trigger('map.create-polygon', {'polygon': polygon});
+            shared.dispatcher.trigger('map.create-polygon', {'polygon': polygon});
         {% elif spec %}
             var spec = "{{ spec.spec }}";
             var data = "{{ spec.data }}";
@@ -318,7 +331,7 @@
                 var longitude = "{{ spec.location.x }}";
                 geom[0] = parseFloat(longitude);
             {% endif %}
-            $APP.trigger('map.update-spec', {
+            shared.dispatcher.trigger('map.update-spec', {
                 'spec': {
                     'spec': spec,
                     'data': data,
@@ -347,7 +360,7 @@
                 var longitude = "{{ attribute.location.x }}";
                 geom[0] = parseFloat(longitude);
             {% endif %}
-            $APP.trigger('map.update-spec', {
+            shared.dispatcher.trigger('map.update-spec', {
                 'spec': {
                     'spec': 'attribute',
                     'data': attribute,

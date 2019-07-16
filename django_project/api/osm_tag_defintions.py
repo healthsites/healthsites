@@ -1,4 +1,3 @@
-
 # -*- coding: utf-8 -*-
 
 # Healthsites related tags
@@ -31,7 +30,7 @@ healthcare = {
         'rehabilitation', 'blood_donation', 'birthing_center'
     ],
     'required': True,
-    'type': str,
+    'type': list,
 }
 
 name = {
@@ -75,7 +74,7 @@ speciality = {
         'and \'healthcare:speciality=blood_check\'',  # noqa
     'options': [],
     'required': False,
-    'type': str,
+    'type': list,
 }
 
 operator_type = {
@@ -164,7 +163,7 @@ health_amenity_type = {
     'key': 'health_amenity_type',
     'name': 'health_amenity_type',
     'description':
-        'Indicates what type of speciality medical equipment '
+        'Indicates what types of speciality medical equipment '
         'is available at the healthsite',
     'options': [
         'ultrasound', 'mri', 'x_ray', 'dialysis', 'operating_theater',
@@ -172,7 +171,7 @@ health_amenity_type = {
         'emergency_department'
     ],
     'required': False,
-    'type': str,
+    'type': list,
 }
 
 dispensing = {
@@ -215,7 +214,7 @@ insurance = {
         'no', 'public', 'private', 'unknown'
     ],
     'required': False,
-    'type': str,
+    'type': list,
 }
 
 water_source = {
@@ -364,7 +363,11 @@ def update_tag_options(tag_definition, osm_tags):
         if not tag_definition['key'] == special_tag['tag']:
             continue
         reference_data = osm_tags.get(special_tag['reference'])
-        if reference_data and special_tag['options'].get(reference_data):
-            tag_definition['options'] = special_tag['options'][reference_data]
+        if not isinstance(reference_data, list):
+            reference_data = [reference_data]
+
+        for value in reference_data:
+            if value and special_tag['options'].get(value):
+                tag_definition['options'].extend(special_tag['options'][value])
 
     return tag_definition

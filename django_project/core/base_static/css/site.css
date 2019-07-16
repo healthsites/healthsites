@@ -319,6 +319,7 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
     font-size: 18px;
     padding-top: 5px;
     padding-bottom: 20px;
+    cursor: pointer;
 }
 
 .searchbar-active .navbar-nav > li > .navbar-search {
@@ -872,7 +873,7 @@ section.container {
     color: #f44a52;
 }
 
-#updates-wrapper .graph, #pending-wrapper .graph {
+#updates-wrapper .graph, .pending-wrapper .graph {
     background: #fff;
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;
@@ -885,22 +886,22 @@ section.container {
     font-family: "Ubuntu", sans-serif;
 }
 
-#updates-wrapper .graph.updates, #pending-wrapper .graph-updates {
+#updates-wrapper .graph.updates, .pending-wrapper .graph-updates {
     padding-left: 0;
     padding-right: 0;
     font-wize: 14px;
 }
 
-#updates-wrapper .graph .entry, #pending-wrapper .graph .entry {
+#updates-wrapper .graph .entry, .pending-wrapper .graph .entry {
     padding: 5px 15px;
     border-bottom: 1px solid #f1f0f0;
 }
 
-#updates-wrapper .graph .entry:first-child, #pending-wrapper .graph .entry:first-child {
+#updates-wrapper .graph .entry:first-child, .pending-wrapper .graph .entry:first-child {
     padding-top: 0;
 }
 
-#updates-wrapper .graph .entry:last-child, #pending-wrapper .graph .entry:last-child {
+#updates-wrapper .graph .entry:last-child, .pending-wrapper .graph .entry:last-child {
     padding-bottom: 0;
     border-bottom: none;
 }

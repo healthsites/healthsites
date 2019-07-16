@@ -5,7 +5,7 @@ import os
 from django.test import TestCase
 
 from api.osm_field_definitions import ALL_FIELDS
-from api.utils import validate_osm_tags, get_osm_schema
+from api.utils import validate_osm_tags, get_osm_schema, validate_duplication
 from ..utils import remap_dict, convert_to_osm_tag
 
 
@@ -70,7 +70,7 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'clinic',
-            'healthcare': 'clinic'
+            'healthcare': ['clinic']
         }
         status, _ = validate_osm_tags(tags)
         self.assertTrue(status)
@@ -81,7 +81,7 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'pharmacy',
-            'healthcare': 'clinic'
+            'healthcare': ['clinic']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = 'Invalid OSM tags: `dispensing` tag is missing.'
@@ -98,7 +98,7 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'not a clinic',
-            'healthcare': 'clinic'
+            'healthcare': ['clinic']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
@@ -113,7 +113,7 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 0,
-            'healthcare': 'clinic'
+            'healthcare': ['clinic']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
@@ -127,8 +127,8 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'clinic',
-            'healthcare': 'clinic',
-            'speciality': 'radiology'
+            'healthcare': ['clinic'],
+            'speciality': ['radiology']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
@@ -143,11 +143,25 @@ class TestUtils(TestCase):
             'source': 'test case',
             'operator': 'the operator',
             'amenity': 'clinic',
-            'healthcare': 'clinic',
-            'speciality': 'abortion'
+            'healthcare': ['clinic'],
+            'speciality': ['abortion']
         }
         status, _ = validate_osm_tags(tags)
         self.assertTrue(status)
+
+    def test_osm_data_duplication(self):
+        osm_data = {
+            'lat': -6.2062530,
+            'lon': 106.8486027,
+            'tag': {
+                'amenity': 'hospital',
+                'name': 'RSIA Tambak',
+                'phone': '+62212303444'
+            }
+        }
+
+        status, _ = validate_duplication(osm_data)
+        self.assertFalse(status)
 
     def test_get_osm_schema(self):
         schema = get_osm_schema()

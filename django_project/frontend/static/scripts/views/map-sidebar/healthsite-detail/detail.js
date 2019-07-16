@@ -58,8 +58,9 @@ define([
             $.each(Object.keys(this.definitions).sort(), function (index, key) {
                 var $element = $('*[data-tag="' + key + '"]');
                 var definition = self.definitions[key];
+                var description = definition['description'];
                 if (definition['required']) {
-                    definition ['description'] = '[REQUIRED] ' + definition['description'];
+                    description = '[REQUIRED] ' + definition['description'];
                 }
                 if ($element.length === 0) {
                     var value = '';
@@ -68,7 +69,7 @@ define([
                         delete attributes[key];
                     }
                     otherHtml += '<tr data-tag="' + key + '"  data-hasvalue="' + (value !== '') + '" data-required="' + definition['required'] + '">' +
-                        '<td class="tag-key">' + key + ' <i class="fa fa-info-circle" aria-hidden="true" title="' + definition['description'] + '"></i></td>' +
+                        '<td class="tag-key">' + key + ' <i class="fa fa-info-circle" aria-hidden="true" title="' + description + '"></i></td>' +
                         '<td><div class="data">' + value + '</div></td>' +
                         '</tr>';
                 }
@@ -114,7 +115,7 @@ define([
             html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">OpenStreetMap</a>';
             attributes['source_html'] = html;
 
-            $APP.trigger('locality.info', {
+            shared.dispatcher.trigger('locality.info', {
                 'locality_uuid': identifier,
                 'locality_name': name,
                 'geom': centroid,
@@ -122,7 +123,7 @@ define([
             });
 
             var geometry = data['geometry'];
-            $APP.trigger('map.create-locality-polygon', geometry);
+            shared.dispatcher.trigger('map.create-locality-polygon', geometry);
 
             delete attributes['changeset_id'];
             delete attributes['changeset_version'];
