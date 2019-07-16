@@ -1,9 +1,13 @@
 define([
     'backbone',
     'jquery',
+    'static/scripts/shared.js',
     'static/scripts/views/statistic/request.js',
     'static/scripts/views/statistic/chart.js',
-    'static/scripts/views/statistic/pie.js'], function (Backbone, $, Request, Chart, Pie) {
+    'static/scripts/views/statistic/pie.js',
+    'static/js/utilities.js',
+    'static/js/custom-functions.js'
+], function (Backbone, $, Shared, Request, Chart, Pie) {
     return Backbone.View.extend({
         initialize: function () {
             this.listenTo(shared.dispatcher, 'show-statistic', this.showStatistic);
