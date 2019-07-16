@@ -18,6 +18,7 @@ INSTALLED_APPS += (
     'rest_framework_gis',
     'django.contrib.gis',
     'django.contrib.flatpages',
+    'ckeditor'
 )
 
 STOP_WORDS = (
