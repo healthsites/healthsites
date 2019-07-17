@@ -251,6 +251,10 @@ define([
                 self._moveTo(payload.location, payload.zoom);
             });
 
+            shared.dispatcher.on('map.setCenter', function (coordinates) {
+                self._setCenter(coordinates);
+            });
+
             shared.dispatcher.on('map.rerender', function (payload) {
                 self.MAP.invalidateSize();
             });
@@ -362,6 +366,10 @@ define([
             } else {
                 this.MAP.setView(new L.LatLng(location[0], location[1]), zoom);
             }
+        },
+        _setCenter: function (location) {
+            var zoom = this.MAP.getZoom();
+            this.MAP.setView(new L.LatLng(location[0], location[1]), zoom);
         }
     })
 });

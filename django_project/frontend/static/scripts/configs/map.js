@@ -131,4 +131,13 @@ require([
             alert("Geolocation is not supported by this browser.");
         }
     });
+
+    $('#coordinate-input-form').submit(function (e) {
+        e.preventDefault();
+        var input = $('#coordinate-input').val();
+        var coordinates = input.replaceAll(' ', '').split(',');
+        if(coordinates.length === 2) {
+            shared.dispatcher.trigger('map.setCenter', coordinates);
+        }
+    })
 });
