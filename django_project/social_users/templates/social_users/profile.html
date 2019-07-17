@@ -187,6 +187,7 @@
             if ('{{ data_migration_in_progress }}' === 'True') {
                 $('#migration-progress-bar-wrapper').show();
             }
+
             var $updates99 = $("#updates-99");
             var $updatesWrappeer = $("#updates-wrapper");
             $.ajax({
@@ -225,7 +226,9 @@
                     updateButton();
                 }
             });
-
+            if ("{{ user.username  }}" !== "{{ request.user.username }}") {
+                return;
+            }
             $.ajax({
                 url: "/api/v2/pending/updates/",
                 dataType: 'json',
