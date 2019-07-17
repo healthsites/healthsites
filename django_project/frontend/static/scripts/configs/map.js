@@ -113,6 +113,9 @@ require([
             var identifiers = shared.currentID().split('/');
             shared.dispatcher.trigger(
                 'show-locality-detail', identifiers[0], identifiers[1]);
+        } else if (shared.currentReviewID()) {
+            shared.dispatcher.trigger(
+                'show-locality-review', shared.currentReviewID());
         }
     }
 

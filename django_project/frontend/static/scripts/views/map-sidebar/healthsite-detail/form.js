@@ -42,7 +42,15 @@ define([
                         inputHtml = "<div class='input multiselect'>";
                         options = options.sort();
                         $.each(options, function (index, key) {
-                            inputHtml += '<input type="checkbox" value="' + key + '" style="width: auto!important;">' + key.replaceAll('_', ' ') + '<br>';
+                            var selected = '';
+                            if (data) {
+                                $.each(data[tag], function (dataIndex, dataValue) {
+                                    if (key === dataValue) {
+                                        selected = 'checked';
+                                    }
+                                });
+                            }
+                            inputHtml += '<input type="checkbox" value="' + key + '" style="width: auto!important;" ' + selected + '>' + key.replaceAll('_', ' ') + '<br>';
                         });
                         inputHtml += "</div>";
                         break;

@@ -210,7 +210,7 @@
                         html += "<div class=\"entry\">";
                         html += "<span class=\"date\">" + getDateString(update.changeset_timestamp) + "</span> - ";
                         html += "<span class=\"name\">";
-                        html += "<a href=\"profile/" + update.changeset_user + "\">@" + update.changeset_user + "</a></span> - ";
+                        html += "<a href=\"/profile/" + update.changeset_user + "\">@" + update.changeset_user + "</a></span> - ";
                         var mode = "added";
                         if (update.changeset_version > 1) {
                             mode = "amended";
@@ -227,37 +227,42 @@
             });
 
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/pending",
+                url: "/api/v2/pending/updates/",
                 dataType: 'json',
                 success: function (data) {
                     // Show pending updates
-                    let pendingUpdates = data['pending_update'];
-                    if (pendingUpdates.length > 0) {
+                    if (data.length > 0) {
                         $('#pending-update').show();
                         var $wrapper = $('#pending-update').find('.graph');
-                        $.each(pendingUpdates, function (index, value) {
+                        $.each(data, function (index, value) {
                             var html = "<div class=\"entry\">";
                             html += "<div class=\"entry\">";
                             html += "<span class=\"date\">" + getDateString(value.time_uploaded) + "</span> - ";
                             html += "<span class=\"name\">";
                             html += "<a href=\"/profile/" + value.uploader + "\">@" + value.uploader + "</a></span> - ";
-                            html += "<a href='" + osmURL + "/" + value.osm_type + "/" + value.osm_id + "'>" + value.osm_name + "</a>";
+                            html += "<a href='" + osmURL + "/" + value.osm_type + "/" + value.osm_id + "'>" + value.name + "</a>";
                             html += "</div>";
                             $wrapper.append(html);
                         });
                     }
+                }
+            });
+
+            $.ajax({
+                url: "/api/v2/pending/reviews/",
+                dataType: 'json',
+                success: function (data) {
                     // Show pending reviews
-                    let pendingReviews = data['pending_review'];
-                    if (pendingReviews.length > 0) {
+                    if (data.length > 0) {
                         $('#pending-review').show();
                         var $wrapper = $('#pending-review').find('.graph');
-                        $.each(pendingReviews, function (index, value) {
+                        $.each(data, function (index, value) {
                             var html = "<div class=\"entry\">";
                             html += "<div class=\"entry\">";
                             html += "<span class=\"date\">" + getDateString(value.time_uploaded) + "</span> - ";
                             html += "<span class=\"name\">";
                             html += "<a href=\"/profile/" + value.uploader + "\">@" + value.uploader + "</a></span> - ";
-                            html += "<a>" + value.osm_name + "</a> - ";
+                            html += "<a href=\"/map#!/review/" + value.id + "\">" + value.name + "</a> - ";
                             html += value.reason;
                             html += "</div>";
                             $wrapper.append(html);

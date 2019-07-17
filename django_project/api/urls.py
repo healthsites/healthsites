@@ -22,7 +22,8 @@ from api.api_views.v2.googlemaps.search import SearchByGeoname
 from api.api_views.v2.gather_enrollment import GatherEnrollment
 from api.api_views.v2.get_migration_progress import GetMigrationProgress
 from api.api_views.v2.users.changesets import GetChangesets
-from api.api_views.v2.users.pending import GetPending
+from api.api_views.v2.pending.list import GetPendingReviews, GetPendingUpdates
+from api.api_views.v2.pending.detail import GetDetailPendingReviews
 
 countries_api = patterns(
     '',
@@ -54,9 +55,16 @@ gmaps_api = patterns(
 user_api = patterns(
     '',
     url(r'^changesets',
-        GetChangesets.as_view()),
-    url(r'^pending',
-        GetPending.as_view())
+        GetChangesets.as_view())
+)
+pending_api = patterns(
+    '',
+    url(r'reviews/(?P<id>-?\d+)',
+        GetDetailPendingReviews.as_view()),
+    url(r'reviews/',
+        GetPendingReviews.as_view()),
+    url(r'updates/',
+        GetPendingUpdates.as_view()),
 )
 gather_api = patterns(
     '',
@@ -69,6 +77,7 @@ api_v2 = patterns(
     url(r'facilities/', include(facilities_api)),
     url(r'gmaps/', include(gmaps_api)),
     url(r'gather/', include(gather_api)),
+    url(r'pending/', include(pending_api)),
     url(r'user/(?P<username>.*)/', include(user_api)),
     url(r'migration-progress/',
         GetMigrationProgress.as_view(), name='api_get_migration_progress')

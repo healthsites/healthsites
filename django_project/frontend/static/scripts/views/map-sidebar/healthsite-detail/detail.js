@@ -93,7 +93,10 @@ define([
         },
         showInfo: function (osm_type, osm_id, data) {
             /** SHOWING INFORMATION TAGS OF HEALHTSITE **/
-            var identifier = osm_type + '/' + osm_id;
+            var identifier = null;
+            if (osm_type) {
+                identifier = osm_type + '/' + osm_id;
+            }
             var properties = data['properties'];
             var attributes = jQuery.extend({}, properties['attributes']);
 
@@ -111,9 +114,11 @@ define([
                 this.$completenees.text(properties['completeness'] + '% Complete');
             }
             // source url
-            var html = '<a href="https://www.openstreetmap.org/' + identifier + '"';
-            html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">OpenStreetMap</a>';
-            attributes['source_html'] = html;
+            if (identifier) {
+                var html = '<a href="https://www.openstreetmap.org/' + identifier + '"';
+                html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">OpenStreetMap</a>';
+                attributes['source_html'] = html;
+            }
 
             shared.dispatcher.trigger('locality.info', {
                 'locality_uuid': identifier,
