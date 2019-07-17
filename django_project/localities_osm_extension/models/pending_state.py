@@ -7,7 +7,8 @@ from localities_osm_extension.models.extension import LocalityOSMExtension
 
 
 class PendingUpdate(models.Model):
-    """ Model for telling pending create/update."""
+    """ This model is about update that already pushed
+    but still not pulled into docker osm cache."""
 
     extension = models.OneToOneField(
         LocalityOSMExtension)
@@ -19,7 +20,7 @@ class PendingUpdate(models.Model):
 
 
 class PendingReview(models.Model):
-    """Model for telling pending review caused by possibly data duplication."""
+    """ This model is about update that failed to be saved."""
 
     uploader = models.ForeignKey(User)
     name = models.CharField(max_length=512)

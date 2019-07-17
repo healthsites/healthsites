@@ -19,6 +19,13 @@ define([
 
                 }
             });
+            crossroads.addRoute('/review/{review_id}', function (review_id) {
+                try {
+                    shared.dispatcher.trigger('show-locality-review', review_id);
+                } catch (e) {
+
+                }
+            });
             //setup hasher
             hasher.prependHash = '!';
             hasher.initialized.add(this._parseHash);

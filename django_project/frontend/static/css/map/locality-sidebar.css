@@ -156,10 +156,11 @@
     outline: none;
 }
 
+\
 .coordinate-input-container {
     background: #fff;
     border: 1px solid grey;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
     border-radius: 4px;
     padding-left: 7px;
     padding-right: 7px;
@@ -178,25 +179,35 @@
     padding: 7px;
     font-size: 12px;
 }
+
 .coordinate-input-container button {
     float: right;
 }
+
 .coordinate-input-container input:focus {
     outline: none;
 }
- .coordinate-input-container input::-webkit-input-placeholder {
- color: #3c4c57;
+
+.coordinate-input-container input::-webkit-input-placeholder {
+    color: #3c4c57;
 }
- .coordinate-input-container input::-moz-placeholder {
- color: #3c4c57;
+
+.coordinate-input-container input::-moz-placeholder {
+    color: #3c4c57;
 }
 
 /* Firefox 19+ */
 .coordinate-input-container input:-moz-placeholder {
- color: #3c4c57;
+    color: #3c4c57;
 }
 
 /* Firefox 18- */
 .coordinate-input-container input:-ms-input-placeholder {
- color: #3c4c57;
+    color: #3c4c57;
+}
+
+#review-error {
+    color: red;
+    padding-bottom: 18px;
+    font-style: italic;
 }

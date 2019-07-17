@@ -1,9 +1,7 @@
-from api.utils import validate_osm_data, convert_to_osm_tag, update_osm_node, \
-    verify_user
-from core.settings.utils import ABS_PATH
-
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
+
+from core.settings.utils import ABS_PATH
 
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
@@ -23,7 +21,11 @@ from localities_osm.serializer.locality_osm import (
     LocalityOSMWaySerializer,
     LocalityOSMWayGeoSerializer
 )
-from api.utilities.pending import create_pending_update, validate_pending_update
+from api.utilities.pending import (
+    create_pending_update, validate_pending_update,
+    create_pending_review, update_pending_review, delete_pending_review)
+from api.utils import (
+    validate_osm_data, convert_to_osm_tag, update_osm_node, verify_user)
 
 
 class GetDetailFacility(FacilitiesBaseAPI):
@@ -76,8 +78,9 @@ class GetDetailFacility(FacilitiesBaseAPI):
         try:
             if osm_type == 'node':
                 locality = self.getLocalityOsm(osm_type, osm_id)
-                data['version'] = locality.changeset_version
                 data['id'] = osm_id
+                data['type'] = osm_type
+                data['version'] = locality.changeset_version
 
                 # Verify data uploader and owner/collector if the API is being
                 # used for uploading data from other osm user.
@@ -95,10 +98,7 @@ class GetDetailFacility(FacilitiesBaseAPI):
                             return HttpResponseForbidden(message)
 
                 # Validate data
-                is_valid, message = validate_osm_data(
-                    user, data, duplication_check=False)
-                if not is_valid:
-                    return HttpResponseBadRequest(message)
+                validate_osm_data(data, duplication_check=False)
 
                 # Map Healthsites tags to OSM tags
                 mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
@@ -115,6 +115,8 @@ class GetDetailFacility(FacilitiesBaseAPI):
                     user,
                     response['version']
                 )
+                if request.GET.get('review', None):
+                    delete_pending_review(request.GET.get('review', None))
                 return Response(response)
             else:
                 # For now, we only support Node
@@ -124,6 +126,14 @@ class GetDetailFacility(FacilitiesBaseAPI):
         except KeyError as e:
             return HttpResponseBadRequest('%s is needed' % e)
         except Exception as e:
+            if user != request.user:
+                if not request.GET.get('review', None):
+                    create_pending_review(user, data, '%s' % e)
+                else:
+                    try:
+                        update_pending_review(request.GET.get('review', None), data, '%s' % e)
+                    except Exception as e:
+                        return HttpResponseBadRequest('%s' % e)
             return HttpResponseBadRequest('%s' % e)
         except (LocalityOSMNode.DoesNotExist, LocalityOSMNode.DoesNotExist):
             raise Http404()

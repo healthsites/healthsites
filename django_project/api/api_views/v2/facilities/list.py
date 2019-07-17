@@ -22,7 +22,9 @@ from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node, \
 from api.utilities.statistic import get_statistic_with_cache
 from core.settings.utils import ABS_PATH
 from localities.models import Country
-from api.utilities.pending import create_pending_update
+from api.utilities.pending import (
+    create_pending_update, validate_pending_update,
+    create_pending_review, update_pending_review, delete_pending_review)
 from localities_osm.queries import filter_locality
 from localities_osm.utilities import split_osm_and_extension_attr
 from localities_osm_extension.utils import save_extensions
@@ -103,9 +105,7 @@ class BulkUpload(FacilitiesBaseAPIWithAuth):
                     return HttpResponseForbidden(message)
 
                 # Validate data
-                is_valid, message = validate_osm_data(facility_data)
-                if not is_valid:
-                    return HttpResponseBadRequest(message)
+                validate_osm_data(facility_data)
 
             for facility_data in facilities_data:
                 # Map Healthsites tags to OSM tags
@@ -170,9 +170,7 @@ class GetFacilities(
                         message = 'User %s is not exist.' % data['osm_user']
                         return HttpResponseForbidden(message)
 
-            is_valid, message = validate_osm_data(user, data)
-            if not is_valid:
-                return HttpResponseBadRequest(message)
+            validate_osm_data(data)
 
             # Map Healthsites tags to OSM tags
             mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
@@ -188,9 +186,20 @@ class GetFacilities(
                 data['tag']['name'], user, response['version'])
 
             save_extensions('node', response['id'], locality_attr)
+
+            if request.GET.get('review', None):
+                delete_pending_review(request.GET.get('review', None))
             return Response(response)
 
         except Exception as e:
+            if user != request.user:
+                if not request.GET.get('review', None):
+                    create_pending_review(user, data, '%s' % e)
+                else:
+                    try:
+                        update_pending_review(request.GET.get('review', None), data, '%s' % e)
+                    except Exception as e:
+                        return HttpResponseBadRequest('%s' % e)
             return HttpResponseBadRequest('%s' % e)
 
 

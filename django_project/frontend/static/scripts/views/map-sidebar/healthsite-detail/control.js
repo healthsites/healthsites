@@ -36,7 +36,8 @@ define([
             },
         },
         initialize: function () {
-            this.listenTo(shared.dispatcher, 'show-locality-detail', this.showDetail);
+            this.listenTo(shared.dispatcher, 'show-locality-detail', this.getLocalityDetail);
+            this.listenTo(shared.dispatcher, 'show-locality-review', this.getLocalityReview)
             this.$el = $('#locality-info');
             this.$elError = $('#locality-error');
             this.$sidebar = $('#locality-info');
@@ -45,6 +46,9 @@ define([
             this.$saveButton = $('#save-healthsite');
             this.$cancelButton = $('#cancel-healthsite');
             this.$infoWrapper = $('#info-wrapper');
+            this.$discardReview = $('#discard-review');
+            this.$reviewError = $('#review-error');
+            this.$goToForm = this.$elError.find('button');
 
             // init event
             var self = this;
@@ -67,6 +71,28 @@ define([
                 if (!self.isDisabled($(this))) {
                     self.toCancelMode();
                 }
+            });
+            this.$goToForm.click(function () {
+                self.$elError.hide();
+                self.$el.show();
+            });
+            this.$discardReview.click(function () {
+                $.ajax({
+                    url: self.reviewAPI + "?output=geojson",
+                    type: 'DELETE',
+                    success: function (data) {
+                        window.location = $('.profile .name a').attr('href');
+                    },
+                    error: function (error) {
+                        self.localityError(
+                            'This reviewed healthsite can\'t be deleted.<br>');
+                    },
+                    beforeSend: function (xhr, settings) {
+                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+                });
             });
 
             // GET DEFINITONS
@@ -95,7 +121,7 @@ define([
                 this.$elError.find('#information').html(message)
             }
         },
-        showDetail: function (osm_type, osm_id) {
+        showDetail: function () {
             /** Showing detail with parameter as osm_type and osm_id **/
             // TODO : remove below
             this.disabled(this.$editButton);
@@ -103,12 +129,13 @@ define([
             $('.details').hide();
             this.$sidebar.show();
             this.detail.showDefaultInfo();
-            this.getInfo(osm_type, osm_id);
         },
-        getInfo: function (osm_type, osm_id) {
+        getLocalityDetail: function (osm_type, osm_id) {
             /** get information of healthsite from osm_type and osm_id parameters **/
             var self = this;
+            this.showDetail();
             this.currentAPI = this.url + osm_type + '/' + osm_id;
+            this.isReview = false;
             self.detail_info = null;
             this.localityError('Loading locality information.');
             $.ajax({
@@ -136,10 +163,51 @@ define([
                             '<a href="' + osmAPI + '/' + osm_type + '/' + osm_id + '">link</a>')
                     } else {
                         self.localityError(
-                            'Locality is not found.<br>' +
-                            'Please check this locality in openstreetmap with this ' +
+                            'Healthsite is not found.<br>' +
+                            'Please check this healthsite in openstreetmap with this ' +
                             '<a href="' + osmAPI + '/' + osm_type + '/' + osm_id + '">link</a>')
                     }
+                }
+            });
+        },
+        getLocalityReview: function (review_id) {
+            /** get information of healthsite review id **/
+            var self = this;
+            this.showDetail();
+            this.reviewAPI = '/api/v2/pending/reviews/' + review_id;
+            this.isReview = true;
+            self.detail_info = null;
+            this.localityError('Loading locality information.');
+            $.ajax({
+                url: this.reviewAPI + "?output=geojson",
+                dataType: 'json',
+                success: function (data) {
+                    shared.dispatcher.trigger('locality.cancel');
+                    self.$latestUI = self.$el;
+                    var properties = data['properties'];
+                    var osm_type = properties['osm_type'];
+                    var osm_id = properties['osm_id'];
+
+                    var reason = "Error when create this.";
+                    self.currentAPI = self.url;
+                    if (osm_type && osm_id) {
+                        self.currentAPI = self.url + osm_type + '/' + osm_id;
+                        reason = "Error when updating this <a href='/map#!/locality/" + osm_type + '/' + osm_id + "'>location</a>.";
+                    }
+                    self.currentAPI += "?review=" + review_id;
+
+                    self.detail.showInfo(osm_type, osm_id, data);
+                    self.detail_info = data;
+                    self.toDetailMode();
+                    self.enabled(self.$editButton);
+                    self.$editButton.click();
+                    self.$reviewError.show();
+                    self.$reviewError.html(reason + "<br>Reason = " + properties["reason"]);
+                },
+                error: function (error) {
+                    self.localityError(
+                        'This reviewed healthsite is not found.<br>');
+                    self.detail.showTags({});
                 }
             });
         },
@@ -159,8 +227,11 @@ define([
             this.$createButton.show();
             this.$saveButton.hide();
             this.$cancelButton.hide();
+            this.$discardReview.hide();
             this.$el.show();
             this.$elError.hide();
+            this.$goToForm.hide();
+            this.$reviewError.hide();
         },
         toMapMode: function () {
             /** This when detail is not opened **/
@@ -192,7 +263,11 @@ define([
             this.$editButton.hide();
             this.$createButton.hide();
             this.$saveButton.show();
-            this.$cancelButton.show();
+            if (this.isReview) {
+                this.$discardReview.show();
+            } else {
+                this.$cancelButton.show();
+            }
             this.$el.find('.data').hide();
             this.$el.find('.input').show();
             this.$el.find('.tags .fa-info-circle').show();
@@ -234,11 +309,14 @@ define([
             this.disabled(this.$saveButton);
             this.form.save(
                 function (data) {
+                    self.isReview = false;
                     self.toDefaultMode();
-                    self.showDetail('node', data['id']);
+                    self.getLocalityDetail('node', data['id']);
                     self.enabled(self.$saveButton);
                 }, function (error) {
-                    alert('Error when uploading. ' + error['responseText']);
+                    self.isReview = false;
+                    self.localityError('Error when uploading. ' + error['responseText']);
+                    self.$goToForm.show();
                     self.enabled(self.$saveButton);
                 }
             );
