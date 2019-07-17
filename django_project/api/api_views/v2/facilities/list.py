@@ -23,7 +23,7 @@ from api.utilities.statistic import get_statistic_with_cache
 from core.settings.utils import ABS_PATH
 from localities.models import Country
 from api.utilities.pending import (
-    create_pending_update, validate_pending_update,
+    create_pending_update,
     create_pending_review, update_pending_review, delete_pending_review)
 from localities_osm.queries import filter_locality
 from localities_osm.utilities import split_osm_and_extension_attr

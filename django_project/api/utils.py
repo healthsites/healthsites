@@ -257,7 +257,7 @@ def validate_osm_tags(osm_tags):
     mandatory_tags = get_mandatory_tags(osm_tags)
     for mandatory_tag in mandatory_tags:
         if mandatory_tag['key'] not in osm_tags.keys():
-            message = 'Invalid OSM tags: `{}` tag is empty.'.format(
+            message = 'Invalid OSM tags: `{}` tag is missing.'.format(
                 mandatory_tag['key'])
             return False, message
 
