@@ -13,6 +13,7 @@ from django.views.generic import FormView, ListView, View
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 
+from api.utils import is_organizer
 from localities.models import Country, DataLoaderPermission
 from masterization import report_locality_as_unconfirmed_synonym
 
@@ -317,14 +318,12 @@ class DataLoaderView(LoginRequiredMixin, FormView):
         pass
 
     def get(self, request, *args, **kwargs):
-        permission = DataLoaderPermission.objects.filter(uploader=request.user)
-        if len(permission) <= 0 and not request.user.is_staff:
+        if not is_organizer(request.user):
             raise Http404('Can not access this page')
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        permission = DataLoaderPermission.objects.filter(uploader=request.user)
-        if len(permission) <= 0 and not request.user.is_staff:
+        if not is_organizer(request.user):
             raise Http404('Can not access this page')
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
@@ -346,7 +345,6 @@ def load_data(request):
                               user=request.user)
         if form.is_valid():
             form.save(True)
-            # load_data_task.delay(data_loader.pk)
 
             response = {}
             success_message = 'You have successfully upload your data'

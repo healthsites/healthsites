@@ -219,10 +219,14 @@ def verify_user(uploader, creator):
     except Http404:
         return False, 'User %s is not organizer of an organisation.' % uploader
 
-    if creator not in (
-            [trusted_user.user for trusted_user in TrustedUser.objects.filter(
-                organisation=organisation)]):
-        return False, 'User %s is not a trusted user.' % creator
+    try:
+        creator = get_object_or_404(User, username=creator)
+        if creator not in (
+                [trusted_user.user for trusted_user in TrustedUser.objects.filter(
+                    organisation=organisation)]):
+            return False, 'User %s is not a trusted user.' % creator
+    except Http404:
+        return False, 'User %s is not exist.' % creator
 
     return True, (
         'Data uploader is an organizer and creator/owner is a trusted user.')
