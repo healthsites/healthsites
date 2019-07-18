@@ -18,7 +18,7 @@ class Autocomplete(APIView):
                 q = search_query[0]
                 try:
                     query = filter_locality(country=country_name)
-                except:
+                except:  # noqa
                     query = all_locality()
             else:
                 query = all_locality()
