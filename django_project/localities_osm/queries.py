@@ -10,13 +10,20 @@ def all_locality():
     return LocalityOSMView.objects.filter(osm_id__isnull=False)
 
 
-def filter_locality(extent=None, country=None):
+def filter_locality(
+        extent=None, country=None, timestamp_from=None, timestamp_to=None):
     """ Filter osm locality by extent and country
     :param extent: extent of data
     :type extent: str (with comma separator)
 
     :param country: specific country
     :type country: str
+
+    :param timestamp_from: start time
+    :type timestamp_from: timestamp
+
+    :param timestamp_to: end time
+    :type timestamp_to: timestamp
 
     :return: LocalityOSMView
     """
@@ -40,4 +47,11 @@ def filter_locality(extent=None, country=None):
                 queryset = queryset.in_polygon(polygons)
         except Country.DoesNotExist:
             raise Exception('%s is not found or not a country.' % country)
+
+    if timestamp_from:
+        queryset = queryset.filter(changeset_timestamp__gte=timestamp_from)
+
+    if timestamp_to:
+        queryset = queryset.filter(changeset_timestamp__lte=timestamp_to)
+
     return queryset

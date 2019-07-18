@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.http import Http404
@@ -30,7 +31,11 @@ from localities_osm_extension.utils import save_extensions
 
 class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
     schemas = [
-        Parameters.country, Parameters.extent, Parameters.output
+        Parameters.country,
+        Parameters.extent,
+        Parameters.output,
+        Parameters.timestamp_from,
+        Parameters.timestamp_to
     ]
 
 
@@ -58,11 +63,23 @@ class GetFacilitiesBaseAPI(object):
     def get_healthsites(self, request):
         extent = request.GET.get('extent', None)
         country = request.GET.get('country', None)
+        timestamp_from = request.GET.get('from', None)
+        timestamp_to = request.GET.get('to', None)
+
+        if timestamp_from:
+            timestamp_from = datetime.fromtimestamp(int(timestamp_from))
+
+        if timestamp_to:
+            timestamp_to = datetime.fromtimestamp(int(timestamp_to))
 
         # check extent data
         try:
             queryset = filter_locality(
-                extent=extent, country=country)
+                extent=extent,
+                country=country,
+                timestamp_from=timestamp_from,
+                timestamp_to=timestamp_to
+            )
         except Exception as e:
             raise BadRequestError('%s' % e)
         return queryset
@@ -205,9 +222,19 @@ class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):
         try:
             country = request.GET.get('country', None)
             extent = request.GET.get('extent', None)
+            timestamp_from = request.GET.get('from', None)
+            timestamp_to = request.GET.get('to', None)
+
+            if timestamp_from:
+                timestamp_from = datetime.fromtimestamp(int(timestamp_from))
+
+            if timestamp_to:
+                timestamp_to = datetime.fromtimestamp(int(timestamp_to))
 
             # get cache data
-            output = get_statistic_with_cache(extent, country)
+            output = \
+                get_statistic_with_cache(
+                    extent, country, timestamp_from, timestamp_to)
             return Response(output['localities'])
         except Exception as e:
             return HttpResponseBadRequest('%s' % e)
@@ -224,9 +251,19 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
         try:
             country = request.GET.get('country', None)
             extent = request.GET.get('extent', None)
+            timestamp_from = request.GET.get('from', None)
+            timestamp_to = request.GET.get('to', None)
+
+            if timestamp_from:
+                timestamp_from = datetime.fromtimestamp(int(timestamp_from))
+
+            if timestamp_to:
+                timestamp_to = datetime.fromtimestamp(int(timestamp_to))
 
             # get cache data
-            output = get_statistic_with_cache(extent, country)
+            output = \
+                get_statistic_with_cache(
+                    extent, country, timestamp_from, timestamp_to)
             if country:
                 country = self.get_country(country)
                 output['geometry'] = country.polygon_geometry.geojson

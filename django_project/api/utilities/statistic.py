@@ -64,7 +64,7 @@ def get_statistic_cache(extent, country):
         return None
 
 
-def get_statistic_with_cache(extent, country):
+def get_statistic_with_cache(extent, country, timestamp_from, timestamp_to):
     """ Checking cache of statistic data
     How it is work? Get cache, if it presents, return cache
     If not, call statistic function and save into cache.
@@ -87,7 +87,11 @@ def get_statistic_with_cache(extent, country):
     # if not return from statistic
     return get_statistic(
         filter_locality(
-            extent=extent, country=country)
+            extent=extent,
+            country=country,
+            timestamp_from=timestamp_from,
+            timestamp_to=timestamp_to
+        )
     )
 
 
