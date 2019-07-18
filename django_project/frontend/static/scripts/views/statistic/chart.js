@@ -5,9 +5,11 @@ define([
     'c3',
     'd3',], function (Backbone, $, JqueryUI, d3Library) {
     return Backbone.View.extend({
+        totalNum: 0,
         url: '/countries',
         chart: null,
         initialize: function (elementID, height, width) {
+            var that = this;
             this.chart = c3.generate({
                 bindto: '#' + elementID,
                 size: {
@@ -62,17 +64,29 @@ define([
                 },
                 color: {
                     pattern: ['#b6cccc', '#f89ea1']
+                },
+                onrendered: function () {
+                    d3.selectAll(".c3-chart-texts text.c3-text")
+                        .style("text-anchor", function(d) {
+                            var percentage = parseInt(d.value) / that.totalNum;
+                            return (percentage > 0.6) ? "end" : "centre";
+                        })
+                    ;
                 }
             });
         },
         update: function (number_of_data, data) {
+            var that = this;
             var xValue = ['x'];
             var numberValue = ['number'];
             var percentValue = ['percent'];
+
+            that.totalNum = 0;
             $.each(data, function (key, value) {
                 xValue.push(key);
                 numberValue.push(value);
                 percentValue.push(value / number_of_data);
+                that.totalNum += value;
             });
             this.chart.load({
                 columns: [
