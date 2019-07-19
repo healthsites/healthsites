@@ -6,7 +6,6 @@ import yaml
 
 from os.path import exists
 from social_django.models import UserSocialAuth
-from django.conf import settings
 from api import osm_tag_defintions
 from api.osm_api_client import OsmApiWrapper
 from api.osm_field_definitions import ALL_FIELDS, get_mandatory_fields
@@ -350,9 +349,10 @@ def validate_duplication(osm_data):
             radius=radius,
             lon=lon,
             lat=lat))
-    response = op_api.get(query.encode("utf-8"))
+    response = op_api.get(query.encode('utf-8'))
     if len(response.get('features', [])) > 0:
-        message = 'Duplication detected. Records = %s' % [feature['id'] for feature in response.get('features')]
+        message = 'Duplication detected. Records = %s' % [
+            feature['id'] for feature in response.get('features')]
         return False, message
 
     return True, 'No duplication found.'
