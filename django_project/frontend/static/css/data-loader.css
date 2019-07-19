@@ -1,0 +1,48 @@
+.data-loader-form-wrapper {
+    margin-top: 90px;
+}
+
+#data-loader-form li {
+    display: block;
+}
+
+#progress-bar-wrapper {
+    width: 100%;
+    background-color: lightgray;
+    margin-top: 30px;
+}
+
+#progress-bar {
+  width: 0;
+  height: 30px;
+  background-color: #4CAF50;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+}
+
+.table-wrapper {
+    margin-top: 15px;
+    margin-bottom: 25px;
+}
+
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:first-child {
+  background-color: #f5f5f5;
+}
+
+.btn-test {
+    background: transparent !important;
+    border: transparent !important;
+}
