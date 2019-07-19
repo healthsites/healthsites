@@ -14,10 +14,10 @@ class Autocomplete(APIView):
         if len(q) > 2:
             if ' in ' in q:
                 search_query = q.split(' in ')
-                country_name = search_query[1]
+                place = search_query[1]
                 q = search_query[0]
                 try:
-                    query = filter_locality(country=country_name)
+                    query = filter_locality(place=place)
                 except:  # noqa
                     query = all_locality()
             else:
