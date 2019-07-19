@@ -123,8 +123,7 @@ class DataLoaderForm(models.ModelForm):
     )
 
     data_loader_mode = forms.ChoiceField(
-        widget=forms.RadioSelect(
-            attrs={'class': 'form-control'}),
+        widget=forms.RadioSelect(),
         choices=DataLoader.DATA_LOADER_MODE_CHOICES,
         initial=DataLoader.REPLACE_DATA_CODE,
     )

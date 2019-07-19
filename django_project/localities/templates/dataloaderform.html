@@ -1,5 +1,49 @@
-<html xmlns="http://www.w3.org/1999/html">
-<head>
+{% extends 'base.html' %}
+
+{% load pipeline %}
+{% load static %}
+
+{% block title %}
+    Healthsites
+{% endblock %}
+
+{% block stylesheet %}
+    <link href="{% static 'css/data-loader.css' %} " rel="stylesheet" type="text/css""/>
+{% endblock stylesheet %}
+
+{% block content %}
+    <div class="container data-loader-form-wrapper">
+        <h3>Healthsites - Data Loader</h3>
+        <form id="data-loader-form"  class="" action="/load-data" method="post"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p}}
+            <br>
+            <input type="submit" class="btn btn-primary" value="Submit" />
+        </form>
+        <div id="result" hidden>
+            <p id="result_message"></p>
+            <p id="detailed_result_message"></p>
+        </div>
+        <button class="btn btn-primary btn-test" style="margin-top: -10px; float: right" onclick="move()">run</button>
+
+        <div id="progress-bar-wrapper">
+            <div id="progress-bar">0%</div>
+        </div>
+
+        <div class="table-wrapper">
+            <table id="table-status">
+                <tr>
+                    <th>Row number</th>
+                    <th>Status</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script>
         $(document).ready(function () {
@@ -41,32 +85,26 @@
 
             $('#data-loader-form').submit(upload);
         });
-    </script>
-</head>
-<body>
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h4 class="modal-title">Healthsites - Data Loader</h4>
-</div>
-<div class="modal-body">
-{#    {% load bootstrap_tags %}#}
-    <form id="data-loader-form"  class="" action="/load-data" method="post"
-          enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p}}
-        <br>
-        <button type="button" class="btn btn-default"
-                data-dismiss="modal">Cancel</button>
-        <input type="submit" class="btn btn-primary" value="Submit" />
-    </form>
-    <div id="result" hidden>
-        <p id="result_message"></p>
-        <p id="detailed_result_message"></p>
-    </div>
 
-</div><!-- /model-body -->
-<div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_button" style="display: none;">Close</button>
-</div><!-- /modal-footer -->
-</body>
-</html>
+        function move() {
+          var elem = document.getElementById("progress-bar");
+          var width = 0;
+          var row = 0;
+          var id = setInterval(frame, 300);
+          $('.row-status').remove();
+          function frame() {
+            if (width >= 100) {
+              clearInterval(id);
+            } else {
+                var statusTemplate = '<tr id="status-row-' + row + '" class="row-status"><td>' + row + '</td><td>success</td></tr>';
+                $('#table-status').append(statusTemplate);
+                width += 20;
+                elem.style.width = width + '%';
+                elem.innerHTML = width + '%';
+                document.getElementById('status-row-' + row).scrollIntoView();
+                row++;
+            }
+          }
+        }
+    </script>
+{% endblock extra_js %}
