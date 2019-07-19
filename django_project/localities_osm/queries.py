@@ -1,6 +1,8 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '19/06/19'
 
+from django.contrib.gis.geos import Polygon
+from api.api_views.v2.googlemaps.search import search_by_geoname
 from localities.models import Country
 from localities_osm.models.locality import LocalityOSMView
 from localities.utils import parse_bbox
@@ -11,7 +13,7 @@ def all_locality():
 
 
 def filter_locality(
-        extent=None, country=None, timestamp_from=None, timestamp_to=None):
+        extent=None, country=None, timestamp_from=None, timestamp_to=None, place=None):
     """ Filter osm locality by extent and country
     :param extent: extent of data
     :type extent: str (with comma separator)
@@ -47,6 +49,16 @@ def filter_locality(
                 queryset = queryset.in_polygon(polygons)
         except Country.DoesNotExist:
             raise Exception('%s is not found or not a country.' % country)
+
+    if place:
+        try:
+            geo = search_by_geoname(place)
+            bbox = (geo['southwest']['lng'], geo['southwest']['lat'],
+                    geo['northeast']['lng'], geo['northeast']['lat'])
+            geom = Polygon.from_bbox(bbox)
+            queryset = queryset.filter(geometry__within=geom)
+        except Exception:
+            pass
 
     if timestamp_from:
         queryset = queryset.filter(changeset_timestamp__gte=timestamp_from)

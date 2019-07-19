@@ -286,7 +286,8 @@ def validate_osm_tags(osm_tags):
             tag_definition['type'] = list
 
         if tag_definition.get('type') == str:
-            item = str(item)
+            if not isinstance(item, unicode):
+                item = str(item)
         elif tag_definition.get('type') == int:
             item = int(item)
         elif tag_definition.get('type') == bool:
@@ -298,11 +299,12 @@ def validate_osm_tags(osm_tags):
             if not isinstance(item, list):
                 item = [item]
         if not isinstance(item, tag_definition.get('type')):
-            message = (
-                'Invalid value type for key `{}`: '
-                'Expected type {}, got {} instead.').format(
-                key, tag_definition['type'].__name__, type(item).__name__)
-            return False, message
+            if not (isinstance(item, unicode) and tag_definition.get('type') == str):
+                message = (
+                    'Invalid value type for key `{}`: '
+                    'Expected type {}, got {} instead.').format(
+                    key, tag_definition['type'].__name__, type(item).__name__)
+                return False, message
 
         # Value option check
         if tag_definition.get('options'):
@@ -340,15 +342,15 @@ def validate_duplication(osm_data):
     op_api = overpass.API()
     name = osm_data['tag']['name']
     query = (
-        '('
-        'node["name"="{name}"](around:{radius}, {lat}, {lon});'
-        'node["name:en"="{name}"](around:{radius}, {lat}, {lon});'
+        u'('
+        u'node["name"="{name}"](around:{radius}, {lat}, {lon});'
+        u'node["name:en"="{name}"](around:{radius}, {lat}, {lon});'
         ')'.format(
             name=name,
             radius=radius,
             lon=lon,
             lat=lat))
-    response = op_api.get(query)
+    response = op_api.get(query.encode("utf-8"))
     if len(response.get('features', [])) > 0:
         message = (
             'Duplication detected. Node with `{name}` name was found '
