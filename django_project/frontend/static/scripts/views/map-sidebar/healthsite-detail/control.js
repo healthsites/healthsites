@@ -264,6 +264,7 @@ define([
                     if (reviewReason.indexOf("Duplication") >= 0) {
                         self.handleDuplicationFromPayload(data['payload'], review_id, osm_type, reviewReason);
                     } else {
+                        self.currentAPI += "?review=" + review_id;
                         self.$reviewError.html(reason + "<br>Reason = " + reviewReason);
                         data = self.getDataFromPayload(data['payload']);
                         self.detail.showInfo(data['properties']['osm_type'], data['properties']['osm_id'], data);
@@ -385,7 +386,12 @@ define([
                     self.isReview = false;
                     var error = JSON.parse(error['responseText']);
                     if (error['error'].indexOf("Duplication") >= 0) {
-                        self.handleDuplicationFromPayload(error['payload'], null, 'node', error['error']);
+                        var reviewID = null;
+                        if (self.currentAPI.split('review=')[1]) {
+                            reviewID = self.currentAPI.split('review=')[1].split('&')[0]
+                        }
+
+                        self.handleDuplicationFromPayload(error['payload'], reviewID, 'node', error['error']);
                     } else {
                         self.localityError('Error when uploading. ' + error['error']);
                         self.$goToForm.show();

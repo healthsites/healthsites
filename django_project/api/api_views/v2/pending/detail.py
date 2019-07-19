@@ -25,7 +25,7 @@ class GetDetailPendingReviews(BaseAPIWithAuth, PaginationAPI):
 
         try:
             data = PendingReview.objects.get(id=id)
-            if data.uploader != request.user:
+            if not request.user.is_staff and data.uploader != request.user:
                 return HttpResponseForbidden()
         except PendingReview.DoesNotExist:
             raise Http404()

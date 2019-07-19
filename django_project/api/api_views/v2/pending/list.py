@@ -20,16 +20,16 @@ class GetPendingReviews(BaseAPIWithAuth, PaginationAPI):
 
     """
 
-    def get(self, request):
+    def get(self, request, username):
         page = self.request.GET.get('page', None)
         if page:
             try:
                 queryset = self.get_query_by_page(
-                    PendingReview.objects.filter(uploader=request.user))
+                    PendingReview.objects.filter(uploader__username=username))
             except (LessThanOneException, NotANumberException) as e:
                 return HttpResponseBadRequest('%s' % e)
         else:
-            queryset = PendingReview.objects.filter(uploader=request.user)
+            queryset = PendingReview.objects.filter(uploader__username=username)
 
         return Response(PendingReviewSerializer(queryset, many=True).data)
 
@@ -41,15 +41,15 @@ class GetPendingUpdates(BaseAPIWithAuth, PaginationAPI):
     that success uploaded into osm but still not pulled by docker osm cache
     """
 
-    def get(self, request):
+    def get(self, request, username):
         page = self.request.GET.get('page', None)
         if page:
             try:
                 queryset = self.get_query_by_page(
-                    PendingUpdate.objects.filter(uploader=request.user))
+                    PendingUpdate.objects.filter(uploader__username=username))
             except (LessThanOneException, NotANumberException) as e:
                 return HttpResponseBadRequest('%s' % e)
         else:
-            queryset = PendingUpdate.objects.filter(uploader=request.user)
+            queryset = PendingUpdate.objects.filter(uploader__username=username)
 
         return Response(PendingUpdateSerializer(queryset, many=True).data)

@@ -25,7 +25,8 @@ from core.settings.utils import ABS_PATH
 from localities.models import Country
 from api.utilities.pending import (
     create_pending_update,
-    create_pending_review, update_pending_review, delete_pending_review)
+    create_pending_review, update_pending_review,
+    delete_pending_review, get_pending_review)
 from localities_osm.queries import filter_locality
 from localities_osm.utilities import split_osm_and_extension_attr
 from localities_osm_extension.utils import save_extensions
@@ -159,6 +160,10 @@ class GetFacilities(
 
             # Verify data uploader and owner/collector if the API is being used
             # for uploading data from other osm user.
+            if request.user.is_staff and request.GET.get('review', None):
+                data['osm_user'] = get_pending_review(
+                    request.GET.get('review')).uploader.username
+
             if data.get('osm_user'):
                 is_valid, message = verify_user(user, data['osm_user'])
                 if not is_valid:

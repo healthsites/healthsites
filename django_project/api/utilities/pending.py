@@ -57,6 +57,14 @@ def delete_pending_review(review_id):
         pass
 
 
+def get_pending_review(review_id):
+    """ This will delete pending review of duplicated locality """
+    try:
+        return PendingReview.objects.get(id=review_id)
+    except PendingReview.DoesNotExist:
+        return None
+
+
 def validate_pending_update(osm_type, osm_id):
     """ Validate pending. Delete it if it is already updated on cache.
     Return false if not pending anymore.

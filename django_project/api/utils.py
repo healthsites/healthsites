@@ -209,6 +209,10 @@ def verify_user(uploader, creator):
     :rtype: tuple
     """
     uploader = get_object_or_404(User, username=uploader)
+    if uploader.is_staff:
+        return True, (
+            'Data uploader is staff.')
+
     creator = get_object_or_404(User, username=creator)
 
     try:

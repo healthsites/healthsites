@@ -55,16 +55,16 @@ gmaps_api = patterns(
 user_api = patterns(
     '',
     url(r'^changesets',
-        GetChangesets.as_view())
+        GetChangesets.as_view()),
+    url(r'^reviews',
+        GetPendingReviews.as_view()),
+    url(r'^updates',
+        GetPendingUpdates.as_view()),
 )
 pending_api = patterns(
     '',
     url(r'reviews/(?P<id>-?\d+)',
         GetDetailPendingReviews.as_view()),
-    url(r'reviews/',
-        GetPendingReviews.as_view()),
-    url(r'updates/',
-        GetPendingUpdates.as_view()),
 )
 gather_api = patterns(
     '',

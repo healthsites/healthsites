@@ -24,7 +24,8 @@ from localities_osm.serializer.locality_osm import (
 )
 from api.utilities.pending import (
     create_pending_update, validate_pending_update,
-    create_pending_review, update_pending_review, delete_pending_review)
+    create_pending_review, update_pending_review, delete_pending_review,
+    get_pending_review)
 from api.utils import (
     validate_osm_data, convert_to_osm_tag, update_osm_node, verify_user)
 
@@ -85,6 +86,10 @@ class GetDetailFacility(FacilitiesBaseAPI):
 
                 # Verify data uploader and owner/collector if the API is being
                 # used for uploading data from other osm user.
+                if request.user.is_staff and request.GET.get('review', None):
+                    data['osm_user'] = get_pending_review(
+                        request.GET.get('review')).uploader.username
+
                 if data.get('osm_user'):
                     is_valid, message = verify_user(user, data['osm_user'])
                     if not is_valid:

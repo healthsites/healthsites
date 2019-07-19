@@ -239,11 +239,12 @@
                     updateButton();
                 }
             });
-            if ("{{ user.username  }}" !== "{{ request.user.username }}") {
+            var isStaff = "{{ request.user.is_staff }}";
+            if (isStaff !== "True" && "{{ user.username  }}" !== "{{ request.user.username }}") {
                 return;
             }
             $.ajax({
-                url: "/api/v2/pending/updates/",
+                url: "/api/v2/user/{{ user.username }}/updates",
                 dataType: 'json',
                 success: function (data) {
                     // Show pending updates
@@ -265,7 +266,7 @@
             });
 
             $.ajax({
-                url: "/api/v2/pending/reviews/",
+                url: "/api/v2/user/{{ user.username }}/reviews",
                 dataType: 'json',
                 success: function (data) {
                     // Show pending reviews
