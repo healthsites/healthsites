@@ -1,17 +1,61 @@
-<html xmlns="http://www.w3.org/1999/html">
-<head>
+{% extends 'base.html' %}
+
+{% load pipeline %}
+{% load static %}
+
+{% block title %}
+    Healthsites
+{% endblock %}
+
+{% block stylesheet %}
+    <link href="{% static 'css/data-loader.css' %} " rel="stylesheet" type="text/css""/>
+{% endblock stylesheet %}
+
+{% block content %}
+    <div class="container data-loader-form-wrapper">
+        <h3>Healthsites - Data Loader</h3>
+        <form id="data-loader-form"  class="" action="/load-data" method="post"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p}}
+            <br>
+            <input type="submit" class="btn btn-primary" value="Submit" />
+        </form>
+        <div id="result" hidden>
+            <p id="result_message"></p>
+            <p id="detailed_result_message"></p>
+        </div>
+
+        <div id="progress-bar-wrapper">
+            <div id="progress-bar">0%</div>
+        </div>
+
+        <div id="table-wrapper">
+            <table id="table-status">
+                <tr>
+                    <th>Row number</th>
+                    <th>Status</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
     <script>
-        $(document).ready(function () {
-            $('#data-loader-modal').on('hidden.bs.modal', function () {
-                $('#data-loader-form').show();
-                $('#result').hide();
-                $('#modal_close_button').hide();
-            });
+        var interval;
 
-            function upload(event) {
+        $(document).ready(function () {
+            $('#progress-bar-wrapper').hide();
+            $('#table-wrapper').hide();
+            $('#data-loader-form').submit(upload);
+        });
+
+        function upload(event) {
                 event.preventDefault();
-                var data = new FormData($('form').get(0));
+                let data = new FormData($(this).get(0));
 
                 $.ajax({
                     url: $(this).attr('action'),
@@ -24,10 +68,10 @@
                     success: function(data) {
                         $('#data-loader-form').hide();
                         $('#result').show();
-                        $('#modal_close_button').show();
                         $('#result_message').text(data['message']);
                         $('#detailed_result_message').text(
                                 data['detailed_message']);
+                        interval = setInterval(getImportProgress, 250)
                     },
                     error: function(xhr, status, error){
                         $('#data-loader-form').hide();
@@ -39,34 +83,31 @@
                 });
             }
 
-            $('#data-loader-form').submit(upload);
-        });
-    </script>
-</head>
-<body>
-<div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h4 class="modal-title">Healthsites - Data Loader</h4>
-</div>
-<div class="modal-body">
-{#    {% load bootstrap_tags %}#}
-    <form id="data-loader-form"  class="" action="/load-data" method="post"
-          enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p}}
-        <br>
-        <button type="button" class="btn btn-default"
-                data-dismiss="modal">Cancel</button>
-        <input type="submit" class="btn btn-primary" value="Submit" />
-    </form>
-    <div id="result" hidden>
-        <p id="result_message"></p>
-        <p id="detailed_result_message"></p>
-    </div>
+        function getImportProgress() {
+            $('#progress-bar-wrapper').show();
+            $.ajax({
+                url: '{% url "api_get_csv_import_progress" %}',
+                data: {
+                    username: "{{ user.username }}"
+                },
+                success: function (data) {
+                    var progress = Math.round((data['count'] / data['total']) * 100);
+                    $('#progress-bar').css('width', progress + '%').html(progress + '% Complete');
 
-</div><!-- /model-body -->
-<div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal" id="modal_close_button" style="display: none;">Close</button>
-</div><!-- /modal-footer -->
-</body>
-</html>
+                    if (progress === 100) {
+                        clearInterval(interval);
+                        $('#table-wrapper').show();
+                        for (var rowNumber in data['status']) {
+                            var statusTemplate = '<tr id="status-row-' + rowNumber + '" class="row-status"><td>' + rowNumber + '</td><td>' + data['status'][rowNumber]['message'] + '</td></tr>';
+                            $('#table-status').append(statusTemplate);
+                            document.getElementById('status-row-' + rowNumber).scrollIntoView();
+                        }
+                    }
+                },
+                error: function (data) {
+                    clearInterval(interval)
+                }
+            })
+        }
+    </script>
+{% endblock extra_js %}
