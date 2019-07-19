@@ -287,7 +287,7 @@ define([
                 return;
             }
 
-            if(this._map) {
+            if (this._map) {
                 var bb = this._map.getBounds();
 
                 if (this._curReq && this._curReq.abort)
@@ -395,6 +395,5 @@ define([
                 this.geom = spec.geom;
             }
         }
-
     });
 });

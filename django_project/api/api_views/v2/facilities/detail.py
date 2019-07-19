@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+import json
 from core.settings.utils import ABS_PATH
 
 from django.contrib.auth.models import User
@@ -126,14 +127,18 @@ class GetDetailFacility(FacilitiesBaseAPI):
         except KeyError as e:
             return HttpResponseBadRequest('%s is needed' % e)
         except Exception as e:
-            if user != request.user:
-                if not request.GET.get('review', None):
+            if not request.GET.get('review', None):
+                if user != request.user:
                     create_pending_review(user, data, '%s' % e)
-                else:
-                    try:
-                        update_pending_review(request.GET.get('review', None), data, '%s' % e)
-                    except Exception as e:
-                        return HttpResponseBadRequest('%s' % e)
-            return HttpResponseBadRequest('%s' % e)
+            else:
+                try:
+                    update_pending_review(request.GET.get('review', None), data, '%s' % e)
+                except Exception as e:
+                    return HttpResponseBadRequest('%s' % e)
+            output = {
+                'error': '%s' % e,
+                'payload': data,
+            }
+            return HttpResponseBadRequest('%s' % json.dumps(output))
         except (LocalityOSMNode.DoesNotExist, LocalityOSMNode.DoesNotExist):
             raise Http404()

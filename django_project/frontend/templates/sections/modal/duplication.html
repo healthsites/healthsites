@@ -1,0 +1,60 @@
+<div class="modal fade" id="duplication-modal" tabindex="-1" role="dialog" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Duplicate Warning</h4>
+            </div>
+            <div class="modal-body">
+                <div><b>The facility you have created appears to be a duplicate for one or more facilities</b></div>
+                <br>
+                <ul>
+                    <li>If you are certain this is new record and not a duplicate, select <b>'Yes add this'</b></li>
+                    <li>If you wish you can change the name or location of the facility so that it is clear that it is not a duplicate, select <b>'Continue editing'</b></li>
+                    <li>If this duplicate and rather edit original record, select <b>'Discard and edit original'</b></li>
+                    <li>If this duplicate and you wish to replace the attributes of the original with this record while keeping the original OSM ID, select <b>'Update attributes of original'</b></li>
+                </ul>
+                <br>
+                <div id="comparison" class="duplication-content">
+                    <div id="comparison-mode" class="btn-group" role="group" aria-label="Basic example">
+                        <button type="button" class="btn btn-primary">Yes add this</button>
+                        <button type="button" class="btn btn-default">Continue editing</button>
+                        <button type="button" class="btn btn-default">Discard and edit original</button>
+                        <button type="button" class="btn btn-default">Update attributes of original</button>
+                    </div>
+                    <button id="duplication-apply" type="button" class="btn btn-success pull-right">APPLY!</button>
+                    <br>
+                    <br>
+                    <br>
+                    <table style="width:100%;">
+                        <tr>
+                            <td class="original" id="original-indicator">
+                            </td>
+                            <td class="between">
+                            </td>
+                            <td class="duplicate" id="duplicate-indicator">
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="original" id="original-title">
+                            </th>
+                            <th class="between">
+                            </th>
+                            <th class="duplicate" id="duplicate-title"> New record that is suspected duplicate
+                            </th>
+                        </tr>
+                        <tr>
+                            <td class="original" id="original-content" valign="top">
+                            </td>
+                            <td class="between">
+                            </td>
+                            <td class="duplicate" id="duplicate-content" valign="top">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="more-than-one" class="duplication-content">Original data is more than one. Please fix it using osm.</div>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>

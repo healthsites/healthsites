@@ -89,6 +89,7 @@ PIPELINE_CSS['project'] = {
         'css/site.css',
         'css/profile.css',
         'css/map/locality-sidebar.css',
+        'css/map/modal-duplication.css',
         'css/jquery.cookiebar.css'
     ),
     'output_filename': 'css/project.css',
@@ -130,3 +131,4 @@ DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
 # TODO: MOVE IT AS ADMIN SETTING
 GATHER_API_URL = 'http://gather.staging.healthsites.io/dev/'
 GATHER_API_URL_ODK = 'http://gather.staging.healthsites.io:8443/dev/odk'
+DUPLICATION_RADIUS = 100  # in meters

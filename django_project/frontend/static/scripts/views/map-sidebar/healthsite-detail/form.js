@@ -43,8 +43,12 @@ define([
                         options = options.sort();
                         $.each(options, function (index, key) {
                             var selected = '';
-                            if (data) {
-                                $.each(data[tag], function (dataIndex, dataValue) {
+                            if (data && data[tag]) {
+                                var arraySelected = data[tag];
+                                if (!$.isArray(arraySelected)) {
+                                    arraySelected = arraySelected.split(';');
+                                }
+                                $.each(arraySelected, function (dataIndex, dataValue) {
                                     if (key === dataValue) {
                                         selected = 'checked';
                                     }

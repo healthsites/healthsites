@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+import json
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.http import Http404
@@ -124,7 +125,7 @@ class BulkUpload(FacilitiesBaseAPIWithAuth):
 
 
 class GetFacilities(
-        PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):  # noqa
+    PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):  # noqa
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -170,7 +171,10 @@ class GetFacilities(
                         message = 'User %s is not exist.' % data['osm_user']
                         return HttpResponseForbidden(message)
 
-            validate_osm_data(data)
+            duplication_check = request.GET.get('duplication-check', True)
+            if duplication_check == 'false':
+                duplication_check = False
+            validate_osm_data(data, duplication_check=duplication_check)
 
             # Map Healthsites tags to OSM tags
             mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
@@ -192,15 +196,19 @@ class GetFacilities(
             return Response(response)
 
         except Exception as e:
-            if user != request.user:
-                if not request.GET.get('review', None):
+            if not request.GET.get('review', None):
+                if user != request.user:
                     create_pending_review(user, data, '%s' % e)
-                else:
-                    try:
-                        update_pending_review(request.GET.get('review', None), data, '%s' % e)
-                    except Exception as e:
-                        return HttpResponseBadRequest('%s' % e)
-            return HttpResponseBadRequest('%s' % e)
+            else:
+                try:
+                    update_pending_review(request.GET.get('review', None), data, '%s' % e)
+                except Exception as e:
+                    return HttpResponseBadRequest('%s' % e)
+            output = {
+                'error': '%s' % e,
+                'payload': data,
+            }
+            return HttpResponseBadRequest('%s' % json.dumps(output))
 
 
 class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):

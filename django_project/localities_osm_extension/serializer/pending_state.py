@@ -13,6 +13,7 @@ from localities_osm_extension.models.pending_state import (
 
 class PendingReviewSerializer(ModelSerializer):
     uploader = SerializerMethodField()
+    payload = SerializerMethodField()
 
     class Meta:
         model = PendingReview
@@ -20,6 +21,9 @@ class PendingReviewSerializer(ModelSerializer):
 
     def get_uploader(self, obj):
         return obj.uploader.username
+
+    def get_payload(self, obj):
+        return ast.literal_eval(obj.payload)
 
 
 class PendingReviewGeoSerializer(GeoFeatureModelSerializer):
@@ -36,7 +40,9 @@ class PendingReviewGeoSerializer(GeoFeatureModelSerializer):
         fields = ['centroid', 'attributes', 'osm_id', 'osm_type', 'reason']
 
     def get_payload(self, obj):
-        return ast.literal_eval(obj.payload)
+        payload = ast.literal_eval(obj.payload)
+        payload['type'] = 'node'
+        return payload
 
     def get_geom(self, obj):
         payload = self.get_payload(obj)
@@ -55,7 +61,7 @@ class PendingReviewGeoSerializer(GeoFeatureModelSerializer):
 
     def get_osm_type(self, obj):
         payload = self.get_payload(obj)
-        return payload.get('type', 'point')
+        return payload.get('type', 'node')
 
     def get_reason(self, obj):
         return obj.reason

@@ -113,7 +113,18 @@
                     next ></a></div>
             <br>
             <div id="pending-update" class="pending" style="display: none">
-                <h3>Pending updates</h3>
+                <h3>Healthsites in pending</h3>
+                <div><i style="color: grey; font-size: 12px">This list contains healthsite that you uploaded to osm, and it was success but HS.io haven't pulled your data from osm yet.
+                    The estimation will be 2-5 minutes from uploaded.</i></div>
+                <br>
+                <div class="pending-wrapper">
+                    <div class="graph updates">
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div id="duplication" class="pending" style="display: none">
+                <h3>Suspected duplicate records</h3>
 
                 <div class="pending-wrapper">
                     <div class="graph updates">
@@ -122,8 +133,10 @@
             </div>
             <br>
             <div id="pending-review" class="pending" style="display: none">
-                <h3>Pending review</h3>
-
+                <h3>Error records when submitted</h3>
+                <div><i style="color: grey; font-size: 12px">This list contains records that you uploaded before from odk,
+                    but was not success because of some error.</i></div>
+                <br>
                 <div class="pending-wrapper">
                     <div class="graph updates">
                     </div>
@@ -257,17 +270,24 @@
                 success: function (data) {
                     // Show pending reviews
                     if (data.length > 0) {
-                        $('#pending-review').show();
-                        var $wrapper = $('#pending-review').find('.graph');
                         $.each(data, function (index, value) {
-                            var html = "<div class=\"entry\">";
-                            html += "<div class=\"entry\">";
-                            html += "<span class=\"date\">" + getDateString(value.time_uploaded) + "</span> - ";
+                            var $wrapper = null;
+                            var html = "<table class=\"entry\">";
+                            html += "<tr>" +
+                                "<td valign=\"top\"><a href=\"/map#!/review/" + value.id + "\" class=\"btn btn-default\" style=\"margin-right:5px\">Resolve on map</a><td>"
+                            html += '<td>' + value.name + " - ";
+                            html += "captured at <span class=\"date\">" + getDateString(value.time_uploaded) + "</span> ";
                             html += "<span class=\"name\">";
-                            html += "<a href=\"/profile/" + value.uploader + "\">@" + value.uploader + "</a></span> - ";
-                            html += "<a href=\"/map#!/review/" + value.id + "\">" + value.name + "</a> - ";
-                            html += value.reason;
-                            html += "</div>";
+                            html += "by <a href=\"/profile/" + value.uploader + "\">@" + value.uploader + "</a></span> ";
+                            if (value.reason.indexOf("Duplication") >= 0) {
+                                $wrapper = $('#duplication').find('.graph');
+                                $('#duplication').show();
+                            } else {
+                                html += ' (' + value.reason + ')';
+                                $wrapper = $('#pending-review').find('.graph');
+                                $('#pending-review').show();
+                            }
+                            html += "</td></table>";
                             $wrapper.append(html);
                         });
                     }

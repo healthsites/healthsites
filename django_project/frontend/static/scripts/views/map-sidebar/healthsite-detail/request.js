@@ -3,13 +3,10 @@ define([
     'jquery'], function (Backbone, $) {
     return Backbone.View.extend({
         url: "/api/v2/facilities/",
-        getStatistic: function (country, successCallback, errorCallback) {
+        getHealthsite: function (osm_id, osm_type, successCallback, errorCallback) {
             $.ajax({
-                url: this.url + 'statistic',
+                url: this.url + osm_type + '/' + osm_id + "?output=geojson",
                 dataType: 'json',
-                data: {
-                    country: country
-                },
                 success: function (data) {
                     if (successCallback) {
                         successCallback(data);
@@ -22,13 +19,10 @@ define([
                 }
             });
         },
-        getCount: function (country, successCallback, errorCallback) {
+        getReview: function (review_id, successCallback, errorCallback) {
             $.ajax({
-                url: this.url + 'count',
+                url: '/api/v2/pending/reviews/' + review_id,
                 dataType: 'json',
-                data: {
-                    country: country
-                },
                 success: function (data) {
                     if (successCallback) {
                         successCallback(data);
