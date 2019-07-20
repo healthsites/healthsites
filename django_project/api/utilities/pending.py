@@ -23,14 +23,46 @@ def create_pending_update(osm_type, osm_id, osm_name, uploader, version):
         pending.save()
 
 
-def create_pending_review(uploader, osm_name, payload, reason):
+def create_pending_review(uploader, payload, reason):
     """ This will create pending review of duplicated locality """
     pending = PendingReview()
     pending.uploader = uploader
-    pending.name = osm_name
     pending.reason = reason
     pending.payload = payload
+
+    osm_name = payload.get('tag', {}).get('name', 'no name')
+    pending.name = osm_name
     pending.save()
+
+
+def update_pending_review(review_id, payload, reason):
+    """ This will update pending review of duplicated locality """
+    try:
+        pending = PendingReview.objects.get(id=review_id)
+    except PendingReview.DoesNotExist:
+        raise Exception('You pushed data from unrecognized review %s' % review_id)
+    pending.reason = reason
+    pending.payload = payload
+
+    osm_name = payload.get('tag', {}).get('name', 'no name')
+    pending.name = osm_name
+    pending.save()
+
+
+def delete_pending_review(review_id):
+    """ This will delete pending review of duplicated locality """
+    try:
+        PendingReview.objects.get(id=review_id).delete()
+    except PendingReview.DoesNotExist:
+        pass
+
+
+def get_pending_review(review_id):
+    """ This will delete pending review of duplicated locality """
+    try:
+        return PendingReview.objects.get(id=review_id)
+    except PendingReview.DoesNotExist:
+        return None
 
 
 def validate_pending_update(osm_type, osm_id):

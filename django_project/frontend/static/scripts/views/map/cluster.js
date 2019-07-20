@@ -216,35 +216,6 @@ define([
             if (isFocused) {
                 mrk = new L.Marker(latlng, {icon: myIcon, zIndexOffset: 9999999});
             }
-            if (data['count'] == 1) {
-                if (typeof data['name'] != "undefined" && data['name'] != "") {
-                    //    window.location.href = "/map#!/locality/" + evt.target.data['uuid'];"
-                    var html = "";
-                    if (isFocused) {
-                        html = '<center><a href="/map#!/locality/' + data['uuid'] + '">' + data['name'] + '</a></center>';
-                    } else {
-                        html = "<center><b>" + data['name'] + "</b></center>";
-                    }
-                    var popup = L.popup()
-                        .setContent(html);
-                    var options =
-                        {
-                            'closeButton': false,
-                            'closeOnClick': false,
-                            'keepInView': false
-                        }
-                    mrk.bindPopup(popup, options);
-                    mrk.on('mouseover', function (e) {
-                        mrk.openPopup();
-                    });
-                    if (!isFocused) {
-                        // don't make hover if it is focused marker'
-                        mrk.on('mouseout', function (e) {
-                            mrk.closePopup();
-                        });
-                    }
-                }
-            }
             mrk.data = {
                 'latlng': latlng,
                 'uuid': data['uuid'],
@@ -316,7 +287,7 @@ define([
                 return;
             }
 
-            if(this._map) {
+            if (this._map) {
                 var bb = this._map.getBounds();
 
                 if (this._curReq && this._curReq.abort)
@@ -424,6 +395,5 @@ define([
                 this.geom = spec.geom;
             }
         }
-
     });
 });

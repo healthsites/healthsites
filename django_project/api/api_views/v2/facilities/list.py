@@ -1,6 +1,8 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+import copy
+import json
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
@@ -23,7 +25,10 @@ from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node, \
 from api.utilities.statistic import get_statistic_with_cache
 from core.settings.utils import ABS_PATH
 from localities.models import Country
-from api.utilities.pending import create_pending_update
+from api.utilities.pending import (
+    create_pending_update,
+    create_pending_review, update_pending_review,
+    delete_pending_review, get_pending_review)
 from localities_osm.queries import filter_locality
 from localities_osm.utilities import split_osm_and_extension_attr
 from localities_osm_extension.utils import save_extensions
@@ -120,9 +125,7 @@ class BulkUpload(FacilitiesBaseAPIWithAuth):
                     return HttpResponseForbidden(message)
 
                 # Validate data
-                is_valid, message = validate_osm_data(facility_data)
-                if not is_valid:
-                    return HttpResponseBadRequest(message)
+                validate_osm_data(facility_data)
 
             for facility_data in facilities_data:
                 # Map Healthsites tags to OSM tags
@@ -141,7 +144,7 @@ class BulkUpload(FacilitiesBaseAPIWithAuth):
 
 
 class GetFacilities(
-        PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):  # noqa
+    PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):  # noqa
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -165,7 +168,7 @@ class GetFacilities(
 
     def post(self, request):
         user = request.user
-        data = request.data
+        data = copy.deepcopy(request.data)
         # Now, we post the data directly to OSM.
         try:
             # Validate data
@@ -175,6 +178,10 @@ class GetFacilities(
 
             # Verify data uploader and owner/collector if the API is being used
             # for uploading data from other osm user.
+            if request.user.is_staff and request.GET.get('review', None):
+                data['osm_user'] = get_pending_review(
+                    request.GET.get('review')).uploader.username
+
             if data.get('osm_user'):
                 is_valid, message = verify_user(user, data['osm_user'])
                 if not is_valid:
@@ -187,9 +194,10 @@ class GetFacilities(
                         message = 'User %s is not exist.' % data['osm_user']
                         return HttpResponseForbidden(message)
 
-            is_valid, message = validate_osm_data(user, data)
-            if not is_valid:
-                return HttpResponseBadRequest(message)
+            duplication_check = request.GET.get('duplication-check', True)
+            if duplication_check == 'false':
+                duplication_check = False
+            validate_osm_data(data, duplication_check=duplication_check)
 
             # Map Healthsites tags to OSM tags
             mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
@@ -205,10 +213,26 @@ class GetFacilities(
                 data['tag']['name'], user, response['version'])
 
             save_extensions('node', response['id'], locality_attr)
+
+            if request.GET.get('review', None):
+                delete_pending_review(request.GET.get('review', None))
             return Response(response)
 
         except Exception as e:
-            return HttpResponseBadRequest('%s' % e)
+            if not request.GET.get('review', None):
+                if user != request.user:
+                    create_pending_review(user, request.data, '%s' % e)
+            else:
+                try:
+                    update_pending_review(request.GET.get(
+                        'review', None), request.data, '%s' % e)
+                except Exception as e:
+                    return HttpResponseBadRequest('%s' % e)
+            output = {
+                'error': '%s' % e,
+                'payload': request.data,
+            }
+            return HttpResponseBadRequest('%s' % json.dumps(output))
 
 
 class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):

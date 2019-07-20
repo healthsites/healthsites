@@ -276,8 +276,6 @@ define([
                     featureGroup: this.newLocalityLayer
                 }
             });
-            // create markerDraw control
-            this.markerDrawControl = new L.Draw.Marker(this.MAP, this.drawControl.options.draw.marker);
         },
         _setupPointLayer: function () {
             this.pointLayer = L.marker([0, 0], {

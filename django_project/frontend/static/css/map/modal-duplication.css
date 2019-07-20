@@ -1,0 +1,39 @@
+#duplication-modal .modal-dialog {
+    top: 52px;
+}
+
+@media (min-width: 768px) {
+    #duplication-modal .modal-dialog {
+        width: 1000px;
+    }
+}
+
+#more-than-one {
+    text-align: center;
+    font-size: 14px;
+    color: red;
+}
+
+#comparison {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.between {
+    width: 10%;
+}
+
+.original, .duplicate {
+    border: 1px solid #ccc;
+    padding: 5px;
+    width: 45%;
+}
+
+.original.disabled, .duplicate.disabled {
+    opacity: 0.4;
+}
+
+th.original, th.duplicate {
+    text-align: center;
+}
+

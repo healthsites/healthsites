@@ -78,7 +78,10 @@ class GetCluster(BaseAPI):
         if uuid:
             uuid = uuid.split('/')
             if len(uuid) == 2:
-                localities = localities.exclude(osm_type=uuid[0], osm_id=uuid[1])
+                try:
+                    localities = localities.exclude(osm_type=uuid[0], osm_id=uuid[1])
+                except ValueError:
+                    pass
         if geoname:
             try:
                 # getting country's polygon

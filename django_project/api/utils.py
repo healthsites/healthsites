@@ -15,7 +15,6 @@ from django.contrib.auth.models import User
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 
-from api.utilities.pending import create_pending_review
 from core.settings.utils import ABS_PATH
 from social_users.models import TrustedUser, Organisation
 
@@ -154,7 +153,7 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
     return remap_dict(data, mapping_dict)
 
 
-def validate_osm_data(data_owner, osm_data, duplication_check=True):
+def validate_osm_data(osm_data, duplication_check=True):
     """Validate osm data based on osm field and tag definition.
 
     :param data_owner: The owner of the data.
@@ -173,28 +172,24 @@ def validate_osm_data(data_owner, osm_data, duplication_check=True):
         osm_data['tag']['source'] = 'healthsites.io'
     except KeyError:
         pass
-    osm_name = osm_data.get('tag', {}).get('name', 'no name')
 
     # Validate fields
     is_valid, message = validate_osm_fields(osm_data)
     if not is_valid:
-        create_pending_review(data_owner, osm_name, osm_data, message)
-        return False, message
+        raise Exception(message)
 
     # Validate tags
     is_valid, message = validate_osm_tags(osm_data.get('tag', {}))
     if not is_valid:
-        create_pending_review(data_owner, osm_name, osm_data, message)
-        return False, message
+        raise Exception(message)
 
     if duplication_check:
         # Validate duplication
         is_valid, message = validate_duplication(osm_data)
         if not is_valid:
-            create_pending_review(data_owner, osm_name, osm_data, message)
-            return False, message
+            raise Exception(message)
 
-    return True, 'OSM data are valid.'
+    return True
 
 
 def verify_user(uploader, creator):
@@ -213,6 +208,10 @@ def verify_user(uploader, creator):
     :rtype: tuple
     """
     uploader = get_object_or_404(User, username=uploader)
+    if uploader.is_staff:
+        return True, (
+            'Data uploader is staff.')
+
     creator = get_object_or_404(User, username=creator)
 
     try:
@@ -335,7 +334,7 @@ def validate_duplication(osm_data):
     # is exist in the bounding box.
 
     # create bounding box with delta = 0.001
-    radius = 10
+    radius = settings.DUPLICATION_RADIUS
     lon = osm_data['lon']
     lat = osm_data['lat']
 
@@ -350,11 +349,10 @@ def validate_duplication(osm_data):
             radius=radius,
             lon=lon,
             lat=lat))
-    response = op_api.get(query.encode("utf-8"))
+    response = op_api.get(query.encode('utf-8'))
     if len(response.get('features', [])) > 0:
-        message = (
-            'Duplication detected. Node with `{name}` name was found '
-            'around the area.').format(name=name)
+        message = 'Duplication detected. Records = %s' % [
+            feature['id'] for feature in response.get('features')]
         return False, message
 
     return True, 'No duplication found.'

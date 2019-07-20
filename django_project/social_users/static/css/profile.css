@@ -137,3 +137,7 @@
     left: -20px;
     top: 10px;
 }
+
+h3 {
+    font-weight: 600 !important;
+}

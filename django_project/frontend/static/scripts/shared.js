@@ -6,8 +6,19 @@ shared['hash'] = function () {
 };
 
 shared['currentID'] = function () {
-    return shared.hash().replace('/locality/', '')
+    if (shared.hash().indexOf('/locality/') !== -1) {
+        return shared.hash().replace('/locality/', '')
+    }
+    return null;
 };
+
+shared['currentReviewID'] = function () {
+    if (shared.hash().indexOf('/review/') !== -1) {
+        return shared.hash().replace('/review/', '')
+    }
+    return null;
+};
+shared['formOrder'] = ['name', 'amenity', 'healthcare', 'health_amenity_type', 'operator', 'source'];
 
 // Styles
 var styles = {
