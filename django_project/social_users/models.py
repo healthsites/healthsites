@@ -20,6 +20,8 @@ class Profile(models.Model):
         User, default=1)
     profile_picture = models.CharField(
         default='', max_length=512, blank=True)
+    osm_name = models.CharField(
+        default='', max_length=512, blank=True)
 
 
 class GatherUser(models.Model):
