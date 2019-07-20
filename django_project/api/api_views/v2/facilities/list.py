@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+import copy
 import json
 from datetime import datetime
 from django.contrib.auth.models import User
@@ -167,7 +168,7 @@ class GetFacilities(
 
     def post(self, request):
         user = request.user
-        data = request.data
+        data = copy.deepcopy(request.data)
         # Now, we post the data directly to OSM.
         try:
             # Validate data
@@ -220,15 +221,15 @@ class GetFacilities(
         except Exception as e:
             if not request.GET.get('review', None):
                 if user != request.user:
-                    create_pending_review(user, data, '%s' % e)
+                    create_pending_review(user, request.data, '%s' % e)
             else:
                 try:
-                    update_pending_review(request.GET.get('review', None), data, '%s' % e)
+                    update_pending_review(request.GET.get('review', None), request.data, '%s' % e)
                 except Exception as e:
                     return HttpResponseBadRequest('%s' % e)
             output = {
                 'error': '%s' % e,
-                'payload': data,
+                'payload': request.data,
             }
             return HttpResponseBadRequest('%s' % json.dumps(output))
 

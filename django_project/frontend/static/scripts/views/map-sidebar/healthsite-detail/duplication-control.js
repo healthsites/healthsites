@@ -69,21 +69,34 @@ define([
             $('#more-than-one').show();
         },
         addContent: function ($wrapper, key, value) {
+            if (!value) {
+                return;
+            }
             var html = '<tr>';
             html += '<td>' + key + '</td>';
+            if (Array.isArray(value)) {
+                value = value.join(', ')
+            }
             html += '<td>' + value + '</td>';
             html += '</tr>';
             $wrapper.append(html)
         },
-        addData: function ($ontent, data) {
+        addData: function ($ontent, input) {
             // add original content
             var self = this;
             $ontent.html('<table style="width:100%;"></table>');
             var $table = $ontent.find('table');
+            var data = $.extend({}, input);
             this.addContent($table, 'lat', data['geometry']['coordinates'][1]);
             this.addContent($table, 'lon', data['geometry']['coordinates'][0]);
-            $.each(data['properties']['attributes'], function (key, value) {
-                self.addContent($table, key, value);
+            var fixedOrder = ['name', 'amenity', 'healthcare', 'healthcare_amenity_type'];
+            $.each(fixedOrder, function (index, value) {
+                self.addContent($table, value, data['properties']['attributes'][value]);
+            });
+            Object.keys(data['properties']['attributes']).sort().forEach(function (key) {
+                if (fixedOrder.indexOf(key) === -1) {
+                    self.addContent($table, key, data['properties']['attributes'][key]);
+                }
             });
         },
         showDuplication: function (originalData, duplicationData, applyFunction) {

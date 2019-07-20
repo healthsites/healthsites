@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+import copy
 import json
 from core.settings.utils import ABS_PATH
 
@@ -74,7 +75,7 @@ class GetDetailFacility(FacilitiesBaseAPI):
             raise Http404()
 
     def post(self, request, osm_type, osm_id):
-        data = request.data.copy()
+        data = copy.deepcopy(request.data)
         user = request.user
         # Now, we post the data directly to OSM.
         try:
@@ -134,15 +135,15 @@ class GetDetailFacility(FacilitiesBaseAPI):
         except Exception as e:
             if not request.GET.get('review', None):
                 if user != request.user:
-                    create_pending_review(user, data, '%s' % e)
+                    create_pending_review(user, request.data, '%s' % e)
             else:
                 try:
-                    update_pending_review(request.GET.get('review', None), data, '%s' % e)
+                    update_pending_review(request.GET.get('review', None), request.data, '%s' % e)
                 except Exception as e:
                     return HttpResponseBadRequest('%s' % e)
             output = {
                 'error': '%s' % e,
-                'payload': data,
+                'payload': request.data,
             }
             return HttpResponseBadRequest('%s' % json.dumps(output))
         except (LocalityOSMNode.DoesNotExist, LocalityOSMNode.DoesNotExist):

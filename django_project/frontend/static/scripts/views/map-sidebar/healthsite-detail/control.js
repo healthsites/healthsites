@@ -219,6 +219,7 @@ define([
                                     params.push("duplication-check=false");
                                 }
                                 self.currentAPI += "?" + params.join("&");
+                                console.log(data);
                                 self.detail.showInfo(osm_type, osm_id, data);
                                 self.detail_info = data;
                                 self.toDetailMode();
@@ -331,6 +332,7 @@ define([
             this.toDefaultMode();
             this.$editButton.hide();
             this.$createButton.hide();
+            this.enabled(this.$saveButton);
             this.$saveButton.show();
             if (this.isReview) {
                 this.$discardReview.show();
