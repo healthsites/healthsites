@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from api.api_views.v2.pagination import LessThanOneException, NotANumberException
 from api.api_views.v2.base_api import BaseAPIWithAuth
 from api.api_views.v2.pagination import PaginationAPI
+from api.utilities.pending import validate_pending_update
 from localities_osm_extension.models.pending_state import (
     PendingReview, PendingUpdate)
 from localities_osm_extension.serializer.pending_state import (
@@ -50,6 +51,10 @@ class GetPendingUpdates(BaseAPIWithAuth, PaginationAPI):
             except (LessThanOneException, NotANumberException) as e:
                 return HttpResponseBadRequest('%s' % e)
         else:
+            queryset = PendingUpdate.objects.filter(uploader__username=username)
+            for pending in queryset:
+                validate_pending_update(
+                    pending.extension.osm_type, pending.extension.osm_id)
             queryset = PendingUpdate.objects.filter(uploader__username=username)
 
         return Response(PendingUpdateSerializer(queryset, many=True).data)
