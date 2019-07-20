@@ -18,6 +18,7 @@ shared['currentReviewID'] = function () {
     }
     return null;
 };
+shared['formOrder'] = ['name', 'amenity', 'healthcare', 'health_amenity_type', 'operator', 'source'];
 
 // Styles
 var styles = {

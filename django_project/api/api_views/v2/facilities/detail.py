@@ -138,7 +138,8 @@ class GetDetailFacility(FacilitiesBaseAPI):
                     create_pending_review(user, request.data, '%s' % e)
             else:
                 try:
-                    update_pending_review(request.GET.get('review', None), request.data, '%s' % e)
+                    update_pending_review(request.GET.get(
+                        'review', None), request.data, '%s' % e)
                 except Exception as e:
                     return HttpResponseBadRequest('%s' % e)
             output = {

@@ -50,28 +50,40 @@ define([
             }
             return true;
         },
+        renderDefinition: function (key, definition, attributes) {
+            var $element = $('*[data-tag="' + key + '"]');
+            var description = definition['description'];
+            if (definition['required']) {
+                description = '[REQUIRED] ' + definition['description'];
+            }
+            var otherHtml = '';
+            if ($element.length === 0) {
+                var value = '';
+                if (attributes[key]) {
+                    value = attributes[key];
+                    delete attributes[key];
+                }
+                otherHtml += '<tr data-tag="' + key + '"  data-hasvalue="' + (value !== '') + '" data-required="' + definition['required'] + '">' +
+                    '<td class="tag-key">' + key + ' <i class="fa fa-info-circle" aria-hidden="true" title="' + description + '"></i></td>' +
+                    '<td><div class="data">' + value + '</div></td>' +
+                    '</tr>';
+            }
+            return otherHtml;
+
+        },
         showTags: function (attributes) {
             // SHOW OTHERS INFO
             var otherHtml = '';
             var self = this;
             this.$otherTagsSection.html('');
-            $.each(Object.keys(this.definitions).sort(), function (index, key) {
-                var $element = $('*[data-tag="' + key + '"]');
+            $.each(shared.formOrder, function (index, key) {
                 var definition = self.definitions[key];
-                var description = definition['description'];
-                if (definition['required']) {
-                    description = '[REQUIRED] ' + definition['description'];
-                }
-                if ($element.length === 0) {
-                    var value = '';
-                    if (attributes[key]) {
-                        value = attributes[key];
-                        delete attributes[key];
-                    }
-                    otherHtml += '<tr data-tag="' + key + '"  data-hasvalue="' + (value !== '') + '" data-required="' + definition['required'] + '">' +
-                        '<td class="tag-key">' + key + ' <i class="fa fa-info-circle" aria-hidden="true" title="' + description + '"></i></td>' +
-                        '<td><div class="data">' + value + '</div></td>' +
-                        '</tr>';
+                otherHtml += self.renderDefinition(key, definition, attributes);
+            });
+            $.each(Object.keys(this.definitions).sort(), function (index, key) {
+                if (shared.formOrder.indexOf(key) === -1) {
+                    var definition = self.definitions[key];
+                    otherHtml += self.renderDefinition(key, definition, attributes);
                 }
             });
             if (Object.keys(attributes).length >= 1) {

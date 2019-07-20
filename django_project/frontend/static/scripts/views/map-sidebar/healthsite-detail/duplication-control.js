@@ -89,12 +89,11 @@ define([
             var data = $.extend({}, input);
             this.addContent($table, 'lat', data['geometry']['coordinates'][1]);
             this.addContent($table, 'lon', data['geometry']['coordinates'][0]);
-            var fixedOrder = ['name', 'amenity', 'healthcare', 'healthcare_amenity_type'];
-            $.each(fixedOrder, function (index, value) {
+            $.each(shared.formOrder, function (index, value) {
                 self.addContent($table, value, data['properties']['attributes'][value]);
             });
             Object.keys(data['properties']['attributes']).sort().forEach(function (key) {
-                if (fixedOrder.indexOf(key) === -1) {
+                if (shared.formOrder.indexOf(key) === -1) {
                     self.addContent($table, key, data['properties']['attributes'][key]);
                 }
             });
