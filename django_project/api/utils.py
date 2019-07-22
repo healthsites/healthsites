@@ -305,7 +305,7 @@ def validate_osm_tags(osm_tags):
             if not (isinstance(item, unicode) and tag_definition.get('type') == str):
                 message = (
                     'Invalid value type for key `{}`: '
-                    'Expected type {}, got {} instead.').format(
+                    'Expected type `{}`, got `{}` instead.').format(
                     key, tag_definition['type'].__name__, type(item).__name__)
                 return False, message
 
@@ -318,7 +318,7 @@ def validate_osm_tags(osm_tags):
                 if row not in tag_definition.get('options'):
                     message = (
                         'Invalid value for key `{}`: '
-                        '{} is not a valid option.').format(key, row)
+                        '`{}` is not a valid option.').format(key, row)
                     return False, message
 
     return True, 'OSM tags are valid.'

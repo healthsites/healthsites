@@ -2,8 +2,10 @@
 import csv
 import json
 import logging
+import os
 import sys
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -33,6 +35,19 @@ class CSVtoOSMImporter:
             self.json_mapping = json.load(mapping_file)
 
         self.parse_file()
+
+        # log progress into a file
+        self.pathname = os.path.join(settings.CACHE_DIR, 'csv-import-progress')
+        self.progress_file = os.path.join(
+            self.pathname, '{}.txt'.format(data_loader.author.username))
+
+        if os.path.exists(self.progress_file):
+            # skip, import process for this user is already running
+            return
+
+        if not os.path.exists(self.pathname):
+            os.makedirs(self.pathname)
+
         self.validate_data() and self.upload_to_osm()
 
     def fields(self):
@@ -183,6 +198,11 @@ class CSVtoOSMImporter:
                 })
 
             self._validation_status[row_number+1] = validation_status
+
+            # write status to progress file
+            f = open(self.progress_file, 'w+')
+            f.write(json.dumps(self._validation_status))
+            f.close()
 
         return False not in (
             [status['is_valid'] for status in

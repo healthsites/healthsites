@@ -15,7 +15,6 @@ logger = get_task_logger(__name__)
 def upload_data_from_csv(self, data_loader_pk):
     # Put here to avoid circular import
     from localities.models import DataLoader
-    from django.core.management import call_command
     try:
         data_loader = DataLoader.objects.get(pk=data_loader_pk)
 
