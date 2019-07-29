@@ -341,20 +341,29 @@ class DataLoaderView(LoginRequiredMixin, FormView):
 def load_data(request):
     """Handling load data."""
     if request.method == 'POST':
+        # delete old import progress before processing the data
+        pathname = os.path.join(
+            settings.CACHE_DIR, 'csv-import-progress')
+        progress_file = os.path.join(
+            pathname, '{}.txt'.format(request.user.username))
+        if os.path.exists(progress_file):
+            os.remove(progress_file)
+
         form = DataLoaderForm(request.POST, files=request.FILES,
                               user=request.user)
         if form.is_valid():
             form.save(True)
 
             response = {}
-            success_message = 'You have successfully upload your data'
+            success_message = 'You have successfully upload your data.'
 
             response['message'] = success_message
             response['success'] = True
             response['detailed_message'] = (
-                'Please wait several minutes for Healthsites to load your '
-                'data. We will send '
-                'you an email if we have finished loading the data.'
+                'Please wait for Healthsites to validate and load your data. '
+                'The status of all your data will be reported here once the '
+                'process has been finished. We will also send you an email if '
+                'we have finished processing your data.'
             )
             return HttpResponse(json.dumps(
                 response,

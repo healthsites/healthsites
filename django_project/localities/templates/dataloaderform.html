@@ -26,11 +26,11 @@
             <p id="detailed_result_message"></p>
         </div>
 
-        <div id="progress-bar-wrapper">
+        <div id="progress-bar-wrapper" style="display: none;">
             <div id="progress-bar">0%</div>
         </div>
 
-        <div id="table-wrapper">
+        <div id="table-wrapper" style="display: none;">
             <table id="table-status">
                 <tr>
                     <th>Row number</th>
@@ -48,8 +48,6 @@
         var interval;
 
         $(document).ready(function () {
-            $('#progress-bar-wrapper').hide();
-            $('#table-wrapper').hide();
             $('#data-loader-form').submit(upload);
         });
 
@@ -71,7 +69,9 @@
                         $('#result_message').text(data['message']);
                         $('#detailed_result_message').text(
                                 data['detailed_message']);
-                        interval = setInterval(getImportProgress, 250)
+                        if (data['success']) {
+                            interval = setInterval(getImportProgress, 250)
+                        }
                     },
                     error: function(xhr, status, error){
                         $('#data-loader-form').hide();
@@ -97,15 +97,25 @@
                     if (progress === 100) {
                         clearInterval(interval);
                         $('#table-wrapper').show();
+
+                        var checkmark = '<span>' + '&#9989;' + '</span>';
+                        var crossmark = '<span>' + '&#10060;' + '</span>';
+
                         for (var rowNumber in data['status']) {
-                            var statusTemplate = '<tr id="status-row-' + rowNumber + '" class="row-status"><td>' + rowNumber + '</td><td>' + data['status'][rowNumber]['message'] + '</td></tr>';
+                            var statusmark = (
+                                data['status'][rowNumber]['is_valid'] ||
+                                data['status'][rowNumber]['uploaded'] ? checkmark : crossmark);
+                            var statusTemplate = (
+                                '<tr id="status-row-' + rowNumber +
+                                '" class="row-status"><td>' + rowNumber +
+                                '</td><td>' + statusmark + '&nbsp' + data['status'][rowNumber]['message'] +
+                                '</td></tr>');
                             $('#table-status').append(statusTemplate);
-                            document.getElementById('status-row-' + rowNumber).scrollIntoView();
                         }
+                        $('#result_message').text('Import Result');
+                        $('#detailed_result_message').text(data['summary']);
+                        $('#progress-bar-wrapper').hide();
                     }
-                },
-                error: function (data) {
-                    clearInterval(interval)
                 }
             })
         }

@@ -125,9 +125,12 @@ class CSVtoOSMImporter:
         :return: Applied flag
         :rtype: bool
         """
-        return True in (
-            [status['uploaded'] for status in
-             self._upload_status['status'].values()])
+        try:
+            return True in (
+                [status['uploaded'] for status in
+                 self._upload_status['status'].values()])
+        except KeyError:
+            return False
 
     def parse_file(self):
         """Open a file and parse rows.
@@ -198,15 +201,25 @@ class CSVtoOSMImporter:
                         })
 
             if is_valid:
-                # Validate data
-                is_valid, message = validate_osm_data(user, data)
-                validation_status.update({
-                    'is_valid': is_valid,
-                    'message': message
-                })
+                try:
+                    # Validate data
+                    is_valid = validate_osm_data(data)
+                    validation_status.update({
+                        'is_valid': is_valid,
+                        'message': 'OSM data is valid.'
+                    })
+                except Exception as e:
+                    validation_status.update({
+                        'is_valid': False,
+                        'message': '%s' % e
+                    })
 
             self._validation_status['status'][row_number+1] = validation_status
-            self._validation_status['count'] = row_number + 1
+            if self.is_valid() and row_number + 1 == len(self._parsed_data):
+                # prepare for the next step, upload data
+                self._validation_status['count'] = row_number
+            else:
+                self._validation_status['count'] = row_number + 1
 
             self._validation_status['summary'] = (
                 'Validation failed. Please see the status detail for more '
