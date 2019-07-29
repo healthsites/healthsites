@@ -28,8 +28,15 @@ class CSVtoOSMImporter:
         self.csv_filename = csv_filename
         self._fields = []
         self._parsed_data = []
-        self._validation_status = {}
-        self._upload_status = {}
+
+        self._validation_status = {
+            'status': {},
+            'summary': ''
+        }
+        self._upload_status = {
+            'status': {},
+            'summary': ''
+        }
 
         with open(mapping_filename, 'rb') as mapping_file:
             self.json_mapping = json.load(mapping_file)
@@ -42,13 +49,12 @@ class CSVtoOSMImporter:
             self.pathname, '{}.txt'.format(data_loader.author.username))
 
         if os.path.exists(self.progress_file):
-            # skip, import process for this user is already running
-            return
-
+            os.remove(self.progress_file)
         if not os.path.exists(self.pathname):
             os.makedirs(self.pathname)
 
-        self.validate_data() and self.upload_to_osm()
+        if self.validate_data():
+            self.upload_to_osm()
 
     def fields(self):
         """Get all fields from csv based on mapping file.
@@ -83,7 +89,7 @@ class CSVtoOSMImporter:
         """
         return False not in (
             [status['is_valid'] for status in
-             self._validation_status.values()])
+             self._validation_status['status'].values()])
 
     def upload_status(self):
         """Get upload status.
@@ -100,8 +106,8 @@ class CSVtoOSMImporter:
         :rtype: bool
         """
         return False not in (
-            [status['is_valid'] for status in
-             self._upload_status.values()])
+            [status['uploaded'] for status in
+             self._upload_status['status'].values()])
 
     def import_status(self):
         """Get status of the import process.
@@ -110,8 +116,8 @@ class CSVtoOSMImporter:
         :rtype: dict
         """
         return (
-            self._validation_status if (
-                not self.is_valid()) else self._upload_status)
+            self._validation_status['status'] if (
+                not self.is_valid()) else self._upload_status['status'])
 
     def is_applied(self):
         """Check if there is applied data or not.
@@ -121,7 +127,7 @@ class CSVtoOSMImporter:
         """
         return True in (
             [status['uploaded'] for status in
-             self._upload_status.values()])
+             self._upload_status['status'].values()])
 
     def parse_file(self):
         """Open a file and parse rows.
@@ -156,10 +162,12 @@ class CSVtoOSMImporter:
         :return: Flag indicating whether the data is valid or not.
         :rtype: bool
         """
+        self._validation_status['total'] = len(self._parsed_data)
         for row_number, data in enumerate(self._parsed_data):
+            is_valid = True
             validation_status = {
-                'is_valid': True,
-                'message': ''
+                'is_valid': is_valid,
+                'message': 'Valid'
             }
 
             # Set default user to data loader author
@@ -197,7 +205,13 @@ class CSVtoOSMImporter:
                     'message': message
                 })
 
-            self._validation_status[row_number+1] = validation_status
+            self._validation_status['status'][row_number+1] = validation_status
+            self._validation_status['count'] = row_number + 1
+
+            self._validation_status['summary'] = (
+                'Validation failed. Please see the status detail for more '
+                'information.' if not self.is_valid() else ''
+            )
 
             # write status to progress file
             f = open(self.progress_file, 'w+')
@@ -206,16 +220,17 @@ class CSVtoOSMImporter:
 
         return False not in (
             [status['is_valid'] for status in
-             self._validation_status.values()])
+             self._validation_status['status'].values()])
 
     def upload_to_osm(self):
         """Push parsed localities/facilities/healthsites data to OSM instance.
 
         """
+        self._upload_status['total'] = len(self._parsed_data)
         for row_number, data in enumerate(self._parsed_data):
             upload_status = {
                 'uploaded': True,
-                'message': ''
+                'message': 'Uploaded'
             }
 
             # Map Healthsites tags to OSM tags
@@ -235,11 +250,23 @@ class CSVtoOSMImporter:
                         unicode(sys.exc_info()[1]))
                 })
 
-            self._upload_status[row_number+1] = upload_status
+            self._upload_status['status'][row_number+1] = upload_status
+            self._upload_status['count'] = row_number + 1
+
+            self._upload_status['summary'] = (
+                'There is error when uploading the data. '
+                'Please see the status detail for more '
+                'information.' if not self.is_uploaded() else ''
+            )
+
+            # write status to progress file
+            f = open(self.progress_file, 'w+')
+            f.write(json.dumps(self._upload_status))
+            f.close()
 
         return False not in (
             [status['uploaded'] for status in
-             self._upload_status.values()])
+             self._upload_status['status'].values()])
 
     def generate_report(self):
         """Generate report for the import process

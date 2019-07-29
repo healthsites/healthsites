@@ -5,7 +5,7 @@ from celery.utils.log import get_task_logger
 from django.utils import timezone
 
 from localities.celery import app
-from localities.tasks import regenerate_cache_cluster, send_email
+from localities.tasks import send_email
 from .importers import CSVtoOSMImporter
 
 logger = get_task_logger(__name__)
