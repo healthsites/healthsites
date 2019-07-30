@@ -42,8 +42,8 @@
                 <li><a href="/#partners">Partners</a></li>
                 {% if user.is_authenticated %}
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Enrollment
-                        <span class="caret"></span></a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Campaigns
+                            <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             {% for enrollment in enrollments %}
                                 <li><a href="/enrollment{{ enrollment.url }}">{{ enrollment.title }}</a></li>

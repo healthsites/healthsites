@@ -24,5 +24,5 @@ urlpatterns = patterns(
     url(r'^help', HelpView.as_view(), name='help'),
     url(r'^map$', 'frontend.views.map', name='map'),
     url(r'^attributions$', AttributionsView.as_view(), name='attribution'),
-    url(r'^enrollment/(?P<url>.*/)$', views.flatpage),
+    url(r'^campaign/(?P<url>.*/)$', views.flatpage),
 )

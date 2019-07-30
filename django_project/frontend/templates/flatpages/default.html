@@ -4,16 +4,219 @@
 {% load static %}
 
 {% block title %}
-    Healthsites
+    {{ flatpage.campaign_title }}
 {% endblock %}
 
+{% block stylesheet %}
+    <style>
+        #campaign-title {
+            padding-bottom: 5px;
+            margin-bottom: 50px;
+            border-bottom: 1px solid grey;
+        }
+
+        #how-to {
+            font-size: 12px;
+            border-top: 1px solid gray;
+            margin-top: 100px;
+            padding-top: 20px;
+        }
+
+        .step-box {
+            width: 25%;
+            float: left;
+            padding: 5px;
+        }
+
+        .step-box.half {
+            width: 50%;
+        }
+
+        .step-box.one-third {
+            width: 33%;
+        }
+
+        .step-box-inside {
+            padding: 5px;
+            border: 1px solid grey;
+        }
+
+        .step-box-description {
+            text-align: center;
+            font-style: italic;
+            color: grey;
+            margin-top: 5px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .step-title {
+            text-align: center;
+            font-weight: 700;
+            font-size: 13px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+
+        }
+
+        .step-title div {
+            padding-left: 10px;
+            padding-right: 10px;
+            background: white;
+        }
+
+        .step-section {
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            position: relative;
+            margin-top: 20px;
+            padding: 15px;
+        }
+
+    </style>
+{% endblock stylesheet %}
+
 {% block content %}
+    {% if not user.is_authenticated %}
+        <script>
+            window.location.href = "{% url "map" %}";
+        </script>
+    {% endif %}
     <section class="white container">
-    <div class="container">
-        <h1>{{ flatpage.customflatpage.enrollment_title }}</h1>
-    </div>
-    <div class="container">
-        {{ flatpage.content }}
-    </div>
+        <div class="container">
+            <div id="campaign-title">
+                <h1>{{ flatpage.campaign_title }}</h1>
+            </div>
+            <div>
+                {{ flatpage.content }}
+                <div style="clear: both"></div>
+            </div>
+            <div id="how-to">
+                <div>
+                    This is a guide for users wanting to gather data in the field. You can use the ‘Gather ODK’ Android app with a custom form to collect <a href="Healthsites.io">Healthsites.io</a> data on an Android mobile phone or
+                    tablet. Everything you record on
+                    the Gather ODK app will be pushed to Healthsites.io and then OSM when you are online and submit your work from the app
+                </div>
+                <div class="step-section">
+                    <div class="step-title">
+                        <div style="margin-left: -50px;">How to setup</div>
+                    </div>
+                    <div class="step-box">
+                        <div class="step-box-inside">
+                            <div>Please download the app from the Android App Store by clicking the image below.</div>
+                            <div style="text-align: center">
+                                <a href='https://play.google.com/store/apps/details?id=org.odk.collect.android&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1' target="_blank">
+                                    <img alt='Get it on Google Play' src='https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png' style="width: 128px;"/>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="step-box-description">step 1</div>
+                    </div>
+                    <div class="step-box half">
+                        <div class="step-box-inside">
+                            <div style="text-align: center; float: right">
+                                <img src="https://opendatakit.org/assets/wp-content/uploads/2017/06/Screenshot_1496350807.png" style="width: 180px;">
+                            </div>
+                            <div>Once you have the application installed, open it and then go to Admin Settings > Import/Export settings. You should see a page like the right image</div>
+                            <br><br>
+                            <div>Now click <b>Scan code from other device</b>. This will show a QR code scanner and you can scan QR code *below* (don’t use the one above, it is an example).
+                                This QR code is customised for you and should not be shared with other users.
+                            </div>
+                            <div style="clear: both"></div>
+                        </div>
+                        <div class="step-box-description">step 2</div>
+                    </div>
+                    <div class="step-box">
+                        <div class="step-box-inside">
+                            <div>Generate QR Code by clicking bottom below. Note that generated QR Code <b>must be scanned</b>.</div>
+                            <div id="qrcode" style="margin: auto; width: 100%; margin-top: 5px">
+                                <button id="qr-code-generator" style="width: 100%;">Generate QR Code</button>
+                            </div>
+                        </div>
+                        <div class="step-box-description">step 3</div>
+                    </div>
+                    <div style="clear: both"></div>
+                </div>
+                <div class="step-section">
+                    <div class="step-title">
+                        <div style="margin-left: -90px;">How to collect data in odk</div>
+                    </div>
+                    <div class="step-box one-third">
+                        <div class="step-box-inside">
+                            <div style="text-align: center; float: right">
+                                <img src="/static/img/how-to-gather_1.png" style="width: 180px;">
+                            </div>
+                            <div>The main menu is of odk is like this image bellow. Go to "Get Blank Form".</div>
+                            <div style="clear: both"></div>
+                        </div>
+                        <div class="step-box-description">step 1</div>
+                    </div>
+                    <div class="step-box one-third">
+                        <div class="step-box-inside">
+                            <div style="text-align: center; float: right">
+                                <img src="/static/img/how-to-gather_2.png" style="width: 180px;">
+                            </div>
+                            <div>On "Get Blank Form", select a form that show and click "Get Selected".</div>
+                            <div style="clear: both"></div>
+                        </div>
+                        <div class="step-box-description">step 2</div>
+                    </div>
+                    <div class="step-box one-third">
+                        <div class="step-box-inside">
+                            <div style="text-align: center; float: right">
+                                <img src="/static/img/how-to-gather_3.png" style="width: 180px;">
+                            </div>
+                            <div>After that go to "Fill blank form" and select the form before on the list. It will show form until you finish it like this.</div>
+                            <div style="clear: both"></div>
+                        </div>
+                        <div class="step-box-description">step 3</div>
+                    </div>
+                    <div class="step-box one-third">
+                        <div class="step-box-inside">
+                            <div style="text-align: center; float: right">
+                                <img src="/static/img/how-to-gather_4.png" style="width: 180px;">
+                            </div>
+                            <div>After that go "Send finalized form" and select form that you finished before like below. Select the form ans click "Send selected".</div>
+                            <div style="clear: both"></div>
+                        </div>
+                        <div class="step-box-description">step 4</div>
+                    </div>
+                    <div class="step-box one-third">
+                        <div class="step-box-inside">
+                            <div style="text-align: center; float: right">
+                                <img src="/static/img/how-to-gather_5.png" style="width: 180px;">
+                            </div>
+                            <div>Your form will be sent into gather and the message will look like this.</div>
+                            <div style="clear: both"></div>
+                        </div>
+                        <div class="step-box-description">step 5</div>
+                    </div>
+                    <div style="clear: both"></div>
+                </div>
+            </div>
+        </div>
     </section>
 {% endblock %}
+{% block extra_js %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/davidshimjs-qrcodejs@0.0.2/qrcode.min.js"></script>
+    <script>
+        <!-- QR Code generation starts here -->
+        $('#qr-code-generator').click(function () {
+            $('#qrcode').html('<i>Please wait....</a>');
+            $.ajax({
+                url: "/api/v2/gather/enrollment?campaign=" +{{ flatpage.id }},
+                dataType: 'json',
+                success: function (data) {
+                    $('#qrcode').html('');
+                    var qrContainer = document.getElementById('qrcode');
+                    new QRCode(qrContainer, data);
+                },
+                error: function (error) {
+                    $('#qrcode').html('<i>error when fetching QR Code : ' + error['responseText'] + '</i>');
+                }
+            })
+        })
+    </script>
+{% endblock extra_js %}

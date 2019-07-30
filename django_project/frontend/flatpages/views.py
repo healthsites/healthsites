@@ -1,11 +1,11 @@
 from django.conf import settings
-from django.contrib.flatpages.models import FlatPage
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import Http404, HttpResponse, HttpResponsePermanentRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_protect
+from frontend.models import CampaignPage
 
 DEFAULT_TEMPLATE = 'flatpages/default.html'
 
@@ -32,13 +32,12 @@ def flatpage(request, url):
     """
     if not url.startswith('/'):
         url = '/' + url
-    site_id = get_current_site(request).id
     try:
-        f = get_object_or_404(FlatPage, url=url, sites=site_id)
+        f = get_object_or_404(CampaignPage, url=url)
     except Http404:
         if not url.endswith('/') and settings.APPEND_SLASH:
             url += '/'
-            f = get_object_or_404(FlatPage, url=url, sites=site_id)
+            f = get_object_or_404(CampaignPage, url=url)
             return HttpResponsePermanentRedirect('%s/' % request.path)
         else:
             raise
