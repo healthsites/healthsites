@@ -36,7 +36,7 @@ healthcare = {
 name = {
     'key': 'name',
     'name': 'name',
-    'description': 'The primary tag used for naming an element',
+    'description': 'Name for buildings and facilities',
     'required': True,
     'type': str,
 }
@@ -95,8 +95,7 @@ addr_full = {
     'key': 'addr_full',
     'name': 'addr_full',
     'description':
-        'Used for a full-text, often multi-line, '
-        'address for buildings and facilities',
+        'Address for buildings and facilities',
     'required': False,
     'type': str,
 }
@@ -105,8 +104,7 @@ contact_number = {
     'key': 'contact_number',
     'name': 'contact_number',
     'description':
-        'The contact tag is the prefix for several contact:* '
-        'keys to describe contacts',
+        'Contact number of facility',
     'required': False,
     'type': str,
 }
@@ -128,9 +126,7 @@ opening_hours = {
     'key': 'opening_hours',
     'name': 'opening_hours',
     'description':
-        'Describes when something is open or closed. '
-        'There is a specific standard format for this data '
-        'https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification',
+        'Time of facility open',
     'required': False,
     'type': str,
 }

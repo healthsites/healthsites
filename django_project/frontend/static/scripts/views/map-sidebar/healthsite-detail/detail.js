@@ -50,28 +50,40 @@ define([
             }
             return true;
         },
+        renderDefinition: function (key, definition, attributes) {
+            var $element = $('*[data-tag="' + key + '"]');
+            var description = definition['description'];
+            if (definition['required']) {
+                description = '[REQUIRED] ' + definition['description'];
+            }
+            var otherHtml = '';
+            if ($element.length === 0) {
+                var value = '';
+                if (attributes[key]) {
+                    value = attributes[key];
+                    delete attributes[key];
+                }
+                otherHtml += '<tr data-tag="' + key + '"  data-hasvalue="' + (value !== '') + '" data-required="' + definition['required'] + '">' +
+                    '<td class="tag-key">' + capitalize(key.replaceAll('_', ' ')) + ' <i class="fa fa-info-circle" aria-hidden="true" title="' + description + '"></i></td>' +
+                    '<td><div class="data">' + value + '</div></td>' +
+                    '</tr>';
+            }
+            return otherHtml;
+
+        },
         showTags: function (attributes) {
             // SHOW OTHERS INFO
             var otherHtml = '';
             var self = this;
             this.$otherTagsSection.html('');
-            $.each(Object.keys(this.definitions).sort(), function (index, key) {
-                var $element = $('*[data-tag="' + key + '"]');
+            $.each(shared.formOrder, function (index, key) {
                 var definition = self.definitions[key];
-                var description = definition['description'];
-                if (definition['required']) {
-                    description = '[REQUIRED] ' + definition['description'];
-                }
-                if ($element.length === 0) {
-                    var value = '';
-                    if (attributes[key]) {
-                        value = attributes[key];
-                        delete attributes[key];
-                    }
-                    otherHtml += '<tr data-tag="' + key + '"  data-hasvalue="' + (value !== '') + '" data-required="' + definition['required'] + '">' +
-                        '<td class="tag-key">' + key + ' <i class="fa fa-info-circle" aria-hidden="true" title="' + description + '"></i></td>' +
-                        '<td><div class="data">' + value + '</div></td>' +
-                        '</tr>';
+                otherHtml += self.renderDefinition(key, definition, attributes);
+            });
+            $.each(Object.keys(this.definitions).sort(), function (index, key) {
+                if (shared.formOrder.indexOf(key) === -1) {
+                    var definition = self.definitions[key];
+                    otherHtml += self.renderDefinition(key, definition, attributes);
                 }
             });
             if (Object.keys(attributes).length >= 1) {
@@ -93,7 +105,10 @@ define([
         },
         showInfo: function (osm_type, osm_id, data) {
             /** SHOWING INFORMATION TAGS OF HEALHTSITE **/
-            var identifier = osm_type + '/' + osm_id;
+            var identifier = null;
+            if (osm_type) {
+                identifier = osm_type + '/' + osm_id;
+            }
             var properties = data['properties'];
             var attributes = jQuery.extend({}, properties['attributes']);
 
@@ -111,9 +126,11 @@ define([
                 this.$completenees.text(properties['completeness'] + '% Complete');
             }
             // source url
-            var html = '<a href="https://www.openstreetmap.org/' + identifier + '"';
-            html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">OpenStreetMap</a>';
-            attributes['source_html'] = html;
+            if (identifier) {
+                var html = '<a href="https://www.openstreetmap.org/' + identifier + '"';
+                html += ' data-toggle="tooltip" title="Data supplied by" target="_blank">OpenStreetMap</a>';
+                attributes['source_html'] = html;
+            }
 
             shared.dispatcher.trigger('locality.info', {
                 'locality_uuid': identifier,

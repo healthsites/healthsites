@@ -492,3 +492,7 @@ to {
     text-decoration: none;
     opacity: 0.9;
 }
+
+.c3-text {
+    fill: #000 !important;
+}

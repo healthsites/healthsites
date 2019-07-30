@@ -2,7 +2,9 @@ define([
     'backbone',
     'jquery',
     'static/scripts/views/map-sidebar/healthsite-detail/detail.js',
-    'static/scripts/views/map-sidebar/healthsite-detail/form.js'], function (Backbone, $, Detail, Form) {
+    'static/scripts/views/map-sidebar/healthsite-detail/form.js',
+    'static/scripts/views/map-sidebar/healthsite-detail/request.js',
+    'static/scripts/views/map-sidebar/healthsite-detail/duplication-control.js'], function (Backbone, $, Detail, Form, Request, Duplication) {
     return Backbone.View.extend({
         url: '/api/v2/facilities/',
         definition_url: '/api/schema/',
@@ -36,7 +38,8 @@ define([
             },
         },
         initialize: function () {
-            this.listenTo(shared.dispatcher, 'show-locality-detail', this.showDetail);
+            this.listenTo(shared.dispatcher, 'show-locality-detail', this.getLocalityDetail);
+            this.listenTo(shared.dispatcher, 'show-locality-review', this.getLocalityReview);
             this.$el = $('#locality-info');
             this.$elError = $('#locality-error');
             this.$sidebar = $('#locality-info');
@@ -45,6 +48,10 @@ define([
             this.$saveButton = $('#save-healthsite');
             this.$cancelButton = $('#cancel-healthsite');
             this.$infoWrapper = $('#info-wrapper');
+            this.$discardReview = $('#discard-review');
+            this.$reviewError = $('#review-error');
+            this.$goToForm = this.$elError.find('button');
+            this.request = new Request();
 
             // init event
             var self = this;
@@ -68,6 +75,28 @@ define([
                     self.toCancelMode();
                 }
             });
+            this.$goToForm.click(function () {
+                self.$elError.hide();
+                self.$el.show();
+            });
+            this.$discardReview.click(function () {
+                $.ajax({
+                    url: self.reviewAPI + "?output=geojson",
+                    type: 'DELETE',
+                    success: function (data) {
+                        window.location = $('.profile .name a').attr('href');
+                    },
+                    error: function (error) {
+                        self.localityError(
+                            'This reviewed healthsite can\'t be deleted.<br>');
+                    },
+                    beforeSend: function (xhr, settings) {
+                        if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+                            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                        }
+                    }
+                });
+            });
 
             // GET DEFINITONS
             $.each(schema['facilities']['create']['fields'], function (index, value) {
@@ -83,6 +112,7 @@ define([
             this.detail = new Detail(self.definitions);
             this.form = new Form(self.definitions);
             this.checkLatestUI();
+            this.duplication = new Duplication();
         },
         checkLatestUI: function () {
             this.$latestUI = $('.details:visible');
@@ -95,7 +125,7 @@ define([
                 this.$elError.find('#information').html(message)
             }
         },
-        showDetail: function (osm_type, osm_id) {
+        showDetail: function () {
             /** Showing detail with parameter as osm_type and osm_id **/
             // TODO : remove below
             this.disabled(this.$editButton);
@@ -103,18 +133,17 @@ define([
             $('.details').hide();
             this.$sidebar.show();
             this.detail.showDefaultInfo();
-            this.getInfo(osm_type, osm_id);
         },
-        getInfo: function (osm_type, osm_id) {
+        getLocalityDetail: function (osm_type, osm_id) {
             /** get information of healthsite from osm_type and osm_id parameters **/
             var self = this;
+            this.showDetail();
             this.currentAPI = this.url + osm_type + '/' + osm_id;
+            this.isReview = false;
             self.detail_info = null;
             this.localityError('Loading locality information.');
-            $.ajax({
-                url: this.currentAPI + "?output=geojson",
-                dataType: 'json',
-                success: function (data) {
+            this.request.getHealthsite(osm_id, osm_type,
+                function (data) {
                     shared.dispatcher.trigger('locality.cancel');
                     self.$latestUI = self.$el;
                     self.detail.showInfo(osm_type, osm_id, data);
@@ -125,8 +154,7 @@ define([
                     } else {
                         self.enabled(self.$editButton);
                     }
-                },
-                error: function (error) {
+                }, function (error) {
                     self.detail.showTags({});
                     if (error['status'] === 400) {
                         shared.dispatcher.trigger('locality.cancel');
@@ -136,12 +164,122 @@ define([
                             '<a href="' + osmAPI + '/' + osm_type + '/' + osm_id + '">link</a>')
                     } else {
                         self.localityError(
-                            'Locality is not found.<br>' +
-                            'Please check this locality in openstreetmap with this ' +
+                            'Healthsite is not found.<br>' +
+                            'Please check this healthsite in openstreetmap with this ' +
                             '<a href="' + osmAPI + '/' + osm_type + '/' + osm_id + '">link</a>')
                     }
+                })
+        },
+        getDataFromPayload: function (payload) {
+            return {
+                "type": "Feature",
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        payload['lon'],
+                        payload['lat']
+                    ]
+                },
+                "properties": {
+                    "centroid": {
+                        "type": "Point",
+                        "coordinates": [
+                            payload['lon'],
+                            payload['lat']
+                        ]
+                    },
+                    "attributes": payload['tag'],
+                    "osm_id": payload['id'],
+                    "osm_type": payload['type']
                 }
-            });
+            };
+
+        },
+        handleDuplicationFromPayload: function (data, review_id, osm_type, reason) {
+            /** Handle duplication from reason **/
+            osm_type = 'node';
+            var self = this;
+            var records = JSON.parse(reason.split('Records = ')[1]);
+            data = self.getDataFromPayload(data);
+            if (records.length === 1) {
+                self.request.getHealthsite(records[0], osm_type,
+                    function (originalData) {
+                        self.duplication.showDuplication(
+                            originalData, data, function (data, osm_id, mode) {
+                                if (osm_id) {
+                                    self.currentAPI = self.url + 'node/' + osm_id;
+                                } else {
+                                    self.currentAPI = self.url;
+                                }
+                                var params = [];
+                                if (review_id) {
+                                    params.push("review=" + review_id);
+                                }
+                                if (mode === "Yes add this") {
+                                    params.push("duplication-check=false");
+                                }
+                                self.currentAPI += "?" + params.join("&");
+                                console.log(data);
+                                self.detail.showInfo(osm_type, osm_id, data);
+                                self.detail_info = data;
+                                self.toDetailMode();
+                                self.enabled(self.$editButton);
+                                self.$editButton.click();
+                                self.$reviewError.show();
+                                if (mode === "Yes add this") {
+                                    self.toSaveMode();
+                                }
+                            });
+                    }, function (error) {
+                        self.duplication.showDuplication(null, data);
+                    })
+            } else {
+                self.duplication.duplicationMoreThanOne();
+            }
+        },
+        getLocalityReview: function (review_id) {
+            /** get information of healthsite review id **/
+            var self = this;
+            this.showDetail();
+            this.reviewAPI = '/api/v2/pending/reviews/' + review_id;
+            this.isReview = true;
+            self.detail_info = null;
+            this.localityError('Loading locality information.');
+            this.request.getReview(review_id,
+                function (data) {
+                    shared.dispatcher.trigger('locality.cancel');
+                    self.$latestUI = self.$el;
+                    var properties = data['payload'];
+                    var osm_type = properties['type'];
+                    var osm_id = properties['id'];
+                    var reviewReason = data["reason"];
+
+                    var reason = "Error when create this.";
+                    self.currentAPI = self.url;
+                    if (osm_type && osm_id) {
+                        self.currentAPI = self.url + osm_type + '/' + osm_id;
+                        reason = "Error when updating this <a href='/map#!/locality/" + osm_type + '/' + osm_id + "'>location</a>.";
+                    }
+
+                    // for handle duplication
+                    if (reviewReason.indexOf("Duplication") >= 0) {
+                        self.handleDuplicationFromPayload(data['payload'], review_id, osm_type, reviewReason);
+                    } else {
+                        self.currentAPI += "?review=" + review_id;
+                        self.$reviewError.html(reason + "<br>Reason = " + reviewReason);
+                        data = self.getDataFromPayload(data['payload']);
+                        self.detail.showInfo(data['properties']['osm_type'], data['properties']['osm_id'], data);
+                        self.detail_info = data;
+                        self.toDetailMode();
+                        self.enabled(self.$editButton);
+                        self.$editButton.click();
+                        self.$reviewError.show();
+                    }
+                }, function (error) {
+                    self.localityError(
+                        'This reviewed healthsite is not found.<br>');
+                    self.detail.showTags({});
+                })
         },
         isDisabled: function ($button) {
             return $button.hasClass('disabled');
@@ -159,8 +297,11 @@ define([
             this.$createButton.show();
             this.$saveButton.hide();
             this.$cancelButton.hide();
+            this.$discardReview.hide();
             this.$el.show();
             this.$elError.hide();
+            this.$goToForm.hide();
+            this.$reviewError.hide();
         },
         toMapMode: function () {
             /** This when detail is not opened **/
@@ -191,8 +332,13 @@ define([
             this.toDefaultMode();
             this.$editButton.hide();
             this.$createButton.hide();
+            this.enabled(this.$saveButton);
             this.$saveButton.show();
-            this.$cancelButton.show();
+            if (this.isReview) {
+                this.$discardReview.show();
+            } else {
+                this.$cancelButton.show();
+            }
             this.$el.find('.data').hide();
             this.$el.find('.input').show();
             this.$el.find('.tags .fa-info-circle').show();
@@ -234,11 +380,24 @@ define([
             this.disabled(this.$saveButton);
             this.form.save(
                 function (data) {
+                    self.isReview = false;
                     self.toDefaultMode();
-                    self.showDetail('node', data['id']);
+                    self.getLocalityDetail('node', data['id']);
                     self.enabled(self.$saveButton);
                 }, function (error) {
-                    alert('Error when uploading. ' + error['responseText']);
+                    self.isReview = false;
+                    var error = JSON.parse(error['responseText']);
+                    if (error['error'].indexOf("Duplication") >= 0) {
+                        var reviewID = null;
+                        if (self.currentAPI.split('review=')[1]) {
+                            reviewID = self.currentAPI.split('review=')[1].split('&')[0]
+                        }
+
+                        self.handleDuplicationFromPayload(error['payload'], reviewID, 'node', error['error']);
+                    } else {
+                        self.localityError('Error when uploading. ' + error['error']);
+                        self.$goToForm.show();
+                    }
                     self.enabled(self.$saveButton);
                 }
             );

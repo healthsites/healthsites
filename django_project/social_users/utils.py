@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import requests
+from django.conf import settings
 from social_users.models import TrustedUser
 
 from .models import Profile
@@ -68,3 +70,24 @@ def get_profile(user, request=None):
     user.provider = provider
 
     return user
+
+
+def get_osm_name(user):
+    """ Getting real osm user name from HS user """
+    # get osm name from profile
+    profile, created = Profile.objects.get_or_create(user=user)
+    if profile.osm_name:
+        return profile.osm_name
+    # get osm name from API
+    try:
+        id = user.social_auth.get(provider='openstreetmap').extra_data['id']
+        url = settings.OSM_API_URL + '/api/0.6/user/%s' % id
+        session = requests.Session()
+        response = session.get(url)
+        if response.status_code == 200:
+            username = response.content.split('display_name="')[1].split("\"")[0]
+            profile.osm_name = username
+            profile.save()
+            return profile.osm_name
+    except Exception as e:
+        return None
