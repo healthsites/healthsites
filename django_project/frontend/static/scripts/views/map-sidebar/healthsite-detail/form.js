@@ -54,7 +54,7 @@ define([
                                     }
                                 });
                             }
-                            inputHtml += '<input type="checkbox" value="' + key + '" style="width: auto!important;" ' + selected + '>' + key.replaceAll('_', ' ') + '<br>';
+                            inputHtml += '<input type="checkbox" value="' + key + '" style="width: auto!important;" ' + selected + '>' + capitalize(key.replaceAll('_', ' ')) + '<br>';
                         });
                         inputHtml += "</div>";
                         break;

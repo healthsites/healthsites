@@ -89,3 +89,7 @@ Array.prototype.remove = function () {
     }
     return this;
 };
+
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1)
+}
