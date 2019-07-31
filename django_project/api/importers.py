@@ -14,6 +14,7 @@ from api.osm_field_definitions import ALL_FIELDS
 from api.osm_tag_defintions import ALL_TAGS
 from api.utils import remap_dict, verify_user, validate_osm_data, \
     convert_to_osm_tag, create_osm_node
+from api.utilities.pending import create_pending_update
 from core.settings.utils import ABS_PATH
 from localities_osm.utilities import split_osm_and_extension_attr
 
@@ -166,6 +167,7 @@ class CSVtoOSMImporter:
         :rtype: bool
         """
         self._validation_status['total'] = len(self._parsed_data)
+        is_validate = True
         for row_number, data in enumerate(self._parsed_data):
             is_valid = True
             validation_status = {
@@ -184,7 +186,8 @@ class CSVtoOSMImporter:
             # Verify data uploader and owner/collector if the API is being used
             # for uploading data from other osm user.
             if data.get('osm_user') and user.username != data.get('osm_user'):
-                is_valid, message = verify_user(user, data['osm_user'])
+                is_valid, message = verify_user(
+                    user, data['osm_user'], ignore_uploader_staff=True)
                 validation_status.update({
                     'is_valid': is_valid,
                     'message': message
@@ -213,8 +216,10 @@ class CSVtoOSMImporter:
                         'is_valid': False,
                         'message': '%s' % e
                     })
+            else:
+                is_validate = False
 
-            self._validation_status['status'][row_number+1] = validation_status
+            self._validation_status['status'][row_number + 1] = validation_status
             if self.is_valid() and row_number + 1 == len(self._parsed_data):
                 # prepare for the next step, upload data
                 self._validation_status['count'] = row_number
@@ -231,9 +236,7 @@ class CSVtoOSMImporter:
             f.write(json.dumps(self._validation_status))
             f.close()
 
-        return False not in (
-            [status['is_valid'] for status in
-             self._validation_status['status'].values()])
+        return is_validate
 
     def upload_to_osm(self):
         """Push parsed localities/facilities/healthsites data to OSM instance.
@@ -254,7 +257,12 @@ class CSVtoOSMImporter:
             # Push data to OSM
             user = get_object_or_404(User, username=data['osm_user'])
             try:
-                _ = create_osm_node(user, data)
+                response = create_osm_node(user, data)
+
+                # create pending index
+                create_pending_update(
+                    'node', response['id'],
+                    data['tag']['name'], user, response['version'])
             except:  # noqa
                 upload_status.update({
                     'uploaded': False,
@@ -263,7 +271,7 @@ class CSVtoOSMImporter:
                         unicode(sys.exc_info()[1]))
                 })
 
-            self._upload_status['status'][row_number+1] = upload_status
+            self._upload_status['status'][row_number + 1] = upload_status
             self._upload_status['count'] = row_number + 1
 
             self._upload_status['summary'] = (

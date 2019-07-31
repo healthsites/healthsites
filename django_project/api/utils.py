@@ -192,7 +192,7 @@ def validate_osm_data(osm_data, duplication_check=True):
     return True
 
 
-def verify_user(uploader, creator):
+def verify_user(uploader, creator, ignore_uploader_staff=False):
     """Verify user.
 
     Uploader has to be organizer of an organisation and the creator has to be
@@ -208,11 +208,9 @@ def verify_user(uploader, creator):
     :rtype: tuple
     """
     uploader = get_object_or_404(User, username=uploader)
-    if uploader.is_staff:
+    if uploader.is_staff and not ignore_uploader_staff:
         return True, (
             'Data uploader is staff.')
-
-    creator = get_object_or_404(User, username=creator)
 
     try:
         organisation = get_object_or_404(Organisation, organizer=uploader)

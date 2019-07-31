@@ -108,9 +108,7 @@ class DataLoaderForm(models.ModelForm):
         model = DataLoader
         fields = (
             'json_concept_mapping',
-            'csv_data',
-            # enable below code when HS support update osm data via csv
-            # 'data_loader_mode',
+            'csv_data'
         )
 
     json_concept_mapping = forms.FileField(
@@ -122,14 +120,6 @@ class DataLoaderForm(models.ModelForm):
         widget=forms.FileInput(
             attrs={'class': 'form-control'})
     )
-
-    # enable below code when HS support update osm data via csv
-    # data_loader_mode = forms.ChoiceField(
-    #     widget=forms.RadioSelect(
-    #         attrs={'class': 'form-control'}),
-    #     choices=DataLoader.DATA_LOADER_MODE_CHOICES,
-    #     initial=DataLoader.REPLACE_DATA_CODE,
-    # )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
