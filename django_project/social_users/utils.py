@@ -85,9 +85,10 @@ def get_osm_name(user):
         session = requests.Session()
         response = session.get(url)
         if response.status_code == 200:
-            username = response.content.split('display_name="')[1].split("\"")[0]
+            username = \
+                response.content.split('display_name="')[1].split('\"')[0]
             profile.osm_name = username
             profile.save()
             return profile.osm_name
-    except Exception as e:
+    except Exception as e:  # noqa
         return None
