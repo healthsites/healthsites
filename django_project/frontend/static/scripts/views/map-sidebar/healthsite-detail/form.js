@@ -23,12 +23,12 @@ define([
                     case 'boolean':
                         options = ["True", "False"];
                     case 'string':
-                        inputHtml = '<input class="input" type="text">';
+                        inputHtml = '<input class="input" type="text" placeholder="' + value['description'] + '" title="' + value['description'] + '" >';
                         if (!options) {
                             break;
                         }
                     case 'selection':
-                        inputHtml = "<select class='input'>";
+                        inputHtml = "<select class='input' title='" + value['description'] + "' >";
                         options = options.sort();
                         if (!value['required']) {
                             inputHtml += '<option></option>';
@@ -54,7 +54,7 @@ define([
                                     }
                                 });
                             }
-                            inputHtml += '<input type="checkbox" value="' + key + '" style="width: auto!important;" ' + selected + '>' + key.replaceAll('_', ' ') + '<br>';
+                            inputHtml += '<input type="checkbox" value="' + key + '" style="width: auto!important;" ' + selected + '>' + capitalize(key.replaceAll('_', ' ')) + '<br>';
                         });
                         inputHtml += "</div>";
                         break;
