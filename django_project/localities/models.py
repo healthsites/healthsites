@@ -2,7 +2,6 @@
 import itertools
 import json
 import logging
-from datetime import datetime
 
 from pg_fts.fields import TSVectorField
 

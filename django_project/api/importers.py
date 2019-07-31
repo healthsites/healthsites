@@ -214,7 +214,8 @@ class CSVtoOSMImporter:
                         'message': '%s' % e
                     })
 
-            self._validation_status['status'][row_number+1] = validation_status
+            self._validation_status['status'][row_number + 1] = (
+                validation_status)
             if self.is_valid() and row_number + 1 == len(self._parsed_data):
                 # prepare for the next step, upload data
                 self._validation_status['count'] = row_number
@@ -258,12 +259,12 @@ class CSVtoOSMImporter:
             except:  # noqa
                 upload_status.update({
                     'uploaded': False,
-                    'message': "{0}: {1}".format(
+                    'message': '{0}: {1}'.format(
                         unicode(sys.exc_info()[0].__name__),
                         unicode(sys.exc_info()[1]))
                 })
 
-            self._upload_status['status'][row_number+1] = upload_status
+            self._upload_status['status'][row_number + 1] = upload_status
             self._upload_status['count'] = row_number + 1
 
             self._upload_status['summary'] = (

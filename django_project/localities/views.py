@@ -14,7 +14,7 @@ from django.views.generic import FormView, ListView, View
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 
 from api.utils import is_organizer
-from localities.models import Country, DataLoaderPermission
+from localities.models import Country
 from masterization import report_locality_as_unconfirmed_synonym
 
 # register signals
@@ -47,9 +47,9 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         raise Http404 exception
         """
 
-        if not (all(param in request.GET for param in [
-                'bbox', 'zoom', 'iconsize', 'geoname',
-                'tag', 'spec', 'data', 'uuid'])):
+        if not all(param in request.GET for param in [
+                'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data',
+                'uuid']):
             raise Http404
 
         try:
@@ -181,10 +181,10 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     # searching by tag
                     if tag != '' and tag != 'undefined':
                         localities = (
-                            Value.objects
-                            .filter(specification__attribute__key='tags')
-                            .filter(data__icontains='|' + tag + '|')
-                            .values('locality')
+                            Value.objects.filter(
+                                specification__attribute__key='tags').filter(
+                                data__icontains='|' + tag + '|').values(
+                                'locality')
                         )
                         localities = Locality.objects.filter(id__in=localities)
                     else:

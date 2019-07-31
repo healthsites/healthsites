@@ -4,8 +4,6 @@ import logging
 import django.forms as forms
 from django.forms import models
 
-from social_users.models import Organisation
-
 from .models import DataLoader, Domain
 from .utils import render_fragment
 
