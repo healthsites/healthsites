@@ -167,7 +167,6 @@ class CSVtoOSMImporter:
         :rtype: bool
         """
         self._validation_status['total'] = len(self._parsed_data)
-        is_validate = True
         for row_number, data in enumerate(self._parsed_data):
             is_valid = True
             validation_status = {
@@ -216,8 +215,6 @@ class CSVtoOSMImporter:
                         'is_valid': False,
                         'message': '%s' % e
                     })
-            else:
-                is_validate = False
 
             self._validation_status['status'][row_number + 1] = validation_status
             if self.is_valid() and row_number + 1 == len(self._parsed_data):
@@ -236,7 +233,9 @@ class CSVtoOSMImporter:
             f.write(json.dumps(self._validation_status))
             f.close()
 
-        return is_validate
+        return False not in (
+            [status['is_valid'] for status in
+             self._validation_status['status'].values()])
 
     def upload_to_osm(self):
         """Push parsed localities/facilities/healthsites data to OSM instance.
