@@ -2,7 +2,6 @@
 import itertools
 import json
 import logging
-from datetime import datetime
 
 from pg_fts.fields import TSVectorField
 
@@ -866,9 +865,10 @@ class DataLoader(models.Model):
     organisation_name = models.CharField(
         verbose_name="Organisation's Name",
         help_text="Organisation's Name",
-        null=False,
-        blank=False,
-        max_length=100
+        max_length=100,
+        null=True,
+        blank=True,
+        default=''
     )
 
     json_concept_mapping = models.FileField(
@@ -889,8 +889,7 @@ class DataLoader(models.Model):
         choices=DATA_LOADER_MODE_CHOICES,
         verbose_name='Data Loader Mode',
         help_text='The mode of the data loader.',
-        blank=False,
-        null=False
+        default=REPLACE_DATA_CODE
     )
 
     applied = models.BooleanField(
@@ -942,15 +941,20 @@ class DataLoader(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.date_time_uploaded:
-            self.date_time_uploaded = datetime.utcnow()
+            self.date_time_uploaded = timezone.now()
         super(DataLoader, self).save(*args, **kwargs)
 
 
 # method for updating
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
-        from .tasks import load_data_task
-        load_data_task.delay(instance.pk)
+        # below is old version task for uploading data from csv
+        # from .tasks import load_data_task
+        # load_data_task.delay(instance.pk)
+
+        # new task for uploading data from csv to osm
+        from api.tasks import upload_data_from_csv
+        upload_data_from_csv.delay(instance.pk)
 
 
 # register the signal

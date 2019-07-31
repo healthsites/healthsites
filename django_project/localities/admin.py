@@ -46,17 +46,16 @@ class SpecificationMA(ChangesetMixin, admin.ModelAdmin):
 admin.site.register(Specification, SpecificationMA)
 
 
-class DataUpdateAdmin(admin.ModelAdmin):
+class DataLoaderAdmin(admin.ModelAdmin):
     list_display = (
-        'organisation_name', 'author', 'data_loader_mode', 'date_time_uploaded', 'applied',
-        'date_time_applied'
+        'author', 'date_time_uploaded', 'applied', 'date_time_applied', 'notes'
     )
 
     def has_add_permission(self, request):
         return False
 
 
-admin.site.register(DataLoader, DataUpdateAdmin)
+admin.site.register(DataLoader, DataLoaderAdmin)
 
 
 class DataLoaderPermissionAdmin(admin.ModelAdmin):

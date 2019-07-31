@@ -13,7 +13,8 @@ from django.views.generic import FormView, ListView, View
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 
-from localities.models import Country, DataLoaderPermission
+from api.utils import is_organizer
+from localities.models import Country
 from masterization import report_locality_as_unconfirmed_synonym
 
 # register signals
@@ -46,9 +47,9 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         raise Http404 exception
         """
 
-        if not (all(param in request.GET for param in [
-                'bbox', 'zoom', 'iconsize', 'geoname',
-                'tag', 'spec', 'data', 'uuid'])):
+        if not all(param in request.GET for param in [
+                'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data',
+                'uuid']):
             raise Http404
 
         try:
@@ -180,10 +181,10 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     # searching by tag
                     if tag != '' and tag != 'undefined':
                         localities = (
-                            Value.objects
-                            .filter(specification__attribute__key='tags')
-                            .filter(data__icontains='|' + tag + '|')
-                            .values('locality')
+                            Value.objects.filter(
+                                specification__attribute__key='tags').filter(
+                                data__icontains='|' + tag + '|').values(
+                                'locality')
                         )
                         localities = Locality.objects.filter(id__in=localities)
                     else:
@@ -317,14 +318,12 @@ class DataLoaderView(LoginRequiredMixin, FormView):
         pass
 
     def get(self, request, *args, **kwargs):
-        permission = DataLoaderPermission.objects.filter(uploader=request.user)
-        if len(permission) <= 0 and not request.user.is_staff:
+        if not is_organizer(request.user):
             raise Http404('Can not access this page')
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        permission = DataLoaderPermission.objects.filter(uploader=request.user)
-        if len(permission) <= 0 and not request.user.is_staff:
+        if not is_organizer(request.user):
             raise Http404('Can not access this page')
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
@@ -342,21 +341,29 @@ class DataLoaderView(LoginRequiredMixin, FormView):
 def load_data(request):
     """Handling load data."""
     if request.method == 'POST':
+        # delete old import progress before processing the data
+        pathname = os.path.join(
+            settings.CACHE_DIR, 'csv-import-progress')
+        progress_file = os.path.join(
+            pathname, '{}.txt'.format(request.user.username))
+        if os.path.exists(progress_file):
+            os.remove(progress_file)
+
         form = DataLoaderForm(request.POST, files=request.FILES,
                               user=request.user)
         if form.is_valid():
             form.save(True)
-            # load_data_task.delay(data_loader.pk)
 
             response = {}
-            success_message = 'You have successfully upload your data'
+            success_message = 'You have successfully upload your data.'
 
             response['message'] = success_message
             response['success'] = True
             response['detailed_message'] = (
-                'Please wait several minutes for Healthsites to load your '
-                'data. We will send '
-                'you an email if we have finished loading the data.'
+                'Please wait for Healthsites to validate and load your data. '
+                'The status of all your data will be reported here once the '
+                'process has been finished. We will also send you an email if '
+                'we have finished processing your data.'
             )
             return HttpResponse(json.dumps(
                 response,

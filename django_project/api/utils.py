@@ -219,10 +219,14 @@ def verify_user(uploader, creator):
     except Http404:
         return False, 'User %s is not organizer of an organisation.' % uploader
 
-    if creator not in (
-            [trusted_user.user for trusted_user in TrustedUser.objects.filter(
-                organisation=organisation)]):
-        return False, 'User %s is not a trusted user.' % creator
+    try:
+        creator = get_object_or_404(User, username=creator)
+        if creator not in (
+                [trusted_user.user for trusted_user in TrustedUser.objects.filter(
+                    organisation=organisation)]):
+            return False, 'User %s is not a trusted user.' % creator
+    except Http404:
+        return False, 'User %s is not exist.' % creator
 
     return True, (
         'Data uploader is an organizer and creator/owner is a trusted user.')
@@ -301,7 +305,7 @@ def validate_osm_tags(osm_tags):
             if not (isinstance(item, unicode) and tag_definition.get('type') == str):
                 message = (
                     'Invalid value type for key `{}`: '
-                    'Expected type {}, got {} instead.').format(
+                    'Expected type `{}`, got `{}` instead.').format(
                     key, tag_definition['type'].__name__, type(item).__name__)
                 return False, message
 
@@ -314,7 +318,7 @@ def validate_osm_tags(osm_tags):
                 if row not in tag_definition.get('options'):
                     message = (
                         'Invalid value for key `{}`: '
-                        '{} is not a valid option.').format(key, row)
+                        '`{}` is not a valid option.').format(key, row)
                     return False, message
 
     return True, 'OSM tags are valid.'

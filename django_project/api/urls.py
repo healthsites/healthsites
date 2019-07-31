@@ -2,6 +2,7 @@
 from django.conf.urls import include, patterns, url
 from rest_framework.documentation import include_docs_urls
 
+from api.api_views.v2.import_progress import ImportCSVProgress
 from api.api_views.v2.schema import SchemaView
 from .views.api_view import Docs
 from .views.facilities import FacilitiesApiView
@@ -80,7 +81,9 @@ api_v2 = patterns(
     url(r'pending/', include(pending_api)),
     url(r'user/(?P<username>.*)/', include(user_api)),
     url(r'migration-progress/',
-        GetMigrationProgress.as_view(), name='api_get_migration_progress')
+        GetMigrationProgress.as_view(), name='api_get_migration_progress'),
+    url(r'csv-import-progress/',
+        ImportCSVProgress.as_view(), name='api_get_csv_import_progress')
 )
 
 urlpatterns = patterns(

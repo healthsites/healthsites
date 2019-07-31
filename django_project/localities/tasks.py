@@ -24,7 +24,7 @@ def send_email(data_loader, report, additional_email=[]):
     ]
     recipient_list = recipient_list + additional_email
 
-    email_message = 'Loading data for %s\n\n' % data_loader.organisation_name
+    email_message = 'Loading data\n\n'
 
     email_message += 'Details:\n'
     email_message += 'Uploader: %s\n' % data_loader.author

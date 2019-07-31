@@ -171,7 +171,7 @@ class GetFacilities(
         data = copy.deepcopy(request.data)
         # Now, we post the data directly to OSM.
         try:
-            # Validate data
+            # Split osm and extension attribute
             osm_attr, locality_attr = split_osm_and_extension_attr(
                 data['tag'])
             data['tag'] = osm_attr
