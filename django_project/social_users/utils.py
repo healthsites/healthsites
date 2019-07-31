@@ -86,7 +86,7 @@ def get_osm_name(user):
         response = session.get(url)
         if response.status_code == 200:
             username = \
-                response.content.split('display_name="')[1].split("\"")[0]
+                response.content.split('display_name="')[1].split('\"')[0]
             profile.osm_name = username
             profile.save()
             return profile.osm_name

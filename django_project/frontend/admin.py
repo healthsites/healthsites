@@ -47,7 +47,8 @@ class CampaignPageAdmin(FlatPageAdmin):
                'and create api key for the organizer'
 
     api_key.allow_tags = True
-    api_key.short_description = 'Api key for this campaign. Use this on the gather authentication.'
+    api_key.short_description = \
+        'Api key for this campaign. Use this on the gather authentication.'
 
 
 admin.site.unregister(FlatPage)
