@@ -43,7 +43,8 @@ class CampaignPageAdmin(FlatPageAdmin):
                 return api_key.api_key
             except UserApiKey.DoesNotExist:
                 pass
-        return "please assign organizer into organisation and create api key for the organizer"
+        return 'please assign organizer into organisation ' \
+               'and create api key for the organizer'
 
     api_key.allow_tags = True
     api_key.short_description = 'Api key for this campaign. Use this on the gather authentication.'
