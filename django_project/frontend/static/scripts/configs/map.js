@@ -33,10 +33,14 @@ require.config({
         'map-functionality': {
             deps: ['leaflet', 'leafletDraw']
         },
+        bootstrap: {
+            deps: ["jquery"]
+        }
     }
 });
 require([
     'jquery',
+    'bootstrap',
     'backbone',
     'underscore',
     'leaflet',

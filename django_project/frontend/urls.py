@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from envelope.views import ContactView
-
 from django.conf.urls import patterns, url
-
 from braces.views import FormMessagesMixin
-
 from .views import AboutView, AttributionsView, HelpView, MainView, \
     GatherEnrollmentView
+from .flatpages import views
 
 
 class MessagesContactView(FormMessagesMixin, ContactView):
@@ -26,4 +24,5 @@ urlpatterns = patterns(
     url(r'^help', HelpView.as_view(), name='help'),
     url(r'^map$', 'frontend.views.map', name='map'),
     url(r'^attributions$', AttributionsView.as_view(), name='attribution'),
+    url(r'^campaign/(?P<url>.*/)$', views.flatpage),
 )

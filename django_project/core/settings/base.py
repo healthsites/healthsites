@@ -109,7 +109,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.template.context_processors.i18n',
     'django.contrib.messages.context_processors.messages',
-    'core.middleware.project.version'
+    'core.middleware.project.version',
+    'core.middleware.project.FlatPageLinkMiddleware'
 )
 
 MIDDLEWARE_CLASSES = (

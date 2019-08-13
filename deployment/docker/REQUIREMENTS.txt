@@ -27,3 +27,4 @@ osmapi
 overpass
 requests_oauthlib
 mock
+django-ckeditor
