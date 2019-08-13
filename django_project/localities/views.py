@@ -48,7 +48,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         """
 
         if not all(param in request.GET for param in [
-            'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid']):
+                'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid']):
             raise Http404
 
         try:
