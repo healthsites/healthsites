@@ -2,7 +2,6 @@
 import itertools
 import json
 import logging
-from datetime import datetime
 
 from pg_fts.fields import TSVectorField
 
@@ -949,7 +948,7 @@ class DataLoader(models.Model):
 # method for updating
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
-        from .tasks import upload_data_from_csv
+        from api.tasks import upload_data_from_csv
         upload_data_from_csv.delay(instance.pk)
 
 

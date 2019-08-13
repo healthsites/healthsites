@@ -14,6 +14,7 @@ from django.http.response import HttpResponseBadRequest
 from api.api_views.v2.base_api import BaseAPIWithAuth
 from rest_framework.views import Response
 from social_users.models import Organisation, OrganisationSupported, TrustedUser
+from frontend.models import CampaignPage
 
 GATHER_USERNAME = ''
 GATHER_PASSWORD = ''
@@ -61,6 +62,15 @@ class GatherEnrollment(BaseAPIWithAuth):
         return r
 
     def get(self, request):
+        campaign_id = request.GET.get('campaign', None)
+        if not campaign_id:
+            return HttpResponseBadRequest('campaign is needed in params')
+
+        try:
+            campaign = CampaignPage.objects.get(id=campaign_id)
+        except CampaignPage.DoesNotExist:
+            return HttpResponseBadRequest('campaign is not found')
+
         password_characters = string.ascii_letters + string.digits + string.punctuation
         username = request.user.username
         # generate payload
@@ -101,7 +111,7 @@ class GatherEnrollment(BaseAPIWithAuth):
 
         data = {
             'general': {
-                'server_url': settings.GATHER_API_URL_ODK,
+                'server_url': campaign.gather_url,
                 'username': request.user.username,
                 'password': password,
             },

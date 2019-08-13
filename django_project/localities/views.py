@@ -50,7 +50,10 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         if not (all(param in request.GET for param in [
             'bbox', 'zoom', 'iconsize', 'geoname',
             'tag', 'spec', 'data', 'uuid'])):
-            raise Http404
+            if not all(param in request.GET for param in [
+                'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data',
+                'uuid']):
+                raise Http404
 
         try:
             bbox_poly = parse_bbox(request.GET.get('bbox'))

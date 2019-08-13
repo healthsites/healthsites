@@ -103,7 +103,7 @@ class TestUtils(TestCase):
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
             'Invalid value for key `amenity`: '
-            'not a clinic is not a valid option.')
+            '`not a clinic` is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
 
@@ -117,7 +117,7 @@ class TestUtils(TestCase):
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
-            'Invalid value for key `amenity`: 0 is not a valid option.')
+            'Invalid value for key `amenity`: `0` is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
 
@@ -133,7 +133,7 @@ class TestUtils(TestCase):
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
             'Invalid value for key `speciality`: '
-            'radiology is not a valid option.')
+            '`radiology` is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
 
