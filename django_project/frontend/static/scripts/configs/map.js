@@ -54,7 +54,7 @@ require([
     'static/scripts/views/map-sidebar/shapefile-downloader.js',
     'static/scripts/views/navbar/search.js',
     'static/scripts/views/map/app.js',
-], function ($, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App) {
+], function ($, bootstrap, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     parameters = new Parameters();
     map = new MAP();
@@ -143,7 +143,7 @@ require([
         e.preventDefault();
         var input = $('#coordinate-input').val();
         var coordinates = input.replaceAll(' ', '').split(',');
-        if(coordinates.length === 2) {
+        if (coordinates.length === 2) {
             shared.dispatcher.trigger('map.setCenter', coordinates);
         }
     })
