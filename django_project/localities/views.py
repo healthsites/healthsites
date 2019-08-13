@@ -47,13 +47,9 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         raise Http404 exception
         """
 
-        if not (all(param in request.GET for param in [
-            'bbox', 'zoom', 'iconsize', 'geoname',
-            'tag', 'spec', 'data', 'uuid'])):
-            if not all(param in request.GET for param in [
-                'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data',
-                'uuid']):
-                raise Http404
+        if not all(param in request.GET for param in [
+            'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data', 'uuid']):
+            raise Http404
 
         try:
             bbox_poly = parse_bbox(request.GET.get('bbox'))
@@ -184,10 +180,10 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                     # searching by tag
                     if tag != '' and tag != 'undefined':
                         localities = (
-                            Value.objects
-                                .filter(specification__attribute__key='tags')
-                                .filter(data__icontains='|' + tag + '|')
-                                .values('locality')
+                            Value.objects.filter(
+                                specification__attribute__key='tags').filter(
+                                data__icontains='|' + tag + '|').values(
+                                'locality')
                         )
                         localities = Locality.objects.filter(id__in=localities)
                     else:

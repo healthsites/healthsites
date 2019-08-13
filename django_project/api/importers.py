@@ -265,7 +265,7 @@ class CSVtoOSMImporter:
             except:  # noqa
                 upload_status.update({
                     'uploaded': False,
-                    'message': "{0}: {1}".format(
+                    'message': '{0}: {1}'.format(
                         unicode(sys.exc_info()[0].__name__),
                         unicode(sys.exc_info()[1]))
                 })
