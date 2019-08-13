@@ -8,7 +8,7 @@ import googlemaps
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.views.generic import FormView, ListView, View
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
@@ -48,8 +48,8 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
         """
 
         if not all(param in request.GET for param in [
-                'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data',
-                'uuid']):
+            'bbox', 'zoom', 'iconsize', 'geoname', 'tag', 'spec', 'data',
+            'uuid']):
             raise Http404
 
         try:
@@ -319,12 +319,12 @@ class DataLoaderView(LoginRequiredMixin, FormView):
 
     def get(self, request, *args, **kwargs):
         if not is_organizer(request.user):
-            raise Http404('Can not access this page')
+            return HttpResponseForbidden('Just orginizer can access this page')
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         if not is_organizer(request.user):
-            raise Http404('Can not access this page')
+            return HttpResponseForbidden('Just orginizer can access this page')
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
     def get_form_kwargs(self):
