@@ -24,3 +24,5 @@ class ImportCSVProgress(APIView):
             with open(progress_file) as json_file:
                 data = json.load(json_file)
                 return Response(data)
+        else:
+            return HttpResponseBadRequest('Username not provided.')

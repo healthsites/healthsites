@@ -14,6 +14,7 @@ from api.osm_field_definitions import ALL_FIELDS
 from api.osm_tag_defintions import ALL_TAGS
 from api.utils import remap_dict, verify_user, validate_osm_data, \
     convert_to_osm_tag, create_osm_node
+from api.utilities.pending import create_pending_update
 from core.settings.utils import ABS_PATH
 from localities_osm.utilities import split_osm_and_extension_attr
 
@@ -184,7 +185,8 @@ class CSVtoOSMImporter:
             # Verify data uploader and owner/collector if the API is being used
             # for uploading data from other osm user.
             if data.get('osm_user') and user.username != data.get('osm_user'):
-                is_valid, message = verify_user(user, data['osm_user'])
+                is_valid, message = verify_user(
+                    user, data['osm_user'], ignore_uploader_staff=True)
                 validation_status.update({
                     'is_valid': is_valid,
                     'message': message
@@ -214,8 +216,7 @@ class CSVtoOSMImporter:
                         'message': '%s' % e
                     })
 
-            self._validation_status['status'][row_number + 1] = (
-                validation_status)
+            self._validation_status['status'][row_number + 1] = validation_status
             if self.is_valid() and row_number + 1 == len(self._parsed_data):
                 # prepare for the next step, upload data
                 self._validation_status['count'] = row_number
@@ -255,7 +256,12 @@ class CSVtoOSMImporter:
             # Push data to OSM
             user = get_object_or_404(User, username=data['osm_user'])
             try:
-                _ = create_osm_node(user, data)
+                response = create_osm_node(user, data)
+
+                # create pending index
+                create_pending_update(
+                    'node', response['id'],
+                    data['tag']['name'], user, response['version'])
             except:  # noqa
                 upload_status.update({
                     'uploaded': False,

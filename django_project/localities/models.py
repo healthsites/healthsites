@@ -948,11 +948,6 @@ class DataLoader(models.Model):
 # method for updating
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
-        # below is old version task for uploading data from csv
-        # from .tasks import load_data_task
-        # load_data_task.delay(instance.pk)
-
-        # new task for uploading data from csv to osm
         from api.tasks import upload_data_from_csv
         upload_data_from_csv.delay(instance.pk)
 

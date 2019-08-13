@@ -14,12 +14,12 @@
 {% block content %}
     <div class="container data-loader-form-wrapper">
         <h3>Healthsites - Data Loader</h3>
-        <form id="data-loader-form"  class="" action="/load-data" method="post"
+        <form id="data-loader-form" class="" action="/load-data" method="post"
               enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p}}
+            {{ form.as_p }}
             <br>
-            <input type="submit" class="btn btn-primary" value="Submit" />
+            <input type="submit" class="btn btn-primary" value="Submit"/>
         </form>
         <div id="result" hidden>
             <p id="result_message"></p>
@@ -52,36 +52,36 @@
         });
 
         function upload(event) {
-                event.preventDefault();
-                let data = new FormData($(this).get(0));
+            event.preventDefault();
+            let data = new FormData($(this).get(0));
 
-                $.ajax({
-                    url: $(this).attr('action'),
-                    type: $(this).attr('method'),
-                    data: data,
-                    cache: false,
-                    processData: false,
-                    contentType: false,
-                    dataType: 'json',
-                    success: function(data) {
-                        $('#data-loader-form').hide();
-                        $('#result').show();
-                        $('#result_message').text(data['message']);
-                        $('#detailed_result_message').text(
-                                data['detailed_message']);
-                        if (data['success']) {
-                            interval = setInterval(getImportProgress, 250)
-                        }
-                    },
-                    error: function(xhr, status, error){
-                        $('#data-loader-form').hide();
-                        $('#result').show();
-                        $('#modal_close_button').hide();
-                        $('#result_message').text(data['message']);
-                        $('#detailed_result_message').text(xhr.responseText);
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (data) {
+                    $('#data-loader-form').hide();
+                    $('#result').show();
+                    $('#result_message').text(data['message']);
+                    $('#detailed_result_message').text(
+                        data['detailed_message']);
+                    if (data['success']) {
+                        interval = setInterval(getImportProgress, 250)
                     }
-                });
-            }
+                },
+                error: function (xhr, status, error) {
+                    $('#data-loader-form').hide();
+                    $('#result').show();
+                    $('#modal_close_button').hide();
+                    $('#result_message').text(data['message']);
+                    $('#detailed_result_message').text(xhr.responseText);
+                }
+            });
+        }
 
         function getImportProgress() {
             $('#progress-bar-wrapper').show();
@@ -114,7 +114,6 @@
                         }
                         $('#result_message').text('Import Result');
                         $('#detailed_result_message').text(data['summary']);
-                        $('#progress-bar-wrapper').hide();
                     }
                 }
             })
