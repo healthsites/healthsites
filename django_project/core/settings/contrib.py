@@ -9,14 +9,16 @@ INSTALLED_APPS = (
                  ) + INSTALLED_APPS
 
 INSTALLED_APPS += (
-    #'raven.contrib.django.raven_compat',  # enable Raven plugin
+    'raven.contrib.django.raven_compat',  # enable Raven plugin
     'social_django',
     'pg_fts',
     'django_forms_bootstrap',
     'celery',
     'rest_framework',
     'rest_framework_gis',
-    'django.contrib.gis'
+    'django.contrib.gis',
+    'django.contrib.flatpages',
+    'ckeditor'
 )
 
 STOP_WORDS = (
@@ -29,6 +31,8 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # Added for userena
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.openstreetmap.OpenStreetMapOAuth',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -100,7 +104,7 @@ DEFAULT_FILE_STORAGE = (
 PIPELINE_TEMPLATE_FUNC = '_.template'
 
 # enable cached storage - requires uglify.js (node.js)
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 # Contributed / third party js libs for pipeline compression
 # For hand rolled js for this app, use project.py

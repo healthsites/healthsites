@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.sites.models import Site
@@ -18,7 +18,24 @@ class Profile(models.Model):
 
     user = models.OneToOneField(
         User, default=1)
-    profile_picture = models.CharField(default='', max_length=150, blank=True)
+    profile_picture = models.CharField(
+        default='', max_length=512, blank=True)
+    osm_name = models.CharField(
+        default='', max_length=512, blank=True)
+
+
+class GatherUser(models.Model):
+    """
+    This is gather user information
+    """
+
+    user = models.OneToOneField(
+        User, default=1)
+    gather_id = models.IntegerField()
+    gather_password = models.CharField(max_length=512)
+
+    def __unicode__(self):
+        return u'%s' % self.user
 
 
 class Organisation(models.Model):
@@ -29,6 +46,7 @@ class Organisation(models.Model):
     name = models.CharField(blank=False, max_length=64)
     site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, default=None)
     contact = models.CharField(default='', blank=True, max_length=64)
+    organizer = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
     trusted_users = models.ManyToManyField(
         'TrustedUser', through='OrganisationSupported', blank=True
     )
@@ -62,7 +80,7 @@ class OrganisationSupported(models.Model):
         verbose_name='Is Staff',
         default=False
     )
-    date_added = models.DateField()
+    date_added = models.DateField(default=datetime.now)
 
 
 def trusted_user_deleted(sender, instance, **kwargs):

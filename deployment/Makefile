@@ -7,7 +7,8 @@ SHELL := /bin/bash
 #    P R O D U C T I O N     C O M M A N D S
 # ----------------------------------------------------------------------------
 default: web
-run: run-docker-osm build permissions web migrate collectstatic
+# run: run-docker-osm build permissions web migrate collectstatic version
+run: build permissions web migrate collectstatic version
 
 deploy: run
 	@echo
@@ -198,6 +199,13 @@ dbshell:
 	@echo "------------------------------------------------------------------"
 	@docker exec -t -i $(PROJECT_ID)-db psql -U docker -h localhost gis
 
+dbshell-osm:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Shelling in in production database"
+	@echo "------------------------------------------------------------------"
+	@docker exec -t -i dockerosm_db psql -U docker -h localhost gis
+
 dbrestore:
 	@echo
 	@echo "------------------------------------------------------------------"
@@ -295,3 +303,30 @@ renew-letsencrypt:
 	@echo "------------------------------------------------------------------"
 	@docker-compose -p $(PROJECT_ID) run uwsgi certbot renew --dry-run
 
+# -----------
+# check-version
+# -----------
+
+version:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Recheck git version"
+	@echo "------------------------------------------------------------------"
+	@git describe > ../django_project/core/settings/version.txt
+
+
+# ----------
+# docker osm
+# ----------
+rm-all: rm rm-volumes
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Removing production instance!!! "
+	@echo "------------------------------------------------------------------"
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) rm
+rm-volumes:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Removing all volumes!!!! "
+	@echo "------------------------------------------------------------------"
+	@docker volume rm $(PROJECT_ID)_osm-postgis-data $(PROJECT_ID)_import_queue $(PROJECT_ID)_import_done $(PROJECT_ID)_cache

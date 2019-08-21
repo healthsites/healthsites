@@ -4,8 +4,6 @@ import logging
 import django.forms as forms
 from django.forms import models
 
-from social_users.models import Organisation
-
 from .models import DataLoader, Domain
 from .utils import render_fragment
 
@@ -108,8 +106,7 @@ class DataLoaderForm(models.ModelForm):
         model = DataLoader
         fields = (
             'json_concept_mapping',
-            'csv_data',
-            'data_loader_mode',
+            'csv_data'
         )
 
     json_concept_mapping = forms.FileField(
@@ -122,41 +119,16 @@ class DataLoaderForm(models.ModelForm):
             attrs={'class': 'form-control'})
     )
 
-    data_loader_mode = forms.ChoiceField(
-        widget=forms.RadioSelect(
-            attrs={'class': 'form-control'}),
-        choices=DataLoader.DATA_LOADER_MODE_CHOICES,
-        initial=DataLoader.REPLACE_DATA_CODE,
-    )
-
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user', None)
         super(DataLoaderForm, self).__init__(*args, **kwargs)
 
-        if self.user.is_staff:
-            self.fields['organisations'] = forms.ChoiceField(
-                choices=[
-                    (org.id, org.name) for org in Organisation.objects.all().order_by('name')
-                ]
-            )
-        else:
-            self.fields['organisations'] = forms.ChoiceField(
-                choices=[
-                    (org.id, org.name) for org in (
-                        Organisation.objects.filter(trusted_users__user=self.user)
-                        .order_by('name')
-                    )
-                ]
-            )
-
     def save(self, commit=True):
         """Save method.
         """
-        data = self.cleaned_data
         data_loader = super(DataLoaderForm, self).save(commit=False)
         data_loader.author = self.user
         data_loader.applied = False
-        data_loader.organisation_name = Organisation.objects.get(id=data['organisations']).name
         if commit:
             data_loader.save()
         return data_loader

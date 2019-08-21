@@ -13,6 +13,12 @@ ADMINS = (
     ('Irwan Fathurrahman', 'irwan@kartoza.com')
 )
 
+APP_NAME = 'Healthsites.io'
+
+# OSM API endpoint
+OSM_API_URL = 'https://api.openstreetmap.org'
+DEV_OSM_API_URL = 'https://api06.dev.openstreetmap.org'
+
 # This should be done in prod rather
 SERVER_EMAIL = 'noreploy@healthsites.io'
 EMAIL_HOST = 'localhost'
@@ -45,7 +51,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = '/home/web/django_project/media'
+MEDIA_ROOT = '/home/web/media'
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -102,7 +108,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.template.context_processors.i18n',
-    'django.contrib.messages.context_processors.messages'
+    'django.contrib.messages.context_processors.messages',
+    'core.middleware.project.version',
+    'core.middleware.project.FlatPageLinkMiddleware'
 )
 
 MIDDLEWARE_CLASSES = (

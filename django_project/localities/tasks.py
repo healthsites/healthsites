@@ -5,12 +5,14 @@ from datetime import datetime
 
 from django.core import management
 from django.core.mail import send_mail
+from django.utils import timezone
 
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
 from .celery import app
 from .importers import CSVImporter
+from api.importers import CSVtoOSMImporter
 
 logger = get_task_logger(__name__)
 
@@ -24,7 +26,7 @@ def send_email(data_loader, report, additional_email=[]):
     ]
     recipient_list = recipient_list + additional_email
 
-    email_message = 'Loading data for %s\n\n' % data_loader.organisation_name
+    email_message = 'Loading data\n\n'
 
     email_message += 'Details:\n'
     email_message += 'Uploader: %s\n' % data_loader.author
@@ -131,20 +133,67 @@ def regenerate_cache(self, changeset_pk, locality_pk):
         print e
 
 
+@shared_task(name='localities.tasks.generate_shapefile')
+def generate_shapefile():
+    management.call_command('generate_shapefile_countries')
+
+
+# TODO: Below is used by Version 2
+# TODO: The above tasks will be deprecated
+# TODO: Move this into API app
+
 @app.task(bind=True)
 def regenerate_cache_cluster(self):
     from django.core.management import call_command
-    call_command('gen_cluster_cache', 48, 46)
-
-
-@shared_task(name='localities.tasks.generate_shapefile')
-def generate_shapefile():
-    management.call_command('generate_shapefile_v2')
+    call_command('generate_cluster_cache')
 
 
 @app.task(bind=True)
 def country_data_into_shapefile_task(self, country):
-    from localities.management.commands.generate_shapefile_v2 import (
+    from api.management.commands.generate_shapefile_countries import (
         country_data_into_shapefile
     )
     country_data_into_shapefile(country)
+
+
+@app.task(bind=True)
+def country_data_into_statistic_task(self, extent, country):
+    from django.core.management import call_command
+    if not extent:
+        extent = ''
+    if not country:
+        country = ''
+    call_command('generate_statistic_countries', extent=extent, country=country)
+
+
+@app.task(bind=True)
+def upload_data_from_csv(self, data_loader_pk):
+    # Put here to avoid circular import
+    from localities.models import DataLoader
+    try:
+        data_loader = DataLoader.objects.get(pk=data_loader_pk)
+
+        # import data from csv to osm
+        csv_importer = CSVtoOSMImporter(
+            data_loader,
+            data_loader.csv_data.path,
+            data_loader.json_concept_mapping.path)
+
+        # update data_loader
+        DataLoader.objects.filter(pk=data_loader_pk).update(
+            applied=csv_importer.is_applied(),
+            date_time_applied=timezone.now(),
+            notes=csv_importer.generate_report())
+
+        # update data_loader reference
+        data_loader = DataLoader.objects.get(pk=data_loader_pk)
+        logger.info('date_time_applied: %s' % data_loader.date_time_applied)
+
+        # send email
+        logger.info(csv_importer.generate_report())
+        send_email(
+            data_loader, csv_importer.generate_report(),
+            [data_loader.author.email])
+
+    except DataLoader.DoesNotExist as exc:
+        raise self.retry(exc=exc, countdown=30, max_retries=5)

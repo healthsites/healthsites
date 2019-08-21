@@ -32,4 +32,7 @@ LOGGING = {
     }
 }
 
-CLUSTER_CACHE_DIR = '/tmp/cache'
+# Cache folder
+CACHE_DIR = '/tmp/cache'
+CACHE_DIR = os.path.join(CACHE_DIR, 'cluster')
+CLUSTER_CACHE_MAX_ZOOM = 9

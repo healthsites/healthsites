@@ -14,6 +14,9 @@ env:
 python:
   - '2.7'
 
+sudo: false
+dist: trusty
+
 addons:
   postgresql: "9.4"
   apt:
@@ -28,6 +31,8 @@ install:
 before_script:
   - psql -c 'create database test_db;' -U postgres
   - psql -c 'CREATE EXTENSION postgis;' -U postgres -d test_db
+  - psql -c 'create database test_db_osm;' -U postgres
+  - psql -c 'CREATE EXTENSION postgis;' -U postgres -d test_db_osm
   - cd django_project
 
 script:

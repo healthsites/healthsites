@@ -1,0 +1,17 @@
+{
+  "type": "document",
+  "_meta": {
+    "url": "http://116.203.102.205/api/schema/",
+    "title": "Healthsites API Version 2 Schema"
+  },
+  "facilities": {
+    "create": {
+      "type": "link",
+      "url": "/api/v2/facilities",
+      "action": "post",
+      "encoding": "application/json",
+      "description": "Create new facility.",
+      "fields": []
+    }
+  }
+}

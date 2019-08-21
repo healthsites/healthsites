@@ -1,0 +1,212 @@
+#other-tags-table table {
+    width: 100%;
+}
+
+#other-tags-table td {
+    border: 1px solid #DDD;
+    padding: 5px 15px;
+    width: 50%;
+}
+
+.icon-holder {
+    width: 53px;
+    float: none !important;
+}
+
+.location-info {
+    padding-bottom: 16px;
+}
+
+
+#locality-info tr {
+    border-bottom: 1px solid #eff0f0;
+}
+
+#locality-info .input {
+    width: 150px;
+}
+
+#locality-info .data.empty {
+    font-style: italic;
+    opacity: 0.5;
+}
+
+.location-info .data-wrapper {
+    padding: 10px 20px !important;
+}
+
+#locality-info .header div {
+    margin-bottom: 5px;
+}
+
+#locality-info .header .input {
+    width: 100%;
+}
+
+#locality-info .input[type="checkbox"] {
+    width: auto !important;
+}
+
+#other-tags-table input, #other-tags-table select {
+    width: 100% !important;
+}
+
+.buttons .button-wrapper .button {
+    cursor: pointer;
+}
+
+.buttons .button-wrapper .button:hover {
+    opacity: 0.8;
+}
+
+.buttons .button-wrapper.disabled .button {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.buttons .button-wrapper.disabled .button:hover {
+    opacity: 0.5;
+}
+
+.coordinates {
+    margin-top: 5px;
+}
+
+
+.full-address input, .note input, .ownership input, .tags input {
+    width: 100% !important;
+}
+
+.tags ul {
+    padding-left: 0;
+}
+
+[data-required="true"] .tag-key {
+    font-weight: 600;
+}
+
+.tags .fa-info-circle {
+    cursor: default;
+    display: none;
+    opacity: 0.7;
+}
+
+#locality-error {
+    padding: 20px;
+    display: none;
+    text-align: center;
+    padding-top: 100px;
+    font-size: 14px;
+}
+
+.btn-group.share {
+    width: 100%;
+}
+
+.dropup {
+    position: relative;
+    display: inline-block;
+}
+
+.dropup-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 160px;
+    bottom: 50px;
+    z-index: 1;
+}
+
+.dropup-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    border: 1px solid #eee;
+}
+
+.dropup-content a:hover {
+    background-color: #ccc
+}
+
+.button.share {
+    display: inherit !important;
+}
+
+.btn-share {
+    margin-right: -5px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: 2px solid !important;
+    width: 66%;
+}
+
+.btn-share-icon {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-left: none !important;
+    width: 34%;
+}
+
+.share-icon-click {
+    background-color: #ccc !important;
+}
+
+.btn-share-icon:focus {
+    outline: none;
+}
+
+.coordinate-input-container {
+    background: #fff;
+    border: 1px solid grey;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.65);
+    border-radius: 4px;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+
+.coordinate-input-wrapper {
+    position: fixed;
+    padding-left: 90px !important;
+    padding-right: 10px !important;
+    bottom: 10px !important;
+}
+
+.coordinate-input-container input, .coordinate-input-container button {
+    border: none;
+    background: white !important;
+    padding: 7px;
+    font-size: 12px;
+}
+
+.coordinate-input-container button {
+    float: right;
+}
+
+.coordinate-input-container input:focus {
+    outline: none;
+}
+
+.coordinate-input-container input::-webkit-input-placeholder {
+    color: #3c4c57;
+}
+
+.coordinate-input-container input::-moz-placeholder {
+    color: #3c4c57;
+}
+
+/* Firefox 19+ */
+.coordinate-input-container input:-moz-placeholder {
+    color: #3c4c57;
+}
+
+/* Firefox 18- */
+.coordinate-input-container input:-ms-input-placeholder {
+    color: #3c4c57;
+}
+
+#review-error {
+    color: red;
+    padding-bottom: 18px;
+    font-style: italic;
+}

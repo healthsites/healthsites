@@ -6,6 +6,7 @@ Adjust these values as needed but don't commit passwords etc. to any public
 repository!
 """
 
+import os
 from django.utils.translation import ugettext_lazy as _
 
 from .celery_setting import *
@@ -16,7 +17,7 @@ from .secret import *  # NOQA
 INSTALLED_APPS += (
     'localities',
     'localities_osm',
-    'localities_healthsites_osm',
+    'localities_osm_extension',
     'frontend',
     'social_users',
     'api',
@@ -48,15 +49,18 @@ LOCALE_PATHS = [ABS_PATH('locale')]
 # Maybe we can split these between project-home and project-map
 PIPELINE_JS['home'] = {
     'source_filenames': (
-        'js/index-page.js',
+        # this is new using require
+        'libs/require.js/2.3.6/require.min.js',
+        'scripts/configs/index.js'
     ),
     'output_filename': 'js/home.js',
 }
 PIPELINE_JS['map.js'] = {
     'source_filenames': (
-        'js/map-page.js',
+        'libs/require.js/2.3.6/require.min.js',
+        'scripts/configs/map.js'
     ),
-    'output_filename': 'js/map.js.js',
+    'output_filename': 'js/map.js',
 }
 
 PIPELINE_JS['project'] = {
@@ -73,10 +77,7 @@ PIPELINE_JS['project'] = {
 }
 PIPELINE_JS['map'] = {
     'source_filenames': (
-        'js/cluster-layer.js',
         'js/locality-sidebar.js',
-        'js/map-functionality.js',
-        'js/_app.js',
     ),
     'output_filename': 'js/map.js',
 }
@@ -87,6 +88,8 @@ PIPELINE_CSS['project'] = {
     'source_filenames': (
         'css/site.css',
         'css/profile.css',
+        'css/map/locality-sidebar.css',
+        'css/map/modal-duplication.css',
         'css/jquery.cookiebar.css'
     ),
     'output_filename': 'css/project.css',
@@ -115,9 +118,17 @@ PIPELINE_CSS['home'] = {
 }
 
 # Cache folder
-CLUSTER_CACHE_DIR = 'cache'
+CACHE_DIR = '/home/web/cache'
+CLUSTER_CACHE_DIR = os.path.join(CACHE_DIR, 'cluster')
+STATISTIC_CACHE_DIR = os.path.join(CACHE_DIR, 'statistic')
 CLUSTER_CACHE_MAX_ZOOM = 5
+MAX_ZOOM = 18
 
 # WHAT3WORDS API
 WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'
 DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
+
+# TODO: MOVE IT AS ADMIN SETTING
+GATHER_API_URL = 'http://gather.staging.healthsites.io/dev/'
+GATHER_API_URL_ODK = 'http://gather.staging.healthsites.io:8443/dev/odk'
+DUPLICATION_RADIUS = 100  # in meters

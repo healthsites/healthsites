@@ -111,7 +111,7 @@ Healthsites is using cache to fasten the process. To generate this process, some
 ```
 cd healthsites/deployment
 make shell
-python manage.py gen_cluster_cache 48 46
+python manage.py generate_cluster_cache
 python manage.py generate_countries_cache
 ```
 
@@ -128,7 +128,7 @@ When we access page per country, there will be button to download shapefile.
 The generation of shapefile will be done in background for every 24 hours.
 But if we want to run it manually, we can do
 ```
-python manage.py generate_shapefile_v2
+python manage.py generate_shapefile_countries
 ```
 
 ## Development setup
@@ -175,3 +175,4 @@ Now project settings is setup, our next step is setup run configuration to run o
 6. Python interpreter= Select the one that we create, which has sentences `localhost:49363`
 7. Click OK and run!
 ```
+

@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, User
 
-from social_users.models import Profile, TrustedUser
+from social_users.models import Profile, TrustedUser, GatherUser
 
 from .models import Organisation
 
@@ -40,7 +40,7 @@ admin.site.register(TrustedUser, TrustedUserAdmin)
 
 
 class OrganisationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'site', 'contact', 'list_trusted_user')
+    list_display = ('name', 'site', 'contact', 'organizer', 'list_trusted_user')
 
     def list_trusted_user(self, obj):
         template_format = '<span><a href="/admin/social_users/trusteduser/%s">%s</a></span>'
@@ -137,3 +137,4 @@ class UserAdmin(BaseUserAdmin):
 admin.site.unregister(Group)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
+admin.site.register(GatherUser, admin.ModelAdmin)

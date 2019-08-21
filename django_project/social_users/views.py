@@ -1,22 +1,17 @@
 # -*- coding: utf-8 -*-
-import json
+import os
 import logging
-from datetime import datetime
 
+from django.conf import settings
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
-from django.core.serializers.json import DjangoJSONEncoder
-from django.db.models import Count, Max, Min
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.http import HttpResponseRedirect
 from django.views.generic import TemplateView, View
 
 from braces.views import LoginRequiredMixin
 
 from api.models.user_api_key import UserApiKey
-from core.utilities import extract_time
-from localities.models import Locality, LocalityArchive
-from localities.utils import extract_updates, get_update_detail
+from localities.models import Locality
 from social_users.models import Profile
 from social_users.utils import get_profile
 
@@ -42,18 +37,46 @@ class ProfilePage(TemplateView):
         *debug* toggles GoogleAnalytics support on the main page
         """
 
-        user = get_object_or_404(User, username=kwargs['username'])
-        user = get_profile(user)
         context = super(ProfilePage, self).get_context_data(*args, **kwargs)
-        context['user'] = user
+        try:
+            user = User.objects.get(username=kwargs['username'])
+            user = get_profile(user, self.request)
+            osm_user = False
 
+            if self.request.user == user:
+                # this is for checking availability old data
+                old_data = Locality.objects.filter(
+                    changeset__social_user__username=user, migrated=False
+                )
+
+                if old_data:
+                    context['old_data_available'] = True
+
+                pathname = \
+                    os.path.join(
+                        settings.CACHE_DIR, 'data-migration-progress')
+                progress_file = \
+                    os.path.join(pathname, '{}.txt'.format(user))
+                found = os.path.exists(progress_file)
+
+                if found:
+                    context['data_migration_in_progress'] = True
+
+                autogenerate_api_key = False
+                if user.is_superuser:
+                    autogenerate_api_key = True
+                context['api_keys'] = UserApiKey.get_user_api_key(
+                    self.request.user, autogenerate=autogenerate_api_key)
+        except User.DoesNotExist:
+            user = {
+                'username': kwargs['username']
+            }
+            osm_user = True
+
+        context['user'] = user
+        context['osm_user'] = osm_user
         context['api_keys'] = None
-        if self.request.user == user:
-            autogenerate_api_key = False
-            if user.is_superuser:
-                autogenerate_api_key = True
-            context['api_keys'] = UserApiKey.get_user_api_key(
-                self.request.user, autogenerate=autogenerate_api_key)
+        context['osm_API'] = settings.OSM_API_URL
         return context
 
 
@@ -68,13 +91,6 @@ class LogoutUser(View):
 
 
 def save_profile(backend, user, response, *args, **kwargs):
-    url = None
-    if backend.name == 'facebook':
-        url = 'http://graph.facebook.com/%s/picture?type=large' % response['id']
-    if backend.name == 'twitter':
-        url = response.get('profile_image_url', '').replace('_normal', '')
-    if backend.name == 'google-oauth2':
-        url = response['image'].get('url')
     # get old user
     if kwargs['is_new']:
         if 'username' in kwargs['details']:
@@ -87,65 +103,25 @@ def save_profile(backend, user, response, *args, **kwargs):
                     User.objects.get(username=old_username).delete()
                 except User.DoesNotExist:
                     pass
-    try:
-        profile = Profile.objects.get(user=user)
-    except Profile.DoesNotExist:
-        profile = Profile(user=user)
-    if url:
-        profile.profile_picture = url
+
+    profile_picture = None
+    if backend.name == 'facebook':
+        profile_picture = 'http://graph.facebook.com/%s/picture?type=large' % response['id']
+    elif backend.name == 'twitter':
+        profile_picture = response.get('profile_image_url', '').replace('_normal', '')
+    elif backend.name == 'google-oauth2':
+        profile_picture = response['image'].get('url')
+    elif backend.name == 'openstreetmap':
+        profile_picture = response['avatar']
+
+    profile, created = Profile.objects.get_or_create(user=user)
+    if profile_picture:
+        profile.profile_picture = profile_picture
     profile.save()
+
+    kwargs['request'].session['social_auth'] = {
+        'profile_picture': profile_picture,
+        'provider': backend.name
+    }
+
     return {'user': user}
-
-
-def user_updates(user, date):
-    updates = []
-    # from locality archive
-    ids = (
-        LocalityArchive.objects
-        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-        .order_by('-changeset__created')
-        .values('changeset', 'object_id')
-        .annotate(id=Min('id')).values('id')
-    )
-    updates_temp = (
-        LocalityArchive.objects
-        .filter(changeset__social_user=user).filter(changeset__created__lt=date)
-        .filter(id__in=ids)
-        .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-        .annotate(edit_count=Count('changeset'), locality_id=Max('object_id'))[:10]
-    )
-    changesets = []
-    for update in updates_temp:
-        changesets.append(update['changeset'])
-        updates.append(get_update_detail(update))
-
-    # get from locality if not in Locality Archive yet
-    updates_temp = (
-        Locality.objects
-        .filter(changeset__social_user=user).exclude(changeset__in=changesets)
-        .order_by('-changeset__created')
-        .values('changeset', 'changeset__created', 'changeset__social_user__username', 'version')
-        .annotate(edit_count=Count('changeset'), locality_id=Max('id'))[:10]
-    )
-    for update in updates_temp:
-        updates.append(get_update_detail(update))
-
-    updates.sort(key=extract_time, reverse=True)
-    return updates[:10]
-
-
-def get_user_updates(request):
-    if request.method == 'GET':
-        date = request.GET.get('date')
-        user = request.GET.get('user')
-        if not date:
-            date = datetime.now()
-        user = get_object_or_404(User, username=user)
-        last_updates = user_updates(user, date)
-        updates = extract_updates(last_updates)
-        result = {}
-        result['last_update'] = updates
-        result = json.dumps(result, cls=DjangoJSONEncoder)
-
-    return HttpResponse(result, content_type='application/json')

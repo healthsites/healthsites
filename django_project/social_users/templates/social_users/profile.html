@@ -5,28 +5,37 @@
 {% block title %}Healthsites{% endblock %}
 
 {% block content %}
+    {% if old_data_available and not data_migration_in_progress %}
+        <div class="migration-info">We are migrating all data into OSM data, thus your healthsites data will not be displayed on the map. Please migrate your data into OSM data by clicking on
+            <button class="btn btn-primary btn-migrate" title="in development" disabled>Migrate</button>
+            .
+            <span class="pull-right" style="margin-right: 20px; cursor: pointer" onclick="$('.migration-info').remove()">
+                <i class="fa fa-times" aria-hidden="true"></i>
+            </span>
+        </div>
+    {% endif %}
     <section class="white container">
         <div class="col-sm-4 user-profile">
             <div class="profile-image-size">
+                {% if user.social_auth.get.provider == "openstreetmap" %}
+                    <img style="height: 40px" class="profile-image-icon" src="{% static "img/osm-logo.png" %}"/>
+                {% endif %}
+                {% if user.provider %}
+                    {% if user.provider == "facebook" %}
+                        <a href="https://www.facebook.com/{{ social.user_link }}" target="_blank"><i
+                                class="fa fa-facebook-square profile-image-icon"></i></a>
+                    {% elif user.provider == "twitter" %}
+                        <a href="https://twitter.com/{{ social.uid }}" target="_blank"><i
+                                class="fa fa-twitter-square profile-image-icon"></i></a>
+                    {% endif %}
+                {% endif %}
                 {% if user.profile_picture == "" %}
-                    <img class="profile-image" src="{% static "img/no-profile-img.gif" %}"/>
+                    <img src="{% static "img/no-profile-img.gif" %}" width="100%"/>
                 {% else %}
-                    <img class="profile-image" src="{{ user.profile_picture }}"/>
+                    <img src="{{ user.profile_picture }}" width="100%"/>
                 {% endif %}
             </div>
             <div class="name" style="font-size: 24px">
-                {% if user.social %}
-                    {% for social in user.social %}
-                        {% if social.provider == "facebook" %}
-                            <a href="https://www.facebook.com/{{ social.uid }}" target="_blank"><i
-                                    class="fa fa-facebook-square"></i></a>
-                        {% endif %}
-                        {% if social.provider == "twitter" %}
-                            <a href="https://twitter.com/{{ social.uid }}" target="_blank"><i
-                                    class="fa fa-twitter-square"></i></a>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
             </div>
             <div class="profile-header">
                 <h1>{{ user.screen_name }}</h1>
@@ -42,6 +51,9 @@
                     -
                 {% else %}
                     {{ user.get_full_name }}
+                {% endif %}
+                {% if osm_user %}
+                    <img src="{% static "img/osm-logo.png" %}" height="20px" data-toggle="tooltip" data-placement="top" title="OSM User"/> OSM User
                 {% endif %}
             </div>
             {% if user.is_trusted_user %}
@@ -99,62 +111,192 @@
             <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< view previous</a>
                 <a class="next opacity-7" onclick="changePage(this)">view
                     next ></a></div>
+            <br>
+            <div id="pending-update" class="pending" style="display: none">
+                <h3>Healthsites in pending</h3>
+                <div><i style="color: grey; font-size: 12px">This list contains healthsite that you uploaded to osm, and it was success but HS.io haven't pulled your data from osm yet.
+                    The estimation will be 2-5 minutes from uploaded.</i></div>
+                <br>
+                <div class="pending-wrapper">
+                    <div class="graph updates">
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div id="duplication" class="pending" style="display: none">
+                <h3>Suspected duplicate records</h3>
+
+                <div class="pending-wrapper">
+                    <div class="graph updates">
+                    </div>
+                </div>
+            </div>
+            <br>
+            <div id="pending-review" class="pending" style="display: none">
+                <h3>Error records when submitted</h3>
+                <div><i style="color: grey; font-size: 12px">This list contains records that you uploaded before from odk,
+                    but was not success because of some error.</i></div>
+                <br>
+                <div class="pending-wrapper">
+                    <div class="graph updates">
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
+    {% if data_migration_in_progress or old_data_available %}
+        <section>
+            <div id="migration-progress-bar-wrapper" class="container" style="display: none">
+                <h5>Data migration progress:</h5>
+                <div class="progress">
+                    <div id="migration-progress-bar" class="progress-bar progress-bar-success" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+                        0%
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% endif %}
 {% endblock content %}
 
 {% block extra_js %}
     <script>
-        $(document).ready(function () {
+        var interval;
+        var osmURL = "{{ osm_API }}";
+
+        function migrateClicked() {
+            $('.loading-icon').show();
             $.ajax({
-                url: "{% url 'user-updates' %}",
-                dataType: 'json',
+                url: '{% url "migrate-user-data" user.username %}',
+                success: function (data) {
+                    $('.migration-info').hide();
+                    $('.migrate-btn-wrapper').hide();
+                    $('#migration-progress-bar-wrapper').show();
+                    interval = setInterval(getMigrationProgress, 250);
+                }
+            })
+        }
+
+        function getMigrationProgress() {
+            $.ajax({
+                url: '{% url "api_get_migration_progress" %}',
                 data: {
-                    user: "{{ user.username }}"
+                    username: "{{ user.username }}"
                 },
                 success: function (data) {
-                    if ($("#updates-99").length > 0) {
-                        $("#updates-wrapper").html("");
-                    }
-                    if (data.last_update.length > 0) {
-                        for (var i = 0; i < data.last_update.length; i++) {
-                            var page = parseInt(i / 10);
-                            var wrapper = $("#updates-" + page);
-                            if (wrapper.length > 0) {
+                    var progress = Math.round((data['count'] / data['total']) * 100);
+                    $('#migration-progress-bar').css('width', progress + '%').html(progress + '% Complete')
 
-                            } else {
-                                $("#updates-wrapper").append('<div id="updates-' + page + '" class="graph updates"></div>');
-                                wrapper = $("#updates-" + page);
-                                if (page != 0) {
-                                    wrapper.hide();
-                                }
+                    if (progress === 100) {
+                        clearInterval(interval)
+                    }
+                },
+                error: function (data) {
+                    clearInterval(interval)
+                }
+            })
+        }
+
+        $(document).ready(function () {
+            if ('{{ data_migration_in_progress }}' === 'True') {
+                $('#migration-progress-bar-wrapper').show();
+            }
+
+            var $updates99 = $("#updates-99");
+            var $updatesWrappeer = $("#updates-wrapper");
+            $.ajax({
+                url: "/api/v2/user/{{ user.username }}/changesets",
+                dataType: 'json',
+                success: function (data) {
+                    if ($updates99.length > 0 && data.length !== 0) {
+                        $updatesWrappeer.html("");
+                    }
+                    $.each(data, function (i, update) {
+                        var page = parseInt(i / 10);
+                        var $page = $("#updates-" + page);
+                        if ($page.length === 0) {
+                            $updatesWrappeer.append('<div id="updates-' + page + '" class="graph updates"></div>');
+                            $page = $("#updates-" + page);
+                            if (page !== 0) {
+                                $page.hide();
                             }
-                            var update = data.last_update[i];
+                        }
+                        var html = "<div class=\"entry\">";
+                        html += "<div class=\"entry\">";
+                        html += "<span class=\"date\">" + getDateString(update.changeset_timestamp) + "</span> - ";
+                        html += "<span class=\"name\">";
+                        html += "<a href=\"/profile/" + update.changeset_user + "\">@" + update.changeset_user + "</a></span> - ";
+                        var mode = "added";
+                        if (update.changeset_version > 1) {
+                            mode = "amended";
+                        }
+
+                        //{# update the html #}
+                        html += "<a href=\"/map#!/locality/" + update.uuid + "\" class=\"location-name\">" + update.name + "</a>";
+                        html += "<span class=\"location-name\"> " + mode + " </span>";
+                        html += "</div>";
+                        $page.append(html);
+                    });
+                    updateButton();
+                }
+            });
+            var isStaff = "{{ request.user.is_staff }}";
+            if (isStaff !== "True" && "{{ user.username  }}" !== "{{ request.user.username }}") {
+                return;
+            }
+            $.ajax({
+                url: "/api/v2/user/{{ user.username }}/updates",
+                dataType: 'json',
+                success: function (data) {
+                    // Show pending updates
+                    if (data.length > 0) {
+                        $('#pending-update').show();
+                        var $wrapper = $('#pending-update').find('.graph');
+                        $.each(data, function (index, value) {
                             var html = "<div class=\"entry\">";
                             html += "<div class=\"entry\">";
-                            html += "<span class=\"date\">" + getDateString(update.date_applied) + "</span> - ";
+                            html += "<span class=\"date\">" + getDateString(value.time_uploaded) + "</span> - ";
                             html += "<span class=\"name\">";
-                            html += "<a href=\"/profile/" + update.author + "\">@" + update.author_nickname + "</a></span> - ";
-                            var mode = "";
-                            if (update.mode == 1) {
-                                mode = "added";
-                            } else {
-                                mode = "amended";
-                            }
-                            {# update the html #}
-                            if (update.data_count == 1) {
-                                html += "<a href=\"/map#!/locality/" + update.locality_uuid + "\" class=\"location-name\">" + data.last_update[i].locality + "</a>";
-                                html += "<span class=\"location-name\"> " + mode + " </span>";
-                            } else {
-                                html += "<span class=\"location-name\">" + data.last_update[i].data_count + " HS/" + mode + "</span>";
-                            }
+                            html += "<a href=\"/profile/" + value.uploader + "\">@" + value.uploader + "</a></span> - ";
+                            html += "<a href='" + osmURL + "/" + value.osm_type + "/" + value.osm_id + "'>" + value.name + "</a>";
                             html += "</div>";
-                            wrapper.append(html);
-                        }
-                        updateButton();
+                            $wrapper.append(html);
+                        });
                     }
                 }
             });
+
+            $.ajax({
+                url: "/api/v2/user/{{ user.username }}/reviews",
+                dataType: 'json',
+                success: function (data) {
+                    // Show pending reviews
+                    if (data.length > 0) {
+                        $.each(data, function (index, value) {
+                            var $wrapper = null;
+                            var html = "<table class=\"entry\">";
+                            html += "<tr>" +
+                                "<td valign=\"top\"><a href=\"/map#!/review/" + value.id + "\" class=\"btn btn-default\" style=\"margin-right:5px\">Resolve on map</a><td>"
+                            html += '<td>' + value.name + " - ";
+                            html += "captured at <span class=\"date\">" + getDateString(value.time_uploaded) + "</span> ";
+                            html += "<span class=\"name\">";
+                            html += "by <a href=\"/profile/" + value.uploader + "\">@" + value.uploader + "</a></span> ";
+                            if (value.reason.indexOf("Duplication") >= 0) {
+                                $wrapper = $('#duplication').find('.graph');
+                                $('#duplication').show();
+                            } else {
+                                html += ' (' + value.reason + ')';
+                                $wrapper = $('#pending-review').find('.graph');
+                                $('#pending-review').show();
+                            }
+                            html += "</td></table>";
+                            $wrapper.append(html);
+                        });
+                    }
+                }
+            });
+
+            interval = setInterval(getMigrationProgress, 250);
+
         });
     </script>
 {% endblock extra_js %}

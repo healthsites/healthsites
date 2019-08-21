@@ -52,82 +52,12 @@
     </head>
 
 <body class="body home" itemscope itemtype="http://schema.org/Organization">
-<img src="http://healthsites.mashastudio.net/img/healthsites-fb.png" itemprop="image" width="0" height="0"/>
-<nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
-    <div class="container-fluid">
-        <div class="navbar-header">
-
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar"><span class="sr-only">Toggle navigation</span> <span
-                    class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
-            <button type="button" class="search-toggle collapsed"><span class="sr-only">Search</span><a
-                    class="navbar-search" href="#"><i class="fa fa-search"></i></a></button>
-            <a class="navbar-brand" href="#"><span class="hs-logo"></span>healthsites.io</a>
-            <a class="navbar-share closed" href="#"><img class="share" src="static/img/share.svg" width="20"/><img
-                    class="close" src="static/img/close.svg" width="16"/></a>
-
-            <div class="hidden" id="site-social">
-                <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
-                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   class="withripple twitter-href" target="_blank">
-                    <i class="fa fa-twitter"></i></a>
-                <a class="facebook-hs-share withripple facebook-href" target="_blank">
-                    <i class="fa fa-facebook"></i></a>
-                <a class="googleplus-href"
-                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   target="_blank">
-                    <i class="fa fa-google-plus"></i>
-                </a>
-                <a class="linkedin-href"
-                   href="https://www.linkedin.com/shareArticle?mini=true&url=http://healthsites.io&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data"
-                   target="_blank">
-                    <i class="fa fa-linkedin"></i>
-                </a>
-            </div>
-            <span class="tagline" itemprop="description">Building an open data commons of health facility data with OpenStreetMap</span>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse pull-right">
-            <ul class="nav navbar-nav">
-                <li><a href="https://medium.com/healthsites-io" target="_blank">Blog</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="/map">Map</a></li>
-                <li><a href="#country-data">Country data</a></li>
-                <li><a href="#lifecycle">How it works</a></li>
-                <li><a href="#share-data">Share data</a></li>
-                <li><a href="#partners">Partners</a></li>
-                <li class="nav-search-wrap"><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
-                <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i
-                        class="fa fa-comments"></i></a></li>
-            </ul>
-
-        </div>
-        <!--/.nav-collapse -->
-
-    </div>
-    <div class="nav-searchbar container-fluid">
-        <form action="map" method="POST">
-            <div class="option-group">
-                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite" checked><span></span><label class="option"
-                                                                                                       for="radio-healthsite">healthsite</label>
-                </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
-                                                        value="place"><span></span><label class="option"
-                                                                                          for="radio-healthsite">place</label>
-                </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-what3words"
-                                                        value="what3words"><span></span><label class="option"
-                                                                                               for="radio-what3words">what3words</label>
-                </div>
-            </div>
-            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
-        </form>
-    </div>
-</nav>
+{% include "sections/navbar.html" %}
 <section id="tophome" class="slideshow js-fullheight fluid-container">
     <div class="slideshow-container limiter pin-top pin-bottom clearfix">
         <div class="z1 slideshow-text pad4y col-md-4 prose prose-big dark">
-            <h2 class="fancy"><span id="healthsites-count"><i style="opacity: 0.3">loading</i><br/></span>
+            <h2 class="fancy ">
+                <span id="healthsites-count" style="opacity: 0.3"><i>loading</i></span><br/>
                 healthsites added</h2>
 
             <div class="cta col-md-12 clearfix pad0x">
@@ -188,7 +118,7 @@
                                                 onerror="this.onerror=null; this.src='image.png'"></div>
                 <div class="col-md-8 pad0x">
                     <strong>Open data collaboration</strong><br/>
-                    Through collaborations with users, trusted partners and OpenStreepMap we will capture and validate
+                    Through collaborations with users, trusted partners and OpenStreetMap we will capture and validate
                     the location and contact details of every facility and make this data freely available under an Open
                     Data License (ODBL)'
                 </div>
@@ -200,7 +130,7 @@
                 <div class="col-md-8 pad0x">
                     <strong>Accessible</strong><br/>
                     We will make the data accessible over the Internet through an API and other formats such as GeoJSON,
-                    Shape files, KML, CSV
+                    Shapefile, KML, CSV
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
@@ -265,16 +195,18 @@
         <div id="map-home" class="col-md-6 map" style="height: 621px">
             <div id="map" style="height: 100%">
             </div>
-            <div class="select-country">
-                <form id="country-form">
-                    <input id="country-search-box" name="country" type="search" placeholder="type country name"/>
-                    <button type="submit" value="Submit"><i class="fa fa-search"></i></button>
-                </form>
+            <div class="select-country-wrapper">
+                <div class="select-country">
+                    <form id="country-form">
+                        <input id="country-search-box" name="country" type="search" placeholder="type country name"/>
+                        <button type="submit" value="Submit"><i class="fa fa-search"></i></button>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="col-md-6 country-data pad10x">
-            <h2 class="col-md-12"><strong><a id="country-title" href="#">World</a></strong> - <span
-                    id="country-locality-number"
+            <h2 class="col-md-12"><strong><a id="title" href="#">World</a></strong> - <span
+                    id="locality-number"
                     class="number">{{ locality_count }}</span>
                 healthsites</h2>
 
@@ -282,7 +214,7 @@
                 <h3>Number of heathsites per type</h3>
 
                 <div class="graph">
-                    <div id="chart1"></div>
+                    <div id="chart"></div>
 
                     <script>
                     </script>
@@ -305,10 +237,8 @@
                         <div class="entry">-</div>
                     </div>
                 </div>
-                <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< view previous
-                    updates</a>
-                    <a class="next opacity-7" onclick="changePage(this)">view
-                        next updates ></a></div>
+                <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< previous</a>
+                    <a class="next opacity-7" onclick="changePage(this)">next ></a></div>
             </div>
         </div>
     </div>
@@ -341,7 +271,8 @@
     <div class="container">
         <h3>Partners</h3>
         <ul class="partners-list">
-            <li><a href="http://healthcareindanger.org/hcid-project/" target="_blank"><img src="{% static "img/hcid-logo.png" %}"/></a></li>
+            <li><a href="https://www.geomatica-services.com/" target="_blank"><img src="{% static "img/geomatica.png" %}"/></a></li>
+<!--            <li><a href="http://healthcareindanger.org/hcid-project/" target="_blank"><img src="{% static "img/hcid-logo.png" %}"/></a></li>-->
             <li><a href="https://www.icrc.org/" target="_blank"><img src="{% static "img/icrc-logo.png" %}"/></a></li>
             <li><a href="https://www.ihf-fih.org/" target="_blank"><img src="{% static "img/ihf-logo.png" %}"/></a></li>
             <li><a href="https://hotosm.org/" target="_blank"><img src="{% static "img/hot-logo.png" %}"/></a></li>
@@ -353,208 +284,28 @@
         </ul>
     </div>
 </section>
-<footer id="colophon">
-    <div class="container">
-        <div class="col-md-3 pad0x">
-            <ul class="footer-nav-1">
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Vision" target="_blank">Vision</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Participate"
-                       target="_blank">Participate</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road
-                    map</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites---terms-of-use">Terms of
-                    use</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Healthsites.io---ip-policy">IP policy</a>
-                </li>
-            </ul>
-        </div>
-        <div class="col-md-3 pad0x">
-            <ul class="footer-nav-2">
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Data" target="_blank">Data</a></li>
-                <li><a href="https://github.com/healthsites/healthsites" target="_blank">Source code</a></li>
-                {#                <li><a href="/map-edit">Map edit</a></li>#}
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Data-lifecycle" target="_blank">Data
-                    lifecycle</a></li>
-                <li><a href="/contact">Contact</a></li>
-            </ul>
-        </div>
-        <div class="col-md-3 pad0x">
-            <ul class="footer-nav-2">
-                {#  disabled for now - see #432 #}
-                {#  <li><a href="upload-form">Upload form</a></li> #}
-                <li><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat space</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/API" target="_blank">API</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/Memorandum-of-Understanding-and-Governance"
-                       target="_blank">MoU's and Governance</a></li>
-                <li><a href="https://github.com/healthsites/healthsites/wiki/healthsites---privacy-policy"
-                       target="_blank">Privacy Policy</a></li>
-            </ul>
-        </div>
-        <div class="col-md-3 right pad0x">
-            <ul class="footer-nav-2 social">
-                <li><a href="https://twitter.com/sharehealthdata" target="_blank"><i
-                        class="fa fa-twitter-square"></i></a></li>
-                <li><a href="https://www.facebook.com/healthsites.io" target="_blank"><i
-                        class="fa fa-facebook-square"></i></a></li>
-                <li><a href="https://www.linkedin.com/company/healthsites-io?trk=biz-companies-cym" target="_blank"><i
-                        class="fa fa-linkedin-square"></i></a></li>
-                <li><a href="https://plus.google.com/u/2/117257570769390062756" target="_blank"><i
-                        class="fa fa-google-plus-square"></i></a></li>
-            </ul>
-        </div>
-        <div style="clear:both;"></div>
-        <div class="copy">
+{% include "sections/footer.html" %}
 
-        </div>
-    </div>
-    <div id="ribbon"><img class="share" src="/static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
-</footer>
-
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet-src.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.slick/1.5.7/slick.min.js"></script>
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
 <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
-
 
 {% javascript 'outsource' %}
 {% javascript 'project' %}
 {% javascript 'map' %}
 {% javascript 'home' %}
 
-<script>
-    var chart = c3.generate({
-        bindto: '#chart1',
-        size: {
-            height: 220
-        },
-        bar: {
-            width: 18
-        },
-        data: {
-            x: 'x',
-            y: 'percent',
-            columns: [
-                //the healthsites names
-                ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
-                //the healthsites number
-                ['number', 0, 0, 0],
-                //the healthsites percentgage
-                ['percent', 0, 0, 0]
-            ],
-            axes: {
-                number: 'y2'
-            },
-            types: {
-                percent: 'bar',
-                number: 'bar'
-            },
-            order: 'asc',
-
-            labels: {
-                format: {
-                    number: function (v, id, i, j) {
-                        return v;
-                    },
-                }
-            },
-
-
-        },
-        axis: {
-            rotated: true,
-            x: {
-                type: 'category',
-
-            },
-            y: {
-                max: 1,
-                tick: {
-                    values: [0, 0.5, 1],
-                    format: d3.format('%,')
-
-                }
-            }
-        },
-        legend: {
-            show: false
-        },
-        color: {
-            pattern: ['#b6cccc', '#f89ea1']
-        }
-    });
-
-    var piechart = c3.generate({
-        bindto: '#piechart',
-        size: {
-            height: 220
-        },
-        data: {
-            // iris data from R
-            columns: [
-                ['complete', 0],
-                ['partial', 0],
-                ['basic', 0],
-            ],
-            colors: {
-                complete: '#f89ea1',
-                partial: '#b6cccc',
-                basic: '#8698a4'
-            },
-            type: 'pie',
-            onclick: function (d, i) {
-                console.log("onclick", d, i);
-            },
-            onmouseover: function (d, i) {
-                console.log("onmouseover", d, i);
-            },
-            onmouseout: function (d, i) {
-                console.log("onmouseout", d, i);
-            }
-        }
-    });
-</script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 <script>
-    $(document).ready(function () {
-        var map = new MAP();
-        renderCredit();
-        $("#country-search-box").autocomplete({
-            source: function (request, response) {
-                $.ajax({
-                    url: "{% url 'countries' %}",
-                    dataType: 'json',
-                    data: {
-                        q: request.term
-                    },
-                    success: function (data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 3,
-            select: function (event, ui) {
-            },
-            open: function () {
-                $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
-            },
-            close: function () {
-                $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
-            }
-        });
-
-        {# first init #}
-        gettingData("");
-    });
+    var mapMaxZoom = {{ map_max_zoom | safe }};
 </script>
 <!--
 <script>

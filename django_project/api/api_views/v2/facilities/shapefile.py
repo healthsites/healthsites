@@ -20,7 +20,7 @@ class GetFacilitiesShapefileProcess(APIView):
     def get(self, request, country_name):
         if country_name == 'world' or country_name == 'World':
             country_name = 'World'
-        country_cache = os.path.join(settings.CLUSTER_CACHE_DIR, country_name)
+        country_cache = os.path.join(settings.CACHE_DIR, 'shapefiles', country_name)
         metadata_file = os.path.join(country_cache, 'metadata')
         try:
             f = open(metadata_file, 'r')
@@ -31,7 +31,7 @@ class GetFacilitiesShapefileProcess(APIView):
                 metadata = json.loads(file_content)
             except ValueError:
                 return Response('Start')
-            if metadata['total'] == metadata['index']:
+            if metadata['total'] >= metadata['index']:
                 # check metadata
                 if country_name == 'world' or country_name == 'World':
                     country_name = 'World'
@@ -43,7 +43,7 @@ class GetFacilitiesShapefileProcess(APIView):
                     queryset = LocalityOSMView.objects.in_polygon(
                         polygons).order_by('row')
                 if metadata['total'] == queryset.count() and \
-                        metadata['row'] == queryset.last().row:
+                        metadata['last'] == queryset.last().osm_id:
                     return Response(metadata)
             else:
                 return Response(metadata)

@@ -22,7 +22,7 @@
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
+    <link href="{% static 'libs/bootstrap/3.3.5/css/bootstrap.min.css' %} " rel="stylesheet" type="text/css"
           media="screen, projection"/>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"
           type="text/css" media="screen, projection"/>
@@ -60,6 +60,7 @@
 
     </head>
     <script>
+        var mapMaxZoom = {{ map_max_zoom | safe }};
         var isLoggedIn = false;
         var isUserTrusted = false;
         {% if user.is_authenticated %}
@@ -70,503 +71,73 @@
         {% endif %}
     </script>
 <body class="map-page">
-<nav class="navbar navbar-fixed-top masthead no-tag">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="{% url "home" %}">
-                <span class="hs-logo"></span>healthsites.io
-            </a>
-            <a class="navbar-share closed" href="#">
-                <img class="share" src="{% static "img/share.svg" %}" width="20"/>
-                <img class="close" src="{% static "img/close.svg" %}" width="16"/>
-            </a>
 
-            <div class="hidden" id="site-social" style="width: 116px;">
-                <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
-                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
-                   class="withripple twitter-href">
-                    <i class="fa fa-twitter"></i>
-                </a>
-                <a class="facebook-hs-share withripple facebook-href">
-                    <i class="fa fa-facebook"></i>
-                </a>
-                <a class="googleplus-href"
-                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
-                    <i class="fa fa-google-plus"></i>
-                </a>
-                <a class="linkedin-href"
-                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;">
-                    <i class="fa fa-linkedin"></i>
-                </a>
-            </div>
-            <span class="tagline">Building an open data commons of health facility data with OpenStreetMap</span>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse pull-right">
-            <ul class="nav navbar-nav">
-                <li><a href="https://medium.com/healthsites-io" target="_blank">Blog</a></li>
-                <li><a href="/#about">About</a></li>
-                <li><a href="{% url "map" %}">Map</a></li>
-                <li><a href="/#country-data">Country data</a></li>
-                <li><a href="/#lifecycle">How it works</a></li>
-                <li><a href="/#share-data">Share data</a></li>
-                <li><a href="/#partners">Partners</a></li>
-                <li><a class="navbar-search" href="#"><i class="fa fa-search"></i></a></li>
-                <li><a class="navbar-chat" href="https://gitter.im/healthsites/healthsites"><i
-                        class="fa fa-comments"></i></a></li>
-            </ul>
-        </div>
-        <!--/.nav-collapse -->
+<div id="fb-root"></div>
+<script>(function (d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js#xfbml=1&version=v3.0";
+    fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
 
-    </div>
-
-    <div class="nav-searchbar container-fluid">
-        <form action="map" method="POST">
-            <div class="option-group">
-                <div class="option"><span></span><input type="radio" name="option" id="radio-healthsite"
-                                                        value="healthsite" checked><span></span><label class="option"
-                                                                                                       for="radio-healthsite">healthsite</label>
-                </div>
-                <div class="option"><span></span><input type="radio" name="option" id="radio-place"
-                                                        value="place"><span></span><label class="option"
-                                                                                          for="radio-healthsite">place</label>
-                </div>
-            </div>
-            <input id="search-box" type="search" name="q" placeholder="search..."><input type="submit" value="search">
-        </form>
-    </div>
-</nav>
-
+{% include "sections/navbar.html" %}
 <section id="map-full" class="js-fullheight fluid-container">
-    <form id="locality-form" action="localities/edit" method="post">
-        {% csrf_token %}
-        <div class="location-info pad0x col-md-4">
-            <div class="profile">
-                {% if user.is_authenticated %}
-                    <div class="person col-xs-8 pad0x">
-                        <div class="avatar-holder">
-                            <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
-                            {% if user.profile_picture == "" %}
-                                <img src="https://pbs.twimg.com/profile_images/2284174872/7df3h38zabcvjylnyfe3_normal.png"
-                                     width="48" height="48"/>
-                            {% else %}
-                                <img src="{{ user.profile_picture }}" width="48" height="48"/>
-                            {% endif %}
-                        </div>
+    <div class="location-info pad0x col-md-4">
+        {# PROFILE SECTION #}
+        {% include "sections/map/profile.html" %}
+        <div id="icons-nav">
+            Browse the map, <a id="search-text" class="a-button">search</a> or use <a id="geolocate" class="a-button">geolocate
+            me</a> to view
+            healthsites close to your location.
+        </div>
 
-                        <span class="name">
-                        <a href="{% url 'userprofilepage' %}{{ user }}">{{ user.screen_name }}</a>
-                    </span>
-                    </div>
-                    <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
-                            class="fa fa-sign-out"></i> sign out</a>
-                {% else %}
-                    <div class="person col-xs-8 pad0x">
-                <span class="name">
-                        You are not signed in
-                    </span>
-                    </div>
-                    <a id="signin-button" class="button col-xs-4 pad0x blue stroke" style="cursor: pointer"><i
-                            class="fa fa-sign-in"></i> sign in</a>
-                {% endif %}
-
-                <div style="clear: both;"></div>
-            </div>
-            <div id="icons-nav">
-                Browse the map, <a class="search" href="#">search</a> or use <a id="geolocate" class="a-button">geolocate
-                me</a> to view
-                healthsites close to your location.
-            </div><!-- #icons-nav -->
-            <div id="locality-default" style="display: none">
-                <div style="padding: 20px;">
-                    <p>
-                        <span class="inner-navbar-brand">healthsites.io</span> invites you to help establish accurate
-                        health
-                        care location data.
-                    </p>
-                    <p>
-                        We aim to provide a single point of reference for healthcare workers, aid agencies, government
-                        agencies and citizens who need access to highly curated global dataset of healthcare
-                        facilities.
-                    </p>
-                    <p>
-                        Download all healthsite data in this
-                        <span class="shapefile-downloader inner-navbar-brand" style="cursor: pointer"
-                              onclick="downloadShapefile('World')">shapefile</span>
-                        <span class="shapefile-indicator inner-navbar-brand" style="display: none"></span>
-                    </p>
-                    <h2 class="sidebar-title "><span id="healthsites-count"><i style="opacity: 0.3">loading</i></span>
-                        healthsites listed</h2>
-                </div>
-                <div id="countries-table">
-                    <div class="block-header"><span class="col-xs-6">Country</span> <span
-                            class="col-xs-3"># of sites</span>
-                        <span class="col-xs-3">% complete</span></div>
-                    <div id="accordion-country" class="accordion">
-                    </div>
-                </div>
-            </div>
-            <div id="locality-statistic" class="details" id="sidebar-info" style="display: none">
-                <div id="title-statistic" class="header" style="font-size: 24px; padding-bottom: 10px;">
-                    <strong id="title-name">No Title</strong> -
-                    <span id="number-locality" style="margin-left: 5px; margin-right: 5px"> 0 </span>
-                    healthsites
-                </div>
-                <p id="country-shapefiles" class="header" style="padding-bottom: 10px; display: none">
-                </p>
-
-                <div style="padding: 20px">
-                    <div>
-                        <h3>Number of heathsites per type</h3>
-
-                        <div class="graph">
-                            <div id="chart1"></div>
-
-                            <script>
-                            </script>
-                        </div>
-                    </div>
-                    <div>
-                        <h3>Completeness of attributes</h3>
-
-                        <div class="graph">
-                            <div id="piechart"></div>
-
-
-                        </div>
-                    </div>
-                    <div>
-                        <h3>Latest updates</h3>
-
-                        <div id="updates" class="graph updates">
-                            <div class="entry">-</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="locality-info" class="details" style="display: none">
-                <div class="header">
-                    <h1><span id="locality-name">No Name</span>
-                        {% if user.is_authenticated %}
-                            <span id="report-flag" title="Report this healthsite as duplication"
-                                  onclick="toogle_popup()">R</span>
-                        {% endif %}
-                    </h1>
-                    <input type="text" id="locality-name-input" name="name"
-                           placeholder="Locality name" style="display: none; width: 100%"/>
-
-                    <p class="sub" id="locality-nature-of-facility">first referral hospital</p>
-
-                    <p style="margin-top: 5px">
-                        <select id="locality-nature-of-facility-input" name="nature_of_facility" style="display: none">
-                        </select>
-                    </p>
-                </div>
-                <div class="info">
-                    <div class="line">
-                        <div id="locality-master">
-                            <div id="locality-master-indicator" class="master">MASTER</div>
-                        </div>
-                    </div>
-                    <div id="line-updates" class="line updates">
-                        <div class="icon-holder">
-                            <i class="fa fa-info-circle"></i>
-                        </div>
-                        <div class="data">
-                            <div class="more" style="margin-bottom: 5px">
-                                <div>
-                                    last update: <span id="last_update" class="date">11 may 2015 17:23:15</span>, by
-                                    <span class="name">
-                                    <a id="uploader" href="profile/sharehealthdata">@sharehealthdata</a>
-                                </span>
-                                </div>
-                                <div id="full-list">
-
-                                </div>
-                                <div>
-                                    <a id="see-more-list" class="more-list">see more list <i
-                                            class="fa fa-angle-down"></i></a>
-                                </div>
-                            </div>
-
-                            <div class="progress">
-                                <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="70"
-                                     aria-valuemin="0" aria-valuemax="100" style="width:90%" id="locality-completeness">
-                                    90% Complete
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="line find">
-                        <div class="icon-holder">
-                            <i class="fa fa-map-marker"></i>
-                        </div>
-                        <div class="data">
-                            <p class="address" id="locality-physical-address">54, Praed st, London, W2 NY<br/>
-                                Unighted Kingdom</p>
-                            <input type="text" id="locality-physical-address-input" name="physical_address"
-                                   placeholder="Physical Address" style="display: none; margin-bottom: 5px;"/>
-                            
-                            <p class="coordinates" id="locality-coordinates">lat: 0, long: 0</p>
-
-                            <p class="coordinates" id="locality-coordinates-input"
-                               style="display: none; margin-top: 5px;">
-                                lat: <input type="number"
-                                            id="locality-coordinates-lat-input"
-                                            style="width: 80px"
-                                            min="-180" max="180" onchange="onChange(this)"/>,
-                                long: <input type="number"
-                                             id="locality-coordinates-long-input" style="width: 80px" min="-180"
-                                             max="180" onchange="onChange(this)"/></p>
-
-
-                            <p>
-                                <i class="fa fa-phone"></i>
-                                <span id="locality-phone" class="call">0141 636 6116</span>
-                                <span id="locality-phone-input" style="display: none">+
-                                    <input type="number"
-                                           id="locality-phone-input-int"
-                                           style="width: 50px; margin-right: 5px"
-                                           onkeypress="onKeyPress(this)"/>
-                                    <input type="number"
-                                           id="locality-phone-input-number"/>
-                                </span>
-                            </p>
-
-                            <p id="locality-operating-hours-section">
-                                <i class="fa fa-clock-o"></i>
-                                <span id="locality-operating-hours" class="call">define operation</span>
-                            </p>
-
-                            <div id="locality-operating-hours-input"
-                                 style="display: none;">
-                                <div style="border: 1px solid black; padding: 10px;">
-                                    <div>
-                                        <strong>OPERATING HOURS : </strong><span onclick="shortcutDefiningHour('24/7')"
-                                                                                 style="cursor: pointer; margin-left: 10px;margin-right: 10px"><a>24/7</a></span><span
-                                            onclick="shortcutDefiningHour('24/5')"
-                                            style="cursor: pointer; margin-right: 10px"><a>24/5</a></span>
-                                    </div>
-                                    <hr>
-                                    <table id="locality-operating-hours-input-table" style="width:100%"></table>
-                                    <hr>
-                                    <div>
-                                        <strong>RESULT :</strong><br>
-                                        <span id="locality-operating-hours-input-result"></span>
-                                    </div>
-                                </div>
-                                <br>
-                            </div>
-
-                            <div id="locality-url">
-                                <p class="url"><i class="fa fa-link"></i><span id="locality-url-content"><a href=""></a></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="line services">
-                        <div class="icon-holder">
-                            <i class="fa fa-tags"></i>
-                        </div>
-                        <div class="data">
-                            <div class="scope-of-service">
-                                <h3>scope of service</h3>
-
-                                <div id="locality-scope-of-service">
-                                </div>
-                                <div id="locality-scope-of-service-input"
-                                     style="display: none; margin-bottom: 10px;">
-                                </div>
-                            </div>
-                            <div class="ancillary">
-                                <h3>ancillary services</h3>
-
-                                <div id="locality-ancillary-service">
-                                </div>
-                                <div id="locality-ancillary-service-input"
-                                     style="display: none; margin-bottom: 10px;">
-                                </div>
-                            </div>
-                            <div class="activities">
-                                <h3>activities</h3>
-
-                                <div id="locality-activities">
-                                </div>
-                                <div id="locality-activities-input"
-                                     style="display: none; margin-bottom: 10px;">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="line beds">
-                        <div class="icon-holder">
-                            <i class="fa fa-bed"></i>
-                        </div>
-                        <div class="data">
-                            <p id="locality-inpatient-service"></p>
-
-                            <p id="locality-inpatient-service-input" style="display: none">
-                                <input type="number"
-                                       id="locality-inpatient-service-full-input"
-                                       min="0"
-                                       style="width: 50px"/>
-                                full
-                                time beds,
-                                <input type="number" id="locality-inpatient-service-part-input" min="0"
-                                       style="width: 50px"/>
-                                part time beds</p>
-                        </div>
-                    </div>
-                    <div class="line note">
-                        <div class="icon-holder">
-                            <i class="fa fa-sticky-note"></i>
-                        </div>
-                        <div class="data" id="locality-notes">
-                            <p><strong>Note: </strong><span id="locality-notes-text"> Outpatient consultation and in-patient hospitalization</span>
-                            </p>
-                        </div>
-                        <div class="data" id="locality-notes-input"
-                             style="display: none; margin-bottom: 10px;">
-                        </div>
-                    </div>
-                    <div class="line doctors">
-                        <div class="icon-holder">
-                            <i class="fa fa-user-md"></i>
-                        </div>
-                        <div class="data">
-                            <p id="locality-staff"></p>
-
-                            <p id="locality-staff-input" style="display: none">
-                                <input type="number"
-                                       id="locality-staff-doctor-input"
-                                       min="0"
-                                       style="width: 50px"/>
-                                full time doctors,
-                                <input type="number" id="locality-staff-nurse-input"
-                                       min="0"
-                                       style="width: 50px"/>
-                                full time nurses</p>
-                        </div>
-                    </div>
-                    <div class="line ownership">
-                        <div class="icon-holder">
-                            <i class="fa fa-briefcase"></i>
-                        </div>
-                        <div class="data">
-                            <p><strong>Ownership:</strong>
-                                <span id="locality-ownership"></span>
-                                <select id="locality-ownership-input" name="ownership"
-                                        style="display: none">
-                                </select></p>
-                        </div>
-                    </div>
-                    <div id="tag" class="line services">
-                        <div class="icon-holder">
-                            <i class="fa fa-tag"></i>
-                        </div>
-                        <div class="data">
-                            <ul id="tag-data"></ul>
-                            <div id="tag-input-text" style="display: none">
-                                <input id="tag-input-text-box" type="text" placeholder="fill new tag"
-                                       style="margin-bottom: 10px;"
-                                       onkeyup="changeTag($(this).val())"/>
-                                <i id="tag-input-error-warning"
-                                   style="margin-left: 10px; color: #f44a52; display: none">tag should be
-                                    more than 2 letter</i>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="others" class="line ">
-                        <div class="icon-holder">
-                            <i class="fa fa-circle"></i>
-                        </div>
-                        <div class="data">
-                            <p id="others-add" onclick="addOthers()" style="display: none; cursor: pointer"><b>add new
-                                information</b></p>
-
-                            <div id="others-data">
-                            </div>
-                            <div id="others-data-input" style="display: none">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="buttons col-md-4 col-sm-12 col-xs-12">
-                <div class="button-wrapper col-xs-4">
-                    <a id="twitter_share_map" class="button share stroke blue">
-                        <i class="fa fa-twitter"></i> share
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="edit-button">
-                    <a class="button edit stroke blue"
-                       style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> edit
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="save-button" style="display: none">
-                    <a class="button edit stroke blue"
-                       style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> save
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="create-button" style="display: none">
-                    <a class="button edit stroke blue"
-                       style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> create
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="add-button">
-                    <a class="button add" style="cursor: pointer">
-                        <i class="fa fa-plus"></i> add new
-                    </a>
-                </div>
-                <div class="button-wrapper col-xs-4" id="cancel-button" style="display: none">
-                    <a class="button edit stroke blue"
-                       style="cursor: pointer"><i
-                            class="fa fa-pencil"></i> cancel
-                    </a>
-                </div>
+        {# SECTIONS #}
+        {% include "sections/map/sidebar-default.html" %}
+        {% include "sections/map/statistic.html" %}
+        {% include "sections/map/locality-error.html" %}
+        {% include "sections/map/locality-detail.html" %}
+        {% include "sections/map/sidebar-footer.html" %}
+    </div>
+    <div class="map-page pad0x col-md-8">
+        <div id="map">
+        </div>
+        <div class="coordinate-input-wrapper">
+            <div class="coordinate-input-container">
+                <form id="coordinate-input-form">
+                    <input id="coordinate-input" name="coordinates" type="text" placeholder="type lat, long coordinates"/>
+                </form>
             </div>
         </div>
-        <div class="map-page pad0x col-md-8">
-            <div id="map">
-            </div>
-            <div id="report-popup" style="display: none; opacity: 0.0">
-                Please enter uuid of it's master or click marker of master
-                <input type="text" id="report-popup-text"
-                       placeholder="master's uuid"/>
-                <div style="width: 100%; margin-top: 20px">
-                    <div class="col-sm-6 button-left">
-                        <div id="report-button" class="button" style="cursor: pointer">
-                            report
-                        </div>
+        <div id="report-popup" style="display: none; opacity: 0.0">
+            Please enter uuid of it's master or click marker of master
+            <input type="text" id="report-popup-text"
+                   placeholder="master's uuid"/>
+            <div style="width: 100%; margin-top: 20px">
+                <div class="col-sm-6 button-left">
+                    <div id="report-button" class="button" style="cursor: pointer">
+                        report
                     </div>
-                    <div class="col-sm-6 button-right">
-                        <div id="cancel-report-button" class="button" style="cursor: pointer">
-                            cancel
-                        </div>
+                </div>
+                <div class="col-sm-6 button-right">
+                    <div id="cancel-report-button" class="button" style="cursor: pointer">
+                        cancel
                     </div>
                 </div>
             </div>
         </div>
-    </form>
+    </div>
 </section>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet-src.js"></script>
+
+<!-- Modal -->
+{% include "sections/map/sign-in-modal.html" %}
+{% include "sections/modal/duplication.html" %}
+
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
 <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<script type="text/javascript"
-        src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script type="text/javascript"
-        src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw-src.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
 <script type="text/javascript"
@@ -588,22 +159,27 @@
             }
         }
     }
-    var APP;
+
+    var schema = JSON.parse("{{ schema | escapejs }}");
+    var osmAPI = "{{ osm_API }}";
+    var countries = [];
     $(document).ready(function () {
-        {# get locality number #}
-        $.ajax({
-            url: "/api/v2/facilities/count",
-            dataType: 'json',
-            data: {
-                country: ''
-            },
-            success: function (data) {
-                $('#healthsites-count').html('<span class="timer" data-speed="2500"  data-to="' + data + '">' + data + '</span>');
-            }
+        // activate share
+        function getContentShare() {
+            var nowURL = window.location.toString();
+            nowURL = nowURL.replaceAll("#", "%23");
+            nowURL = nowURL.replaceAll('&', '%26');
+            return 'See ' + nowURL;
+        }
+
+        $('#twitter_share_map').on('click', function (evt) {
+            javascript:window.open('https://twitter.com/intent/tweet?text=See ' + getContentShare(), 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');
         });
+        $('#facebook_share_map').click(function () {
+            $(this).attr('href', 'https://www.facebook.com/sharer/sharer.php?u=' + getContentShare() + '&amp;src=sdkpreparse')
+        })
 
         {# ----------- #}
-        prerender_popup();
         // Set viewport if exist
         {% if northeast_lat and northeast_lng and southwest_lat and southwest_lng %}
             sessionStorage.setItem('northeast_lat', {{ northeast_lat }});
@@ -612,10 +188,6 @@
             sessionStorage.setItem('southwest_lng', {{ southwest_lng }});
         {% endif %}
 
-        // initialize the app
-        APP = new APP();
-        renderCredit();
-
         // set share url
         var baseURL = location.protocol + "//" + location.hostname + "/";
         $(".twitter-href").attr("href", "https://twitter.com/intent/tweet?text=Share and develop critical health facility data on " + baseURL);
@@ -623,21 +195,6 @@
         $(".googleplus-href").attr("href", "https://plus.google.com/share?url=" + baseURL);
         $(".linkedin-href").attr("href", "https://www.linkedin.com/shareArticle?mini=true&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data&url=" + baseURL);
 
-        // checking default view
-        var url = window.location.href;
-        $country_table = $('#accordion-country');
-        for (var i = 0; i < titleRow.length; i++) {
-            var html = '<h3 onClick="loadByAlphabet(' + i + ')">' + titleRow[i] + '</h3>';
-            html += '<div id="title-row-' + i + '" class="table">';
-            html += '</div>';
-            $country_table.append(html);
-        }
-
-        $(".accordion").accordion({
-            collapsible: true,
-            header: "h3",
-            active: false,
-        });
         // render country data list
         {% if countries %}
             {% for country in countries %}
@@ -653,7 +210,7 @@
             latitude = parseFloat(latitude);
             var longitude = "{{ location.x }}";
             longitude = parseFloat(longitude);
-            $APP.trigger('map.pan', {'location': [latitude, longitude]});
+            shared.dispatcher.trigger('map.pan', {'location': [latitude, longitude]});
         {% endif %}
 
         {% if viewport %}
@@ -662,7 +219,7 @@
             var southwest_lat = parseFloat("{{ viewport.southwest_lat }}");
             var southwest_lng = parseFloat("{{ viewport.southwest_lng }}");
             if (southwest_lat != 0.0 && southwest_lng != 0.0 && northeast_lat != 0.0 && northeast_lng) {
-                $APP.trigger('map.update-bound', {
+                shared.dispatcher.trigger('map.update-bound', {
                     'southwest_lat': southwest_lat,
                     'southwest_lng': southwest_lng,
                     'northeast_lat': northeast_lat,
@@ -698,44 +255,44 @@
             {% endfor %}
         {% endif %}
 
-        $(".accordion").accordion({
-            collapsible: true,
-            header: "h3"
-        });
-
 
         // check cookie for create mode from request
         {% if new_geom %}
             var new_geom = "{{ new_geom }}".split(",");
-            $APP.trigger('map.pan', {'location': [new_geom[0], new_geom[1]], 'zoom': 10});
+            shared.dispatcher.trigger('map.pan', {'location': [new_geom[0], new_geom[1]], 'zoom': 10});
             $('#add-button').click();
         {% endif %}
         // check cookie for create mode
-        if (isLoggedIn) {
-            var type = getCookie("type");
-            if (type == 'create') {
-                var center = getCookie("center");
-                if (center != "") {
-                    center = center.split(",");
-                    if (center.length > 0) {
-                        var zoom = getCookie("zoom");
-                        if (zoom != "") {
-                            $APP.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});
-                            $('#add-button').click();
-                        }
-                    }
-                    {# reset cookie because it is done #}
-                    resetCookies();
-                }
-            } else if (type == 'edit') {
-                var uuid = getCookie("uuid");
-                if (uuid != "") {
-                    $APP.trigger('locality.map.click', {'locality_uuid': uuid});
-                    $APP.trigger('set.hash.silent', {'locality': uuid});
-                    {# cookie will be reseted if already loaded the uuid #}
-                }
-            }
-        }
+        // TODO : fix this
+        {#if (isLoggedIn) {#}
+        {#    var type = getCookie("type");#}
+        {#    if (type == 'create') {#}
+        {#        var center = getCookie("center");#}
+        {#        if (center != "") {#}
+        {#            center = center.split(",");#}
+        {#            if (center.length > 0) {#}
+        {#                var zoom = getCookie("zoom");#}
+        {#                if (zoom != "") {#}
+        {#                    shared.dispatcher.trigger('map.pan', {'location': [center[0], center[1]], 'zoom': zoom});#}
+        {#                    $('#add-button').click();#}
+        {#                }#}
+        {#            }#}
+        {# reset cookie because it is done #}
+        {#            resetCookies();#}
+        {#        }#}
+        {#    } else if (type == 'edit') {#}
+        {#        var uuid = getCookie("uuid");#}
+        {#        if (uuid !== "" && uuid !== "undefined") {#}
+        {#            shared.dispatcher.trigger('locality.map.click', {'locality_uuid': uuid});#}
+        {#            shared.dispatcher.trigger('set.hash.silent', '/locality/' + uuid);#}
+        {# cookie will be reseted if already loaded the uuid #}
+        {#        }#}
+        {#    }#}
+
+        $('.btn-share-icon').click(function () {
+            $(this).toggleClass('share-icon-click')
+            $('.dropup-content').toggle()
+        });
     });
 
     function changeToDefault() {
@@ -743,7 +300,7 @@
         $("#locality-statistic").hide();
         $("#locality-info").hide();
         $("#locality-default").hide();
-        {% if tag or country or spec or attribute %}
+        {% if tag or spec or attribute %}
             $("#locality-statistic").show();
             $("#number-locality").html("{{ localities }}");
             updateChart({{ numbers.hospital }}, {{ numbers.medical_clinic }}, {{ numbers.orthopaedic_clinic }});
@@ -764,22 +321,15 @@
                 var longitude = "{{ spec.location.x }}";
                 geom[0] = parseFloat(longitude);
             {% endif %}
-            $APP.trigger('map.update-tag', {'tag': "{{ tag }}"});
+            shared.dispatcher.trigger('map.update-tag', {'tag': "{{ tag }}"});
         {% elif country %}
-            $("#country-shapefiles").show();
-            $("#country-shapefiles").html('' +
-                'Download all healthsite data from ' +
-                '<span class="shapefile-downloader inner-navbar-brand" style="cursor: pointer" ' +
-                'onclick="downloadShapefile(\'{{ country }}\')">shapefile</span> ' +
-                '<span class="shapefile-indicator inner-navbar-brand" style="display: none"></span>'
-            );
             $("#title-name").html("{{ country }}");
-            $APP.trigger('map.update-geoname', {'geoname': "{{ country }}"});
+            shared.dispatcher.trigger('map.update-geoname', {'geoname': "{{ country }}"});
             // creating polygon
             var polygon_raw = '{{ polygon|safe }}';
             var polygon_json = JSON.parse(polygon_raw);
             var polygon = polygon_json['coordinates'];
-            $APP.trigger('map.create-polygon', {'polygon': polygon});
+            shared.dispatcher.trigger('map.create-polygon', {'polygon': polygon});
         {% elif spec %}
             var spec = "{{ spec.spec }}";
             var data = "{{ spec.data }}";
@@ -792,7 +342,7 @@
                 var longitude = "{{ spec.location.x }}";
                 geom[0] = parseFloat(longitude);
             {% endif %}
-            $APP.trigger('map.update-spec', {
+            shared.dispatcher.trigger('map.update-spec', {
                 'spec': {
                     'spec': spec,
                     'data': data,
@@ -821,7 +371,7 @@
                 var longitude = "{{ attribute.location.x }}";
                 geom[0] = parseFloat(longitude);
             {% endif %}
-            $APP.trigger('map.update-spec', {
+            shared.dispatcher.trigger('map.update-spec', {
                 'spec': {
                     'spec': 'attribute',
                     'data': attribute,
@@ -841,117 +391,10 @@
             }
         {% endif %}
     }
-
-    var chart = c3.generate({
-        bindto: '#chart1',
-        size: {
-            height: 220
-        },
-        bar: {
-            width: 18
-        },
-        data: {
-            x: 'x',
-            y: 'percent',
-            columns: [
-                //the healthsites names
-                ['x', 'Hospitals', 'Medical clinic', 'Orthopaedic clinic'],
-                //the healthsites number
-                ['number', 12, 12, 12],
-                //the healthsites percentgage
-                ['percent', 0.33, 0.33, 0.34]
-            ],
-            axes: {
-                number: 'y2'
-            },
-            types: {
-                percent: 'bar',
-                number: 'bar'
-            },
-            order: 'asc',
-
-            labels: {
-                format: {
-                    number: function (v, id, i, j) {
-                        return v;
-                    },
-                }
-            },
-
-
-        },
-        axis: {
-            rotated: true,
-            x: {
-                type: 'category',
-
-            },
-            y: {
-                max: 1,
-                tick: {
-                    values: [0, 0.5, 1],
-                    format: d3.format('%,')
-
-                }
-            }
-        },
-        legend: {
-            show: false
-        },
-        color: {
-            pattern: ['#b6cccc', '#f89ea1']
-        }
-    });
-
-    var piechart = c3.generate({
-        bindto: '#piechart',
-        size: {
-            height: 220
-        },
-        data: {
-            // iris data from R
-            columns: [
-                ['complete', 33],
-                ['partial', 33],
-                ['basic', 34],
-            ],
-            colors: {
-                complete: '#f89ea1',
-                partial: '#b6cccc',
-                basic: '#8698a4'
-            },
-            type: 'pie',
-            onclick: function (d, i) {
-                console.log("onclick", d, i);
-            },
-            onmouseover: function (d, i) {
-                console.log("onmouseover", d, i);
-            },
-            onmouseout: function (d, i) {
-                console.log("onmouseout", d, i);
-            }
-        }
-    });
-
-    function downloadShapefile(country) {
-        $('.shapefile-indicator').show();
-        $('.shapefile-indicator').html('<i>generating...</i>');
-        $('.shapefile-downloader').hide();
-        checkingShapefile(country);
-    }
-
-    function checkingShapefile(country) {
-        $.ajax({
-            url: "/api/v2/facilities/shapefile/process/" + country,
-            dataType: 'json',
-            success: function (data) {
-                window.location.href = '/data/shapefiles/' + country + '.zip';
-            }
-        });
-    }
 </script>
 
 <div id="ribbon"><img class="share" src="static/img/ribbon.png" width="70" height="105" alt="now in beta"/></div>
 <p id="alert"></p>
+
 </body>
 </html>

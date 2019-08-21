@@ -1,0 +1,39 @@
+{% load static %}
+<div class="profile">
+    {% if user.is_authenticated %}
+        <div class="person col-xs-8 pad0x">
+            <div class="avatar-holder">
+                <img src="{% static "img/av-holder.svg" %}" class="frame" width="48" height="48"/>
+                {% if user.provider == "openstreetmap" %}
+                    <img height="14" class="avatar-icon" src="{% static "img/osm-logo.png" %}" title="OpenStreetMap"/>
+                {% elif user.provider == "facebook" %}
+                    <i class="fa fa-facebook-square avatar-icon"></i>
+                {% elif user.provider == "twitter" %}
+                    <i class="fa fa-twitter-square avatar-icon"></i>
+                {% endif %}
+                {% if user.profile_picture == "" %}
+                    <img src="{% static "img/no-profile-img.gif" %}" width="48" height="48"/>
+                {% else %}
+                    <img src="{{ user.profile_picture }}" width="48" height="48"/>
+                {% endif %}
+            </div>
+
+            <span class="name">
+                <a href="{% url 'userprofilepage' %}{{ user }}">{{ user.screen_name }}</a>
+            </span>
+        </div>
+        <a href="{% url 'logout_user' %}" class="button col-xs-4 pad0x blue stroke"><i
+                class="fa fa-sign-out"></i> sign out</a>
+    {% else %}
+        <div class="person col-xs-8 pad0x">
+            <span class="name">
+                You are not signed in
+            </span>
+        </div>
+        <a href="{% url 'social:begin' 'openstreetmap' %}?next=/map" id="signin-button" type="button" class="button col-xs-4 pad0x blue stroke" data-toggle="modal">
+            <i class="fa fa-sign-in"></i> sign in
+        </a>
+    {% endif %}
+
+    <div style="clear: both;"></div>
+</div>

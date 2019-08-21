@@ -2,7 +2,6 @@
 import itertools
 import json
 import logging
-from datetime import datetime
 
 from pg_fts.fields import TSVectorField
 
@@ -155,6 +154,7 @@ class Locality(UpdateMixin, ChangesetMixin):
     specifications = models.ManyToManyField('Specification', through='Value')
     name = models.TextField()
     source = models.TextField(default='healthsites.io')
+    migrated = models.BooleanField(default=False)
 
     # completeness is a big calculation
     # so it has to be an field
@@ -319,13 +319,17 @@ class Locality(UpdateMixin, ChangesetMixin):
                 identifier = osm_whole_id[0]
                 osm_id = osm_whole_id[1:]
                 if identifier == 'n':
+                    dict['osm_type'] = 'node'
                     url = 'http://www.openstreetmap.org/node/' + osm_id
                 elif identifier == 'r':
+                    dict['osm_type'] = 'relation'
                     url = 'http://www.openstreetmap.org/relation/' + osm_id
                 elif identifier == 'w':
+                    dict['osm_type'] = 'way'
                     url = 'http://www.openstreetmap.org/way/' + osm_id
 
                 if url:
+                    dict['osm_id'] = osm_id
                     dict['source_url'] = url
         return dict
 
@@ -859,11 +863,12 @@ class DataLoader(models.Model):
     )
 
     organisation_name = models.CharField(
-        verbose_name='Organisation\'s Name',
-        help_text='Organiation\'s Name',
-        null=False,
-        blank=False,
-        max_length=100
+        verbose_name="Organisation's Name",
+        help_text="Organisation's Name",
+        max_length=100,
+        null=True,
+        blank=True,
+        default=''
     )
 
     json_concept_mapping = models.FileField(
@@ -884,8 +889,7 @@ class DataLoader(models.Model):
         choices=DATA_LOADER_MODE_CHOICES,
         verbose_name='Data Loader Mode',
         help_text='The mode of the data loader.',
-        blank=False,
-        null=False
+        default=REPLACE_DATA_CODE
     )
 
     applied = models.BooleanField(
@@ -937,15 +941,15 @@ class DataLoader(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.date_time_uploaded:
-            self.date_time_uploaded = datetime.utcnow()
+            self.date_time_uploaded = timezone.now()
         super(DataLoader, self).save(*args, **kwargs)
 
 
 # method for updating
 def load_data(sender, instance, **kwargs):
     if not instance.applied:
-        from .tasks import load_data_task
-        load_data_task.delay(instance.pk)
+        from api.tasks import upload_data_from_csv
+        upload_data_from_csv.delay(instance.pk)
 
 
 # register the signal

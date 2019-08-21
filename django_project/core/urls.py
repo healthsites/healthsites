@@ -22,7 +22,6 @@ urlpatterns = patterns(
             'document_root': settings.MEDIA_ROOT,
             'show_indexes': True
         }),
-
 )
 
 # expose static files and uploded media if DEBUG is active

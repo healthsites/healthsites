@@ -1,8 +1,13 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from django.http.response import HttpResponseBadRequest
-from rest_framework import status
+import copy
+import json
+from datetime import datetime
+from django.contrib.auth.models import User
+from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from api.api_views.v2.schema import (
@@ -11,61 +16,135 @@ from api.api_views.v2.schema import (
     Parameters
 )
 from api.api_views.v2.utilities import BadRequestError
-from api.serializer.locality_post import LocalityPostSerializer
-from api.api_views.v2.facilities.base_api import (
-    PaginationAPI
+from api.api_views.v2.pagination import (
+    PaginationAPI, LessThanOneException, NotANumberException
 )
-from localities.models import Country, Locality
-from localities_osm.models.locality import LocalityOSMView
-from localities.utils import parse_bbox
+from api.api_views.v2.facilities.base_api import FacilitiesBaseAPIWithAuth
+from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node, \
+    verify_user
+from api.utilities.statistic import get_statistic_with_cache
+from core.settings.utils import ABS_PATH
+from localities.models import Country
+from api.utilities.pending import (
+    create_pending_update,
+    create_pending_review, update_pending_review,
+    delete_pending_review, get_pending_review)
+from localities_osm.queries import filter_locality
+from localities_osm.utilities import split_osm_and_extension_attr
+from localities_osm_extension.utils import save_extensions
 
 
-class CountScheme(ApiSchemaBaseWithoutApiKey):
+class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
     schemas = [
-        Parameters.country, Parameters.extent, Parameters.output
+        Parameters.country,
+        Parameters.extent,
+        Parameters.output,
+        Parameters.timestamp_from,
+        Parameters.timestamp_to
     ]
 
 
 class ApiSchema(ApiSchemaBase):
-    schemas = [
-        Parameters.page, Parameters.country, Parameters.extent, Parameters.output
-    ]
+    schemas = [Parameters.page] + FilterFacilitiesScheme.schemas
 
 
-class GetFacilitiesUtilities(object):
+class GetFacilitiesBaseAPI(object):
     """
     Parent class that hold filtering method of healthsites
     """
 
-    def get_healthsites(self, request):
-
-        # check extent data
-        extent = request.GET.get('extent', None)
-        queryset = LocalityOSMView.objects.all()
-        if extent:
-            try:
-                polygon = parse_bbox(request.GET.get('extent'))
-            except (ValueError, IndexError):
-                raise BadRequestError('extent is incorrect format')
-            queryset = queryset.in_polygon(polygon)
-
+    def get_country(self, country):
+        """ This function is for get country object from request
+        """
         # check by country
-        country = request.GET.get('country', None)
         if country == 'World':
             country = None
         if country:
             # getting country's polygon
-            try:
-                country = Country.objects.get(
-                    name__iexact=country)
-                polygons = country.polygon_geometry
-                queryset = queryset.in_polygon(polygons)
-            except Country.DoesNotExist:
-                raise BadRequestError('%s is not found or not a country.' % country)
+            country = Country.objects.get(
+                name__iexact=country)
+        return country
+
+    def get_healthsites(self, request):
+        extent = request.GET.get('extent', None)
+        country = request.GET.get('country', None)
+        timestamp_from = request.GET.get('from', None)
+        timestamp_to = request.GET.get('to', None)
+
+        if timestamp_from:
+            timestamp_from = datetime.fromtimestamp(int(timestamp_from))
+
+        if timestamp_to:
+            timestamp_to = datetime.fromtimestamp(int(timestamp_to))
+
+        # check extent data
+        try:
+            queryset = filter_locality(
+                extent=extent,
+                country=country,
+                timestamp_from=timestamp_from,
+                timestamp_to=timestamp_to
+            )
+        except Exception as e:
+            raise BadRequestError('%s' % e)
         return queryset
 
 
-class GetFacilities(PaginationAPI, GetFacilitiesUtilities):
+class BulkUpload(FacilitiesBaseAPIWithAuth):
+    """
+    post:
+    Upload multiple healthsites/facilities data.
+    """
+    filter_backends = (ApiSchema,)
+
+    def get(self, request):
+        """FOR TESTING ONLY"""
+        user = request.user
+        data = request.data
+        facilities_data = data['healthsites']
+        response = {}
+        for facility_data in facilities_data:
+            # Verify data owner/collector
+            is_valid, message = verify_user(user, facility_data['username'])
+            response[facility_data['username']] = is_valid
+
+        return Response(response)
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        # Now, we post the data directly to OSM.
+        try:
+            responses = []
+            facilities_data = data['healthsites']
+            for facility_data in facilities_data:
+                # Verify data uploader and owner/collector
+                is_valid, message = \
+                    verify_user(user, facility_data['osm_user'])
+                if not is_valid:
+                    return HttpResponseForbidden(message)
+
+                # Validate data
+                validate_osm_data(facility_data)
+
+            for facility_data in facilities_data:
+                # Map Healthsites tags to OSM tags
+                mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
+                facility_data['tag'] = convert_to_osm_tag(
+                    mapping_file_path, facility_data['tag'], 'node')
+
+                # Push data to OSM
+                response = create_osm_node(user, facility_data)
+                responses.append(response)
+
+            return Response(responses)
+
+        except Exception as e:
+            return HttpResponseBadRequest('%s' % e)
+
+
+class GetFacilities(
+        PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):  # noqa
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -75,41 +154,143 @@ class GetFacilities(PaginationAPI, GetFacilitiesUtilities):
     """
     filter_backends = (ApiSchema,)
 
-    def get_serializer(self):
-        return LocalityPostSerializer()
-
     def get(self, request):
         validation = self.validation()
         if validation:
             return HttpResponseBadRequest(validation)
 
-        queryset = self.get_query_by_page(self.get_healthsites(request))
+        try:
+            queryset = self.get_query_by_page(self.get_healthsites(request))
+        except (LessThanOneException, NotANumberException) as e:
+            return HttpResponseBadRequest('%s' % e)
+
         return Response(self.serialize(queryset, many=True))
 
     def post(self, request):
-        data = request.data
-        facility = Locality()
+        user = request.user
+        data = copy.deepcopy(request.data)
+        # Now, we post the data directly to OSM.
         try:
-            data = self.parse_data(data)
-            facility.update_data(data, request.user)
-            return Response(facility.uuid, status=status.HTTP_201_CREATED)
-        except KeyError as e:
-            return HttpResponseBadRequest('%s is required' % e)
-        except ValueError as e:
-            return HttpResponseBadRequest('%s' % e)
+            # Split osm and extension attribute
+            osm_attr, locality_attr = split_osm_and_extension_attr(
+                data['tag'])
+            data['tag'] = osm_attr
+
+            # Verify data uploader and owner/collector if the API is being used
+            # for uploading data from other osm user.
+            if request.user.is_staff and request.GET.get('review', None):
+                data['osm_user'] = get_pending_review(
+                    request.GET.get('review')).uploader.username
+
+            if data.get('osm_user'):
+                is_valid, message = verify_user(user, data['osm_user'])
+                if not is_valid:
+                    return HttpResponseForbidden(message)
+                else:
+                    try:
+                        user = get_object_or_404(
+                            User, username=data['osm_user'])
+                    except Http404:
+                        message = 'User %s is not exist.' % data['osm_user']
+                        return HttpResponseForbidden(message)
+
+            duplication_check = request.GET.get('duplication-check', True)
+            if duplication_check == 'false':
+                duplication_check = False
+            validate_osm_data(data, duplication_check=duplication_check)
+
+            # Map Healthsites tags to OSM tags
+            mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
+            data['tag'] = convert_to_osm_tag(
+                mapping_file_path, data['tag'], 'node')
+
+            # Push data to OSM
+            response = create_osm_node(user, data)
+
+            # create pending index
+            create_pending_update(
+                'node', response['id'],
+                data['tag']['name'], user, response['version'])
+
+            save_extensions('node', response['id'], locality_attr)
+
+            if request.GET.get('review', None):
+                delete_pending_review(request.GET.get('review', None))
+            return Response(response)
+
         except Exception as e:
-            return HttpResponseBadRequest('%s' % e)
+            if not request.GET.get('review', None):
+                if user != request.user:
+                    create_pending_review(user, request.data, '%s' % e)
+            else:
+                try:
+                    update_pending_review(request.GET.get(
+                        'review', None), request.data, '%s' % e)
+                except Exception as e:
+                    return HttpResponseBadRequest('%s' % e)
+            output = {
+                'error': '%s' % e,
+                'payload': request.data,
+            }
+            return HttpResponseBadRequest('%s' % json.dumps(output))
 
 
-class GetFacilitiesCount(APIView, GetFacilitiesUtilities):
+class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):
     """
     get:
     Returns count of facilities with some filtering parameters.
     """
-    filter_backends = (CountScheme,)
+    filter_backends = (FilterFacilitiesScheme,)
 
     def get(self, request):
         try:
-            return Response(self.get_healthsites(request).count())
-        except BadRequestError as e:
+            country = request.GET.get('country', None)
+            extent = request.GET.get('extent', None)
+            timestamp_from = request.GET.get('from', None)
+            timestamp_to = request.GET.get('to', None)
+
+            if timestamp_from:
+                timestamp_from = datetime.fromtimestamp(int(timestamp_from))
+
+            if timestamp_to:
+                timestamp_to = datetime.fromtimestamp(int(timestamp_to))
+
+            # get cache data
+            output = \
+                get_statistic_with_cache(
+                    extent, country, timestamp_from, timestamp_to)
+            return Response(output['localities'])
+        except Exception as e:
+            return HttpResponseBadRequest('%s' % e)
+
+
+class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
+    """
+    get:
+    Returns statistic of facilities with some filtering parameters.
+    """
+    filter_backends = (FilterFacilitiesScheme,)
+
+    def get(self, request):
+        try:
+            country = request.GET.get('country', None)
+            extent = request.GET.get('extent', None)
+            timestamp_from = request.GET.get('from', None)
+            timestamp_to = request.GET.get('to', None)
+
+            if timestamp_from:
+                timestamp_from = datetime.fromtimestamp(int(timestamp_from))
+
+            if timestamp_to:
+                timestamp_to = datetime.fromtimestamp(int(timestamp_to))
+
+            # get cache data
+            output = \
+                get_statistic_with_cache(
+                    extent, country, timestamp_from, timestamp_to)
+            if country:
+                country = self.get_country(country)
+                output['geometry'] = country.polygon_geometry.geojson
+            return Response(output)
+        except Exception as e:
             return HttpResponseBadRequest('%s' % e)

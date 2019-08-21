@@ -2,10 +2,12 @@
 import logging
 import os
 
+import json
 import googlemaps
 from envelope.views import ContactView
 from hurry.filesize import size
 
+from api.api_views.v2.schema import Schema
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -20,7 +22,6 @@ from braces.views import FormMessagesMixin
 from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from localities.utils import (
-    get_country_statistic,
     search_locality_by_spec_data, search_locality_by_tag
 )
 from social_users.utils import get_profile
@@ -34,6 +35,7 @@ class MainView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         context['debug'] = settings.DEBUG
+        context['map_max_zoom'] = settings.MAX_ZOOM
         if request.user.is_authenticated():
             if request.user.is_staff:
                 context['uploader'] = True
@@ -81,6 +83,14 @@ class AttributionsView(TemplateView):
     template_name = 'attributions.html'
 
 
+class GatherEnrollmentView(TemplateView):
+    template_name = 'how_to_gather.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(GatherEnrollmentView, self).get_context_data(**kwargs)
+        return context
+
+
 def search_place(request, place):
     # getting country's polygon
     result = {}
@@ -111,7 +121,7 @@ def map(request):
     """View for request."""
     if request.user.is_authenticated():
         user = get_object_or_404(User, username=request.user)
-        request.user = get_profile(user)
+        request.user = get_profile(user, request)
 
     if request.method == 'POST':
         search_query = request.POST.get('q')
@@ -152,25 +162,15 @@ def map(request):
     else:
         tag = request.GET.get('tag')
         country = request.GET.get('country')
-        place = request.GET.get('place')
         attribute = request.GET.get('attribute')
+        uuid = request.GET.get('uuid')
         result = {}
 
         if tag:
             result = search_locality_by_tag(tag)
             result['tag'] = tag
         elif country:
-            result = get_country_statistic(country)
-            result['country'] = country
-            result['polygon'] = (
-                Country.objects.get(name__iexact=country).polygon_geometry.geojson
-            )
-            result['shapefile_size'] = 0
-            filename = os.path.join(directory_media, country + '_shapefile.zip')
-            if (os.path.isfile(filename)):
-                result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
-        elif place:
-            result = search_place(request, place)
+            pass
         elif attribute:
             uuid = request.GET.get('uuid')
             result = search_locality_by_spec_data('attribute', attribute, uuid)
@@ -178,15 +178,7 @@ def map(request):
                 'attribute': attribute, 'uuid': uuid, 'name': result['locality_name'],
                 'location': result['location']
             }
-        elif len(request.GET) == 0:
-            result = search_place(request, place)
-            # get facilities shapefile size
-            result['shapefile_size'] = 0
-            filename = os.path.join(directory_media, 'facilities_shapefile.zip')
-            if (os.path.isfile(filename)):
-                result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
-        else:
-            uuid = request.GET.get('uuid')
+        elif uuid:
             for item in request.GET:
                 if item != 'uuid':
                     spec = item
@@ -196,10 +188,21 @@ def map(request):
                         'spec': spec, 'data': data, 'uuid': uuid,
                         'name': result['locality_name'], 'location': result['location']
                     }
+        else:
+            result = search_place(request, None)
+            # get facilities shapefile size
+            result['shapefile_size'] = 0
+            filename = os.path.join(directory_media, 'facilities_shapefile.zip')
+            if (os.path.isfile(filename)):
+                result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
 
         if 'new_geom' in request.session:
             result['new_geom'] = request.session['new_geom']
             del request.session['new_geom']
+
+        result['osm_API'] = settings.OSM_API_URL
+        result['map_max_zoom'] = settings.MAX_ZOOM
+        result['schema'] = json.dumps(Schema().get_schema())
         return render_to_response(
             'map.html',
             result,

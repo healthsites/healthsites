@@ -2,6 +2,7 @@
 from django.conf.urls import include, patterns, url
 from rest_framework.documentation import include_docs_urls
 
+from api.api_views.v2.import_progress import ImportCSVProgress
 from api.api_views.v2.schema import SchemaView
 from .views.api_view import Docs
 from .views.facilities import FacilitiesApiView
@@ -11,22 +12,78 @@ from .views.locality_search import LocalitySearchApiView
 from .views.locality_synonym import LocalitySynonymApiView
 
 # API Version 2
+from api.api_views.v2.countries.search import Autocomplete as CountryAutocomplete
+from api.api_views.v2.facilities.cluster import GetCluster
 from api.api_views.v2.facilities.detail import GetDetailFacility
-from api.api_views.v2.facilities.list import (GetFacilities, GetFacilitiesCount)
+from api.api_views.v2.facilities.list import (
+    BulkUpload, GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
 from api.api_views.v2.facilities.shapefile import GetFacilitiesShapefileProcess
+from api.api_views.v2.facilities.search import Autocomplete
+from api.api_views.v2.googlemaps.search import SearchByGeoname
+from api.api_views.v2.gather_enrollment import GatherEnrollment
+from api.api_views.v2.get_migration_progress import GetMigrationProgress
+from api.api_views.v2.users.changesets import GetChangesets
+from api.api_views.v2.pending.list import GetPendingReviews, GetPendingUpdates
+from api.api_views.v2.pending.detail import GetDetailPendingReviews
 
+countries_api = patterns(
+    '',
+    url(r'^autocomplete',
+        CountryAutocomplete.as_view())
+)
+facilities_api = patterns(
+    '',
+    url(r'^cluster', GetCluster.as_view()),
+    url(r'^count',
+        GetFacilitiesCount.as_view()),
+    url(r'^statistic',
+        GetFacilitiesStatistic.as_view()),
+    url(r'^autocomplete/',
+        Autocomplete.as_view()),
+    url(r'^shapefile/process/(?P<country_name>[\w\+%_& ]+)',
+        GetFacilitiesShapefileProcess.as_view()),
+    url(r'^bulk/create', BulkUpload.as_view()),
+    url(r'^(?P<osm_type>\w+)/(?P<osm_id>-?\d+)',
+        GetDetailFacility.as_view()),
+    url(r'^',
+        GetFacilities.as_view()),
+)
+gmaps_api = patterns(
+    '',
+    url(r'^search/geoname',
+        SearchByGeoname.as_view())
+)
+user_api = patterns(
+    '',
+    url(r'^changesets',
+        GetChangesets.as_view()),
+    url(r'^reviews',
+        GetPendingReviews.as_view()),
+    url(r'^updates',
+        GetPendingUpdates.as_view()),
+)
+pending_api = patterns(
+    '',
+    url(r'reviews/(?P<id>-?\d+)',
+        GetDetailPendingReviews.as_view()),
+)
+gather_api = patterns(
+    '',
+    url(r'enrollment/',
+        GatherEnrollment.as_view(), name='api_gather_enrollment'),
+)
 api_v2 = patterns(
     '',
-    url(r'^facilities/count',
-        GetFacilitiesCount.as_view(), name='api_v2_facility_count'),
-    url(r'^facilities/shapefile/process/(?P<country_name>[\w\+%_& ]+)',
-        GetFacilitiesShapefileProcess.as_view(), name='api_v2_facility_list'),
-    url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
-        GetDetailFacility.as_view(), name='api_v2_facility_detail'),
-    url(r'^facilities/(?P<uuid>[\w\+%_& ]+)',
-        GetDetailFacility.as_view(), name='api_v2_facility_detail'),
-    url(r'^facilities',
-        GetFacilities.as_view(), name='api_v2_facility_list'),
+    url(r'countries/', include(countries_api)),
+    url(r'facilities/', include(facilities_api)),
+    url(r'gmaps/', include(gmaps_api)),
+    url(r'gather/', include(gather_api)),
+    url(r'pending/', include(pending_api)),
+    url(r'user/(?P<username>.*)/', include(user_api)),
+    url(r'migration-progress/',
+        GetMigrationProgress.as_view(), name='api_get_migration_progress'),
+    url(r'csv-import-progress/',
+        ImportCSVProgress.as_view(), name='api_get_csv_import_progress')
 )
 
 urlpatterns = patterns(

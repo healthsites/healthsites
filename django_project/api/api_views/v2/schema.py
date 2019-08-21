@@ -1,7 +1,8 @@
+from api.utils import get_osm_schema
+
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-import json
 from coreapi import Field
 from coreschema import Integer, String
 from rest_framework.filters import BaseFilterBackend
@@ -93,8 +94,34 @@ class ApiSchemaBase(BaseFilterBackend):
         return schemas
 
 
+class Schema(object):
+    def _change_type_into_string(self, type):
+        if type == float:
+            return 'float'
+        elif type == str:
+            return 'string'
+        elif type == bool:
+            return 'boolean'
+        elif type == dict:
+            return 'object'
+        elif type == int:
+            return 'integer'
+        elif type == list:
+            return 'list'
+        return type
+
+    def get_schema(self):
+        schema = get_osm_schema()
+        fields = schema['facilities']['create']['fields']
+        for field in fields:
+            field['type'] = self._change_type_into_string(field['type'])
+            if field['key'] == 'tag':
+                for tag in field['tags']:
+                    tag['type'] = self._change_type_into_string(tag['type'])
+        return schema
+
+
 class SchemaView(APIView):
     def get(self, request):
-        schema = open('api/schema.json', 'rb')
-        schema = schema.read()
-        return Response(json.loads(schema))
+        schema = Schema().get_schema()
+        return Response(schema)

@@ -1,0 +1,86 @@
+<nav id="navbar-wrapper" class="navbar navbar-fixed-top masthead">
+    <div class="container-fluid">
+        <div class="navbar-header">
+
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                    aria-expanded="false" aria-controls="navbar"><span class="sr-only">Toggle navigation</span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span></button>
+            <button type="button" class="search-toggle collapsed"><span class="sr-only">Search</span><a
+                    class="navbar-search" href="#"><i class="fa fa-search"></i></a></button>
+            <a class="navbar-brand" href="/"><span class="hs-logo"></span>healthsites.io</a>
+            <a class="navbar-share closed" href="#"><img class="share" src="/static/img/share.svg" width="20"/><img
+                    class="close" src="/static/img/close.svg" width="16"/></a>
+
+            <div class="hidden" id="site-social">
+                <i class="medium-size-icon mdi-content-clear" id="site-social-icon-open"></i>
+                <a onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+                   class="withripple twitter-href" target="_blank">
+                    <i class="fa fa-twitter"></i></a>
+                <a class="facebook-hs-share withripple facebook-href" target="_blank">
+                    <i class="fa fa-facebook"></i></a>
+                <a class="googleplus-href"
+                   onclick="javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=600,width=600');return false;"
+                   target="_blank">
+                    <i class="fa fa-google-plus"></i>
+                </a>
+                <a class="linkedin-href"
+                   href="https://www.linkedin.com/shareArticle?mini=true&url=http://healthsites.io&title=Healthsites&summary=Building%20a%20free,%20curated,%20canonical%20source%20of%20healthcare%20location%20data"
+                   target="_blank">
+                    <i class="fa fa-linkedin"></i>
+                </a>
+            </div>
+            <span class="tagline" itemprop="description">Building an open data commons of health facility data with OpenStreetMap</span>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse pull-right">
+            <ul class="nav navbar-nav">
+                <li><a href="https://medium.com/healthsites-io" target="_blank">Blog</a></li>
+                <li><a href="/#about">About</a></li>
+                <li><a href="/map">Map</a></li>
+                <li><a href="/#country-data">Country data</a></li>
+                <li><a href="/#lifecycle">How it works</a></li>
+                <li><a href="/#share-data">Share data</a></li>
+                <li><a href="/#partners">Partners</a></li>
+                {% if user.is_authenticated %}
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">Campaigns
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            {% for enrollment in enrollments %}
+                                <li><a href="/campaign{{ enrollment.url }}">{{ enrollment.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                {% endif %}
+                <li class="nav-search-wrap"><a class="navbar-search"><i class="fa fa-search"></i></a></li>
+                <li><a href="https://gitter.im/healthsites/healthsites" class="navbar-chat" target="_blank"><i
+                        class="fa fa-comments"></i></a></li>
+            </ul>
+
+        </div>
+        <!--/.nav-collapse -->
+
+    </div>
+    <form class="nav-searchbar container-fluid" id="search-form">
+        <div id="search-options" class="option-group">
+            <div class="option">
+                <span></span>
+                <input type="radio" name="option" id="radio-healthsite" value="healthsite" checked>
+                <span></span>
+                <label class="option" for="radio-healthsite">healthsite</label>
+            </div>
+            <div class="option">
+                <span></span>
+                <input type="radio" name="option" id="radio-country" value="country">
+                <span></span>
+                <label class="option" for="radio-country">country</label>
+            </div>
+            <div class="option">
+                <span></span>
+                <input type="radio" name="option" id="radio-place" value="place">
+                <span></span>
+                <label class="option" for="radio-place">place</label>
+            </div>
+        </div>
+        <input id="search-box" type="search" name="q" placeholder="search...">
+    </form>
+</nav>

@@ -26,3 +26,18 @@ DATABASES = {
         'TEST_NAME': 'docker_osm_unittests',
     }
 }
+
+# use master apis for dev
+OSM_API_URL = 'https://master.apis.dev.openstreetmap.org'
+try:
+    SOCIAL_AUTH_OPENSTREETMAP_KEY = SOCIAL_AUTH_OPENSTREETMAP_STAGING_KEY
+    SOCIAL_AUTH_OPENSTREETMAP_SECRET = SOCIAL_AUTH_OPENSTREETMAP_STAGING_SECRET
+except (ImportError, NameError):
+    pass
+
+AUTHENTICATION_BACKENDS = (
+    'core.backends.dev_openstreetmap.OpenStreetMapDevOAuth',
+    'social_core.backends.twitter.TwitterOAuth',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)

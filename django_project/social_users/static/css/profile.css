@@ -96,3 +96,48 @@
     border-radius: 5px;
     margin-top: 3px;
 }
+
+.profile-image-icon {
+    float: left;
+    position: absolute;
+    background-color: white;
+    padding: 5px;
+    font-size: 30px;
+    border-bottom-right-radius: 5px;
+}
+
+.migration-info {
+    z-index: 1500;
+    color: white;
+    position: absolute;
+    background-color: #3c4c57;
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+}
+
+.migrate-btn-wrapper {
+    position: absolute;
+    margin-top: 20px;
+    z-index: 1500;
+}
+
+.btn-migrate {
+    background-color: #53a453 !important;
+    font-weight: bold;
+    padding: 0 6px !important;
+}
+
+.btn-migrate:hover {
+    opacity: 0.7;
+}
+
+.loading-icon {
+    position: absolute;
+    left: -20px;
+    top: 10px;
+}
+
+h3 {
+    font-weight: 600 !important;
+}

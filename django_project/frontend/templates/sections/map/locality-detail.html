@@ -1,0 +1,146 @@
+<div id="locality-info" class="details" style="display: none">
+    <div id="review-error" class="header" style="display: none">
+    </div>
+    <div class="header">
+        <div data-tag="name">
+            <h1 class="data"></h1>
+        </div>
+        <div data-tag="amenity">
+            <span class="sub data"></span>
+        </div>
+    </div>
+    <div class="info">
+        <table style="width:100%">
+            <tr id="info-wrapper">
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-info-circle"></i>
+                </td>
+                <td class="data-wrapper updates">
+                    <div class="more" style="margin-bottom: 5px">
+                        <div>
+                            last update: <span data-tag="changeset_timestamp"><span class="date uneditable-data"></span></span>, by
+                            <span data-tag="changeset_user" class="name"><a class="uneditable-data"></a></span>
+                        </div>
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="0"
+                             aria-valuemin="0" aria-valuemax="100" style="width:0" id="locality-completeness">
+                            0% Complete
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-map-marker"></i>
+                </td>
+                <td class="data-wrapper find">
+                    <div class="full-address" data-tag="addr_full">
+                        <p class="address data"></p>
+                    </div>
+                    <div class="coordinates">
+                        lat: <span data-tag="latitude"><span class="data"></span></span>,
+                        long: <span data-tag="longitude"><span class="data"></span></span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-phone"></i>
+                </td>
+                <td class="data-wrapper find">
+                    <div data-tag="contact_number">
+                        <span class="data">-</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-clock-o"></i>
+                </td>
+                <td class="data-wrapper find">
+                    <div data-tag="opening_hours">
+                        <span class="data">-</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-link"></i>
+                </td>
+                <td class="data-wrapper find">
+                    <div data-tag="source_html" class="url">
+                        <span class="data">-</span>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-tags"></i>
+                </td>
+                <td class="data-wrapper tags">
+                    <table id="other-tags-table" style="width: 100%"></table>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-bed"></i>
+                </td>
+                <td class="data-wrapper beds">
+                    <span data-tag="beds">
+                        <strong class="data">-</strong>
+                    </span> full time beds,&nbsp;
+                    <span data-tag="part_time_beds">
+                        <strong class="data">0</strong>
+                    </span> part time beds
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-user-md"></i>
+                </td>
+                <td class="data-wrapper doctors">
+                    <span data-tag="staff_doctors">
+                        <strong class="data">-</strong>
+                    </span> full time doctors,&nbsp;
+                    <span data-tag="staff_nurses">
+                        <strong class="data">0</strong>
+                    </span> full time nurses
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-briefcase"></i>
+                </td>
+                <td class="data-wrapper ownership">
+                    <div data-tag="operator_type">
+                        <div class="data"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td valign="top" class="icon-holder">
+                    <i class="fa fa-sticky-note"></i>
+                </td>
+                <td class="data-wrapper note">
+                    <div data-tag="notes">
+                        <div class="data"></div>
+                    </div>
+                </td>
+            </tr>
+
+            {#            // TODO: We will fix this#}
+            {#            <tr>#}
+            {#                <td valign="top" class="icon-holder">#}
+            {#                    <i class="fa fa-tag"></i>#}
+            {#                </td>#}
+            {#                <td class="data-wrapper tags">#}
+            {#                    <div data-tag="tag">#}
+            {#                        <ul class="data"></ul>#}
+            {#                    </div>#}
+            {#                </td>#}
+            {#            </tr>#}
+        </table>
+    </div>
+</div>
