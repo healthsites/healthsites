@@ -1027,3 +1027,7 @@ section.container {
 .ui-menu .ui-menu-item div {
     padding: 3px 1em 3px .4em;
 }
+
+.modal-dialog {
+    margin-top: 100px;
+}

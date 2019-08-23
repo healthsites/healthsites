@@ -56,10 +56,6 @@
     float: none;
 }
 
-.profile-header {
-    margin-bottom: 20px;
-}
-
 .left-side {
     width: 300px;
     margin-right: 20px;
@@ -67,10 +63,6 @@
     padding: 30px;
 }
 
-.profile-image-size {
-    width: 200px;
-    border: 1px solid #000000;
-}
 
 .profile-image {
     max-width: 100%;
@@ -100,10 +92,7 @@
 .profile-image-icon {
     float: left;
     position: absolute;
-    background-color: white;
-    padding: 5px;
     font-size: 30px;
-    border-bottom-right-radius: 5px;
 }
 
 .migration-info {
@@ -140,4 +129,49 @@
 
 h3 {
     font-weight: 600 !important;
+}
+
+.user-profile {
+    margin-top: 0;
+    padding: 10px;
+    padding-top: 0;
+}
+
+.profile-image-size {
+    width: 120px !important;
+    height: 120px !important;
+    border: none !important;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.5);
+}
+
+.profile-header h1 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.status {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.label-profile {
+    font-weight: 600;
+}
+
+.value-profile {
+    margin-left: 20px;
+    margin-bottom: 7px;
+
+}
+
+section.container {
+    padding-top: 120px;
+}
+
+.profile-button {
+    font-size: 10px;
+    width: 100%;
+    font-weight: 500;
 }
