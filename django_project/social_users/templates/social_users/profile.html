@@ -100,32 +100,34 @@
                     </div>
                 {% endif %}
             </div>
-            {% include 'social_users/update-profile-modal.html' %}
-            <div id="api-key-modal" class="modal fade" role="dialog">
-                <div class="modal-dialog">
-                    <!-- Modal content-->
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Your API KEY</h4>
-                        </div>
-                        <div class="modal-body">
-                            {% if api_keys %}
-                                {% for api_key in api_keys %}
-                                    <div>{{ api_key }}</div>
-                                {% endfor %}
-                            {% else %}
-                                <i style="color: #f44a52">You don't have api key. Please update profile or ask administrator.</i>
-                            {% endif %}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            {% if user == request.user %}
+                {% include 'social_users/update-profile-modal.html' %}
+                <div id="api-key-modal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Your API KEY</h4>
+                            </div>
+                            <div class="modal-body">
+                                {% if api_keys %}
+                                    {% for api_key in api_keys %}
+                                        <div>{{ api_key }}</div>
+                                    {% endfor %}
+                                {% else %}
+                                    <i style="color: #f44a52">You don't have api key. Please update profile or ask administrator.</i>
+                                {% endif %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <input type="button" name="btn" data-toggle="modal"
-                   data-target="#api-key-modal" class="btn btn-default profile-button"
-                   value="Check your API key">
+                <input type="button" name="btn" data-toggle="modal"
+                       data-target="#api-key-modal" class="btn btn-default profile-button"
+                       value="Check your API key">
+            {% endif %}
         </div>
         <div class="col-sm-9 profile-graphs" style="padding-left: 30px">
             <h3 style="margin-top: 0">Latest updates</h3>
