@@ -149,11 +149,7 @@ define([
                     self.detail.showInfo(osm_type, osm_id, data);
                     self.detail_info = data;
                     self.toDetailMode();
-                    if (osm_type !== 'node') {
-                        self.disabled(self.$editButton);
-                    } else {
-                        self.enabled(self.$editButton);
-                    }
+                    self.enabled(self.$editButton);
                 }, function (error) {
                     self.detail.showTags({});
                     if (error['status'] === 400) {
@@ -219,7 +215,6 @@ define([
                                     params.push("duplication-check=false");
                                 }
                                 self.currentAPI += "?" + params.join("&");
-                                console.log(data);
                                 self.detail.showInfo(osm_type, osm_id, data);
                                 self.detail_info = data;
                                 self.toDetailMode();
@@ -369,10 +364,13 @@ define([
                     attributes['latitude'] = coordinates[1];
                     attributes['longitude'] = coordinates[0];
                 }
+
+                if (this.detail_info['properties']['osm_type'] === 'node') {
+                    shared.dispatcher.trigger('locality.edit');
+                }
             }
             this.form.renderForm(attributes, this.currentAPI);
             this.toFormMode();
-            shared.dispatcher.trigger('locality.edit');
         },
         toSaveMode: function () {
             /** Asking form to push the data on form **/
@@ -382,7 +380,7 @@ define([
                 function (data) {
                     self.isReview = false;
                     self.toDefaultMode();
-                    self.getLocalityDetail('node', data['id']);
+                    self.getLocalityDetail(self.detail_info['properties']['osm_type'], data['id']);
                     self.enabled(self.$saveButton);
                 }, function (error) {
                     self.isReview = false;
@@ -410,6 +408,8 @@ define([
                 this.$latestUI.show();
                 this.$el.hide();
                 this.$elError.hide();
+            } else {
+                this.enabled(this.$editButton);
             }
         }
     })

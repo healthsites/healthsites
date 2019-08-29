@@ -145,6 +145,13 @@ define([
             delete attributes['changeset_id'];
             delete attributes['changeset_version'];
             this.showTags(attributes);
+
+            // hide coordinates if not node
+            if (osm_type !== 'node') {
+                $('.coordinates').hide();
+            } else {
+                $('.coordinates').show();
+            }
         },
 
     })
