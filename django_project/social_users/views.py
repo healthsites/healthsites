@@ -5,14 +5,18 @@ import logging
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
-from django.http import HttpResponseRedirect
+from django.contrib.sites.models import Site
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.views.generic import TemplateView, View
+from rest_framework.views import APIView
 
 from braces.views import LoginRequiredMixin
 
 from api.models.user_api_key import UserApiKey
 from localities.models import Locality
-from social_users.models import Profile
+from social_users.models import (
+    Profile, Organisation, TrustedUser, OrganisationSupported)
 from social_users.utils import get_profile
 
 LOG = logging.getLogger(__name__)
@@ -38,6 +42,7 @@ class ProfilePage(TemplateView):
         """
 
         context = super(ProfilePage, self).get_context_data(*args, **kwargs)
+        context['api_keys'] = None
         try:
             user = User.objects.get(username=kwargs['username'])
             user = get_profile(user, self.request)
@@ -75,7 +80,6 @@ class ProfilePage(TemplateView):
 
         context['user'] = user
         context['osm_user'] = osm_user
-        context['api_keys'] = None
         context['osm_API'] = settings.OSM_API_URL
         return context
 
@@ -125,3 +129,37 @@ def save_profile(backend, user, response, *args, **kwargs):
     }
 
     return {'user': user}
+
+
+class ProfileUpdate(APIView):
+    """API for listing all database record of source reference."""
+
+    def post(self, request, *args):
+        if not request.user.is_authenticated():
+            return HttpResponseForbidden()
+        data = request.data
+        request.user.first_name = data.get('first-name', None)
+        request.user.last_name = data.get('last-name', None)
+        request.user.email = data.get('email', None)
+        request.user.save()
+
+        org_name = data.get('organisation-name', None)
+        site_url = data.get('site-url', None)
+        if org_name and site_url:
+            if site_url:
+                site, created = Site.objects.get_or_create(
+                    domain=site_url, name=site_url)
+                organisation, created = Organisation.objects.get_or_create(
+                    name=org_name,
+                    site=site
+                )
+                trusted_user, created = TrustedUser.objects.get_or_create(user=request.user)
+                OrganisationSupported.objects.get_or_create(
+                    user=trusted_user,
+                    organisation=organisation)
+
+        UserApiKey.get_user_api_key(
+            self.request.user, autogenerate=True)
+
+        return HttpResponseRedirect(
+            reverse('profile', kwargs={'username': request.user.username}))
