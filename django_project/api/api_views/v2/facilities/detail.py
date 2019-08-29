@@ -29,6 +29,7 @@ from api.utilities.pending import (
     get_pending_review)
 from api.utils import (
     validate_osm_data, convert_to_osm_tag, update_osm_node, verify_user)
+from localities_osm_extension.models.extension import LocalityOSMExtension
 
 
 class GetDetailFacility(FacilitiesBaseAPI):
@@ -41,7 +42,7 @@ class GetDetailFacility(FacilitiesBaseAPI):
     """
 
     def getLocalityOsm(self, osm_type, osm_id):
-        """"""
+        """ Get locality osm """
 
         if osm_type == 'node':
             return LocalityOSMNode.objects.get(osm_id=osm_id)
@@ -77,6 +78,13 @@ class GetDetailFacility(FacilitiesBaseAPI):
     def post(self, request, osm_type, osm_id):
         data = copy.deepcopy(request.data)
         user = request.user
+
+        # delete uuid, because it is not editable
+        try:
+            del data['tag']['uuid']
+        except KeyError:
+            pass
+
         # Now, we post the data directly to OSM.
         try:
             if osm_type == 'node':
@@ -149,3 +157,30 @@ class GetDetailFacility(FacilitiesBaseAPI):
             return HttpResponseBadRequest('%s' % json.dumps(output))
         except (LocalityOSMNode.DoesNotExist, LocalityOSMNode.DoesNotExist):
             raise Http404()
+
+
+class GetDetailFacilityByUUID(GetDetailFacility):
+    """
+    get:
+    Returns a facility detail.
+
+    put:
+    Update a facility.
+    """
+
+    def get_facility_by_uuid(self, uuid):
+        """ Get facility by uuid """
+        extension = LocalityOSMExtension.get_extension_by_uuid(uuid)
+        if not extension:
+            raise Http404('not found')
+        return extension.osm_type, extension.osm_id
+
+    def get(self, request, uuid):
+        """ Get facility by uuid """
+        osm_type, osm_id = self.get_facility_by_uuid(uuid)
+        return super(GetDetailFacilityByUUID, self).get(request, osm_type, osm_id)
+
+    def post(self, request, uuid):
+        """ Update facility by uuid """
+        osm_type, osm_id = self.get_facility_by_uuid(uuid)
+        return super(GetDetailFacilityByUUID, self).post(request, osm_type, osm_id)

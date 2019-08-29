@@ -6,9 +6,41 @@ define([
             this.definitions = definitions;
             this.listenTo(shared.dispatcher, 'form:update-coordinates', this.updateCoordinates);
         },
+        insertIntoElement: function (tag, inputHtml, value, required) {
+            /** INSERT HTML INTO FORM ELEMENT **/
+            var $element = $('*[data-tag="' + tag + '"]');
+            if ($element.length > 0) {
+                if ($element.find('.input').length !== 0) {
+                    return;
+                }
+                $element.find('.data').after(inputHtml);
+            }
+
+            var $input = $element.find('.input');
+            $input.attr('required', required);
+
+            // assign value to form
+            if (value) {
+                $input.val(value);
+            }
+
+            switch (tag) {
+                case 'source':
+                    $input.val("healthsites.io");
+                    $input.prop('disabled', true);
+                    break;
+                case 'uuid':
+                    $input.prop('disabled', true);
+                    break;
+            }
+        },
         renderForm: function (data, APIUrl) {
             /** RENDER FORM BASED ON DATA **/
+            var that = this;
             this.APIUrl = APIUrl;
+            if (!data) {
+                data = {};
+            }
             $.each(this.definitions, function (tag, value) {
                 var inputHtml = '';
                 var required = value['required'];
@@ -43,7 +75,7 @@ define([
                         options = options.sort();
                         $.each(options, function (index, key) {
                             var selected = '';
-                            if (data && data[tag]) {
+                            if (data[tag]) {
                                 var arraySelected = data[tag];
                                 if (!$.isArray(arraySelected)) {
                                     arraySelected = arraySelected.split(';');
@@ -59,22 +91,13 @@ define([
                         inputHtml += "</div>";
                         break;
                 }
-                var $element = $('*[data-tag="' + tag + '"]');
-                if ($element.length > 0) {
-                    $element.find('.data').after(inputHtml);
-                }
+                that.insertIntoElement(tag, inputHtml, data[tag], required);
+            });
 
-                var $input = $element.find('.input');
-                $input.attr('required', required);
-
-                // assign value to form
-                if (data && data[tag]) {
-                    $input.val(data[tag]);
-                }
-                if (tag === "source") {
-                    $input.val("healthsites.io");
-                    $input.prop('disabled', true);
-                }
+            // put every data into form
+            $.each(data, function (tag, value) {
+                that.insertIntoElement(
+                    tag, '<input class="input" type="text" placeholder="this is custom tag" title="this is custom tag" >', value, false);
             });
             this.$latInput = $('*[data-tag="latitude"] input');
             this.$lonInput = $('*[data-tag="longitude"] input');

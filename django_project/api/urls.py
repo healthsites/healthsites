@@ -14,7 +14,8 @@ from .views.locality_synonym import LocalitySynonymApiView
 # API Version 2
 from api.api_views.v2.countries.search import Autocomplete as CountryAutocomplete
 from api.api_views.v2.facilities.cluster import GetCluster
-from api.api_views.v2.facilities.detail import GetDetailFacility
+from api.api_views.v2.facilities.detail import (
+    GetDetailFacility, GetDetailFacilityByUUID)
 from api.api_views.v2.facilities.list import (
     BulkUpload, GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
 from api.api_views.v2.facilities.shapefile import GetFacilitiesShapefileProcess
@@ -45,6 +46,8 @@ facilities_api = patterns(
     url(r'^bulk/create', BulkUpload.as_view()),
     url(r'^(?P<osm_type>\w+)/(?P<osm_id>-?\d+)',
         GetDetailFacility.as_view()),
+    url(r'by-uuid/(?P<uuid>[\w\-]+)',
+        GetDetailFacilityByUUID.as_view()),
     url(r'^',
         GetFacilities.as_view()),
 )

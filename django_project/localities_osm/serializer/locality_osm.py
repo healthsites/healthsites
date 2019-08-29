@@ -1,6 +1,7 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '22/01/19'
 
+import uuid
 import json
 from django.contrib.gis.geos.error import GEOSException
 from rest_framework import serializers
@@ -13,6 +14,7 @@ from localities_osm.models.locality import (
     LocalityOSMNode, LocalityOSMWay
 )
 from localities_osm_extension.models.extension import LocalityOSMExtension
+from localities_osm_extension.models.tag import Tag
 
 attributes_fields = LocalityOSM._meta.get_all_field_names()
 attributes_fields.remove('osm_id')
@@ -23,13 +25,17 @@ class LocalityOSMBaseSerializer(object):
         return obj.get_completeness()
 
     def get_attributes(self, obj):
+        """ Get attributes from model fields
+        and also the extension"""
         attributes = {}
         for attribute in attributes_fields:
             if getattr(obj, attribute):
                 attributes[attribute] = getattr(obj, attribute)
+
+        extension = None
+        osm_id = obj.osm_id
+        osm_type = self.get_osm_type(obj)
         try:
-            osm_id = obj.osm_id
-            osm_type = self.get_osm_type(obj)
             extension = LocalityOSMExtension.objects.get(
                 osm_id=osm_id,
                 osm_type=osm_type
@@ -39,6 +45,22 @@ class LocalityOSMBaseSerializer(object):
                     attributes[tag.name] = tag.value
         except LocalityOSMExtension.DoesNotExist:
             pass
+
+        try:
+            attributes['uuid']
+        except KeyError:
+            locality_uuid = uuid.uuid4().hex
+            if not extension:
+                extension, created = LocalityOSMExtension.objects.get_or_create(
+                    osm_id=osm_id,
+                    osm_type=osm_type
+                )
+            Tag.objects.create(
+                extension=extension,
+                name='uuid',
+                value=locality_uuid
+            )
+            attributes['uuid'] = locality_uuid
         return attributes
 
     def get_centroid(self, obj):
@@ -147,7 +169,7 @@ class LocalityOSMBasicSerializer(ModelSerializer):
         if obj.name:
             return obj.name
         else:
-            return'<i>No Name</i>'
+            return '<i>No Name</i>'
 
     def get_uuid(self, obj):
         return '%s/%s' % (obj.osm_type, obj.osm_id)
