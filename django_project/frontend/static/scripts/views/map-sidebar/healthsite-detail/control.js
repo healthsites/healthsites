@@ -313,7 +313,7 @@ define([
             this.toDefaultMode();
             // TODO : this.enabled(this.$editButton);
             this.$el.find('.data').show();
-            this.$el.find('.input').hide();
+            this.$el.find('.input,.unreplaced-input').hide();
             this.$el.find('tr').show();
             this.$el.find('tr[data-hasvalue="false"]').hide();
             this.$el.find('tr[data-required="true"]').show();
@@ -340,7 +340,7 @@ define([
                 this.$cancelButton.show();
             }
             this.$el.find('.data').hide();
-            this.$el.find('.input').show();
+            this.$el.find('.input,.unreplaced-input').show();
             this.$el.find('.tags .fa-info-circle').show();
 
             // hide some of section

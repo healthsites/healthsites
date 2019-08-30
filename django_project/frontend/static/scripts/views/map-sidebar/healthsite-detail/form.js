@@ -1,10 +1,12 @@
 define([
     'backbone',
-    'jquery'], function (Backbone, $) {
+    'jquery',
+    'static/scripts/views/map-sidebar/healthsite-detail/form-widget/opening-hours.js'], function (Backbone, $, OpeningHoursWidget) {
     return Backbone.View.extend({
         initialize: function (definitions) {
             this.definitions = definitions;
             this.listenTo(shared.dispatcher, 'form:update-coordinates', this.updateCoordinates);
+            this.opening_hours = new OpeningHoursWidget();
         },
         getDependantClassName: function (value) {
             if (value) {
@@ -15,6 +17,7 @@ define([
         },
         renderForm: function (data, APIUrl) {
             /** RENDER FORM BASED ON DATA **/
+            this.opening_hours.toDefault();
             this.APIUrl = APIUrl;
             var that = this;
             $.each(this.definitions, function (tag, value) {
@@ -122,7 +125,7 @@ define([
                         inputHtml += "</div>";
                         break;
                 }
-                if ($element.length > 0) {
+                if ($element.length > 0 && $element.find('.unreplaced-input').length === 0) {
                     $element.find('.data').after(inputHtml);
                 }
 
@@ -168,6 +171,11 @@ define([
             $('*[data-tag]').each(function (index) {
                 var key = $(this).data('tag');
                 var value = that.getValue($(this));
+
+                // special value
+                if (key === 'opening_hours') {
+                    value = that.opening_hours.getDefiningHours();
+                }
                 if (value) {
                     tags[key] = value
                 }
@@ -182,28 +190,29 @@ define([
             return payload;
         },
         save: function (successCallback, errorCallback) {
-            $.ajax({
-                url: this.APIUrl,
-                type: "POST",
-                dataType: 'json',
-                contentType: 'application/json',
-                beforeSend: function (xhr, settings) {
-                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                },
-                success: function (data) {
-                    if (successCallback) {
-                        successCallback(data);
-                    }
-                },
-                error: function (error) {
-                    if (errorCallback) {
-                        errorCallback(error)
-                    }
-                },
-                data: JSON.stringify(this.getPayload())
-            })
+            console.log(JSON.stringify(this.getPayload()));
+            // $.ajax({
+            //     url: this.APIUrl,
+            //     type: "POST",
+            //     dataType: 'json',
+            //     contentType: 'application/json',
+            //     beforeSend: function (xhr, settings) {
+            //         if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+            //             xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            //         }
+            //     },
+            //     success: function (data) {
+            //         if (successCallback) {
+            //             successCallback(data);
+            //         }
+            //     },
+            //     error: function (error) {
+            //         if (errorCallback) {
+            //             errorCallback(error)
+            //         }
+            //     },
+            //     data: JSON.stringify(this.getPayload())
+            // })
         }
     })
 });

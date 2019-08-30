@@ -62,6 +62,9 @@
                 <td class="data-wrapper find">
                     <div data-tag="opening_hours">
                         <span class="data">-</span>
+                        <div class="unreplaced-input">
+                            {% include 'sections/widget/opening-hours.html' %}
+                        </div>
                     </div>
                 </td>
             </tr>
@@ -129,18 +132,6 @@
                     </div>
                 </td>
             </tr>
-
-            {#            // TODO: We will fix this#}
-            {#            <tr>#}
-            {#                <td valign="top" class="icon-holder">#}
-            {#                    <i class="fa fa-tag"></i>#}
-            {#                </td>#}
-            {#                <td class="data-wrapper tags">#}
-            {#                    <div data-tag="tag">#}
-            {#                        <ul class="data"></ul>#}
-            {#                    </div>#}
-            {#                </td>#}
-            {#            </tr>#}
         </table>
     </div>
 </div>
