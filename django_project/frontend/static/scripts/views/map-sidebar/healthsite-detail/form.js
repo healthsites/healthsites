@@ -6,13 +6,22 @@ define([
             this.definitions = definitions;
             this.listenTo(shared.dispatcher, 'form:update-coordinates', this.updateCoordinates);
         },
+        getDependantClassName: function (value) {
+            if (value) {
+                return 'depend-on-' + value;
+            } else {
+                return 'depend-on-none';
+            }
+        },
         renderForm: function (data, APIUrl) {
             /** RENDER FORM BASED ON DATA **/
             this.APIUrl = APIUrl;
+            var that = this;
             $.each(this.definitions, function (tag, value) {
                 var inputHtml = '';
                 var required = value['required'];
                 var options = value['options'];
+                var $element = $('*[data-tag="' + tag + '"]');
                 switch (value['type']) {
                     case 'integer':
                         inputHtml = '<input class="input" type="number">';
@@ -40,8 +49,44 @@ define([
                         break;
                     case 'list':
                         inputHtml = "<div class='input multiselect'>";
-                        options = options.sort();
+                        var options_with_depend_on = {};
+                        var parentValues = null;
                         $.each(options, function (index, key) {
+                            options_with_depend_on[key] = [that.getDependantClassName()];
+                        });
+
+                        // merge options_dependent into options
+                        // tell it with parent value in class
+                        if (value['options_dependent']) {
+                            var depend_options = value['options_dependent']['options'];
+                            $.each(depend_options, function (parent_key, options_value) {
+                                $.each(options_value, function (index, key) {
+                                    if (!options_with_depend_on[key]) {
+                                        options_with_depend_on[key] = [];
+                                    }
+                                    options_with_depend_on[key].push(that.getDependantClassName(parent_key))
+                                });
+                            });
+
+                            var depend_on = value['options_dependent']['depend_on'];
+                            var $parentElement = $('*[data-tag="' + depend_on + '"]');
+                            parentValues = that.getValue($parentElement);
+
+                            // show hide selections based on the parent value
+                            $parentElement.find('input').change(function () {
+                                var className = that.getDependantClassName($(this).val());
+                                if ($(this).is(':checked')) {
+                                    $element.find('.' + className).show();
+                                } else {
+                                    $element.find('.' + className).hide();
+                                    $element.find('.' + className + ' input').prop('checked', false);
+                                }
+                            });
+                        }
+
+                        // Render options
+                        var keys = Object.keys(options_with_depend_on).sort();
+                        $.each(keys, function (index, key) {
                             var selected = '';
                             if (data && data[tag]) {
                                 var arraySelected = data[tag];
@@ -54,12 +99,29 @@ define([
                                     }
                                 });
                             }
-                            inputHtml += '<input type="checkbox" value="' + key + '" style="width: auto!important;" ' + selected + '>' + capitalize(key.replaceAll('_', ' ')) + '<br>';
+
+                            // check if options are displaying in default
+                            var style = '';
+                            if (options_with_depend_on[key][0] !== that.getDependantClassName()) {
+                                style = 'display:none';
+                                if (parentValues) {
+                                    $.each(parentValues, function (index, parentValue) {
+                                        if ($.inArray(that.getDependantClassName(parentValue), options_with_depend_on[key]) >= 0) {
+                                            style = '';
+                                        }
+                                    });
+
+                                }
+                            }
+
+                            // Render it
+                            inputHtml += '<div class="' + options_with_depend_on[key].join(' ') + '" style="' + style + '">' +
+                                '<input type="checkbox" value="' + key + '" style="width: auto!important;" ' + selected + '>' +
+                                '' + capitalize(key.replaceAll('_', ' ')) + '</div>';
                         });
                         inputHtml += "</div>";
                         break;
                 }
-                var $element = $('*[data-tag="' + tag + '"]');
                 if ($element.length > 0) {
                     $element.find('.data').after(inputHtml);
                 }
@@ -84,21 +146,30 @@ define([
             this.$latInput.val(payload.latlng.lat);
             this.$lonInput.val(payload.latlng.lng);
         },
+        getValue: function ($elementTag) {
+            /** get value of element tag **/
+            var value = null;
+            var $element = $elementTag.find('input,select');
+            if ($element.val()) {
+                value = $element.val()
+            }
+            var $inputWrapper = $($elementTag.find('.input'));
+            if ($inputWrapper.hasClass('multiselect')) {
+                value = [];
+                $.each($inputWrapper.find("input:checked"), function () {
+                    value.push($(this).val());
+                });
+            }
+            return value;
+        },
         getPayload: function () {
             var tags = {};
+            var that = this;
             $('*[data-tag]').each(function (index) {
                 var key = $(this).data('tag');
-                var $element = $(this).find('input,select');
-                var value = $element.val();
+                var value = that.getValue($(this));
                 if (value) {
                     tags[key] = value
-                }
-                var $inputWrapper = $($(this).find('.input'));
-                if ($inputWrapper.hasClass('multiselect')) {
-                    tags[key] = [];
-                    $.each($inputWrapper.find("input:checked"), function () {
-                        tags[key].push($(this).val());
-                    });
                 }
             });
             var payload = {
