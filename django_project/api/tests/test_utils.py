@@ -128,12 +128,12 @@ class TestUtils(TestCase):
             'operator': 'the operator',
             'amenity': 'clinic',
             'healthcare': ['clinic'],
-            'speciality': ['radiology']
+            'speciality': ['blood_check']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
             'Invalid value for key `speciality`: '
-            '`radiology` is not a valid option.')
+            '`blood_check` is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
 
