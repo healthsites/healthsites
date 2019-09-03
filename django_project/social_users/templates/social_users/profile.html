@@ -7,7 +7,7 @@
 {% block content %}
     {% if old_data_available and not data_migration_in_progress %}
         <div class="migration-info">We are migrating all data into OSM data, thus your healthsites data will not be displayed on the map. Please migrate your data into OSM data by clicking on
-            <button class="btn btn-primary btn-migrate" title="in development" disabled>Migrate</button>
+            <button class="btn btn-primary btn-migrate" onclick="migrateClicked()">Migrate</button>
             .
             <span class="pull-right" style="margin-right: 20px; cursor: pointer" onclick="$('.migration-info').remove()">
                 <i class="fa fa-times" aria-hidden="true"></i>
@@ -214,8 +214,8 @@
                 success: function (data) {
                     var progress = Math.round((data['count'] / data['total']) * 100);
                     $('#migration-progress-bar').css('width', progress + '%').html(progress + '% Complete')
-
                     if (progress === 100) {
+                        location.reload();
                         clearInterval(interval)
                     }
                 },
