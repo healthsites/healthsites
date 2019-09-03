@@ -16,6 +16,9 @@ def convert_into_osm_dict(locality):
 
     osm_dict = data['values']
     osm_dict['name'] = data['name']
+    if osm_dict.get('physical_address', None):
+        osm_dict['addr_full'] = osm_dict['physical_address']
+        del osm_dict['physical_address']
 
     if osm_dict.get('staff', None):
         staff = osm_dict['staff'].split('|')
