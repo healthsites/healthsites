@@ -20,6 +20,10 @@ def convert_into_osm_dict(locality):
         osm_dict['addr_full'] = osm_dict['physical_address']
         del osm_dict['physical_address']
 
+    if osm_dict.get('phone', None):
+        osm_dict['contact_number'] = osm_dict['phone']
+        del osm_dict['phone']
+
     if osm_dict.get('staff', None):
         staff = osm_dict['staff'].split('|')
 
