@@ -19,10 +19,15 @@ def upload_data_from_csv(self, data_loader_pk):
         data_loader = DataLoader.objects.get(pk=data_loader_pk)
 
         # import data from csv to osm
-        csv_importer = CSVtoOSMImporter(
-            data_loader,
-            data_loader.csv_data.path,
-            data_loader.json_concept_mapping.path)
+        try:
+            csv_importer = CSVtoOSMImporter(
+                data_loader,
+                data_loader.csv_data.path,
+                data_loader.json_concept_mapping.path)
+        except ValueError:
+            csv_importer = CSVtoOSMImporter(
+                data_loader,
+                data_loader.csv_data.path)
 
         # update data_loader
         DataLoader.objects.filter(pk=data_loader_pk).update(

@@ -24,7 +24,9 @@ LOG = logging.getLogger(__name__)
 class CSVtoOSMImporter:
     """CSV Based Importer"""
 
-    def __init__(self, data_loader, csv_filename, mapping_filename):
+    def __init__(
+            self, data_loader, csv_filename,
+            mapping_filename='localities/data/mapping.json'):
         self.data_loader = data_loader
         self.csv_filename = csv_filename
         self._fields = []
@@ -184,7 +186,10 @@ class CSVtoOSMImporter:
 
             # Verify data uploader and owner/collector if the API is being used
             # for uploading data from other osm user.
-            if data.get('osm_user') and user.username != data.get('osm_user'):
+            if not data.get('osm_user'):
+                data['osm_user'] = user.username
+
+            if user.username != data.get('osm_user'):
                 is_valid, message = verify_user(
                     user, data['osm_user'], ignore_uploader_staff=True)
                 validation_status.update({
@@ -193,7 +198,7 @@ class CSVtoOSMImporter:
                 })
                 if is_valid:
                     try:
-                        user = get_object_or_404(
+                        _ = get_object_or_404(
                             User, username=data['osm_user'])
                     except Http404:
                         message = 'User %s is not exist.' % data['osm_user']

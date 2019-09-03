@@ -535,13 +535,9 @@ class DataLoaderView(LoginRequiredMixin, FormView):
         pass
 
     def get(self, request, *args, **kwargs):
-        if not is_organizer(request.user):
-            return HttpResponseForbidden('You are not organizer of a organization')
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        if not is_organizer(request.user):
-            return HttpResponseForbidden('You are not organizer of a organization')
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
     def get_form_kwargs(self):
