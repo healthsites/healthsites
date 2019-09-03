@@ -55,6 +55,7 @@ class Command(BaseCommand):
             sys.exit(
                 'Data migration process for user {} '
                 'is already running.'.format(options['username']))
+            return
 
         print('Start migrating data.........')
 
@@ -87,8 +88,8 @@ class Command(BaseCommand):
                 request_data.update(extension)
                 data = {
                     'tag': request_data,
-                    "lat": values['geom'][1],
-                    "lon": values['geom'][0]
+                    'lat': values['geom'][1],
+                    'lon': values['geom'][0]
                 }
                 create_osm_node_by_data(user=user, data=data)
 
