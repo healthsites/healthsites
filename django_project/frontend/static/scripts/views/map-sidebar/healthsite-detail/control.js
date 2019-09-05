@@ -345,7 +345,9 @@ define([
         toCreateMode: function () {
             /** This is when edit form enabled **/
             /** Asking form to render in default inputs **/
-            this.detail.showTags({});
+            if (!this.detail_info) {
+                this.detail.showTags({});
+            }
             this.$el.find('.input').remove();
             this.form.renderForm(null, this.url);
             this.toFormMode();

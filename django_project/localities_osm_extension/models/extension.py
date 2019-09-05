@@ -35,3 +35,12 @@ class LocalityOSMExtension(models.Model):
 
     def __unicode__(self):
         return '%s/%s/%s' % (settings.OSM_API_URL, self.osm_type, self.osm_id)
+
+    @staticmethod
+    def get_extension_by_uuid(uuid):
+        """ Return extension by checking uuid """
+        from localities_osm_extension.models.tag import Tag
+        try:
+            return Tag.objects.get(name='uuid', value=uuid).extension
+        except Tag.DoesNotExist:
+            return None
