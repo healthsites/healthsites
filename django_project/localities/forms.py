@@ -105,14 +105,8 @@ class DataLoaderForm(models.ModelForm):
     class Meta:
         model = DataLoader
         fields = (
-            'json_concept_mapping',
-            'csv_data'
+            'csv_data',
         )
-
-    json_concept_mapping = forms.FileField(
-        widget=forms.FileInput(
-            attrs={'class': 'form-control'})
-    )
 
     csv_data = forms.FileField(
         widget=forms.FileInput(

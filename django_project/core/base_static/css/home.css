@@ -496,3 +496,7 @@ to {
 .c3-text {
     fill: #000 !important;
 }
+
+.partners-list li{
+    margin-bottom: 20px;
+}

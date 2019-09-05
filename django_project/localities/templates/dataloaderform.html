@@ -9,6 +9,13 @@
 
 {% block stylesheet %}
     <link href="{% static 'css/data-loader.css' %} " rel="stylesheet" type="text/css""/>
+    <style>
+        #info {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+    </style>
 {% endblock stylesheet %}
 
 {% block content %}
@@ -18,7 +25,8 @@
               enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <br>
+            <div id="info">Template file can be downloaded in <a href="/static/data/example-upload-data.csv">here</a>. In the csv, after <b>operator</b> are optionals.
+                <b>osm_user</b> is optional. Use this if you want to upload data from other user, but you need to be organizer of organisation with the osm_user is trusted user of organisation.</div>
             <input type="submit" class="btn btn-primary" value="Submit"/>
         </form>
         <div id="result" hidden>

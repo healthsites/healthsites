@@ -13,31 +13,31 @@
             </a>
         </div>
     </div>
-    {#    {% if user.provider == "openstreetmap" %}#}
-    <div id="edit-healthsite" class="button-wrapper col-xs-4">
-        <a class="button edit stroke blue">
-            <i class="fa fa-pencil"></i> edit
-        </a>
-    </div>
-    <div id="create-healthsite" class="button-wrapper col-xs-4">
-        <a class="button add">
-            <i class="fa fa-plus"></i> add new
-        </a>
-    </div>
-    <div id="save-healthsite" class="button-wrapper col-xs-4" style="display: none">
-        <a class="button edit stroke blue">
-            <i class="fa fa-floppy-o" aria-hidden="true"></i> save
-        </a>
-    </div>
-    <div id="cancel-healthsite" class="button-wrapper col-xs-4" style="display: none">
-        <a class="button edit stroke blue">
-            <i class="fa fa-pencil"></i> cancel
-        </a>
-    </div>
-    <div id="discard-review" class="button-wrapper col-xs-4" style="display: none">
-        <a class="button edit stroke blue">
-            <i class="fa fa-trash-o" aria-hidden="true"></i> discard
-        </a>
-    </div>
-    {#    {% endif %}#}
+    {% if user.provider == "openstreetmap" %}
+        <div id="edit-healthsite" class="button-wrapper col-xs-4">
+            <a class="button edit stroke blue">
+                <i class="fa fa-pencil"></i> edit
+            </a>
+        </div>
+        <div id="create-healthsite" class="button-wrapper col-xs-4">
+            <a class="button add">
+                <i class="fa fa-plus"></i> add new
+            </a>
+        </div>
+        <div id="save-healthsite" class="button-wrapper col-xs-4" style="display: none">
+            <a class="button edit stroke blue">
+                <i class="fa fa-floppy-o" aria-hidden="true"></i> save
+            </a>
+        </div>
+        <div id="cancel-healthsite" class="button-wrapper col-xs-4" style="display: none">
+            <a class="button edit stroke blue">
+                <i class="fa fa-pencil"></i> cancel
+            </a>
+        </div>
+        <div id="discard-review" class="button-wrapper col-xs-4" style="display: none">
+            <a class="button edit stroke blue">
+                <i class="fa fa-trash-o" aria-hidden="true"></i> discard
+            </a>
+        </div>
+    {% endif %}
 </div>

@@ -27,4 +27,8 @@ class GetMigrationProgress(APIView):
 
             with open(progress_file) as json_file:
                 data = json.load(json_file)
-                return Response(data)
+
+            if data.get('count', None):
+                if data.get('count', None) == data.get('total', None):
+                    os.remove(progress_file)
+            return Response(data)

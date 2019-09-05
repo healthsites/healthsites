@@ -1,9 +1,31 @@
 # -*- coding: utf-8 -*-
 
+
+# Healthcare speciality options
+# https://wiki.openstreetmap.org/wiki/Key:healthcare#Subtags
+
+speciality_options = {
+    'clinic': [
+        'abortion', 'fertility'
+    ],
+    'psychotherapist': [
+        'behavior', 'body', 'depth', 'humanistic', 'other', 'systemic'
+    ],
+    'laboratory': [
+        'biology', 'blood_check', 'clinical_pathology',
+        'diagnostic_radiology', 'medical _physics', 'medical_engineering',
+        'radiology'
+    ],
+    'alternative': [
+        'acupuncture', 'anthroposophical', 'applied_kinesiology',
+        'aromatherapy', 'ayurveda', 'chiropractic', 'herbalism', 'homeopathy',
+        'hydrotherapy', 'hypnosis', 'naturopathy', 'osteopathy', 'reflexology',
+        'reiki', 'shiatsu', 'traditional_chinese_medicine', 'tuina', 'unani'
+    ],
+}
+
 # Healthsites related tags
-
 # Mandatory tags - see https://github.com/healthsites/healthsites/issues/1129
-
 
 amenity = {
     'key': 'amenity',
@@ -72,7 +94,78 @@ speciality = {
         'To be used in conjuction with the \'healthcare=*\' tag. '  # noqa
         'For example \'healthcare=laboratory\', '  # noqa
         'and \'healthcare:speciality=blood_check\'',  # noqa
-    'options': [],
+    'options': [
+        'allergology',
+        'anatomy',
+        'anaesthetics',
+        'biochemistry',
+        'biological_haematology',
+        'biology',
+        'cardiology',
+        'cardiac_surgery',
+        'child_psychiatry',
+        'community',
+        'dental_oral_maxillo_facial_surgery',
+        'dermatology',
+        'dermatovenereology',
+        'diagnostic_radiology',
+        'emergency',
+        'endocrinology',
+        'gastroenterological_surgery',
+        'gastroenterology',
+        'general',
+        'geriatrics',
+        'gynaecology',
+        'haematology',
+        'hepatology',
+        'immunology',
+        'infectious_diseases',
+        'intensive',
+        'internal',
+        'maxillofacial_surgery',
+        'microbiology',
+        'nephrology',
+        'neurology',
+        'neurophysiology',
+        'neuropsychiatry',
+        'neurosurgery',
+        'nuclear',
+        'occupational',
+        'oncology',
+        'ophthalmology',
+        'orthodontics',
+        'orthopaedics',
+        'otolaryngology',
+        'paediatric_surgery',
+        'paediatrics',
+        'palliative',
+        'pathology',
+        'pharmacology',
+        'physiatry',
+        'plastic_surgery',
+        'podiatry',
+        'proctology',
+        'psychiatry',
+        'pulmonology',
+        'radiology',
+        'radiotherapy',
+        'rheumatology',
+        'stomatology',
+        'surgery',
+        'surgical_oncology',
+        'thoracic_surgery',
+        'transplant',
+        'trauma',
+        'tropical',
+        'urology',
+        'vascular_surgery',
+        'vaccination',
+        'venereology'
+    ],
+    'options_dependent': {
+        'depend_on': 'healthcare',
+        'options': speciality_options
+    },
     'required': False,
     'type': list,
 }
@@ -310,30 +403,6 @@ def get_mandatory_tags(osm_tags):
         return MANDATORY_TAGS + [dispensing]
 
     return MANDATORY_TAGS
-
-
-# Healthcare speciality options
-# https://wiki.openstreetmap.org/wiki/Key:healthcare#Subtags
-
-speciality_options = {
-    'clinic': [
-        'abortion', 'fertility'
-    ],
-    'psychotherapist': [
-        'behavior', 'body', 'depth', 'humanistic', 'other', 'systemic'
-    ],
-    'laboratory': [
-        'biology', 'blood_check', 'clinical_pathology',
-        'diagnostic_radiology', 'medical _physics', 'medical_engineering',
-        'radiology'
-    ],
-    'alternative': [
-        'acupuncture', 'anthroposophical', 'applied_kinesiology',
-        'aromatherapy', 'ayurveda', 'chiropractic', 'herbalism', 'homeopathy',
-        'hydrotherapy', 'hypnosis', 'naturopathy', 'osteopathy', 'reflexology',
-        'reiki', 'shiatsu', 'traditional_chinese_medicine', 'tuina', 'unani'
-    ],
-}
 
 
 def update_tag_options(tag_definition, osm_tags):

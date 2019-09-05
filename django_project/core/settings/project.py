@@ -89,6 +89,7 @@ PIPELINE_CSS['project'] = {
         'css/site.css',
         'css/profile.css',
         'css/map/locality-sidebar.css',
+        'css/map/widget/opening-hours.css',
         'css/map/modal-duplication.css',
         'css/jquery.cookiebar.css'
     ),

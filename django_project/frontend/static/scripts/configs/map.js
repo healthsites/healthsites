@@ -10,7 +10,8 @@ require.config({
         'c3': 'libs/c3/0.6.14/c3.min',
         'leaflet': 'libs/leaflet/0.7.7/leaflet-src',
         'map-functionality': 'scripts/views/map/map',
-        'leafletDraw': 'libs/leaflet.draw/0.2.3/leaflet.draw-src'
+        'leafletDraw': 'libs/leaflet.draw/0.2.3/leaflet.draw-src',
+        'timePicker': 'libs/jquery.timepicker/1.10.0/jquery.timepicker.min'
     },
     shim: {
         leaflet: {

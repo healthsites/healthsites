@@ -1,0 +1,4 @@
+lat,lon,amenity,healthcare,name,operator,osm_user,addr_full,beds,contact_number,dispensing,electricity,emergency,health_amenity_type,insurance,is_in_health_area,is_in_health_zone,opening_hours,operational_status,operator_type,source,speciality,staff_doctors,staff_nurses,water_source,wheelchair
+-6.266,106.74663,clinic,clinic,klinik pemancar,darmawadon,meomancer,,,,,,,,,,,,,,,,,,,
+-6.58,106.75663,clinic,clinic,juns clinic,juns,meomancer,,,,,,,,,,,,,,,,,,,
+-6.36,106.74663,clinic,clinic,not really a clinic,juns,meomancer,,,,,,,,,,,,,,,,,,,
