@@ -1,0 +1,85 @@
+<div id="op-hr">
+    <div class="btn-group" role="group" aria-label="Basic example">
+        <button type="button" class="btn selected">Unspecified</button>
+        <button type="button" class="btn" data-target="all-time">24/7</button>
+        <button type="button" class="btn" data-target="weekday">Weekday</button>
+        <button type="button" class="btn" data-target="weekend">Weekend</button>
+        <button type="button" class="btn" data-target="custom">Custom</button>
+    </div>
+    <div id="op-hr-section-wrapper">
+        <div id="op-hr-weekday" class="op-hr-section">
+            <table>
+                <tr>
+                    <td valign="top"><b>Weekday</b></td>
+                    <td valign="top"><i class="fa fa-plus-square" aria-hidden="true"></i></td>
+                    <td class="op-hr-input">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="op-hr-weekend" class="op-hr-section">
+            <table>
+                <tr>
+                    <td valign="top"><b>Weekend</b></td>
+                    <td valign="top"><i class="fa fa-plus-square" aria-hidden="true"></i></td>
+                    <td class="op-hr-input"></td>
+                </tr>
+            </table>
+        </div>
+        <div id="op-hr-custom" class="op-hr-section">
+            <table>
+                <tr id="op-hr-monday" data-day="Mo">
+                    <td valign="top"><input type="checkbox" checked></td>
+                    <td valign="top"><b>Monday</b></td>
+                    <td valign="top"><i class="fa fa-plus-square" aria-hidden="true"></i></td>
+                    <td class="op-hr-input"></td>
+                </tr>
+                <tr id="op-hr-tuesday" data-day="Tu">
+                    <td valign="top"><input type="checkbox" checked></td>
+                    <td valign="top"><b>Tuesday</b></td>
+                    <td valign="top"><i class="fa fa-plus-square" aria-hidden="true"></i></td>
+                    <td class="op-hr-input"></td>
+                </tr>
+                <tr id="op-hr-wednesday" data-day="We">
+                    <td valign="top"><input type="checkbox" checked></td>
+                    <td valign="top"><b>Wednesday</b></td>
+                    <td valign="top"><i class="fa fa-plus-square" aria-hidden="true"></i></td>
+                    <td class="op-hr-input"></td>
+                </tr>
+                <tr id="op-hr-thursday" data-day="Th">
+                    <td valign="top"><input type="checkbox" checked></td>
+                    <td valign="top"><b>Thursday</b></td>
+                    <td valign="top"><i class="fa fa-plus-square" aria-hidden="true"></i></td>
+                    <td class="op-hr-input"></td>
+                </tr>
+                <tr id="op-hr-friday" data-day="Fr">
+                    <td valign="top"><input type="checkbox" checked></td>
+                    <td valign="top"><b>Friday</b></td>
+                    <td valign="top"><i class="fa fa-plus-square" aria-hidden="true"></i></td>
+                    <td class="op-hr-input"></td>
+                </tr>
+                <tr id="op-hr-saturday" data-day="Sa">
+                    <td valign="top"><input type="checkbox" checked></td>
+                    <td valign="top"><b>Saturday</b></td>
+                    <td valign="top"><i class="fa fa-plus-square" aria-hidden="true"></i></td>
+                    <td class="op-hr-input"></td>
+                </tr>
+                <tr id="op-hr-sunday" data-day="Su">
+                    <td valign="top"><input type="checkbox" checked></td>
+                    <td valign="top"><b>Sunday</b></td>
+                    <td valign="top"><i class="fa fa-plus-square" aria-hidden="true"></i></td>
+                    <td class="op-hr-input"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script type='text/template' id='_op-hr-timepicker'>
+    <div style="margin-bottom: 3px">
+        <i class="fa fa-minus-square" aria-hidden="true"></i>&nbsp;
+        <input class="timepicker time-from" type="text" value="00:00"/>
+        &nbsp;&nbsp; to &nbsp;&nbsp;
+        <input class="timepicker time-to" type="text" value="23:55"/>
+    </div>
+</script>

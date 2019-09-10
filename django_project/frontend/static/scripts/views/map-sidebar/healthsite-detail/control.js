@@ -149,11 +149,7 @@ define([
                     self.detail.showInfo(osm_type, osm_id, data);
                     self.detail_info = data;
                     self.toDetailMode();
-                    if (osm_type !== 'node') {
-                        self.disabled(self.$editButton);
-                    } else {
-                        self.enabled(self.$editButton);
-                    }
+                    self.enabled(self.$editButton);
                 }, function (error) {
                     self.detail.showTags({});
                     if (error['status'] === 400) {
@@ -219,7 +215,6 @@ define([
                                     params.push("duplication-check=false");
                                 }
                                 self.currentAPI += "?" + params.join("&");
-                                console.log(data);
                                 self.detail.showInfo(osm_type, osm_id, data);
                                 self.detail_info = data;
                                 self.toDetailMode();
@@ -313,7 +308,7 @@ define([
             this.toDefaultMode();
             // TODO : this.enabled(this.$editButton);
             this.$el.find('.data').show();
-            this.$el.find('.input').hide();
+            this.$el.find('.input,.unreplaced-input').hide();
             this.$el.find('tr').show();
             this.$el.find('tr[data-hasvalue="false"]').hide();
             this.$el.find('tr[data-required="true"]').show();
@@ -340,7 +335,7 @@ define([
                 this.$cancelButton.show();
             }
             this.$el.find('.data').hide();
-            this.$el.find('.input').show();
+            this.$el.find('.input,.unreplaced-input').show();
             this.$el.find('.tags .fa-info-circle').show();
 
             // hide some of section
@@ -350,7 +345,9 @@ define([
         toCreateMode: function () {
             /** This is when edit form enabled **/
             /** Asking form to render in default inputs **/
-            this.detail.showTags({});
+            if (!this.detail_info) {
+                this.detail.showTags({});
+            }
             this.$el.find('.input').remove();
             this.form.renderForm(null, this.url);
             this.toFormMode();
@@ -369,10 +366,13 @@ define([
                     attributes['latitude'] = coordinates[1];
                     attributes['longitude'] = coordinates[0];
                 }
+
+                if (this.detail_info['properties']['osm_type'] === 'node') {
+                    shared.dispatcher.trigger('locality.edit');
+                }
             }
             this.form.renderForm(attributes, this.currentAPI);
             this.toFormMode();
-            shared.dispatcher.trigger('locality.edit');
         },
         toSaveMode: function () {
             /** Asking form to push the data on form **/
@@ -382,7 +382,7 @@ define([
                 function (data) {
                     self.isReview = false;
                     self.toDefaultMode();
-                    self.getLocalityDetail('node', data['id']);
+                    self.getLocalityDetail(self.detail_info['properties']['osm_type'], data['id']);
                     self.enabled(self.$saveButton);
                 }, function (error) {
                     self.isReview = false;
@@ -410,6 +410,8 @@ define([
                 this.$latestUI.show();
                 this.$el.hide();
                 this.$elError.hide();
+            } else {
+                this.enabled(this.$editButton);
             }
         }
     })

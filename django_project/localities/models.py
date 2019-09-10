@@ -871,13 +871,6 @@ class DataLoader(models.Model):
         default=''
     )
 
-    json_concept_mapping = models.FileField(
-        verbose_name='JSON Concept Mapping',
-        help_text='JSON Concept Mapping File.',
-        upload_to='json_mapping/%Y/%m/%d',
-        max_length=100
-    )
-
     csv_data = models.FileField(
         verbose_name='CSV Data',
         help_text='CSV data that contains the data.',
@@ -890,6 +883,15 @@ class DataLoader(models.Model):
         verbose_name='Data Loader Mode',
         help_text='The mode of the data loader.',
         default=REPLACE_DATA_CODE
+    )
+
+    json_concept_mapping = models.FileField(
+        verbose_name='JSON Concept Mapping',
+        help_text='JSON Concept Mapping File.',
+        upload_to='json_mapping/%Y/%m/%d',
+        max_length=100,
+        null=True,
+        blank=True
     )
 
     applied = models.BooleanField(

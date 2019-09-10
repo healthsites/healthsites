@@ -58,7 +58,10 @@ class Organisation(models.Model):
             return 'http://' + self.site.domain
 
     def __unicode__(self):
-        return u'%s' % (self.name)
+        name = u'%s' % self.name
+        if self.site:
+            name += ' (%s)' % self.clean_website()
+        return name
 
 
 class TrustedUser(models.Model):

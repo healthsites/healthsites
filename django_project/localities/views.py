@@ -8,12 +8,11 @@ import googlemaps
 
 from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import Http404, HttpResponse, HttpResponseForbidden
+from django.http import Http404, HttpResponse
 from django.views.generic import FormView, ListView, View
 
 from braces.views import JSONResponseMixin, LoginRequiredMixin
 
-from api.utils import is_organizer
 from localities.models import Country
 from masterization import report_locality_as_unconfirmed_synonym
 
@@ -535,13 +534,9 @@ class DataLoaderView(LoginRequiredMixin, FormView):
         pass
 
     def get(self, request, *args, **kwargs):
-        if not is_organizer(request.user):
-            return HttpResponseForbidden('You are not organizer of a organization')
         return super(DataLoaderView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        if not is_organizer(request.user):
-            return HttpResponseForbidden('You are not organizer of a organization')
         return super(DataLoaderView, self).post(request, *args, **kwargs)
 
     def get_form_kwargs(self):

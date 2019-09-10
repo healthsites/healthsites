@@ -1,0 +1,71 @@
+<div id="update-profile-modal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <form id="update-profile-form" action="{% url 'userprofileupdate' %}" method="post">
+            {% csrf_token %}
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h4 class="modal-title">Update profile</h4>
+                </div>
+                <div class="modal-body" style="text-align: left;">
+                    <div id="update-profile-form-error" class="alert alert-danger" role="alert"
+                         style="display: none;">
+                    </div>
+                    <div class="form-group">
+                        <label for="first-name">First name</label>
+                        <input type="text" class="form-control" id="first-name" placeholder="Enter your first name" name="first-name" value="{{ user.first_name }}" required>
+                        <div id="first-name-error" class="alert alert-danger" role="alert"
+                             style="display: none;">First name can't be empty
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="last-name">Last name</label>
+                        <input type="text" class="form-control" id="last-name" placeholder="Enter your last name" name="last-name" value="{{ user.last_name }}" required>
+                        <div id="last-name-error" class="alert alert-danger" role="alert"
+                             style="display: none;">Last name can't be empty
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email address</label>
+                        <input type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" name="email" value="{{ user.email }}" required>
+                        <div id="email-error" class="alert alert-danger" role="alert"
+                             style="display: none;">Email can't be empty
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="organisation-name">Organisation name</label>
+                        <input type="text" class="form-control" id="organisation-name" placeholder="Enter organisation name" name="organisation-name" required>
+                        <div id="organisation-name-error" class="alert alert-danger" role="alert"
+                             style="display: none;">Organisation name can't be empty
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="site-url">Site url</label>
+                        <input type="url" class="form-control" id="site-url" placeholder="Enter site url" name="site-url" required>
+                        <div id="site-url-error" class="alert alert-danger" role="alert"
+                             style="display: none;">Site url is in wrong format
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label><input id="acknowledge" type="checkbox" required>Acknowledging ODbL license</label>
+                        </div>
+                        <div id="acknowledge-error" class="alert alert-danger" role="alert"
+                             style="display: none;">Site url is in wrong format
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button id="submit-pofile" type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<div style="margin-top: 20px;margin-bottom: 20px">
+    <input type="button" name="btn" data-toggle="modal"
+           data-target="#update-profile-modal" class="btn btn-default profile-button"
+           value="Update profile">
+</div>

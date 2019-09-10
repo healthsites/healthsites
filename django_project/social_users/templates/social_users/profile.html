@@ -7,7 +7,7 @@
 {% block content %}
     {% if old_data_available and not data_migration_in_progress %}
         <div class="migration-info">We are migrating all data into OSM data, thus your healthsites data will not be displayed on the map. Please migrate your data into OSM data by clicking on
-            <button class="btn btn-primary btn-migrate" title="in development" disabled>Migrate</button>
+            <button class="btn btn-primary btn-migrate" onclick="migrateClicked()">Migrate</button>
             .
             <span class="pull-right" style="margin-right: 20px; cursor: pointer" onclick="$('.migration-info').remove()">
                 <i class="fa fa-times" aria-hidden="true"></i>
@@ -15,93 +15,122 @@
         </div>
     {% endif %}
     <section class="white container">
-        <div class="col-sm-4 user-profile">
+        <div class="col-sm-3 user-profile">
             <div class="profile-image-size">
                 {% if user.social_auth.get.provider == "openstreetmap" %}
-                    <img style="height: 40px" class="profile-image-icon" src="{% static "img/osm-logo.png" %}"/>
+                    <img style="height: 20px" class="profile-image-icon" src="{% static "img/osm-logo.png" %}"/>
                 {% endif %}
-                {% if user.provider %}
-                    {% if user.provider == "facebook" %}
-                        <a href="https://www.facebook.com/{{ social.user_link }}" target="_blank"><i
-                                class="fa fa-facebook-square profile-image-icon"></i></a>
-                    {% elif user.provider == "twitter" %}
-                        <a href="https://twitter.com/{{ social.uid }}" target="_blank"><i
-                                class="fa fa-twitter-square profile-image-icon"></i></a>
-                    {% endif %}
-                {% endif %}
-                {% if user.profile_picture == "" %}
+                {% if not user.profile_picture %}
                     <img src="{% static "img/no-profile-img.gif" %}" width="100%"/>
                 {% else %}
                     <img src="{{ user.profile_picture }}" width="100%"/>
                 {% endif %}
             </div>
-            <div class="name" style="font-size: 24px">
-            </div>
-            <div class="profile-header">
-                <h1>{{ user.screen_name }}</h1>
-            </div>
-            {% if user.is_trusted_user %}
-                <div class="status">
-                    <span>trusted user</span>
-                </div>
-            {% endif %}
-            <div class="name">
-                <strong>name :</strong>
-                {% if user.get_full_name == "" %}
-                    -
-                {% else %}
-                    {{ user.get_full_name }}
+            <div style="text-align: left; margin-bottom: 20px;margin-top: 20px">
+                {% if user.is_trusted_user %}
+                    <div class="status">
+                        <span>trusted user</span>
+                    </div>
                 {% endif %}
-                {% if osm_user %}
-                    <img src="{% static "img/osm-logo.png" %}" height="20px" data-toggle="tooltip" data-placement="top" title="OSM User"/> OSM User
+                <div>
+                    <div class="label-profile">username</div>
+                    <div class="value-profile">
+                        {{ user.screen_name }}
+                    </div>
+                </div>
+                <div>
+                    <div class="label-profile">name</div>
+                    <div class="value-profile">
+                        {% if user.get_full_name == "" %}
+                            -
+                        {% else %}
+                            {{ user.get_full_name }}
+                        {% endif %}
+                        {% if osm_user %}
+                            <img src="{% static "img/osm-logo.png" %}" height="20px" data-toggle="tooltip" data-placement="top" title="OSM User"/> OSM User
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <div class="label-profile">email</div>
+                    <div class="value-profile">
+                        {% if user.email %}
+                            {{ user.email }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </div>
+                </div>
+                {% if user.is_trusted_user %}
+                    <div>
+                        <div class="label-profile">organisation</div>
+                        <div class="value-profile">
+                            <span id="organization-list">
+                                {% if user.organisations %}
+                                    {% for org in user.organisations %}
+                                        {% if org.website %}
+                                            <a href="{{ org.website }}">{{ org.name }}</a>,
+                                        {% else %}
+                                            {{ org.name }},
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="label-profile">organisations supported</div>
+                        <div class="value-profile">
+                            <span id="organization-list">
+                                {% if user.organisations_supported %}
+                                    {% for org in user.organisations_supported %}
+                                        {% if org.website %}
+                                            <a href="{{ org.website }}">{{ org.name }}</a>,
+                                        {% else %}
+                                            {{ org.name }},
+                                        {% endif %}
+                                    {% endfor %}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
                 {% endif %}
             </div>
-            {% if user.is_trusted_user %}
-                <div class="name">
-                    <strong>organisation :</strong>
-                    <span id="organization-list">
-                    {% if user.organisations %}
-                        {% for org in user.organisations %}
-                            {% if org.website %}
-                                <a href="{{ org.website }}">{{ org.name }}</a>,
-                            {% else %}
-                                {{ org.name }},
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        -
-                    {% endif %}
-                    </span>
+            {% if user == request.user %}
+                {% include 'social_users/update-profile-modal.html' %}
+                <div id="api-key-modal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <!-- Modal content-->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Your API KEY</h4>
+                            </div>
+                            <div class="modal-body">
+                                {% if api_keys %}
+                                    {% for api_key in api_keys %}
+                                        <div>{{ api_key }}</div>
+                                    {% endfor %}
+                                {% else %}
+                                    <i style="color: #f44a52">You don't have api key. Please update profile or ask administrator.</i>
+                                {% endif %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="name">
-                    <strong>organisations supported :</strong>
-                    <span id="organization-list">
-                    {% if user.organisations_supported %}
-                        {% for org in user.organisations_supported %}
-                            {% if org.website %}
-                                <a href="{{ org.website }}">{{ org.name }}</a>,
-                            {% else %}
-                                {{ org.name }},
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        -
-                    {% endif %}
-                    </span>
-                </div>
-            {% endif %}
-            {% if api_keys %}
-                <div id="api-keys-section">
-                    <strong>Your API KEYS</strong>
-                    <br>
-                    {% for api_key in api_keys %}
-                        <div>{{ api_key }}</div>
-                    {% endfor %}
-                </div>
+                <input type="button" name="btn" data-toggle="modal"
+                       data-target="#api-key-modal" class="btn btn-default profile-button"
+                       value="Check your API key">
             {% endif %}
         </div>
-        <div class="col-sm-8 profile-graphs">
-            <h3>Latest updates</h3>
+        <div class="col-sm-9 profile-graphs" style="padding-left: 30px">
+            <h3 style="margin-top: 0">Latest updates</h3>
 
             <div id="updates-wrapper">
                 <div id="updates-99" class="graph updates">
@@ -185,8 +214,8 @@
                 success: function (data) {
                     var progress = Math.round((data['count'] / data['total']) * 100);
                     $('#migration-progress-bar').css('width', progress + '%').html(progress + '% Complete')
-
                     if (progress === 100) {
+                        location.reload();
                         clearInterval(interval)
                     }
                 },
@@ -296,7 +325,6 @@
             });
 
             interval = setInterval(getMigrationProgress, 250);
-
         });
     </script>
 {% endblock extra_js %}

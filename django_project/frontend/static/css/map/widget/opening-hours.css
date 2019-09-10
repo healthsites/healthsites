@@ -1,0 +1,83 @@
+#op-hr {
+    margin-top: 10px;
+}
+
+#op-hr .btn-group button {
+    background-color: white;
+    border: 1px solid #aaa;
+    border-radius: 0;
+    font-size: 12px;
+}
+
+#op-hr .btn-group button.selected {
+    background-color: #d8d8d8;
+    font-weight: 700;
+}
+
+#op-hr .op-hr-section {
+    display: none;
+    background-color: #d8d8d8;
+    border: 1px solid #aaa;
+    font-size: 12px;
+    padding: 10px;
+    padding-bottom: 5px;
+    margin-top: -1px;
+}
+
+#op-hr tr {
+    border: none;
+}
+
+.timepicker {
+    text-align: center;
+}
+
+.op-hr-input {
+    width: 150px;
+    text-align: right;
+    padding-right: 0;
+}
+
+#op-hr-section-wrapper table {
+    width: 100%;
+}
+
+#op-hr-section-wrapper input[type=checkbox],
+#op-hr-section-wrapper i {
+    cursor: pointer;
+}
+
+#op-hr-section-wrapper .fa-plus-square {
+    color: #009340;
+}
+
+#op-hr-section-wrapper .fa-minus-square {
+    color: #f44a52;
+}
+
+#op-hr-weekday tr td:first-child,
+#op-hr-weekend tr td:first-child,
+#op-hr-weekday tr td:nth-child(2),
+#op-hr-weekend tr td:nth-child(2) {
+    padding-top: 3px;
+}
+
+#op-hr-weekday tr td:nth-child(2),
+#op-hr-weekend tr td:nth-child(2),
+#op-hr-custom tr td:first-child,
+#op-hr-custom tr td:nth-child(3) {
+    width: 5px;
+}
+
+#op-hr-custom tr td:nth-child(2),
+#op-hr-custom tr td:nth-child(3) {
+    padding-top: 2px;
+}
+
+#op-hr-custom .fa-plus-square {
+    margin-top: 4px;
+}
+
+#op-hr-custom td {
+    padding-bottom: 5px;
+}
