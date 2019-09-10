@@ -51,16 +51,7 @@
                         {% endif %}
                     </div>
                 </div>
-                <div>
-                    <div class="label-profile">email</div>
-                    <div class="value-profile">
-                        {% if user.email %}
-                            {{ user.email }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </div>
-                </div>
+
                 {% if user.is_trusted_user %}
                     <div>
                         <div class="label-profile">organisation</div>

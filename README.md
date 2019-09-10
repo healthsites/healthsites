@@ -1,6 +1,6 @@
 # Welcome to the healthsites code base!
 
-[comment]: # version 2.0.2
+<!-- version 2.0.3 -->
 
 [![Join the chat at https://gitter.im/healthsites/healthsites](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/healthsites/healthsites?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
