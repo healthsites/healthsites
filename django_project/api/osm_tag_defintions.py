@@ -70,7 +70,7 @@ operator = {
         'The operator tag is used to name a company, corporation, '
         'person or any other entity who is directly in charge of '
         'the current operation of a map object',
-    'required': True,
+    'required': False,
     'type': str,
 }
 
@@ -281,8 +281,11 @@ wheelchair = {
         'Used to mark places or ways that are suitable to be used '
         'with a wheelchair and a person with a disability who uses '
         'another mobility device (like a walker)',
+    'options': [
+        'yes', 'limited', 'no', 'designated'
+    ],
     'required': False,
-    'type': bool,
+    'type': str,
 }
 
 emergency = {
