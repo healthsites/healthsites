@@ -1,6 +1,6 @@
 # Welcome to the healthsites code base!
 
-<!-- version 2.0.3 -->
+<!-- version 2.0.4 -->
 
 [![Join the chat at https://gitter.im/healthsites/healthsites](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/healthsites/healthsites?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
@@ -29,12 +29,11 @@ Development status: [![Stories in Ready](https://badge.waffle.io/healthsites/hea
 Data: [Open Database License](http://opendatacommons.org/licenses/odbl/)
 Code: [Free BSD License](http://www.freebsd.org/copyright/freebsd-license.html)
 
-Out intention is to foster wide spread usage of the data and the code that we provide. Please use this code and data in the interests of humanity and not for nefarious purposes.
+Our intention is to foster widespread usage of the data and the code that we provide. Please use this code and data in the interests of humanity and not for nefarious purposes.
 
 # Setup instructions
-
-Healthsites infrastructure is using docker, with django platform and has 2 database. The database are django database for django that contains all healthsites data, and another one is for docker osm database.
-Healthsites has docker osm mirror and needs it as main architecture. But all setup are easy to be done.  
+The Healthsites infrastructure uses Docker with the Django platform, and has two databases. One is a database for use with Django that contains data for all healthsites, another is for the Docker OpenStreetMap database.
+Healthsites has a Docker OSM mirror and needs it as main architecture.
 To setup the server, please follow the instruction.
 
 ### Check out the source
@@ -54,7 +53,7 @@ cd healthsites/deployment
 make deploy
 ```
 
-It will run all of architecture automatically and wait it until this error shows 
+It will run all of architecture automatically. Wait until this error shows: 
 
 ```
 django.db.utils.ProgrammingError: relation "django_site" does not exist

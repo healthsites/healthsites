@@ -5,7 +5,7 @@ __date__ = '15/04/19'
 import json
 import os
 from django.conf import settings
-from django.http.response import HttpResponseBadRequest
+from django.http.response import Http404
 from rest_framework.views import APIView, Response
 
 
@@ -23,7 +23,7 @@ class GetMigrationProgress(APIView):
             found = os.path.exists(progress_file)
 
             if not found:
-                return HttpResponseBadRequest('Data not found.')
+                raise Http404('Data not found.')
 
             with open(progress_file) as json_file:
                 data = json.load(json_file)
