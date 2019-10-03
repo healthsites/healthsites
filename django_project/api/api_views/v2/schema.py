@@ -77,6 +77,15 @@ class Parameters(object):
         ),
     )
 
+    flat = Field(
+        'flat-properties',
+        location='query',
+        required=False,
+        schema=String(
+            description='Put true to show properties in flat'
+        ),
+    )
+
 
 class ApiSchemaBaseWithoutApiKey(BaseFilterBackend):
     schemas = []
