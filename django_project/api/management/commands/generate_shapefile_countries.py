@@ -49,6 +49,8 @@ def country_data_into_shapefile(country=None):
     :param country_name: Country name
     :type: str
     """
+    if country == 'World' or country == 'world':
+        country = None
     queryset = filter_locality(
         extent=None,
         country=country).order_by('row')
@@ -62,12 +64,19 @@ def country_data_into_shapefile(country=None):
         LocalityOSMSerializer(queryset, many=True).data, fields, country_name)
 
 
-def insert_to_shapefile(data, fields, shp_filename):
+def get_shapefile_folder(counter_name):
+    """ Return shapefile folder for a country"""
+    shp_filename = counter_name.replace('.', '')
+    return os.path.join(directory_cache, 'shapefiles', shp_filename)
+
+
+def insert_to_shapefile(data, fields, output_filename):
     """ Convert and insert data into shapefile
     :param data: data that will be inserted
-    :param shp_filename: shapefile name
+    :param output_filename: shapefile name
     """
-    dir_cache = os.path.join(directory_cache, 'shapefiles', shp_filename)
+    shp_filename = output_filename.replace('.', '')
+    dir_cache = get_shapefile_folder(output_filename)
     dir_shapefile = os.path.join(dir_cache, 'output')
     metadata_file = os.path.join(dir_cache, 'metadata')
 
@@ -142,7 +151,7 @@ def insert_to_shapefile(data, fields, shp_filename):
     print 'rezipping the files'
     if not os.path.exists(directory_media):
         os.makedirs(directory_media)
-    filename = os.path.join(directory_media, '%s.zip' % shp_filename)
+    filename = os.path.join(directory_media, '%s.zip' % output_filename)
     try:
         os.remove(filename)
     except OSError:

@@ -5,6 +5,9 @@ import json
 import os
 from django.conf import settings
 from django.http.response import HttpResponseBadRequest
+from api.management.commands.generate_shapefile_countries import (
+    get_shapefile_folder
+)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from localities.tasks import country_data_into_shapefile_task
@@ -17,10 +20,14 @@ class GetFacilitiesShapefileProcess(APIView):
     API for checking process of generating shapefile
     """
 
-    def get(self, request, country_name):
+    def get(self, request):
+        try:
+            country_name = request.GET['country']
+        except KeyError:
+            return HttpResponseBadRequest('country_name is needed on parameter')
         if country_name == 'world' or country_name == 'World':
             country_name = 'World'
-        country_cache = os.path.join(settings.CACHE_DIR, 'shapefiles', country_name)
+        country_cache = get_shapefile_folder(country_name)
         metadata_file = os.path.join(country_cache, 'metadata')
         try:
             f = open(metadata_file, 'r')
