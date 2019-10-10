@@ -168,6 +168,10 @@ define([
                 that.insertIntoElement(
                     tag, '<input class="input" type="text" placeholder="this is custom tag" title="this is custom tag" >', value, false);
             });
+            // source
+            that.insertIntoElement(
+                'source', '', null, false);
+
             this.$latInput = $('*[data-tag="latitude"] input');
             this.$lonInput = $('*[data-tag="longitude"] input');
         },
