@@ -3,7 +3,6 @@ __date__ = '17/12/19'
 
 import json
 import os
-from django.conf import settings
 from django.http.response import HttpResponseBadRequest
 from api.management.commands.generate_shapefile_countries import (
     get_shapefile_folder
