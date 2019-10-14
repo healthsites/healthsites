@@ -101,7 +101,7 @@ def remap_dict(old_dict, transform):
     for k, v in old_dict.items():
         try:
             v = v.decode('utf-8')
-        except (UnicodeDecodeError, UnicodeEncodeError):
+        except (UnicodeDecodeError, UnicodeEncodeError, AttributeError):
             pass
 
         if k in transform:
