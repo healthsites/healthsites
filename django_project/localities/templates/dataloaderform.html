@@ -25,7 +25,8 @@
               enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <div id="info">Template file can be downloaded in <a href="/static/data/example-upload-data.csv">here</a>. In the csv, after <b>operator</b> are optionals.
+            <div id="info">Template file can be downloaded in <a href="/static/data/Healthsites data uploader template.xlsx">here</a>. This is in excell and we need to export it as csv in comma separator.
+                <br><b>lat, lon, amenity, healthcare, name</b> are required.
                 <b>osm_user</b> is optional. Use this if you want to upload data from other user, but you need to be organizer of organisation with the osm_user is trusted user of organisation.</div>
             <input type="submit" class="btn btn-primary" value="Submit"/>
         </form>

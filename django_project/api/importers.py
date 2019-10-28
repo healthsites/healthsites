@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import copy
 import csv
 import json
 import logging
@@ -16,6 +17,7 @@ from api.utils import remap_dict, verify_user, validate_osm_data, \
     convert_to_osm_tag, create_osm_node
 from api.utilities.pending import create_pending_update
 from core.settings.utils import ABS_PATH
+from localities_osm_extension.utils import save_extensions
 from localities_osm.utilities import split_osm_and_extension_attr
 
 LOG = logging.getLogger(__name__)
@@ -25,8 +27,7 @@ class CSVtoOSMImporter:
     """CSV Based Importer"""
 
     def __init__(
-            self, data_loader, csv_filename,
-            mapping_filename='localities/data/mapping.json'):
+            self, data_loader, csv_filename):
         self.data_loader = data_loader
         self.csv_filename = csv_filename
         self._fields = []
@@ -40,9 +41,6 @@ class CSVtoOSMImporter:
             'status': {},
             'summary': ''
         }
-
-        with open(mapping_filename, 'rb') as mapping_file:
-            self.json_mapping = json.load(mapping_file)
 
         self.parse_file()
 
@@ -144,20 +142,23 @@ class CSVtoOSMImporter:
         with open(self.csv_filename, 'rb') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                self._parsed_data.append(
-                    remap_dict(
-                        row, {y: x for x, y in self.json_mapping.iteritems()}))
+                self._parsed_data.append(row)
 
         # Rearrange it to osm api push data format
         new_parsed_data = []
         for data in self._parsed_data:
-            new_data = dict(data)
-            new_data['tag'] = {}
-            for key in data:
-                if key in [tag['key'] for tag in ALL_TAGS]:
-                    new_data['tag'].update({key: data[key]})
-                    del new_data[key]
-
+            new_data = {
+                'lat': data['lat'],
+                'lon': data['lon']
+            }
+            del data['lat']
+            del data['lon']
+            try:
+                new_data['osm_user'] = data['osm_user']
+                del data['osm_user']
+            except KeyError:
+                pass
+            new_data['tag'] = data
             new_parsed_data.append(new_data)
 
         self._parsed_data = new_parsed_data
@@ -176,50 +177,72 @@ class CSVtoOSMImporter:
                 'message': 'Valid'
             }
 
-            # Set default user to data loader author
-            user = self.data_loader.author
+            # check 2nd row based on the hxl
+            if row_number == 0:
+                mapping_file_path = ABS_PATH('api', 'fixtures', 'hxl_tags.json')
+                _file = open(mapping_file_path, 'r')
+                hxl_tag = json.loads(_file.read())
+                _file.close()
 
-            # Split osm and extension attribute
-            osm_attr, locality_attr = split_osm_and_extension_attr(
-                data['tag'])
-            data['tag'] = osm_attr
+                # get the newest hxl tag
+                all_tag = copy.deepcopy(data['tag'])
+                all_tag['lon'] = data['lon']
+                all_tag['lat'] = data['lat']
 
-            # Verify data uploader and owner/collector if the API is being used
-            # for uploading data from other osm user.
-            if not data.get('osm_user'):
-                data['osm_user'] = user.username
-
-            if user.username != data.get('osm_user'):
-                is_valid, message = verify_user(
-                    user, data['osm_user'], ignore_uploader_staff=True)
-                validation_status.update({
-                    'is_valid': is_valid,
-                    'message': message
-                })
-                if is_valid:
+                for tag, hxl in all_tag.items():
                     try:
-                        _ = get_object_or_404(
-                            User, username=data['osm_user'])
-                    except Http404:
-                        message = 'User %s is not exist.' % data['osm_user']
-                        validation_status.update({
-                            'is_valid': False,
-                            'message': message
-                        })
+                        hxl_tag[tag]
+                    except KeyError:
+                        hxl_tag[tag] = hxl
+                _file = open(mapping_file_path, 'w')
+                _file.write(json.dumps(hxl_tag, indent=4))
+                _file.close()
+            else:
+                # Set default user to data loader author
+                user = self.data_loader.author
 
-            if is_valid:
-                try:
-                    # Validate data
-                    is_valid = validate_osm_data(data)
+                # Split osm and extension attribute
+                osm_attr, locality_attr = split_osm_and_extension_attr(
+                    data['tag'])
+                data['tag'] = osm_attr
+                data['tag'].update(locality_attr)
+
+                # Verify data uploader and owner/collector if the API is being used
+                # for uploading data from other osm user.
+                if not data.get('osm_user'):
+                    data['osm_user'] = user.username
+
+                if user.username != data.get('osm_user'):
+                    is_valid, message = verify_user(
+                        user, data['osm_user'], ignore_uploader_staff=True)
                     validation_status.update({
                         'is_valid': is_valid,
-                        'message': 'OSM data is valid.'
+                        'message': message
                     })
-                except Exception as e:
-                    validation_status.update({
-                        'is_valid': False,
-                        'message': '%s' % e
-                    })
+                    if is_valid:
+                        try:
+                            _ = get_object_or_404(
+                                User, username=data['osm_user'])
+                        except Http404:
+                            message = 'User %s is not exist.' % data['osm_user']
+                            validation_status.update({
+                                'is_valid': False,
+                                'message': message
+                            })
+
+                if is_valid:
+                    try:
+                        # Validate data
+                        is_valid = validate_osm_data(data)
+                        validation_status.update({
+                            'is_valid': is_valid,
+                            'message': 'OSM data is valid.'
+                        })
+                    except Exception as e:
+                        validation_status.update({
+                            'is_valid': False,
+                            'message': '%s' % e
+                        })
 
             self._validation_status['status'][row_number + 1] = validation_status
             if self.is_valid() and row_number + 1 == len(self._parsed_data):
@@ -238,6 +261,7 @@ class CSVtoOSMImporter:
             f.write(json.dumps(self._validation_status))
             f.close()
 
+        del self._parsed_data[0]
         return False not in (
             [status['is_valid'] for status in
              self._validation_status['status'].values()])
@@ -253,6 +277,11 @@ class CSVtoOSMImporter:
                 'message': 'Uploaded'
             }
 
+            # split osm and extension attributes
+            osm_attr, locality_attr = split_osm_and_extension_attr(
+                data['tag'])
+            data['tag'] = osm_attr
+
             # Map Healthsites tags to OSM tags
             mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
             data['tag'] = convert_to_osm_tag(
@@ -267,6 +296,7 @@ class CSVtoOSMImporter:
                 create_pending_update(
                     'node', response['id'],
                     data['tag']['name'], user, response['version'])
+                save_extensions('node', response['id'], locality_attr)
             except:  # noqa
                 upload_status.update({
                     'uploaded': False,
