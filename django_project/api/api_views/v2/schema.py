@@ -86,6 +86,15 @@ class Parameters(object):
         ),
     )
 
+    tag_format = Field(
+        'tag-format',
+        location='query',
+        required=False,
+        schema=String(
+            description='Tag format that want to be used. (osm/hxl. default : osm)'
+        ),
+    )
+
 
 class ApiSchemaBaseWithoutApiKey(BaseFilterBackend):
     schemas = []
