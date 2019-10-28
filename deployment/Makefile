@@ -120,7 +120,7 @@ collectstatic:
 	#@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py collectstatic --noinput
 	#We need to run collect static in the same context as the running
 	# uwsgi container it seems so I use docker exec here
-	@docker exec -t -i $(PROJECT_ID)-uwsgi python manage.py collectstatic --noinput
+	@docker exec $(PROJECT_ID)-uwsgi python manage.py collectstatic --noinput
 
 reload:
 	@echo
