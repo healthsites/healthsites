@@ -8,7 +8,7 @@ SHELL := /bin/bash
 # ----------------------------------------------------------------------------
 default: web
 # run: run-docker-osm build permissions web migrate collectstatic version
-run: build permissions web migrate collectstatic version
+run: dnsmasq build permissions web migrate collectstatic version
 
 deploy: run
 	@echo
@@ -71,6 +71,13 @@ db:
 	@echo "Running db in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up -d db
+
+dnsmasq:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running dnsmasq in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up -d dnsmasq
 
 rabbitmq:
 	@echo

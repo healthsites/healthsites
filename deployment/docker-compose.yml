@@ -217,3 +217,12 @@ services:
       # for ssh
       - "49363:22"
 
+  dnsmasq:
+    image: andyshinn/dnsmasq
+    ports:
+      - "127.0.0.1:53:53/tcp"
+      - "127.0.0.1:53:53/udp"
+    cap_add:
+      - NET_ADMIN
+    command: --log-facility=-
+
