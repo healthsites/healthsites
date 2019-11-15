@@ -25,8 +25,11 @@
               enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <div id="info">Template file can be downloaded in <a href="/static/data/example-upload-data.csv">here</a>. In the csv, after <b>operator</b> are optionals.
-                <b>osm_user</b> is optional. Use this if you want to upload data from other user, but you need to be organizer of organisation with the osm_user is trusted user of organisation.</div>
+            <div id="info">Template file can be downloaded in <a href="/static/data/example-upload-data.xlsx">here</a>.
+                After that, please export the xlsx into csv and uplod the csv<br><br>
+                If you want to upload data from other user, how it can be done:<br>
+                - Add new column `osm_user` and put osm username into the column<br>
+                - You need to be organizer of organisation with the osm_user is trusted user of organisation.</div>
             <input type="submit" class="btn btn-primary" value="Submit"/>
         </form>
         <div id="result" hidden>
