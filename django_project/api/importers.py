@@ -142,7 +142,7 @@ class CSVtoOSMImporter:
         """
         # Read csv file as a dict and then remap it to osm fields
         with open(self.csv_filename, 'rb') as csv_file:
-            csv_reader = csv.DictReader(csv_file)
+            csv_reader = csv.DictReader(csv_file, delimiter=";")
             for row in csv_reader:
                 self._parsed_data.append(
                     remap_dict(
