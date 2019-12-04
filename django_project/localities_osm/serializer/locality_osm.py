@@ -27,9 +27,15 @@ class LocalityOSMBaseSerializer(object):
     def get_attributes(self, obj):
         """ Get attributes from model fields
         and also the extension"""
+        show_all = False
+        try:
+            show_all = self.context.get('flat', None)
+        except AttributeError:
+            pass
+
         attributes = {}
         for attribute in attributes_fields:
-            if getattr(obj, attribute):
+            if getattr(obj, attribute) or show_all:
                 attributes[attribute] = getattr(obj, attribute)
 
         extension = None
@@ -86,6 +92,14 @@ class LocalityOSMSerializer(LocalityOSMBaseSerializer,
         model = LocalityOSMView
         fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
 
+    def to_representation(self, instance):
+        result = super(LocalityOSMSerializer, self).to_representation(instance)
+        if self.context.get('flat', None):
+            result.update(result['attributes'])
+            del result['attributes']
+            del result['centroid']
+        return result
+
 
 class LocalityOSMGeoSerializer(LocalityOSMBaseSerializer,
                                GeoFeatureModelSerializer):
@@ -97,6 +111,14 @@ class LocalityOSMGeoSerializer(LocalityOSMBaseSerializer,
         model = LocalityOSMView
         geo_field = 'geometry'
         fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
+
+    def to_representation(self, instance):
+        result = super(LocalityOSMGeoSerializer, self).to_representation(instance)
+        if self.context.get('flat', None):
+            result['properties'].update(result['properties']['attributes'])
+            del result['properties']['attributes']
+            del result['properties']['centroid']
+        return result
 
 
 class LocalityOSMNodeSerializer(LocalityOSMBaseSerializer,

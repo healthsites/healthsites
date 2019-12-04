@@ -17,6 +17,9 @@ class UserApiKey(models.Model):
         max_length=40, primary_key=True)
     is_active = models.BooleanField(
         default=True)
+    allow_write = models.BooleanField(
+        default=False,
+        help_text='allow this api key to write data')
 
     def save(self, *args, **kwargs):
         if not self.api_key:
@@ -71,5 +74,24 @@ class UserApiKey(models.Model):
                 is_active=True
             )
             return api_key_user.user
+        except UserApiKey.DoesNotExist:
+            return None
+
+    @staticmethod
+    def get_key_from_api_key(api_key):
+        """ return user from API Key
+
+        :param api_key: user that going to be checked
+        :type api_key: User
+
+        :return: UserApiKey
+        :rtype: UserApiKey
+        """
+        try:
+            api_key_user = UserApiKey.objects.get(
+                api_key=api_key,
+                is_active=True
+            )
+            return api_key_user
         except UserApiKey.DoesNotExist:
             return None

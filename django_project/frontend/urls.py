@@ -3,7 +3,7 @@ from envelope.views import ContactView
 from django.conf.urls import patterns, url
 from braces.views import FormMessagesMixin
 from .views import AboutView, AttributionsView, HelpView, MainView, \
-    GatherEnrollmentView
+    GatherEnrollmentView, DonateView
 from .flatpages import views
 
 
@@ -24,5 +24,7 @@ urlpatterns = patterns(
     url(r'^help', HelpView.as_view(), name='help'),
     url(r'^map$', 'frontend.views.map', name='map'),
     url(r'^attributions$', AttributionsView.as_view(), name='attribution'),
+    url(r'^donate$', DonateView.as_view(), name='donate'),
     url(r'^campaign/(?P<url>.*/)$', views.flatpage),
+
 )

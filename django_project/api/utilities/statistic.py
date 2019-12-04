@@ -122,7 +122,7 @@ def get_statistic(healthsites):
     # last update
     healthsites = healthsites.exclude(
         changeset_timestamp__isnull=True).order_by(
-        '-changeset_timestamp')[:10]
+        '-changeset_timestamp')[:20]
     statistic['last_update'] = LocalityOSMBasicSerializer(
         healthsites, many=True).data
     return statistic

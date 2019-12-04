@@ -99,6 +99,11 @@ def remap_dict(old_dict, transform):
     """
     new_dict = {}
     for k, v in old_dict.items():
+        try:
+            v = v.decode('utf-8')
+        except (UnicodeDecodeError, UnicodeEncodeError, AttributeError):
+            pass
+
         if k in transform:
             new_dict.update({transform[k]: v})
         else:

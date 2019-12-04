@@ -24,7 +24,7 @@ define([
                 country = 'World';
             }
             $.ajax({
-                url: "/api/v2/facilities/shapefile/process/" + country,
+                url: "/api/v2/facilities/shapefile/process/?country=" + country,
                 dataType: 'json',
                 success: function (data) {
                     if (!data['index'] || data['index'] !== data['total']) {

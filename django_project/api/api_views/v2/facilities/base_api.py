@@ -15,12 +15,16 @@ class FacilitiesBaseAPI(BaseAPI):
     GEOJSONSerializer = LocalityOSMGeoSerializer
 
     def serialize(self, queryset, many=False):
+        flat = self.request.GET.get('flat-properties')
         if self.format == 'json':
-            return self.JSONSerializer(queryset, many=many).data
+            return self.JSONSerializer(
+                queryset, many=many, context={'flat': flat}).data
         elif self.format == 'geojson':
-            return self.GEOJSONSerializer(queryset, many=many).data
+            return self.GEOJSONSerializer(
+                queryset, many=many, context={'flat': flat}).data
         elif self.format == 'xml':
-            data = self.JSONSerializer(queryset, many=many).data
+            data = self.JSONSerializer(
+                queryset, many=many, context={'flat': flat}).data
             return dicttoxml.dicttoxml(data)
 
 

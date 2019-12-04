@@ -11,7 +11,7 @@ from api.api_views.v2.schema import Schema
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
@@ -81,6 +81,13 @@ class HelpView(TemplateView):
 
 class AttributionsView(TemplateView):
     template_name = 'attributions.html'
+
+
+class DonateView(TemplateView):
+    template_name = 'donate.html'
+
+    def post(self, *args, **kwargs):
+        return HttpResponse('')
 
 
 class GatherEnrollmentView(TemplateView):

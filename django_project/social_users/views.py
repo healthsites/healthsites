@@ -149,14 +149,10 @@ class ProfileUpdate(APIView):
             if site_url:
                 site, created = Site.objects.get_or_create(
                     domain=site_url, name=site_url)
-                organisation, created = Organisation.objects.get_or_create(
+                Organisation.objects.get_or_create(
                     name=org_name,
                     site=site
                 )
-                trusted_user, created = TrustedUser.objects.get_or_create(user=request.user)
-                OrganisationSupported.objects.get_or_create(
-                    user=trusted_user,
-                    organisation=organisation)
 
         UserApiKey.get_user_api_key(
             self.request.user, autogenerate=True)

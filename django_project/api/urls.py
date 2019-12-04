@@ -41,7 +41,7 @@ facilities_api = patterns(
         GetFacilitiesStatistic.as_view()),
     url(r'^autocomplete/',
         Autocomplete.as_view()),
-    url(r'^shapefile/process/(?P<country_name>[\w\+%_& ]+)',
+    url(r'^shapefile/process',
         GetFacilitiesShapefileProcess.as_view()),
     url(r'^bulk/create', BulkUpload.as_view()),
     url(r'^(?P<osm_type>\w+)/(?P<osm_id>-?\d+)',

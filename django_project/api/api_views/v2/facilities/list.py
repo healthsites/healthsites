@@ -40,7 +40,8 @@ class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
         Parameters.extent,
         Parameters.output,
         Parameters.timestamp_from,
-        Parameters.timestamp_to
+        Parameters.timestamp_to,
+        Parameters.flat
     ]
 
 

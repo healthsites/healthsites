@@ -8,7 +8,7 @@ SHELL := /bin/bash
 # ----------------------------------------------------------------------------
 default: web
 # run: run-docker-osm build permissions web migrate collectstatic version
-run: build permissions web migrate collectstatic version
+run: dnsmasq build permissions web migrate collectstatic version
 
 deploy: run
 	@echo
@@ -48,7 +48,6 @@ web:
 	@# Dont confuse this with the dbbackup make command below
 	@# This one runs the postgis-backup cron container
 	@# We add --no-recreate so that it does not destroy & recreate the db container
-	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up --no-recreate --no-deps -d dbbackups
 	@docker-compose -f docker-osm-compose.yml -p $(PROJECT_ID) up -d --no-recreate
 
 permissions:
@@ -71,6 +70,13 @@ db:
 	@echo "Running db in production mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up -d db
+
+dnsmasq:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running dnsmasq in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up -d dnsmasq
 
 rabbitmq:
 	@echo
@@ -120,7 +126,7 @@ collectstatic:
 	#@docker-compose -p $(PROJECT_ID) run uwsgi python manage.py collectstatic --noinput
 	#We need to run collect static in the same context as the running
 	# uwsgi container it seems so I use docker exec here
-	@docker exec -t -i $(PROJECT_ID)-uwsgi python manage.py collectstatic --noinput
+	@docker exec $(PROJECT_ID)-uwsgi python manage.py collectstatic --noinput
 
 reload:
 	@echo
