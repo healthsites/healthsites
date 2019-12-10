@@ -96,7 +96,10 @@ def split_osm_and_extension_attr(locality_attr):
         value = locality_attr.get(field, None)
         if (isinstance(value, bool) and value is not None) or value:
             osm_attr[field] = locality_attr[field]
+        try:
             del locality_attr[field]
+        except KeyError:
+            pass
 
     if locality_attr.get('defining_hours', None):
         del locality_attr['defining_hours']
