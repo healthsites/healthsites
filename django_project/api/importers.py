@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404
 
 from api.osm_field_definitions import ALL_FIELDS
 from api.osm_tag_defintions import ALL_TAGS
-from api.utils import remap_dict, verify_user, validate_osm_data, \
+from api.utils import verify_user, validate_osm_data, \
     convert_to_osm_tag, create_osm_node
 from api.utilities.pending import create_pending_update
 from core.settings.utils import ABS_PATH
@@ -140,7 +140,7 @@ class CSVtoOSMImporter:
         """
         # Read csv file as a dict and then remap it to osm fields
         with open(self.csv_filename, 'rb') as csv_file:
-            csv_reader = csv.DictReader(csv_file)
+            csv_reader = csv.DictReader(csv_file, delimiter=";")
             for row in csv_reader:
                 self._parsed_data.append(row)
 

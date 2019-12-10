@@ -25,9 +25,12 @@
               enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <div id="info">Template file can be downloaded in <a href="/static/data/Healthsites data uploader template.xlsx">here</a>. This is in excell and we need to export it as csv in comma separator.
-                <br><b>lat, lon, amenity, healthcare, name</b> are required.
-                <b>osm_user</b> is optional. Use this if you want to upload data from other user, but you need to be organizer of organisation with the osm_user is trusted user of organisation.</div>
+            <div id="info">Template file can be downloaded in <a href="/static/data/Healthsites data uploader template.xls">here</a>.
+                After that, please export the xlsx into csv with ; delimiter and upload the csv<br><br>
+                If you want to upload data from other user, how it can be done:<br>
+                - Add new column `osm_user` and put osm username into the column<br>
+                - You need to be organizer of organisation with the osm_user is trusted user of organisation.
+            </div>
             <input type="submit" class="btn btn-primary" value="Submit"/>
         </form>
         <div id="result" hidden>
@@ -111,15 +114,23 @@
                         var crossmark = '<span>' + '&#10060;' + '</span>';
 
                         for (var rowNumber in data['status']) {
+                            let id = 'status-row-' + rowNumber;
                             var statusmark = (
                                 data['status'][rowNumber]['is_valid'] ||
                                 data['status'][rowNumber]['uploaded'] ? checkmark : crossmark);
-                            var statusTemplate = (
-                                '<tr id="status-row-' + rowNumber +
-                                '" class="row-status"><td>' + rowNumber +
-                                '</td><td>' + statusmark + '&nbsp' + data['status'][rowNumber]['message'] +
-                                '</td></tr>');
-                            $('#table-status').append(statusTemplate);
+                            let content = '' +
+                                '<td>' + rowNumber +
+                                '</td>' +
+                                '<td>' + statusmark + '&nbsp' + data['status'][rowNumber]['message'] +
+                                '</td>';
+                            if ($('#' + id).length === 0) {
+                                var statusTemplate = (
+                                    '<tr id="' + id + '" class="row-status">' + content +
+                                    '</tr>');
+                                $('#table-status').append(statusTemplate);
+                            } else {
+                                $('#' + id).html(content);
+                            }
                         }
                         $('#result_message').text('Import Result');
                         $('#detailed_result_message').text(data['summary']);

@@ -5,9 +5,9 @@ from api.models.user_api_key import UserApiKey
 
 class UserApiKeyAdmin(admin.ModelAdmin):
     list_display = (
-        'user', 'api_key', 'is_active')
+        'user', 'api_key', 'is_active', 'allow_write')
     ordering = ('user',)
-    filter = ('is_active',)
+    list_filter = ('is_active', 'allow_write')
     readonly_fields = ('api_key',)
 
 

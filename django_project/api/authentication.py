@@ -11,8 +11,11 @@ class APIKeyAuthentication(authentication.BaseAuthentication):
         api_key = request.GET.get('api-key', None)
         if not api_key:
             raise exceptions.AuthenticationFailed('api-key is needed')
-        user = UserApiKey.get_user_from_api_key(api_key)
+        key = UserApiKey.get_key_from_api_key(api_key)
+        user = key.user
         if not user:
             raise exceptions.AuthenticationFailed('api-key is invalid')
+        if request.method != 'GET' and not key.allow_write:
+            raise exceptions.AuthenticationFailed('this api-key is not allowed to post data')
 
         return (user, None)

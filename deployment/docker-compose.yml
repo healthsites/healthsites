@@ -28,8 +28,6 @@ services:
     hostname: nginx
     volumes:
       - ./nginx-conf:/etc/nginx/conf.d
-    ports:
-      - "0.0.0.0:80:80"
     restart: on-failure:5
 
   smtp:
@@ -175,8 +173,6 @@ services:
       - ./webroot-path:/var/www/webroot
     links:
       - uwsgi:uwsgi
-    ports:
-      - "49361:8080"
     restart: on-failure:5
 
   # This is the entry point for a development server.
@@ -216,4 +212,13 @@ services:
       - "49362:8080"
       # for ssh
       - "49363:22"
+
+  dnsmasq:
+    image: andyshinn/dnsmasq
+    ports:
+      - "127.0.0.1:53:53/tcp"
+      - "127.0.0.1:53:53/udp"
+    cap_add:
+      - NET_ADMIN
+    command: --log-facility=-
 
