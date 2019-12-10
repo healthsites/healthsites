@@ -16,7 +16,7 @@ from braces.views import LoginRequiredMixin
 from api.models.user_api_key import UserApiKey
 from localities.models import Locality
 from social_users.models import (
-    Profile, Organisation, TrustedUser, OrganisationSupported)
+    Profile, Organisation)
 from social_users.utils import get_profile
 
 LOG = logging.getLogger(__name__)
