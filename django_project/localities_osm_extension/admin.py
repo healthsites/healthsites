@@ -6,6 +6,7 @@ from django.contrib import admin
 from .models.extension import LocalityOSMExtension
 from .models.tag import Tag
 from .models.pending_state import PendingUpdate, PendingReview
+from localities_osm.models.locality import LocalityOSMView
 
 
 class TagInline(admin.TabularInline):
@@ -21,8 +22,21 @@ class LocalityOSMExtensionAdmin(admin.ModelAdmin):
     list_filter = ('osm_type',)
     search_fields = ['osm_id']
     ordering = ('osm_id', 'osm_type',)
+    readonly_fields = ('osm_id', 'osm_type', 'osm_detail')
+
+    def osm_detail(self, obj):
+        try:
+            osm_view = LocalityOSMView.objects.get(
+                osm_id=obj.osm_id,
+                osm_type=obj.osm_type
+            )
+            return '<a href="/admin/localities_osm/' \
+                   'localityosmview/%s/">click here</a>' % osm_view.row
+        except LocalityOSMView.DoesNotExist:
+            return '%s (but is not found)' % obj.osm_id
 
     inlines = [TagInline, PendingStateInline]
+    osm_detail.allow_tags = True
 
 
 class PendingUpdateAdmin(admin.ModelAdmin):

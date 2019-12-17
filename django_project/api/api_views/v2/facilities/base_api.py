@@ -16,15 +16,20 @@ class FacilitiesBaseAPI(BaseAPI):
 
     def serialize(self, queryset, many=False):
         flat = self.request.GET.get('flat-properties')
+        tag_format = self.request.GET.get('tag-format')
+        context = {
+            'tag_format': tag_format,
+            'flat': flat
+        }
         if self.format == 'json':
             return self.JSONSerializer(
-                queryset, many=many, context={'flat': flat}).data
+                queryset, many=many, context=context).data
         elif self.format == 'geojson':
             return self.GEOJSONSerializer(
-                queryset, many=many, context={'flat': flat}).data
+                queryset, many=many, context=context).data
         elif self.format == 'xml':
             data = self.JSONSerializer(
-                queryset, many=many, context={'flat': flat}).data
+                queryset, many=many, context=context).data
             return dicttoxml.dicttoxml(data)
 
 

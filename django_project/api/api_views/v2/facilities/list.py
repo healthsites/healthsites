@@ -41,7 +41,8 @@ class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
         Parameters.output,
         Parameters.timestamp_from,
         Parameters.timestamp_to,
-        Parameters.flat
+        Parameters.flat,
+        Parameters.tag_format
     ]
 
 
@@ -91,61 +92,8 @@ class GetFacilitiesBaseAPI(object):
         return queryset
 
 
-class BulkUpload(FacilitiesBaseAPIWithAuth):
-    """
-    post:
-    Upload multiple healthsites/facilities data.
-    """
-    filter_backends = (ApiSchema,)
-
-    def get(self, request):
-        """FOR TESTING ONLY"""
-        user = request.user
-        data = request.data
-        facilities_data = data['healthsites']
-        response = {}
-        for facility_data in facilities_data:
-            # Verify data owner/collector
-            is_valid, message = verify_user(user, facility_data['username'])
-            response[facility_data['username']] = is_valid
-
-        return Response(response)
-
-    def post(self, request):
-        user = request.user
-        data = request.data
-        # Now, we post the data directly to OSM.
-        try:
-            responses = []
-            facilities_data = data['healthsites']
-            for facility_data in facilities_data:
-                # Verify data uploader and owner/collector
-                is_valid, message = \
-                    verify_user(user, facility_data['osm_user'])
-                if not is_valid:
-                    return HttpResponseForbidden(message)
-
-                # Validate data
-                validate_osm_data(facility_data)
-
-            for facility_data in facilities_data:
-                # Map Healthsites tags to OSM tags
-                mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
-                facility_data['tag'] = convert_to_osm_tag(
-                    mapping_file_path, facility_data['tag'], 'node')
-
-                # Push data to OSM
-                response = create_osm_node(user, facility_data)
-                responses.append(response)
-
-            return Response(responses)
-
-        except Exception as e:
-            return HttpResponseBadRequest('%s' % e)
-
-
 class GetFacilities(
-        PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):  # noqa
+    PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):  # noqa
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -293,5 +241,58 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
                 country = self.get_country(country)
                 output['geometry'] = country.polygon_geometry.geojson
             return Response(output)
+        except Exception as e:
+            return HttpResponseBadRequest('%s' % e)
+
+
+class BulkUpload(FacilitiesBaseAPIWithAuth):
+    """
+    post:
+    Upload multiple healthsites/facilities data.
+    """
+    filter_backends = (ApiSchema,)
+
+    def get(self, request):
+        """FOR TESTING ONLY"""
+        user = request.user
+        data = request.data
+        facilities_data = data['healthsites']
+        response = {}
+        for facility_data in facilities_data:
+            # Verify data owner/collector
+            is_valid, message = verify_user(user, facility_data['username'])
+            response[facility_data['username']] = is_valid
+
+        return Response(response)
+
+    def post(self, request):
+        user = request.user
+        data = request.data
+        # Now, we post the data directly to OSM.
+        try:
+            responses = []
+            facilities_data = data['healthsites']
+            for facility_data in facilities_data:
+                # Verify data uploader and owner/collector
+                is_valid, message = \
+                    verify_user(user, facility_data['osm_user'])
+                if not is_valid:
+                    return HttpResponseForbidden(message)
+
+                # Validate data
+                validate_osm_data(facility_data)
+
+            for facility_data in facilities_data:
+                # Map Healthsites tags to OSM tags
+                mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
+                facility_data['tag'] = convert_to_osm_tag(
+                    mapping_file_path, facility_data['tag'], 'node')
+
+                # Push data to OSM
+                response = create_osm_node(user, facility_data)
+                responses.append(response)
+
+            return Response(responses)
+
         except Exception as e:
             return HttpResponseBadRequest('%s' % e)

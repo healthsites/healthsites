@@ -9,6 +9,8 @@ from rest_framework.serializers import (
     ModelSerializer, SerializerMethodField
 )
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
+
+from core.settings.utils import ABS_PATH
 from localities_osm.models.locality import (
     LocalityOSM, LocalityOSMView,
     LocalityOSMNode, LocalityOSMWay
@@ -21,6 +23,22 @@ attributes_fields.remove('osm_id')
 
 
 class LocalityOSMBaseSerializer(object):
+    key_mapping = None
+
+    def map_tag(self, tag):
+        """ return tag based on key map
+
+        :param tag: tag that will be mapped
+        :type tag: str
+
+        :return: tag that already mapped
+        :rtype: str
+        """
+        try:
+            return self.key_mapping[tag]
+        except (TypeError, KeyError):
+            return tag
+
     def get_completeness(self, obj):
         return obj.get_completeness()
 
@@ -30,43 +48,41 @@ class LocalityOSMBaseSerializer(object):
         show_all = False
         try:
             show_all = self.context.get('flat', None)
-        except AttributeError:
+
+            # check tag that want to be used
+            tag = self.context.get('tag_format', None)
+            if tag == 'hxl':
+                mapping_file_path = ABS_PATH('api', 'fixtures', 'hxl_tags.json')
+                self.key_mapping = json.loads(open(mapping_file_path, 'r').read())
+        except (AttributeError, IOError):
             pass
 
         attributes = {}
         for attribute in attributes_fields:
             if getattr(obj, attribute) or show_all:
-                attributes[attribute] = getattr(obj, attribute)
+                attributes[
+                    self.map_tag(attribute)] = getattr(obj, attribute)
 
-        extension = None
-        osm_id = obj.osm_id
-        osm_type = self.get_osm_type(obj)
-        try:
-            extension = LocalityOSMExtension.objects.get(
-                osm_id=osm_id,
-                osm_type=osm_type
-            )
-            for tag in extension.tag_set.all():
-                if tag.value:
-                    attributes[tag.name] = tag.value
-        except LocalityOSMExtension.DoesNotExist:
-            pass
+        # check attributes from extension
+        extension, created = LocalityOSMExtension.objects.get_or_create(
+            osm_id=obj.osm_id,
+            osm_type=self.get_osm_type(obj)
+        )
+        for tag in extension.tag_set.all():
+            if tag.value:
+                attributes[self.map_tag(tag.name)] = tag.value
 
+        # check and create uuid
+        uuid_attribute = self.map_tag('uuid')
         try:
-            attributes['uuid']
+            attributes[uuid_attribute]
         except KeyError:
-            locality_uuid = uuid.uuid4().hex
-            if not extension:
-                extension, created = LocalityOSMExtension.objects.get_or_create(
-                    osm_id=osm_id,
-                    osm_type=osm_type
-                )
+            attributes[uuid_attribute] = uuid.uuid4().hex
             Tag.objects.create(
                 extension=extension,
                 name='uuid',
-                value=locality_uuid
+                value=attributes[uuid_attribute]
             )
-            attributes['uuid'] = locality_uuid
         return attributes
 
     def get_centroid(self, obj):
