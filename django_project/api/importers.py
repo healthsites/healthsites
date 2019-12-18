@@ -178,7 +178,7 @@ class CSVtoOSMImporter:
             }
 
             # check 2nd row based on the hxl
-            if row_number == 0:
+            if row_number == 0 and 'lat' in data and '#' in data['lat']:
                 mapping_file_path = ABS_PATH('api', 'fixtures', 'hxl_tags.json')
                 _file = open(mapping_file_path, 'r')
                 hxl_tag = json.loads(_file.read())
@@ -197,52 +197,53 @@ class CSVtoOSMImporter:
                 _file = open(mapping_file_path, 'w')
                 _file.write(json.dumps(hxl_tag, indent=4))
                 _file.close()
-            else:
-                # Set default user to data loader author
-                user = self.data_loader.author
+                continue
 
-                # Split osm and extension attribute
-                osm_attr, locality_attr = split_osm_and_extension_attr(
-                    data['tag'])
-                data['tag'] = osm_attr
-                data['tag'].update(locality_attr)
+            # Set default user to data loader author
+            user = self.data_loader.author
 
-                # Verify data uploader and owner/collector if the API is being used
-                # for uploading data from other osm user.
-                if not data.get('osm_user'):
-                    data['osm_user'] = user.username
+            # Split osm and extension attribute
+            osm_attr, locality_attr = split_osm_and_extension_attr(
+                data['tag'])
+            data['tag'] = osm_attr
+            data['tag'].update(locality_attr)
 
-                if user.username != data.get('osm_user'):
-                    is_valid, message = verify_user(
-                        user, data['osm_user'], ignore_uploader_staff=True)
-                    validation_status.update({
-                        'is_valid': is_valid,
-                        'message': message
-                    })
-                    if is_valid:
-                        try:
-                            _ = get_object_or_404(
-                                User, username=data['osm_user'])
-                        except Http404:
-                            message = 'User %s is not exist.' % data['osm_user']
-                            validation_status.update({
-                                'is_valid': False,
-                                'message': message
-                            })
+            # Verify data uploader and owner/collector if the API is being used
+            # for uploading data from other osm user.
+            if not data.get('osm_user'):
+                data['osm_user'] = user.username
 
+            if user.username != data.get('osm_user'):
+                is_valid, message = verify_user(
+                    user, data['osm_user'], ignore_uploader_staff=True)
+                validation_status.update({
+                    'is_valid': is_valid,
+                    'message': message
+                })
                 if is_valid:
                     try:
-                        # Validate data
-                        is_valid = validate_osm_data(data)
-                        validation_status.update({
-                            'is_valid': is_valid,
-                            'message': 'OSM data is valid.'
-                        })
-                    except Exception as e:
+                        _ = get_object_or_404(
+                            User, username=data['osm_user'])
+                    except Http404:
+                        message = 'User %s is not exist.' % data['osm_user']
                         validation_status.update({
                             'is_valid': False,
-                            'message': '%s' % e
+                            'message': message
                         })
+
+            if is_valid:
+                try:
+                    # Validate data
+                    is_valid = validate_osm_data(data)
+                    validation_status.update({
+                        'is_valid': is_valid,
+                        'message': 'OSM data is valid.'
+                    })
+                except Exception as e:
+                    validation_status.update({
+                        'is_valid': False,
+                        'message': '%s' % e
+                    })
 
             self._validation_status['status'][row_number + 1] = validation_status
             if self.is_valid() and row_number + 1 == len(self._parsed_data):
