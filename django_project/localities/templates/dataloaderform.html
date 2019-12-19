@@ -26,7 +26,7 @@
             {% csrf_token %}
             {{ form.as_p }}
             <div id="info">Template file can be downloaded in <a href="/static/data/Healthsites data uploader template.xlsx">here</a>.
-                After that, please export the xlsx into csv with ; delimiter and upload the csv<br><br>
+                After that, please export the xlsx into csv with , delimiter and upload the csv<br><br>
                 If you want to upload data from other user, how it can be done:<br>
                 - Add new column `osm_user` and put osm username into the column<br>
                 - You need to be organizer of organisation with the osm_user is trusted user of organisation.
@@ -34,6 +34,7 @@
             <input type="submit" class="btn btn-primary" value="Submit"/>
         </form>
         <div id="result" hidden>
+            <p style="font-style: italic; color: darkorange">[WARNING] When you batch upload data, all records should be valid. You will see a report after uploading indicating any rows that have issues. If there were any issues, no data will be imported and you should open your batch datafile, resolve any issues, then try again to  upload your data.</p>
             <p id="result_message"></p>
             <p id="detailed_result_message"></p>
         </div>
