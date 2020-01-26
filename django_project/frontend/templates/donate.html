@@ -12,33 +12,29 @@
  * The CSS shown here will not be introduced in the Quickstart guide, but shows
  * how you can use CSS to style your Element's container.
  */
-    .StripeElement {
+    #card-element {
+        width: 36em;
         box-sizing: border-box;
+        font-size: 18px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        height: 46px;
+        border: 1px solid #ccc;
+    }
 
-        height: 40px;
+    #card-errors {
+        color: #f44a52;
+    }
 
-        padding: 10px 12px;
-
-        border: 1px solid transparent;
-        border-radius: 4px;
+    .StripeElement {
         background-color: white;
-
+        padding: 10px 16px;
+        border-radius: 4px;
+        border: 1px solid transparent;
         box-shadow: 0 1px 3px 0 #e6ebf1;
         -webkit-transition: box-shadow 150ms ease;
         transition: box-shadow 150ms ease;
     }
 
-    .StripeElement--focus {
-        box-shadow: 0 1px 3px 0 #cfd7df;
-    }
-
-    .StripeElement--invalid {
-        border-color: #fa755a;
-    }
-
-    .StripeElement--webkit-autofill {
-        background-color: #fefde5 !important;
-    }
 </style>
 {% endblock stylesheet %}
 
@@ -46,76 +42,102 @@
     <script src="https://js.stripe.com/v3/"></script>
 
 <script>
-    // Create a Stripe client.
-    var stripe = Stripe('pk_test_HKNMsoyS0qSEyM8jBCO1B7Db00CYO6uIXQ');
 
-    // Create an instance of Elements.
-    var elements = stripe.elements();
+    var url = 'https://1pj9ud92b2.execute-api.eu-west-2.amazonaws.com/Stage/intent';
 
-    // Custom styling can be passed to options when creating an Element.
-    // (Note that this demo uses a wider set of styles than the guide below.)
-    var style = {
-        base: {
-            color: '#32325d',
-            fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-            fontSmoothing: 'antialiased',
-            fontSize: '16px',
-            '::placeholder': {
-                color: '#aab7c4'
-            }
-        },
-        invalid: {
-            color: '#fa755a',
-            iconColor: '#fa755a'
-        }
-    };
+    $('#cc-amount-form').on('submit', function (event) {
 
-    // Create an instance of the card Element.
-    var card = elements.create('card', {style: style});
-
-    // Add an instance of the card Element into the `card-element` <div>.
-    card.mount('#card-element');
-
-    // Handle real-time validation errors from the card Element.
-    card.addEventListener('change', function(event) {
-        var displayError = document.getElementById('card-errors');
-        if (event.error) {
-            displayError.textContent = event.error.message;
-        } else {
-            displayError.textContent = '';
-        }
-    });
-
-    // Handle form submission.
-    var form = document.getElementById('payment-form');
-    form.addEventListener('submit', function(event) {
         event.preventDefault();
+        $(this).hide();
+        $('#alert-step-1').show();
 
-        stripe.createToken(card).then(function(result) {
-            if (result.error) {
-                // Inform the user if there was an error.
-                var errorElement = document.getElementById('card-errors');
-                errorElement.textContent = result.error.message;
-            } else {
-                // Send the token to your server.
-                stripeTokenHandler(result.token);
-            }
+        var data = {};
+
+        for(var item of $(this).serializeArray()) { data[item.name] = item.value; }
+
+        fetch(url, {
+            method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        }).then((response) => {
+            return response.json();
+        }).then(function (intent) {
+            console.log(intent);
+
+            var stripe = Stripe(intent.publishableKey), elements = stripe.elements(), card = elements.create('card', { style: {
+                    base: {
+                        iconColor: '#c4f0ff',
+                        color: '#000',
+                        fontWeight: 500,
+                        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                        fontSize: '18px',
+                        fontSmoothing: 'antialiased',
+                        backgroundColor: '#fff',
+                        ':-webkit-autofill': {
+                            color: '#fce883',
+                        },
+                        '::placeholder': {
+                            color: '#666666',
+                        },
+                    },
+                    invalid: {
+                        iconColor: '#f44a52',
+                        color: '#f44a52',
+                    }
+                }});
+
+            card.mount('#card-element');
+
+            $('#alert-step-1').hide();
+            $('#payment-form').show();
+
+            // Handle real-time validation errors from the card Element.
+            card.addEventListener('change', function(event) {
+
+                var displayError = document.getElementById('card-errors');
+
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+            $('#payment-form').on('submit', function (event2) {
+                event2.preventDefault();
+
+                $(this).hide();
+                $('#alert-step-2').show();
+
+                stripe
+                    .confirmCardPayment(intent.clientSecret, {
+                        payment_method: {
+                            card: card
+                        }
+                    })
+                    .then(function(result) {
+                        console.log(result);
+                        $('#alert-step-2').hide();
+
+                        if(result.hasOwnProperty('error')) {
+                            document.getElementById('card-errors').textContent = result.error.message;
+                            $('#payment-form').show();
+                        }
+
+                        if (result.hasOwnProperty('paymentIntent')) {
+                            if (result.paymentIntent.status === "succeeded") {
+                                $('#alert-success').show();
+                            } else {
+                                $('#alert-error').show();
+                            }
+                        }
+                    });
+
+            });
+
         });
+
     });
 
-    // Submit the form with the token ID.
-    function stripeTokenHandler(token) {
-        // Insert the token ID into the form so it gets submitted to the server
-        var form = document.getElementById('payment-form');
-        var hiddenInput = document.createElement('input');
-        hiddenInput.setAttribute('type', 'hidden');
-        hiddenInput.setAttribute('name', 'stripeToken');
-        hiddenInput.setAttribute('value', token.id);
-        form.appendChild(hiddenInput);
-
-        // Submit the form
-        form.submit();
-    }
 </script>
 
 {% endblock extra_js %}
@@ -130,21 +152,62 @@
     </div>
     <div class="container content">
 
-        <form action="{% url 'donate' %}" method="post" id="payment-form">{% csrf_token %}
-            <div class="form-row">
-                <label for="card-element">
-                    Credit or debit card
-                </label>
-                <div id="card-element">
-                    <!-- A Stripe Element will be inserted here. -->
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active"><a href="#cc" aria-controls="cc" role="tab" data-toggle="tab">Donate by Card</a></li>
+            <li role="presentation"><a href="#bank" aria-controls="bank" role="tab" data-toggle="tab">Bank Transfer</a></li>
+            <li role="presentation"><a href="#crypto" aria-controls="crypto" role="tab" data-toggle="tab">Crypto</a></li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="cc">
+
+                <h3>How much would you like to donate?</h3>
+
+                <div class="jumbotron">
+
+
+                    <form class="form-inline" id="cc-amount-form">
+                        <div class="form-group form-group-lg">
+                            <label class="sr-only">Amount (in british pounds)</label>
+                            <div class="input-group">
+                                <div class="input-group-addon">£</div>
+                                <input type="text" class="form-control" placeholder="Amount" name="amount">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Donate</button>
+                    </form>
+
+                    <div id="alert-step-1" class="alert alert-info" role="alert" style="display: none">Initializing payment form ...</div>
+                    <div id="alert-step-2" class="alert alert-info" role="alert" style="display: none">Processing payment ...</div>
+                    <div id="alert-success" class="alert alert-success" role="alert" style="display: none">Thank you! Your donation payment was successful.</div>
+                    <div id="alert-error" class="alert alert-danger" role="alert" style="display: none">Something went wrong - unable to process transaction</div>
+
+                    <form class="form-inline" id="payment-form" style="display: none">
+                        <div class="form-group form-group-lg col-lg-8">
+                            <label class="sr-only" for="card-element">Credit or debit card</label>
+                            <div class="input-group">
+                                <div id="card-element"></div>
+                                <div id="card-errors"></div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg">Pay</button>
+                    </form>
+
                 </div>
 
-                <!-- Used to display form errors. -->
-                <div id="card-errors" role="alert"></div>
             </div>
+            <div role="tabpanel" class="tab-pane" id="bank">
+                <h3>Please send donations to any of the bank accounts</h3>
 
-            <button>Submit Payment</button>
-        </form>
+                <p>Bank account list here</p>
+            </div>
+            <div role="tabpanel" class="tab-pane" id="crypto">
+                <h3>Please send donations to any of the wallets</h3>
+
+                <p>Wallet list here</p>
+            </div>
+        </div>
 
 
     </div>

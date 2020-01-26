@@ -86,9 +86,6 @@ class AttributionsView(TemplateView):
 class DonateView(TemplateView):
     template_name = 'donate.html'
 
-    def post(self, *args, **kwargs):
-        return HttpResponse('')
-
 
 class GatherEnrollmentView(TemplateView):
     template_name = 'how_to_gather.html'
