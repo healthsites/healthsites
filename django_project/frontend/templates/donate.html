@@ -55,7 +55,13 @@
 
 <script>
 
-    var url = 'https://1pj9ud92b2.execute-api.eu-west-2.amazonaws.com/Stage/intent';
+    var url;
+
+    if(window.location.hostname === 'healthsites.io') {
+        url = 'https://1pj9ud92b2.execute-api.eu-west-2.amazonaws.com/Prod/intent';
+    } else {
+        url = 'https://1pj9ud92b2.execute-api.eu-west-2.amazonaws.com/Stage/intent';
+    }
 
     $('#cc-amount-form').on('submit', function (event) {
 
@@ -149,6 +155,7 @@
         });
 
     });
+
 
 </script>
 
