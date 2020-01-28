@@ -35,6 +35,18 @@
         transition: box-shadow 150ms ease;
     }
 
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance:textfield;
+    }
+
 </style>
 {% endblock stylesheet %}
 
@@ -172,7 +184,7 @@
                             <label class="sr-only">Amount (in british pounds)</label>
                             <div class="input-group">
                                 <div class="input-group-addon">£</div>
-                                <input type="text" class="form-control" placeholder="Amount" name="amount">
+                                <input type="number" class="form-control" placeholder="Amount" name="amount" min="5">
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary btn-lg">Donate</button>
