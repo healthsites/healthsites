@@ -1,24 +1,21 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 import os
 
-import json
 import googlemaps
-from envelope.views import ContactView
-from hurry.filesize import size
-
 from api.api_views.v2.schema import Schema
+from braces.views import FormMessagesMixin
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-
-from braces.views import FormMessagesMixin
-
+from envelope.views import ContactView
+from hurry.filesize import size
 from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from localities.utils import (
@@ -85,9 +82,6 @@ class AttributionsView(TemplateView):
 
 class DonateView(TemplateView):
     template_name = 'donate.html'
-
-    def post(self, *args, **kwargs):
-        return HttpResponse('')
 
 
 class GatherEnrollmentView(TemplateView):
