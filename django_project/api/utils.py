@@ -352,7 +352,7 @@ def validate_duplication(osm_data):
         u'node["name"="{name}"](around:{radius}, {lat}, {lon});'
         u'node["name:en"="{name}"](around:{radius}, {lat}, {lon});'
         ')'.format(
-            name=name,
+            name=name.decode('utf-8'),
             radius=radius,
             lon=lon,
             lat=lat))

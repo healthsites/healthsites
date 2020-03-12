@@ -140,9 +140,9 @@ class CSVtoOSMImporter:
         """
         # Read csv file as a dict and then remap it to osm fields
         with open(self.csv_filename, 'rb') as csv_file:
-            csv_reader = csv.DictReader(csv_file, delimiter=';')
+            csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                self._parsed_data.append(row)
+                self._parsed_data.append({key.decode("utf-8-sig").encode("utf-8"): value for key, value in row.iteritems()})
 
         # Rearrange it to osm api push data format
         new_parsed_data = []
