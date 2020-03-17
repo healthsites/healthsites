@@ -147,15 +147,14 @@ class CSVtoOSMImporter:
         # Rearrange it to osm api push data format
         new_parsed_data = []
         for data in self._parsed_data:
-            new_data = {
-                'lat': data['lat'],
-                'lon': data['lon']
-            }
-            del data['lat']
-            del data['lon']
+            new_data = {}
             try:
+                new_data['lat'] = data['lat']
+                new_data['lon'] = data['lon']
                 new_data['osm_user'] = data['osm_user']
                 del data['osm_user']
+                del data['lat']
+                del data['lon']
             except KeyError:
                 pass
             new_data['tag'] = data
