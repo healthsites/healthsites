@@ -281,11 +281,8 @@ wheelchair = {
         'Used to mark places or ways that are suitable to be used '
         'with a wheelchair and a person with a disability who uses '
         'another mobility device (like a walker)',
-    'options': [
-        'yes', 'limited', 'no', 'designated'
-    ],
     'required': False,
-    'type': str,
+    'type': bool,
 }
 
 emergency = {

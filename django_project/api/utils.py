@@ -96,10 +96,13 @@ def is_trusted_user(user):
 def remap_dict(old_dict, transform):
     """
     Rename specific dictionary keys
+    Ignore the empty value
     """
     new_dict = {}
     for k, v in old_dict.items():
         try:
+            if v == '':
+                continue
             v = v.decode('utf-8')
         except (UnicodeDecodeError, UnicodeEncodeError, AttributeError):
             pass
@@ -146,7 +149,7 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
                 column['name']: column['key']
             })
             if isinstance(data[column['name']], bool):
-                data[column['name']] = 'True' if data[column['name']] else 'False'
+                data[column['name']] = 'yes' if data[column['name']] else 'no'
             elif isinstance(data[column['name']], int) \
                     or isinstance(data[column['name']], float):
                 data[column['name']] = '%s' % data[column['name']]
@@ -297,9 +300,9 @@ def validate_osm_tags(osm_tags):
         elif tag_definition.get('type') == int:
             item = int(item)
         elif tag_definition.get('type') == bool:
-            if item == 'False':
+            if item == 'yes':
                 item = False
-            elif item == 'True':
+            elif item == 'no':
                 item = True
         if tag_definition['type'] == list:
             if not isinstance(item, list):

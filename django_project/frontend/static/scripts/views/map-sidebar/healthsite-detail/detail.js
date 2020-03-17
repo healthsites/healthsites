@@ -63,9 +63,12 @@ define([
                     value = attributes[key];
                     delete attributes[key];
                 }
+                if (value) {
+                    value = value.replaceAll(';', ', ')
+                }
                 otherHtml += '<tr data-tag="' + key + '"  data-hasvalue="' + (value !== '') + '" data-required="' + definition['required'] + '">' +
                     '<td class="tag-key">' + capitalize(key.replaceAll('_', ' ')) + ' <i class="fa fa-info-circle" aria-hidden="true" title="' + description + '"></i></td>' +
-                    '<td><div class="data">' + value.replaceAll(';', ', ') + '</div></td>' +
+                    '<td><div class="data">' + value + '</div></td>' +
                     '</tr>';
             }
             return otherHtml;

@@ -63,7 +63,7 @@ define([
                         inputHtml = '<input class="input" type="number" step="0.0001">';
                         break;
                     case 'boolean':
-                        options = ["True", "False"];
+                        options = ['yes', 'no'];
                     case 'string':
                         inputHtml = '<input class="input" type="text" placeholder="' + value['description'] + '" title="' + value['description'] + '" >';
                         if (!options) {
