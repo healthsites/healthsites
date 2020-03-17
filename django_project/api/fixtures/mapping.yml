@@ -69,7 +69,7 @@ tables:
       - key: water_source
         name: water_source
         type: string
-      - key: Key:electricity
+      - key: electricity
         name: electricity
         type: string
       - key: is_in:health_area

@@ -140,22 +140,26 @@ class CSVtoOSMImporter:
         """
         # Read csv file as a dict and then remap it to osm fields
         with open(self.csv_filename, 'rb') as csv_file:
-            csv_reader = csv.DictReader(csv_file, delimiter=';')
+            csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                self._parsed_data.append(row)
+                self._parsed_data.append(
+                    {
+                        key.decode('utf-8-sig').encode('utf-8'):
+                            value for key, value in row.iteritems()
+                    }
+                )
 
         # Rearrange it to osm api push data format
         new_parsed_data = []
         for data in self._parsed_data:
-            new_data = {
-                'lat': data['lat'],
-                'lon': data['lon']
-            }
-            del data['lat']
-            del data['lon']
+            new_data = {}
             try:
+                new_data['lat'] = data['lat']
+                new_data['lon'] = data['lon']
                 new_data['osm_user'] = data['osm_user']
                 del data['osm_user']
+                del data['lat']
+                del data['lon']
             except KeyError:
                 pass
             new_data['tag'] = data

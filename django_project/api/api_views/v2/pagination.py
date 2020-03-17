@@ -29,7 +29,6 @@ class PaginationAPI(APIView):
     """
     Base API for Facilities in pagination
     """
-    limit = 100
     page = None
 
     def get_query_by_page(self, query):
@@ -44,6 +43,7 @@ class PaginationAPI(APIView):
         """
         data = self.request.GET
         page = data.get('page', 1)
+        limit = data.get('limit', 100)
         try:
             self.page = int(page)
             if self.page <= 0:
@@ -51,7 +51,7 @@ class PaginationAPI(APIView):
         except ValueError:
             raise NotANumberException()
         try:
-            paginator = Paginator(query, self.limit)
+            paginator = Paginator(query, limit)
             return paginator.page(self.page)
         except EmptyPage:
             return []
