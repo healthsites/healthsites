@@ -95,12 +95,32 @@
                                                 onerror="this.onerror=null; this.src='image.png'">
                 </div>
                 <div class="col-md-10 pad0x">
-                    When a natural disaster or disease outbreak occurs there is a rush to establish accurate health care
-                    location data that can be used to support people on the ground. This has been demonstrated by events
-                    such as the Haiti earthquake and the Ebola epidemic in West Africa. As a result valuable time is
-                    wasted establishing accurate and accessible baseline data.<br/>
-                    Healthsites.io establishes this data and the tools necessary to upload, manage and make the data
-                    easily accessible.
+                    <p>The Global Healthsites Mapping Project is building an open data commons of health facility data
+                        with OpenStreetMap. We believe that by leaning on the methods and infrastructure of
+                        OpenStreetMap, baseline health facility data can be maintained.</p>
+                    <p>Key activities of Healthsites include:</p>
+                    <ul>
+                        <li>Enabling National health agencies and organisations to share and contribute data to
+                            OpenStreetMap
+                        </li>
+                        <li>Enabling collaboration between national health agencies and volunteer communities</li>
+                        <li>Connecting multiple data streams to build higher quality data</li>
+                        <li>Explore Human Centered Design to drive the development of the data</li>
+                    </ul>
+                    <p>Saving health facility data to OpenStreetMap improves interoperability and harnesses the
+                        contributions of citizens, academic institutions, businesses and organisations who use the data
+                        in their daily operations. In addition to cost savings, improved health facility data supports
+                        epidemic preparedness, immunization programs, disaster response, Maternity care and Health
+                        capacity planning.</p>
+                    <p>When a natural disaster or disease outbreak occurs there is a rush to establish accurate health
+                        care location data that can be used to support people on the ground. This has been demonstrated
+                        by events such as the Haiti earthquake and the Ebola epidemic in West Africa. As a result
+                        valuable time is wasted establishing accurate and accessible baseline data.
+                        Healthsites.io <a href="/map">establishes this data</a> and the tools necessary to <a
+                                href="/upload-form">upload</a>, manage and make the <a
+                                href="https://data.humdata.org/organization/healthsites" target="_blank">data
+                            easily accessible</a>.
+                    </p>
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
@@ -118,9 +138,9 @@
                                                 onerror="this.onerror=null; this.src='image.png'"></div>
                 <div class="col-md-8 pad0x">
                     <strong>Open data collaboration</strong><br/>
-                    Through collaborations with users, trusted partners and OpenStreetMap we will capture and validate
-                    the location and contact details of every facility and make this data freely available under an Open
-                    Data License (ODBL)'
+                    Through collaborations with users, trusted partners and OpenStreetMap we publish baseline health
+                    facility data under an <a href="https://www.openstreetmap.org/copyright" target="_blank">Open Data
+                    License</a> (ODBL)
                 </div>
             </div>
             <div style="clear: both"></div>
@@ -129,8 +149,11 @@
                                                 onerror="this.onerror=null; this.src='image.png'"></div>
                 <div class="col-md-8 pad0x">
                     <strong>Accessible</strong><br/>
-                    We will make the data accessible over the Internet through an API and other formats such as GeoJSON,
-                    Shapefile, KML, CSV
+                    We make the data accessible over the Internet <a
+                        href="https://github.com/healthsites/healthsites/wiki/API" target="_blank">through an API</a>
+                    and other formats such as GeoJSON, Shapefile, KML, CSV. In addition we apply #HXL tags to the data
+                    and publish to the <a href="https://data.humdata.org/organization/healthsites" target="_blank">Humanitarian
+                    Data Exchange</a>.
                 </div>
             </div>
             <div class="col-md-6 pad0x block">
@@ -138,9 +161,9 @@
                                                 onerror="this.onerror=null; this.src='image.png'"></div>
                 <div class="col-md-8 pad0x">
                     <strong>Focus on health care location data</strong><br/>
-                    Our design philosophy is the long term curation and validation of health care location data. The
-                    healthsites.io map will enable users to discover what healthcare facilities exist at any global
-                    location and the associated services and resources.
+                    Our design philosophy is the long term curation and validation of health care location data. <a
+                        href="/map">Healthsites.io</a> enables users to discover what healthcare facilities exist at any
+                    global location and the associated services and resources.
                 </div>
             </div>
         </div>
@@ -149,44 +172,51 @@
 <span class="scroll" id="share-data"></span>
 <section id="share-data" class="navi">
     <div class="container-fluid pad0x">
+
         <div class="center col-md-3 pad0x">
             <div class="content">
                 <div class="icon-holder"><i class="fa fa-cog"></i></div>
                 <h3 class="col-md-12">Data model</h3>
-                <span class="col-md-12 text">Each healthsite is stored as a geometry object in the database</span>
-                <span class="col-md-12 links"><a
-                        href="https://github.com/healthsites/healthsites/wiki/Healthsite-attributes" target="_blank">Healthsites
-                    attributes</a> <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-data-model"
-                                      target="_blank">Data model</a></span>
+                <span class="col-md-12 text">Each health facility is stored as a geometry object in the database</span>
+                <span class="col-md-12 links">
+                    <a href="https://wiki.openstreetmap.org/wiki/Global_Healthsites_Mapping_Project#Complete" target="_blank">Healthsites attributes</a>
+                </span>
             </div>
         </div>
+
         <div class="center col-md-3 pad0x">
             <div class="content">
                 <div class="icon-holder"><i class="fa fa-map-marker"></i></div>
-                <h3 class="col-md-12">Share healthsite data</h3>
-                <span class="col-md-12 text">Please contact us should you wish to share data and we will assist you. </span>
-                <span class="col-md-12 links">{# disabled for now - see #432 <a href="/upload-form">Upload form</a>#} <a
-                        href="/contact">Contact
-                    us</a></span></div>
+                <h3 class="col-md-12">Share health facility data</h3>
+                <span class="col-md-12 text">Please contact us should you wish to share data and we will assist you.</span>
+                <span class="col-md-12 links"><a href="/contact">Contact us</a></span>
+            </div>
         </div>
+
         <div class="center col-md-3 pad0x">
             <div class="content">
                 <div class="icon-holder"><i class="fa fa-pencil"></i></div>
                 <h3 class="col-md-12">Developers</h3>
-                <span class="col-md-12 text">We welcome new contributions to this project - see our github page for details.</span>
-                <span class="col-md-12 links"><a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a> <a
-                        href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road
-                    Map</a></span>
+                <span class="col-md-12 text">We welcome new contributions to this project. Use the code and help us develop the road map.</span>
+                <span class="col-md-12 links">
+                    <a href="https://github.com/healthsites/healthsites/" target="_blank">GitHub</a>
+                    <a href="https://github.com/healthsites/healthsites/wiki/Healthsites-roadmap" target="_blank">Road Map</a>
+                </span>
             </div>
         </div>
+
         <div class="center col-md-3 pad0x">
             <div class="content">
                 <div class="icon-holder"><i class="fa fa-comments"></i></div>
-                <h3 class="col-md-12">Chat live</h3>
+                <h3 class="col-md-12">Collaborate</h3>
                 <span class="col-md-12 text">We've established a chatroom where we'll do our best to respond and share project knowledge.</span>
-                <span class="col-md-12 links"><a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat
-                    space</a></span></div>
+                <span class="col-md-12 links">
+                    <a href="https://gitter.im/healthsites/healthsites" target="_blank">Chat space</a>
+                    <a href="https://twitter.com/sharehealthdata" target="_blank">Twitter</a>
+                </span>
+            </div>
         </div>
+
     </div>
 </section>
 <span class="scroll" id="country-data"></span>
