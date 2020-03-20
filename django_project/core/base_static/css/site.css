@@ -776,6 +776,12 @@ input[type=text].transparent, input[type=text].transparent:active, input[type=te
     }
 }
 
+#ribbon {
+    position: fixed;
+    right: 0;
+    bottom: 100px;
+}
+
 section.container {
     padding-top: 100px;
     margin-bottom: 50px;

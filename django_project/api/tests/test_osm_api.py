@@ -157,68 +157,6 @@ class TestOsmApi(unittest.TestCase):
         self.assertEquals(result['lon'], test_node['lon'])
         self.assertEquals(result['tag'], test_node['tag'])
 
-    def test_MergeTags(self):
-        self._session_mock(auth=True)
-
-        # setup mock
-        self.api.ChangesetCreate = mock.Mock(
-            return_value=1111
-        )
-        self.api._CurrentChangesetId = 1111
-
-        current_node = {
-            'changeset': '111',
-            'id': '99',
-            'timestamp': '2020-03-17 05:17:42',
-            'uid': 3658135,
-            'user': 'user',
-            'version': 3,
-            'visible': True,
-            'lat': 47.287,
-            'lon': 8.765,
-            'tag': {
-                'amenity': 'hospital',
-                'religion': 'test',
-                'tag 1': 1,
-                'tag 2': 2,
-                'tag 3': 3,
-            }
-        }
-
-        updated_node = {
-            'id': '99',
-            'type': 'node',
-            'version': 3,
-            'lat': 47.287,
-            'lon': 8.765,
-            'tag': {
-                'amenity': 'place_of_worship',
-                'religion': 'pastafarian',
-                'tag 3': None,
-                'tag 4': 4,
-                'tag 5': 5,
-            }
-        }
-        merged_node = {
-            'id': '99',
-            'type': 'node',
-            'version': 3,
-            'lat': 47.287,
-            'lon': 8.765,
-            'tag': {
-                'amenity': 'place_of_worship',
-                'religion': 'pastafarian',
-                'tag 1': 1,
-                'tag 2': 2,
-                'tag 4': 4,
-                'tag 5': 5,
-            }
-        }
-
-        merged_node_output = self.api.merge_data(
-            current_node, updated_node)
-        self.assertEqual(merged_node, merged_node_output)
-
     @unittest.skipIf(
         condition=not (OAUTH_TOKEN and OAUTH_TOKEN_SECRET),
         reason='requires valid oauth token')
