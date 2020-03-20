@@ -319,6 +319,8 @@ class OsmApiWrapper(OsmApi, object):
         """
         current_data = self.WayGet(data['id'])
         data = self.merge_data(current_data, data)
+        del data['lat']
+        del data['lon']
         self.ChangesetCreate(self.changeset_tags(comment))
         changeset = self.WayUpdate(data)
         self.ChangesetClose()
