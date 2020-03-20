@@ -15,6 +15,7 @@ class OAuthTokenMissingError(BaseException):
     """
     Error when oauth token is missing for an authenticated request
     """
+
     def __init__(self):
         message = 'OAuth token missing'
         super(OAuthTokenMissingError, self).__init__(message)
@@ -129,6 +130,26 @@ class OsmApiWrapper(OsmApi, object):
             })
         return tags
 
+    def merge_data(self, current_data, updated_data):
+        """ Merging tags from current data to updated data
+        if on updated tags is None, delete it
+
+        :param current_data: The current data from OSM
+        :type current_data: dict
+
+        :param updated_data: The updated data from HS
+        :type updated_data: dict
+
+        :return: merged tags
+        :rtype: dict
+        """
+        if int(current_data['id']) != int(updated_data['id']):
+            raise Exception(
+                "can't update the healthsite because the data doesn't match with osm")
+        current_data['tag'].update(updated_data['tag'])
+        updated_data['tag'] = {k: v for k, v in current_data['tag'].items() if v is not None}
+        return updated_data
+
     def create_node(self, data, comment=None):
         """Create OSM node data and push it to OSM instance through OSM api.
 
@@ -193,6 +214,8 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
+        current_data = self.NodeGet(data['id'])
+        data = self.merge_data(current_data, data)
         self.ChangesetCreate(self.changeset_tags(comment))
         changeset = self.NodeUpdate(data)
         self.ChangesetClose()
@@ -294,6 +317,10 @@ class OsmApiWrapper(OsmApi, object):
                 'visible': True|False
             }
         """
+        current_data = self.WayGet(data['id'])
+        data = self.merge_data(current_data, data)
+        del data['lat']
+        del data['lon']
         self.ChangesetCreate(self.changeset_tags(comment))
         changeset = self.WayUpdate(data)
         self.ChangesetClose()
