@@ -33,6 +33,10 @@ define([
             }
 
             switch (tag) {
+                case 'source':
+                    $input.val("healthsites.io");
+                    $input.prop('disabled', true);
+                    break;
                 case 'uuid':
                     $input.prop('disabled', true);
                     break;

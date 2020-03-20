@@ -64,11 +64,7 @@ define([
                     delete attributes[key];
                 }
                 if (value) {
-                    try {
-                        value = value.replaceAll(';', ', ')
-                    }catch (e) {
-                        
-                    }
+                    value = value.replaceAll(';', ', ')
                 }
                 otherHtml += '<tr data-tag="' + key + '"  data-hasvalue="' + (value !== '') + '" data-required="' + definition['required'] + '">' +
                     '<td class="tag-key">' + capitalize(key.replaceAll('_', ' ')) + ' <i class="fa fa-info-circle" aria-hidden="true" title="' + description + '"></i></td>' +

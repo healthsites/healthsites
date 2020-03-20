@@ -102,7 +102,7 @@ def remap_dict(old_dict, transform):
     for k, v in old_dict.items():
         try:
             if v == '':
-                v = None
+                continue
             v = v.decode('utf-8')
         except (UnicodeDecodeError, UnicodeEncodeError, AttributeError):
             pass
@@ -176,6 +176,11 @@ def validate_osm_data(osm_data, duplication_check=True):
     :return: Validation status and message.
     :rtype: tuple
     """
+    try:
+        osm_data['tag']['source'] = 'healthsites.io'
+    except KeyError:
+        pass
+
     # Validate fields
     is_valid, message = validate_osm_fields(osm_data)
     if not is_valid:
