@@ -80,7 +80,7 @@ source = {
     'description':
         'Used to indicate the source of information '
         '(i.e. meta data) added to OpenStreetMap',
-    'required': True,
+    'required': False,
     'type': str,
 }
 
