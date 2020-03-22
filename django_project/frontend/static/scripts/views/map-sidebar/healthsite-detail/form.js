@@ -30,6 +30,7 @@ define([
             // assign value to form
             if (value) {
                 $input.val(value);
+                $input.data('value', value);
             }
 
             switch (tag) {
@@ -182,6 +183,10 @@ define([
             var $element = $elementTag.find('input,select');
             if ($element.val()) {
                 value = $element.val()
+            } else {
+                if ($element.data('value')) {
+                    value = ''
+                }
             }
             var $inputWrapper = $($elementTag.find('.input'));
             if ($inputWrapper.hasClass('multiselect')) {
@@ -203,7 +208,7 @@ define([
                 if (key === 'opening_hours') {
                     value = that.opening_hours.getDefiningHours();
                 }
-                if (value) {
+                if (value != null) {
                     tags[key] = value
                 }
             });
