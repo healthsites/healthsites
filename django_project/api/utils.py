@@ -295,14 +295,16 @@ def validate_osm_tags(osm_tags):
         elif tag_definition.get('type') == int:
             item = int(item)
         elif tag_definition.get('type') == bool:
-            if item == 'yes':
+            if item == 'yes' or item == 'True':
                 item = False
-            elif item == 'no':
+            elif item == 'no' or item == 'False':
                 item = True
+            elif item == '':
+                item = None
         if tag_definition['type'] == list:
             if not isinstance(item, list):
                 item = [item]
-        if not isinstance(item, tag_definition.get('type')):
+        if item is not None and not isinstance(item, tag_definition.get('type')):
             if not (isinstance(item, unicode) and tag_definition.get('type') == str):
                 message = (
                     'Invalid value type for key `{}`: '
