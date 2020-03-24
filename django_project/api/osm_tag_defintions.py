@@ -74,15 +74,16 @@ operator = {
     'type': str,
 }
 
-source = {
-    'key': 'source',
-    'name': 'source',
-    'description':
-        'Used to indicate the source of information '
-        '(i.e. meta data) added to OpenStreetMap',
-    'required': False,
-    'type': str,
-}
+# TODO : we hide this for now
+# source = {
+#     'key': 'source',
+#     'name': 'source',
+#     'description':
+#         'Used to indicate the source of information '
+#         '(i.e. meta data) added to OpenStreetMap',
+#     'required': False,
+#     'type': str,
+# }
 
 # Not mandatory tags
 speciality = {
@@ -364,7 +365,7 @@ ALL_TAGS = [
     healthcare,
     name,
     operator,
-    source,
+    # source, # TODO: hide it for now
     speciality,
     operator_type,
     addr_full,

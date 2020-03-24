@@ -113,6 +113,11 @@ define([
             this.form = new Form(self.definitions);
             this.checkLatestUI();
             this.duplication = new Duplication();
+
+            // for enabling save button
+            this.listenTo(shared.dispatcher, 'form:enable-save-button', function () {
+                self.enabled(self.$saveButton)
+            });
         },
         checkLatestUI: function () {
             this.$latestUI = $('.details:visible');
@@ -382,7 +387,12 @@ define([
                 function (data) {
                     self.isReview = false;
                     self.toDefaultMode();
-                    self.getLocalityDetail(self.detail_info['properties']['osm_type'], data['id']);
+
+                    let osm_type = 'node';
+                    if (self.detail_info) {
+                        osm_type = self.detail_info['properties']['osm_type']
+                    }
+                    self.getLocalityDetail(osm_type, data['id']);
                     self.enabled(self.$saveButton);
                 }, function (error) {
                     self.isReview = false;
