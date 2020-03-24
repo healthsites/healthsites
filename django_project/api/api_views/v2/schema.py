@@ -3,6 +3,8 @@ from api.utils import get_osm_schema
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
+import json
+from core.settings.utils import ABS_PATH
 from coreapi import Field
 from coreschema import Integer, String
 from rest_framework.filters import BaseFilterBackend
@@ -136,6 +138,13 @@ class Schema(object):
             if field['key'] == 'tag':
                 for tag in field['tags']:
                     tag['type'] = self._change_type_into_string(tag['type'])
+
+                    # for addr country, we load options_dict
+                    if tag['name'] == 'addr_country':
+                        country_list_file = ABS_PATH('api', 'fixtures', 'country_list.json')
+                        with open(country_list_file) as json_file:
+                            tag['options_dict'] = json.load(json_file)
+
         return schema
 
 

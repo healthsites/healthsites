@@ -73,7 +73,44 @@
 }
 
 
-.full-address input, .note input, .ownership input, .tags input {
+.note input, .ownership input, .tags input {
+    width: 100% !important;
+}
+
+.full-address {
+    display: inline-block;
+}
+
+.full-address input {
+    height: 28px;
+}
+
+
+.full-address .select2-container {
+    margin-top: -2px;
+}
+
+.full-address .select2-container--default .select2-selection--single {
+    border-radius: 0px;
+}
+
+#addr_housenumber input {
+    width: 100% !important;
+}
+
+#addr_street input {
+    width: 100% !important;
+}
+
+#addr_city input {
+    width: 100% !important;
+}
+
+#addr_country input {
+    width: 100% !important;
+}
+
+#addr_country input {
     width: 100% !important;
 }
 
@@ -214,9 +251,11 @@
 .progress {
     margin-bottom: 0;
 }
+
 .nav-updates {
     margin-top: 15px;
 }
+
 .nav-updates a {
     color: #fff;
     border-radius: 5px;
@@ -225,9 +264,11 @@
     opacity: 1;
     cursor: pointer;
 }
-.opacity-7{
+
+.opacity-7 {
     opacity: 0.7 !important;
 }
+
 .nav-updates a:hover {
     text-decoration: none;
     opacity: 0.9;

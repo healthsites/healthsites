@@ -30,9 +30,7 @@ tables:
       - key: operator:type
         name: operator_type
         type: string
-      - key: addr:full
-        name: addr_full
-        type: string
+
       - key: contact:phone
         name: contact_number
         type: string
@@ -80,6 +78,23 @@ tables:
         type: string
       - key: url
         name: url
+        type: string
+
+        # Address
+      - key: addr:housenumber
+        name: addr_housenumber
+        type: string
+      - key: addr:street
+        name: addr_street
+        type: string
+      - key: addr:postcode
+        name: addr_postcode
+        type: string
+      - key: addr:city
+        name: addr_city
+        type: string
+      - key: addr:country
+        name: addr_country
         type: string
     mapping:
       amenity:
@@ -134,9 +149,6 @@ tables:
       - key: operator:type
         name: operator_type
         type: string
-      - key: addr:full
-        name: addr_full
-        type: string
       - key: contact:phone
         name: contact_number
         type: string
@@ -184,6 +196,23 @@ tables:
         type: string
       - key: url
         name: url
+        type: string
+
+      # Address
+      - key: addr:housenumber
+        name: addr_housenumber
+        type: string
+      - key: addr:street
+        name: addr_street
+        type: string
+      - key: addr:postcode
+        name: addr_postcode
+        type: string
+      - key: addr:city
+        name: addr_city
+        type: string
+      - key: addr:country
+        name: addr_country
         type: string
     mapping:
       amenity:

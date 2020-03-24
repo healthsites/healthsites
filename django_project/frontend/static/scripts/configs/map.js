@@ -47,6 +47,7 @@ require([
     'leaflet',
     'static/scripts/views/map/cluster.js',
     'map-functionality',
+    'static/libs/select2-4.0.13/select2.min.js',
     'static/scripts/parameters.js',
     'static/scripts/shared.js',
     'static/scripts/views/statistic/view.js',
@@ -55,7 +56,8 @@ require([
     'static/scripts/views/map-sidebar/shapefile-downloader.js',
     'static/scripts/views/navbar/search.js',
     'static/scripts/views/map/app.js',
-], function ($, bootstrap, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App) {
+    'static/scripts/helper.js',
+], function ($, bootstrap, Backbone, _, L, Cluster, MAP, Select2, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App, Helper) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     parameters = new Parameters();
     map = new MAP();

@@ -7,7 +7,6 @@ define([
             'name': 'No Name',
             'amenity': 'needs information',
             'completeness': '0% Complete',
-            'addr_full': '..please update address',
             'contact_number': '..please update phone number',
             'source_html': 'No url found',
             'operator_type': '..please define ownership status',
@@ -24,9 +23,29 @@ define([
             /** Showing default information, especially for empty value **/
             var self = this;
             $('.data').html('-');
+            $('.full-address .data').html('');
             $.each(this.tag_and_default, function (key, value) {
                 self.insertIntoElement(key, value, true);
             })
+            this.checkAddressInfo();
+        },
+        /**
+         * Check if all address is empty, show please update message
+         */
+        checkAddressInfo: function () {
+            let empty = true;
+            $('.full-address .data').each(function (index) {
+                if ($(this).html().length !== 0) {
+                    empty = false;
+                    return
+                }
+            });
+            if (empty) {
+                let $first = $($('.full-address .data')[0]);
+                $first.html('..please update address');
+                $first.addClass('empty')
+            }
+
         },
         insertIntoElement(id, value, isDefault) {
             /** Insert value into element **/
@@ -38,6 +57,9 @@ define([
                 if (id === 'changeset_user') {
                     $element.attr("href", "profile/" + value);
                     value = "@" + value;
+                }
+                if (id.includes("addr_")) {
+                    $element.css('height', 'auto')
                 }
                 $element.html(value);
 
@@ -66,8 +88,8 @@ define([
                 if (value) {
                     try {
                         value = value.replaceAll(';', ', ')
-                    }catch (e) {
-                        
+                    } catch (e) {
+
                     }
                 }
                 otherHtml += '<tr data-tag="' + key + '"  data-hasvalue="' + (value !== '') + '" data-required="' + definition['required'] + '">' +
@@ -93,6 +115,9 @@ define([
                     otherHtml += self.renderDefinition(key, definition, attributes);
                 }
             });
+
+            // put tags into element
+            $('.full-address .data').html('');
             if (Object.keys(attributes).length >= 1) {
                 $.each(Object.keys(attributes).sort(), function (index, key) {
                     if (attributes[key]) {
@@ -109,6 +134,7 @@ define([
             if (otherHtml) {
                 this.$otherTagsSection.html('<table>' + otherHtml + '</table>');
             }
+            this.checkAddressInfo();
         },
         showInfo: function (osm_type, osm_id, data) {
             /** SHOWING INFORMATION TAGS OF HEALHTSITE **/

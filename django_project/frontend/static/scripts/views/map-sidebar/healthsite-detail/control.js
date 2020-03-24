@@ -392,6 +392,9 @@ define([
                     if (self.detail_info) {
                         osm_type = self.detail_info['properties']['osm_type']
                     }
+                    if (!osm_type) {
+                        osm_type = 'node';
+                    }
                     self.getLocalityDetail(osm_type, data['id']);
                     self.enabled(self.$saveButton);
                 }, function (error) {
