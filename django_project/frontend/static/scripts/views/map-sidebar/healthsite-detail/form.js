@@ -1,12 +1,16 @@
 define([
     'backbone',
     'jquery',
-    'static/scripts/views/map-sidebar/healthsite-detail/form-widget/opening-hours.js'], function (Backbone, $, OpeningHoursWidget) {
+    'static/scripts/views/map-sidebar/healthsite-detail/form-widget/opening-hours.js',
+    'static/scripts/views/map-sidebar/healthsite-detail/modal/changeset-comment.js',], function (Backbone, $, OpeningHoursWidget, ChangesetModal) {
     return Backbone.View.extend({
+        minChangesetComment: 10, // minimum character of changeset comment
+        minChangesetSource: 5, // minimum character of changeset source
         initialize: function (definitions) {
             this.definitions = definitions;
             this.listenTo(shared.dispatcher, 'form:update-coordinates', this.updateCoordinates);
             this.opening_hours = new OpeningHoursWidget();
+            this.modal = new ChangesetModal();
         },
         getDependantClassName: function (value) {
             if (value) {
@@ -222,28 +226,39 @@ define([
             return payload;
         },
         save: function (successCallback, errorCallback) {
-            $.ajax({
-                url: this.APIUrl,
-                type: "POST",
-                dataType: 'json',
-                contentType: 'application/json',
-                beforeSend: function (xhr, settings) {
-                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                },
-                success: function (data) {
-                    if (successCallback) {
-                        successCallback(data);
-                    }
-                },
-                error: function (error) {
-                    if (errorCallback) {
-                        errorCallback(error)
-                    }
-                },
-                data: JSON.stringify(this.getPayload())
-            })
+            let self = this;
+            this.modal.show(
+                function (data) {
+                    // submitted
+                    let payload = Object.assign({}, self.getPayload(), data);
+                    $.ajax({
+                        url: self.APIUrl,
+                        type: "POST",
+                        dataType: 'json',
+                        contentType: 'application/json',
+                        beforeSend: function (xhr, settings) {
+                            if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                            }
+                        },
+                        success: function (data) {
+                            if (successCallback) {
+                                successCallback(data);
+                            }
+                        },
+                        error: function (error) {
+                            if (errorCallback) {
+                                errorCallback(error)
+                            }
+                        },
+                        data: JSON.stringify(payload)
+                    })
+                }, function () {
+                    // cancelled
+                    shared.dispatcher.trigger('form:enable-save-button')
+
+                })
+
         }
     })
 });

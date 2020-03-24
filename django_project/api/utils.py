@@ -402,7 +402,8 @@ def create_osm_node(user, data):
         api=settings.OSM_API_URL,
         appid=settings.APP_NAME
     )
-    response = osm_api.create_node(data)
+    response = osm_api.create_node(
+        data, data.get('comment', None), data.get('source', None))
 
     return response
 
@@ -446,50 +447,8 @@ def update_osm_node(user, data):
         api=settings.OSM_API_URL,
         appid=settings.APP_NAME
     )
-    response = osm_api.update_node(data)
-
-    return response
-
-
-def delete_osm_node(user, data):
-    """Delete OSM node data through OSM api.
-
-    :param user: The user.
-    :type user: django.contrib.auth.models.User
-
-    :param data: OSM Node data.
-    :type data: dict
-        example: {
-            'id': id of node,
-            'lat': latitude of node,
-            'lon': longitude of node,
-            'version': version number of node,
-        }
-
-    :return: OSM changeset data.
-    :rtype: dict
-        example: {
-            'id': id of node,
-            'lat': latitude of node,
-            'lon': longitude of node,
-            'tag': dict of tags,
-            'changeset': id of changeset of last change,
-            'version': version number of node,
-            'user': username of last change,
-            'uid': id of user of last change,
-            'visible': True|False
-        }
-    """
-    oauth_token, oauth_token_secret = get_oauth_token(user)
-    osm_api = OsmApiWrapper(
-        client_key=settings.SOCIAL_AUTH_OPENSTREETMAP_KEY,
-        client_secret=settings.SOCIAL_AUTH_OPENSTREETMAP_SECRET,
-        oauth_token=oauth_token,
-        oauth_token_secret=oauth_token_secret,
-        api=settings.OSM_API_URL,
-        appid=settings.APP_NAME
-    )
-    response = osm_api.delete_node(data)
+    response = osm_api.update_node(
+        data, data.get('comment', None), data.get('source', None))
 
     return response
 
@@ -529,7 +488,8 @@ def update_osm_way(user, data):
         api=settings.OSM_API_URL,
         appid=settings.APP_NAME
     )
-    response = osm_api.update_way(data)
+    response = osm_api.update_way(
+        data, data.get('comment', None), data.get('source', None))
 
     return response
 

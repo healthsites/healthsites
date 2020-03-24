@@ -1,0 +1,49 @@
+<style>
+    .alert {
+        padding: 5px;
+        padding-left: 10px;
+        color: rgba(255, 0, 0, 0.8);
+        display: none;
+        border: 1px solid rgba(255, 0, 0, 0.5);
+        background: rgba(255, 0, 0, 0.1);
+    }
+
+    .help-text {
+        font-style: italic;
+        color: grey;
+        font-size: 12px;
+    }
+</style>
+<div class="modal fade" id="changeset-comment" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">About the changes</h5>
+            </div>
+            <div class="modal-body">
+                <form id="changeset-comment-form">
+                    <div class="form-group">
+                        <label for="changeset-comment-input" class="col-form-label">Comment :</label>
+                        <div class="help-text">Please provide any comments about this change. For example the mapping event, organisation programme or other rationale for these changes.<br><br></div>
+                        <div class="alert alert-primary" role="alert" id="changeset-comment-input-error">
+                            Your comment is empty or very short.
+                        </div>
+                        <textarea class="form-control" id="changeset-comment-input"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="changeset-comment-source-input" class="col-form-label">Source :</label>
+                        <div class="help-text">Please indicate the source of the information you used for this update. e.g. local knowledge, a website, an open geodata portal.<br><br></div>
+                        <div class="alert alert-primary" role="alert" id="changeset-comment-source-input-error">
+                            Your source is empty or very short.
+                        </div>
+                        <input type="text" class="form-control" id="changeset-comment-source-input">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="changeset-comment-cancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="changeset-comment-submit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
