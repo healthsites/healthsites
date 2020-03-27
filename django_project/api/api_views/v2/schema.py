@@ -3,8 +3,6 @@ from api.utils import get_osm_schema
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-import json
-from core.settings.utils import ABS_PATH
 from coreapi import Field
 from coreschema import Integer, String
 from rest_framework.filters import BaseFilterBackend
