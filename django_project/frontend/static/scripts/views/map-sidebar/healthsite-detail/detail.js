@@ -33,17 +33,19 @@ define([
          * Check if all address is empty, show please update message
          */
         checkAddressInfo: function () {
-            let empty = true;
+            let address = [];
             $('.full-address .data').each(function (index) {
                 if ($(this).html().length !== 0) {
-                    empty = false;
-                    return
+                    address.push($(this).html());
                 }
             });
-            if (empty) {
-                let $first = $($('.full-address .data')[0]);
-                $first.html('..please update address');
-                $first.addClass('empty')
+
+            let $addressDisplay = $('#addr_display_name');
+            if (!address) {
+                $addressDisplay.html('..please update address');
+                $addressDisplay.addClass('empty')
+            } else {
+                $addressDisplay.html(address.join(', '));
             }
 
         },
