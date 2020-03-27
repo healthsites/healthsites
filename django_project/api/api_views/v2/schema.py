@@ -139,12 +139,6 @@ class Schema(object):
                 for tag in field['tags']:
                     tag['type'] = self._change_type_into_string(tag['type'])
 
-                    # for addr country, we load options_dict
-                    if tag['name'] == 'addr_country':
-                        country_list_file = ABS_PATH('api', 'fixtures', 'country_list.json')
-                        with open(country_list_file) as json_file:
-                            tag['options_dict'] = json.load(json_file)
-
         return schema
 
 

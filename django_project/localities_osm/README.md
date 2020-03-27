@@ -114,9 +114,3 @@ LocalitiesOSM model is based on table from docker osm. Here are the description 
 > ##### addr_city 
 > Used for a full-text, often multi-line, city name for buildings and facilities.<br>
 > addr:city (osm-tag)<br>
-
-> ##### addr_country 
-> Used for a full-text, often multi-line, ISO country code for buildings and facilities.
-> See : https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-> <br>
-> addr:country (osm-tag)<br>

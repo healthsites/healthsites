@@ -84,20 +84,6 @@ define([
                             inputHtml += "</select>";
                             break;
                         }
-                    case 'selection_dictionary':
-                        if (options_dict) {
-                            inputHtml = "<select class='input' title='" + value['description'] + "' >";
-                            if (!value['required']) {
-                                inputHtml += '<option></option>';
-                            }
-
-                            Object.keys(options_dict).sort().forEach(function (key) {
-                                value = options_dict[key];
-                                inputHtml += '<option value="' + key + '">' + value + '</option>';
-                            })
-                            inputHtml += "</select>";
-                            break;
-                        }
                     case 'list':
                         inputHtml = "<div class='input multiselect'>";
                         var options_with_depend_on = {};
@@ -179,11 +165,6 @@ define([
 
                 var $input = $element.find('.input');
                 $input.attr('required', required);
-
-                // if it is options_dict
-                if (options_dict) {
-                    createSelectToSelect2($input, $input.attr("title"));
-                }
             });
 
             // put every data into form

@@ -106,11 +106,7 @@
     width: 100% !important;
 }
 
-#addr_country input {
-    width: 100% !important;
-}
-
-#addr_country input {
+#addr_postcode input {
     width: 100% !important;
 }
 

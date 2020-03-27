@@ -105,9 +105,6 @@ class LocalityOSM(LocalityOSMBase):
     addr_city = models.CharField(
         max_length=512, blank=True, null=True,
         help_text='addr:city')
-    addr_country = models.CharField(
-        max_length=512, blank=True, null=True,
-        help_text='addr:country')
 
     # changesets
     changeset_id = models.IntegerField(blank=True, null=True)

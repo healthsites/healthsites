@@ -384,14 +384,6 @@ addr_city = {
     'required': False,
     'type': str,
 }
-addr_country = {
-    'key': 'addr_country',
-    'name': 'addr_country',
-    'description':
-        'Country name',
-    'required': False,
-    'type': str,
-}
 
 ALL_TAGS = [
     amenity,
@@ -421,8 +413,7 @@ ALL_TAGS = [
     addr_housenumber,
     addr_street,
     addr_postcode,
-    addr_city,
-    addr_country
+    addr_city
 ]
 
 MANDATORY_TAGS = [tag for tag in ALL_TAGS if tag.get('required')]

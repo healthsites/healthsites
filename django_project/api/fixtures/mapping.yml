@@ -93,9 +93,6 @@ tables:
       - key: addr:city
         name: addr_city
         type: string
-      - key: addr:country
-        name: addr_country
-        type: string
     mapping:
       amenity:
         - clinic
@@ -210,9 +207,6 @@ tables:
         type: string
       - key: addr:city
         name: addr_city
-        type: string
-      - key: addr:country
-        name: addr_country
         type: string
     mapping:
       amenity:
