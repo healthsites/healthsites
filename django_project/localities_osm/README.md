@@ -38,6 +38,11 @@ LocalitiesOSM model is based on table from docker osm. Here are the description 
 > operator:type=public,private,community,religious,government,ngo (osm-tag)<br>
 > ownership (old-hs-attributes)
 
+> ##### addr_full 
+> Used for a full-text, often multi-line, address for buildings and facilities.<br>
+> addr:full (osm-tag)<br>
+> physical-address (old-hs-attributes)
+
 > ##### contact_number 
 > The contact tag is the prefix for several contact:* keys to describe contacts.<br>
 > contact:phone (osm-tag)<br>
@@ -98,19 +103,3 @@ LocalitiesOSM model is based on table from docker osm. Here are the description 
 > ##### url
 > Specifying a url related to a feature, in this case the url if available .<br>
 > url (osm-tag)
-
-> ##### addr_housenumber 
-> Used for a full-text, often multi-line, housenumber for buildings and facilities.<br>
-> addr:housenumber (osm-tag)<br>
-
-> ##### addr_street 
-> Used for a full-text, often multi-line, street for buildings and facilities.<br>
-> addr:street (osm-tag)<br>
-
-> ##### addr_postcode 
-> Used for a full-text, often multi-line, postal code for buildings and facilities.<br>
-> addr:postcode (osm-tag)<br>
-
-> ##### addr_city 
-> Used for a full-text, often multi-line, city name for buildings and facilities.<br>
-> addr:city (osm-tag)<br>

@@ -44,6 +44,9 @@ class LocalityOSM(LocalityOSMBase):
     operator_type = models.CharField(
         max_length=512, blank=True, null=True,
         help_text='operator:type=public,private,community,religious,government,ngo')
+    addr_full = models.CharField(
+        max_length=512, blank=True, null=True,
+        help_text='addr:full')
     contact_number = models.CharField(
         max_length=512, blank=True, null=True,
         help_text='contact:phone')
@@ -92,19 +95,6 @@ class LocalityOSM(LocalityOSMBase):
     url = models.CharField(
         max_length=512, blank=True, null=True,
         help_text='url')
-
-    addr_housenumber = models.CharField(
-        max_length=512, blank=True, null=True,
-        help_text='addr:housenumber')
-    addr_street = models.CharField(
-        max_length=512, blank=True, null=True,
-        help_text='addr:street')
-    addr_postcode = models.CharField(
-        max_length=512, blank=True, null=True,
-        help_text='addr:postcode')
-    addr_city = models.CharField(
-        max_length=512, blank=True, null=True,
-        help_text='addr:city')
 
     # changesets
     changeset_id = models.IntegerField(blank=True, null=True)
