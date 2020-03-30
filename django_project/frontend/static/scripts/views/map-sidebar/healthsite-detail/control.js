@@ -353,7 +353,7 @@ define([
             if (!this.detail_info) {
                 this.detail.showTags({});
             }
-            this.$el.find('.input').remove();
+            this.$el.find('.input').not(".unremoved").remove();
             this.form.renderForm(null, this.url);
             this.toFormMode();
             shared.dispatcher.trigger('locality.create');
@@ -362,7 +362,7 @@ define([
         toEditMode: function () {
             /** This is when edit form enabled **/
             /** Giving form current data, as default data on inputs **/
-            this.$el.find('.input').remove();
+            this.$el.find('.input').not(".unremoved").remove();
             var attributes = {};
             if (this.detail_info) {
                 attributes = this.detail_info['properties']['attributes'];
@@ -391,6 +391,9 @@ define([
                     let osm_type = 'node';
                     if (self.detail_info) {
                         osm_type = self.detail_info['properties']['osm_type']
+                    }
+                    if (!osm_type) {
+                        osm_type = 'node';
                     }
                     self.getLocalityDetail(osm_type, data['id']);
                     self.enabled(self.$saveButton);

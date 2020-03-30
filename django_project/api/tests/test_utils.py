@@ -112,12 +112,12 @@ class TestUtils(TestCase):
             'name': 'the name',
             'source': 'test case',
             'operator': 'the operator',
-            'amenity': 0,
+            'amenity': 1,
             'healthcare': ['clinic']
         }
         status, actual_message = validate_osm_tags(tags)
         expected_message = (
-            'Invalid value for key `amenity`: `0` is not a valid option.')
+            'Invalid value for key `amenity`: `1` is not a valid option.')
         self.assertFalse(status)
         self.assertEqual(actual_message, expected_message)
 

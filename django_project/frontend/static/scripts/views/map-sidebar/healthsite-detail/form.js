@@ -2,7 +2,8 @@ define([
     'backbone',
     'jquery',
     'static/scripts/views/map-sidebar/healthsite-detail/form-widget/opening-hours.js',
-    'static/scripts/views/map-sidebar/healthsite-detail/modal/changeset-comment.js',], function (Backbone, $, OpeningHoursWidget, ChangesetModal) {
+    'static/scripts/views/map-sidebar/healthsite-detail/form-widget/nominatim.js',
+    'static/scripts/views/map-sidebar/healthsite-detail/modal/changeset-comment.js',], function (Backbone, $, OpeningHoursWidget, Nominatim, ChangesetModal) {
     return Backbone.View.extend({
         minChangesetComment: 10, // minimum character of changeset comment
         minChangesetSource: 5, // minimum character of changeset source
@@ -11,7 +12,15 @@ define([
             this.listenTo(shared.dispatcher, 'form:update-coordinates', this.updateCoordinates);
             this.opening_hours = new OpeningHoursWidget();
             this.modal = new ChangesetModal();
+            this.nominatim = new Nominatim();
+            this.$nominatimSuggestion = $('#nominatim-suggestion');
         },
+        /**
+         * Get class of depend. This is for identifiying input
+         * when that input is depend on another input
+         * @param value = is the input tag name
+         * @returns {string}
+         */
         getDependantClassName: function (value) {
             if (value) {
                 return 'depend-on-' + value;
@@ -19,6 +28,13 @@ define([
                 return 'depend-on-none';
             }
         },
+        /**
+         * Inserting value to input element
+         * @param tag = the name of tag
+         * @param inputHtml = the html that created
+         * @param value = the value
+         * @param required = is required or not
+         */
         insertIntoElement: function (tag, inputHtml, value, required) {
             /** INSERT HTML INTO FORM ELEMENT **/
             var $element = $('*[data-tag="' + tag + '"]');
@@ -43,6 +59,11 @@ define([
                     break;
             }
         },
+        /**
+         * Rendering form of data
+         * @param data = data that will be show on form
+         * @param APIUrl = url that used to get the data
+         */
         renderForm: function (data, APIUrl) {
             /** RENDER FORM BASED ON DATA **/
             var that = this;
@@ -55,6 +76,7 @@ define([
                 var inputHtml = '';
                 var required = value['required'];
                 var options = value['options'];
+                var options_dict = value['options_dict'];
                 var $element = $('*[data-tag="' + tag + '"]');
                 switch (value['type']) {
                     case 'integer':
@@ -67,20 +89,22 @@ define([
                         options = ['yes', 'no'];
                     case 'string':
                         inputHtml = '<input class="input" type="text" placeholder="' + value['description'] + '" title="' + value['description'] + '" >';
-                        if (!options) {
+                        if (!options && !options_dict) {
                             break;
                         }
                     case 'selection':
-                        inputHtml = "<select class='input' title='" + value['description'] + "' >";
-                        options = options.sort();
-                        if (!value['required']) {
-                            inputHtml += '<option></option>';
+                        if (options) {
+                            inputHtml = "<select class='input' title='" + value['description'] + "' >";
+                            options = options.sort();
+                            if (!value['required']) {
+                                inputHtml += '<option></option>';
+                            }
+                            $.each(options, function (index, key) {
+                                inputHtml += '<option value="' + key + '">' + key + '</option>';
+                            });
+                            inputHtml += "</select>";
+                            break;
                         }
-                        $.each(options, function (index, key) {
-                            inputHtml += '<option value="' + key + '">' + key + '</option>';
-                        });
-                        inputHtml += "</select>";
-                        break;
                     case 'list':
                         inputHtml = "<div class='input multiselect'>";
                         var options_with_depend_on = {};
@@ -175,12 +199,91 @@ define([
 
             this.$latInput = $('*[data-tag="latitude"] input');
             this.$lonInput = $('*[data-tag="longitude"] input');
+
+            if (this.$latInput.val() && this.$lonInput.val()) {
+                this.updateNominatimSearch(
+                    this.$latInput.val(), this.$lonInput.val());
+            }
         },
+        /**
+         * Updating coordinates when point is moved
+         * @param payload of location
+         * payload =
+         * {
+         *      latlng :
+         *      {
+         *          lat:xx, lng:yy
+         *      }
+         * }
+         */
         updateCoordinates: function (payload) {
             // set new values
             this.$latInput.val(payload.latlng.lat);
             this.$lonInput.val(payload.latlng.lng);
+
+            // update nominatim search
+            this.updateNominatimSearch(
+                payload.latlng.lat, payload.latlng.lng);
         },
+        /**
+         * Update nominatim from new location
+         * @param lat = float
+         * @param lng = float
+         */
+        updateNominatimSearch: function (lat, lng) {
+            // update nominatim search location
+            let self = this;
+            this.nominatim.updateLocation(
+                lat, lng
+            );
+            this.$nominatimSuggestion.hide();
+            this.nominatim.getData(
+                this.nominatim.MAJOR_AND_MINOR_STREETS,
+                /**This is success callback*/
+                function (data) {
+                    if (data['display_name'] && data['address']) {
+                        $('#nominatim-suggestion-field').html(data['display_name']);
+
+                        // the city
+                        let address = data['address'];
+                        let city = null;
+                        city = address['city'] ? address['city'] : city;
+                        city = address['village'] ? address['village'] : city;
+                        city = address['state_district'] ? address['state_district'] : city;
+
+                        // the road
+                        let road = address['road'] ? address['road'] : null;
+
+                        // the road
+                        let postcode = address['postcode'] ? address['postcode'] : null;
+
+                        self.$nominatimSuggestion.show();
+                        self.$nominatimSuggestion.click(function () {
+                            // when suggestion clicked, fill the form
+                            if (city) {
+                                $('#addr_city input').val(city)
+                            }
+                            if (road) {
+                                $('#addr_street input').val(road)
+                            }
+                            if (postcode) {
+                                $('#addr_postcode input').val(postcode)
+                            }
+                        });
+                    }
+                },
+                /**This is error callback*/
+                function () {
+
+                },
+            )
+
+        },
+        /**
+         * Return value of an element
+         * @param $elementTag : element input from html
+         * @returns {*}
+         */
         getValue: function ($elementTag) {
             /** get value of element tag **/
             var value = null;
@@ -201,6 +304,10 @@ define([
             }
             return value;
         },
+        /**
+         * Return all value of form
+         * @returns {{}}
+         */
         getPayload: function () {
             var tags = {};
             var that = this;
@@ -225,6 +332,11 @@ define([
             payload['tag'] = tags;
             return payload;
         },
+        /**
+         * Save the form by showing modal of comment and source
+         * @param successCallback = function when success
+         * @param errorCallback = function when error
+         */
         save: function (successCallback, errorCallback) {
             let self = this;
             this.modal.show(
