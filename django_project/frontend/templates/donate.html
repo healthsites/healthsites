@@ -179,10 +179,19 @@
 
             <form class="form-inline" id="cc-amount-form">
                 <div class="form-group form-group-lg">
+                    <label class="sr-only">Amount</label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" placeholder="Amount" name="amount" min="5">
+                    </div>
+                </div>
+                <div class="form-group form-group-lg">
                     <label class="sr-only">Amount (in british pounds)</label>
                     <div class="input-group">
-                        <div class="input-group-addon">£</div>
-                        <input type="number" class="form-control" placeholder="Amount" name="amount" min="5">
+                        <select name="currency" class="form-control">
+                            <option value="GBP">GBP</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                        </select>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-lg">Donate</button>
