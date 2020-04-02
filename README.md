@@ -47,6 +47,18 @@ git clone git://github.com/healthsites/healthsites.git
 
 ## Production setup
 
+### Just for specific area
+If you don't want to specify area instead want to show all of earth data, you can skip this section. 
+
+If you specify the area (like country or continent), you should prepare before deploy:  
+1. Prepare the geojson of area first.
+2. Search your continent or country in here : http://download.geofabrik.de/. (you can click the continent name to get sub region of it)
+3. Right click on *[.osm.pbf]* and copy link 
+4. Go to deployment/docker-osm-healthcare/ and change Dockerfile file. Rename https://planet.openstreetmap.org/pbf/planet-latest.osm.pbf in the file into the link that you copied before. 
+5. Go to deployment/docker-osm-healthcare/settings and put the geojson area in there and rename it into clip.geojson
+6. Preparation is complete, now we need to do next step. 
+
+### How to setup
 To start production setup, follow this steps
 ```
 cd healthsites/deployment
@@ -59,6 +71,13 @@ It will run all of architecture automatically. Wait until this error shows:
 django.db.utils.ProgrammingError: relation "django_site" does not exist
 LINE 1: SELECT (1) AS "a" FROM "django_site" LIMIT 1
 ```
+or
+
+```
+django.db.utils.ProgrammingError: relation "osm_healthcare_facilities_node" does not exist
+LINE 3: ...sm_id,'-node') as row, 'node' as osm_type, * from osm_health...
+```
+
 This is because database in the docker osm needs to be created. 
 This database is created automatically by container of docker osm
 To fix it, just wait until the container done on creating database by checking it periodically.
@@ -91,6 +110,15 @@ Server can be accessed in
 http://localhost:49362
 ```
 
+Healthsites is using cache to fasten the process. To generate this process, some process needs to be done
+```
+cd healthsites/deployment
+make shell
+python manage.py generate_cluster_cache
+python manage.py generate_countries_cache
+```
+and wait until everything is done
+
 ### Creating admin user
 Currently admin can't be accessed because it doesn't had admin user yet.
 To do it
@@ -103,17 +131,12 @@ and fill the instruction shows on the terminal
 
 ### I have initial database
 If we already has initial backups database, we need to restore this database into server.
-To do it
+Put the database into deployment/backups and rename it into latest.dmp
+
+After that, do
 ```
 cd healthsites/deployment
 make dbrestore
-```
-Healthsites is using cache to fasten the process. To generate this process, some process needs to be done
-```
-cd healthsites/deployment
-make shell
-python manage.py generate_cluster_cache
-python manage.py generate_countries_cache
 ```
 
 Now, we want to link our data into docker osm data, to do that

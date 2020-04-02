@@ -7,8 +7,8 @@ SHELL := /bin/bash
 #    P R O D U C T I O N     C O M M A N D S
 # ----------------------------------------------------------------------------
 default: web
-# run: run-docker-osm build permissions web migrate collectstatic version
-run: dnsmasq build permissions web migrate collectstatic version
+run: run-docker-osm build permissions web migrate collectstatic version
+# run: dnsmasq build permissions web migrate collectstatic version
 
 deploy: run
 	@echo
