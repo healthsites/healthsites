@@ -136,6 +136,7 @@ class Schema(object):
             if field['key'] == 'tag':
                 for tag in field['tags']:
                     tag['type'] = self._change_type_into_string(tag['type'])
+
         return schema
 
 

@@ -35,8 +35,27 @@
                 <td valign="top" class="icon-holder">
                     <i class="fa fa-map-marker"></i>
                 </td>
-                <td class="data-wrapper find">
-                    <div class="full-address" data-tag="addr_full">
+                <td id="location-section" class="data-wrapper find">
+                    <div class="input unremoved" style="width: 100%">
+                        <div id="nominatim-suggestion">
+                            <span style="color: gray; font-weight: 600;">suggestion</span> <span class="help-text">( click to autofill the address input )</span>
+                            <div id="nominatim-suggestion-field"></div>
+                        </div>
+                    </div>
+                    {# this is for displaying #}
+                    <div class="address data" id="addr_display_name">
+                    </div>
+
+                    <div class="full-address" data-tag="addr_housenumber" id="addr_housenumber">
+                        <p class="address data"></p>
+                    </div>
+                    <div class="full-address" data-tag="addr_street" id="addr_street">
+                        <p class="address data"></p>
+                    </div>
+                    <div class="full-address" data-tag="addr_city" id="addr_city">
+                        <p class="address data"></p>
+                    </div>
+                    <div class="full-address" data-tag="addr_postcode" id="addr_postcode">
                         <p class="address data"></p>
                     </div>
                     <div class="coordinates">

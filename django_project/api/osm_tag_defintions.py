@@ -185,15 +185,6 @@ operator_type = {
     'type': str,
 }
 
-addr_full = {
-    'key': 'addr_full',
-    'name': 'addr_full',
-    'description':
-        'Address for buildings and facilities',
-    'required': False,
-    'type': str,
-}
-
 contact_number = {
     'key': 'contact_number',
     'name': 'contact_number',
@@ -360,6 +351,40 @@ url = {
     'type': str,
 }
 
+# ADDRESS
+addr_housenumber = {
+    'key': 'addr_housenumber',
+    'name': 'addr_housenumber',
+    'description':
+        'Housenumber',
+    'required': False,
+    'type': str,
+}
+addr_street = {
+    'key': 'addr_street',
+    'name': 'addr_street',
+    'description':
+        'Street name',
+    'required': False,
+    'type': str,
+}
+addr_postcode = {
+    'key': 'addr_postcode',
+    'name': 'addr_postcode',
+    'description':
+        'Postcode',
+    'required': False,
+    'type': str,
+}
+addr_city = {
+    'key': 'addr_city',
+    'name': 'addr_city',
+    'description':
+        'City name',
+    'required': False,
+    'type': str,
+}
+
 ALL_TAGS = [
     amenity,
     healthcare,
@@ -368,7 +393,6 @@ ALL_TAGS = [
     # source, # TODO: hide it for now
     speciality,
     operator_type,
-    addr_full,
     contact_number,
     operational_status,
     opening_hours,
@@ -385,6 +409,11 @@ ALL_TAGS = [
     is_in_health_area,
     is_in_health_zone,
     url,
+
+    addr_housenumber,
+    addr_street,
+    addr_postcode,
+    addr_city
 ]
 
 MANDATORY_TAGS = [tag for tag in ALL_TAGS if tag.get('required')]

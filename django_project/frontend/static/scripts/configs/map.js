@@ -54,7 +54,7 @@ require([
     'static/scripts/views/map-sidebar/healthsite-detail/control.js',
     'static/scripts/views/map-sidebar/shapefile-downloader.js',
     'static/scripts/views/navbar/search.js',
-    'static/scripts/views/map/app.js',
+    'static/scripts/views/map/app.js'
 ], function ($, bootstrap, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     parameters = new Parameters();

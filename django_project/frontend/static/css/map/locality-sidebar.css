@@ -73,7 +73,57 @@
 }
 
 
-.full-address input, .note input, .ownership input, .tags input {
+.note input, .ownership input, .tags input {
+    width: 100% !important;
+}
+
+.full-address {
+    float: left;
+}
+
+.full-address input {
+    height: 28px;
+}
+
+
+.full-address .select2-container {
+    margin-top: -2px;
+}
+
+.full-address .select2-container--default .select2-selection--single {
+    border-radius: 0px;
+}
+
+#addr_housenumber {
+    width: 20%;
+}
+
+#addr_housenumber input {
+    width: 100% !important;
+}
+
+#addr_street {
+    width: 79%;
+}
+
+#addr_street input {
+    width: 100% !important;
+}
+
+#addr_city {
+    width: 70%;
+}
+
+#addr_city input {
+    width: 100% !important;
+}
+
+#addr_postcode {
+    width: 29%;
+}
+
+#addr_postcode input {
+    margin-bottom: 10px;
     width: 100% !important;
 }
 
@@ -214,9 +264,11 @@
 .progress {
     margin-bottom: 0;
 }
+
 .nav-updates {
     margin-top: 15px;
 }
+
 .nav-updates a {
     color: #fff;
     border-radius: 5px;
@@ -225,10 +277,36 @@
     opacity: 1;
     cursor: pointer;
 }
-.opacity-7{
+
+.opacity-7 {
     opacity: 0.7 !important;
 }
+
 .nav-updates a:hover {
     text-decoration: none;
     opacity: 0.9;
+}
+
+#nominatim-suggestion {
+    background: rgba(92, 184, 92, 0.1);
+    border: 1px solid rgba(92, 184, 92, 0.5);
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 5px;
+    margin-bottom: 5px;
+    text-align: right;
+    width: 100% !important;
+}
+
+#nominatim-suggestion:hover {
+    opacity: 0.7;
+}
+
+#nominatim-suggestion-field {
+    color: #0ba03d;
+    margin-top: 5px;
+}
+
+.full-address .address.data {
+    display: none !important;
 }
