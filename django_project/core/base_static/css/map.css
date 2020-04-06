@@ -737,3 +737,11 @@ a.inner-navbar-brand:hover {
     max-height: 150px;
     overflow-y: auto;
 }
+
+.form-control {
+    width: 100% !important;
+}
+
+.cancel-btn {
+    margin-left: 20px;
+}

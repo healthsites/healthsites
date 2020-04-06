@@ -29,6 +29,7 @@ define([
             })
         },
         renderForm: function (data) {
+            let that = this;
             let $wrapper = $(this.contentWrapper);
             $wrapper.html('');
             for(let i=0; i<data.length; i++){
@@ -53,6 +54,13 @@ define([
                     )
                 }
             }
+            $wrapper.append('' +
+                '<button class="btn btn-primary">Apply</button>' +
+                '<button class="cancel-btn btn btn-danger">Reset</button>'
+            );
+            $('.cancel-btn').click(function () {
+                that.resetFilter();
+            })
         },
         toggleFilter: function () {
             let $wrapper = $('#filter-dashboard');
@@ -66,6 +74,14 @@ define([
                 $('#filter-tab').css('right', '-26px')
             }
 
+        },
+        resetFilter: function () {
+            $('input[type=checkbox]').each(function () {
+                $(this).prop('checked', false)
+            });
+            $('input[type=text]').each(function () {
+                $(this).val('')
+            })
         }
     })
 });
