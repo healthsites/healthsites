@@ -23,14 +23,19 @@ class GetPendingReviews(BaseAPIWithAuth, PaginationAPI):
 
     def get(self, request, username):
         page = self.request.GET.get('page', None)
+        status = self.request.GET.get('status', None)
         if page:
             try:
-                queryset = self.get_query_by_page(
-                    PendingReview.objects.filter(uploader__username=username))
+                query = PendingReview.objects.filter(uploader__username=username)
+                if status:
+                    query = query.filter(status=status)
+                queryset = self.get_query_by_page(query)
             except (LessThanOneException, NotANumberException) as e:
                 return HttpResponseBadRequest('%s' % e)
         else:
             queryset = PendingReview.objects.filter(uploader__username=username)
+            if status:
+                queryset = queryset.filter(status=status)
 
         return Response(PendingReviewSerializer(queryset, many=True).data)
 

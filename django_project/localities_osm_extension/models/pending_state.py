@@ -8,7 +8,8 @@ from localities_osm_extension.models.extension import LocalityOSMExtension
 
 class PendingUpdate(models.Model):
     """ This model is about update that already pushed
-    but still not pulled into docker osm cache."""
+    but still not pulled into docker osm cache.
+    """
 
     extension = models.OneToOneField(
         LocalityOSMExtension)
@@ -19,11 +20,21 @@ class PendingUpdate(models.Model):
     version = models.IntegerField()
 
 
+PENDING_REVIEW_STATUS = (
+    ('ERROR', 'ERROR'),
+    ('DRAFT', 'DRAFT'),
+)
+
+
 class PendingReview(models.Model):
-    """ This model is about update that failed to be saved."""
+    """ This model is about changes in draft. """
 
     uploader = models.ForeignKey(User)
     name = models.CharField(max_length=512)
-    reason = models.TextField(null=True, blank=True, default='')
     payload = models.TextField(null=True, blank=True, default='')
     time_uploaded = models.DateTimeField(auto_now_add=True, blank=True)
+    status = models.CharField(
+        choices=PENDING_REVIEW_STATUS,
+        default='ERROR',
+        max_length=30)
+    reason = models.TextField(null=True, blank=True, default='')

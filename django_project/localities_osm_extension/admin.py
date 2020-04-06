@@ -46,8 +46,8 @@ class PendingUpdateAdmin(admin.ModelAdmin):
 
 
 class PendingReviewAdmin(admin.ModelAdmin):
-    list_display = ('uploader', 'name', 'reason', 'time_uploaded')
-    list_filter = ('uploader', 'time_uploaded')
+    list_display = ('uploader', 'name', 'time_uploaded', 'status', 'reason')
+    list_filter = ('uploader', 'time_uploaded', 'status')
     search_fields = ['name']
 
 

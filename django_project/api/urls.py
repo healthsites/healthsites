@@ -26,6 +26,7 @@ from api.api_views.v2.get_migration_progress import GetMigrationProgress
 from api.api_views.v2.users.changesets import GetChangesets
 from api.api_views.v2.pending.list import GetPendingReviews, GetPendingUpdates
 from api.api_views.v2.pending.detail import GetDetailPendingReviews
+from api.api_views.v2.facilities.save_draft import SaveDraft
 
 countries_api = patterns(
     '',
@@ -69,6 +70,8 @@ pending_api = patterns(
     '',
     url(r'reviews/(?P<id>-?\d+)',
         GetDetailPendingReviews.as_view()),
+    url(r'draft/save',
+        SaveDraft.as_view()),
 )
 gather_api = patterns(
     '',

@@ -23,10 +23,6 @@
     text-decoration: underline;
 }
 
-#icons-nav i {
-    font-size: 30px;
-}
-
 .search-block {
     background: #dadddf;
     padding: 26px 0;
@@ -580,7 +576,6 @@ table {
     }
 
     #icons-nav i {
-        font-size: 24px;
         margin-right: 10px;
     }
 

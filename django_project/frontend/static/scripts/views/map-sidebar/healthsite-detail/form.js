@@ -339,37 +339,30 @@ define([
          */
         save: function (successCallback, errorCallback) {
             let self = this;
-            this.modal.show(
-                function (data) {
-                    // submitted
-                    let payload = Object.assign({}, self.getPayload(), data);
-                    $.ajax({
-                        url: self.APIUrl,
-                        type: "POST",
-                        dataType: 'json',
-                        contentType: 'application/json',
-                        beforeSend: function (xhr, settings) {
-                            if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
-                                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                            }
-                        },
-                        success: function (data) {
-                            if (successCallback) {
-                                successCallback(data);
-                            }
-                        },
-                        error: function (error) {
-                            if (errorCallback) {
-                                errorCallback(error)
-                            }
-                        },
-                        data: JSON.stringify(payload)
-                    })
-                }, function () {
-                    // cancelled
-                    shared.dispatcher.trigger('form:enable-save-button')
-
-                })
+            // submitted
+            let payload = self.getPayload();
+            $.ajax({
+                url: self.APIUrl,
+                type: "POST",
+                dataType: 'json',
+                contentType: 'application/json',
+                beforeSend: function (xhr, settings) {
+                    if (!/^(GET|HEAD|OPTIONS|TRACE)$/.test(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                },
+                success: function (data) {
+                    if (successCallback) {
+                        successCallback(data);
+                    }
+                },
+                error: function (error) {
+                    if (errorCallback) {
+                        errorCallback(error)
+                    }
+                },
+                data: JSON.stringify(payload)
+            })
 
         }
     })

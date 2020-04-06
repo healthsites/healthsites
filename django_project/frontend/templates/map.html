@@ -63,11 +63,13 @@
         var mapMaxZoom = {{ map_max_zoom | safe }};
         var isLoggedIn = false;
         var isUserTrusted = false;
+        var username = null;
         {% if user.is_authenticated %}
             isLoggedIn = true;
             {% if user.is_trusted_user %}
                 isUserTrusted = true;
             {% endif %}
+            username = '{{ user.username }}';
         {% endif %}
 
         var countries = [];
@@ -100,6 +102,10 @@
             Browse the map, <a id="search-text" class="a-button">search</a> or use <a id="geolocate" class="a-button">geolocate
             me</a> to view
             healthsites close to your location.
+
+{#            <div id="draft-count-wrapper">#}
+{#                You have <span id="draft-count"><i>loading</i></span> draft(s).#}
+{#            </div>#}
         </div>
 
         {# SECTIONS #}

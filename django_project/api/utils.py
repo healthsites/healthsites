@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import ast
 import json
 import overpass
 import yaml
@@ -505,3 +506,98 @@ def get_osm_schema():
         schema = json.load(json_file)
         schema['facilities']['create']['fields'] = ALL_FIELDS
         return schema
+
+
+def save_draft_data(user, review_ids, comment, source):
+    """ Push draft data into osm
+
+    :param user: The user.
+    :type user: django.contrib.auth.models.User
+
+    :param review_ids: list of review id.
+    :type review_ids: list
+
+    :param comment: comment of changeset
+    :type comment: str
+
+    :param source: source of changeset
+    :type source: str
+
+    :return: OSM changeset data.
+    :rtype: dict
+        example: {
+            'id': id of node,
+            'tag': dict of tags,
+            'changeset': id of changeset of last change,
+            'version': version number of node,
+            'user': username of last change,
+            'uid': id of user of last change,
+            'visible': True|False
+        }
+    """
+
+    from api.utilities.pending import create_pending_update
+    from localities_osm_extension.models.pending_state import PendingReview
+    from localities_osm.utilities import split_osm_and_extension_attr
+
+    mapping_file_path = ABS_PATH('api', 'fixtures', 'mapping.yml')
+    oauth_token, oauth_token_secret = get_oauth_token(user)
+    osm_api = OsmApiWrapper(
+        client_key=settings.SOCIAL_AUTH_OPENSTREETMAP_KEY,
+        client_secret=settings.SOCIAL_AUTH_OPENSTREETMAP_SECRET,
+        oauth_token=oauth_token,
+        oauth_token_secret=oauth_token_secret,
+        api=settings.OSM_API_URL,
+        appid=settings.APP_NAME
+    )
+
+    # validate and convert tag to osm tags
+    prepared_data = {}
+    for id in review_ids:
+
+        # save_extensions('node', response['id'], locality_attr)
+        review = PendingReview.objects.get(id=id)
+        if review.status != 'DRAFT':
+            raise Exception('Review %s is not draft' % id)
+        if review.uploader != user:
+            raise Exception('This draft (%s) is not yours' % id)
+        data = ast.literal_eval(review.payload)
+
+        # split data between osm and HS
+        osm_attr, locality_attr = split_osm_and_extension_attr(
+            data['tag'])
+        data['tag'] = osm_attr
+
+        validate_osm_data(data, duplication_check=False)
+        data['tag'] = convert_to_osm_tag(
+            mapping_file_path, data['tag'], data['type'])
+        prepared_data[id] = data
+
+    # save to osm
+    osm_api.ChangesetCreate(
+        osm_api.changeset_tags(comment, source))
+    for id, data in prepared_data.items():
+        # Push data to OSM
+        # push to osm
+        if data['type'] == 'node':
+            if 'id' not in data:
+                response = osm_api.NodeCreate(data)
+            else:
+                current_data = osm_api.NodeGet(data['id'])
+                data = osm_api.merge_data(current_data, data)
+                response = osm_api.NodeUpdate(data)
+        else:
+            if 'id' not in data:
+                response = osm_api.WayCreate(data)
+            else:
+                current_data = osm_api.NodeGet(data['id'])
+                data = osm_api.merge_data(current_data, data)
+                response = osm_api.WayUpdate(data)
+
+        # create pending update
+        create_pending_update(
+            data['type'], response['id'],
+            data['tag']['name'], user, response['version']
+        )
+        PendingReview.objects.get(id=id).delete()
+    osm_api.ChangesetClose()
