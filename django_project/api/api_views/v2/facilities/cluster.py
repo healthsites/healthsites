@@ -139,13 +139,13 @@ class FilterOSMData(BaseAPI):
                     or isinstance(param, int)  # noqa
                     or isinstance(param, date)   # noqa
             ):
-                formatted_param = '\'' + str(param) + '\''
+                formatted_param = '\'' + str(param) + '\''  # noqa
             elif isinstance(param, list):
                 formatted_param = str(param)
-                formatted_param = formatted_param.replace('[u\'', '\'{"')
-                formatted_param = formatted_param.replace('\',', '",')
-                formatted_param = formatted_param.replace(' u\'', ' "')
-                formatted_param = formatted_param.replace('\']', '"}\'')
+                formatted_param = formatted_param.replace('[u\'', '\'{"')  # noqa
+                formatted_param = formatted_param.replace('\',', '",')  # noqa
+                formatted_param = formatted_param.replace(' u\'', ' "')  # noqa
+                formatted_param = formatted_param.replace('\']', '"}\'')  # noqa
             formatted_params += (formatted_param,)
         query_string = raw_query[0] % formatted_params
         return query_string
@@ -163,7 +163,7 @@ class FilterOSMData(BaseAPI):
                 format(
                     view_name=name
                 ))
-            cursor.execute('''%s''' % sql)
+            cursor.execute('''%s''' % sql)  # noqa
         except (ProgrammingError, DatabaseError):
             pass
         sql = (
@@ -172,4 +172,4 @@ class FilterOSMData(BaseAPI):
                 view_name=name,
                 sql_raw=sql_raw
             ))
-        cursor.execute('''%s''' % sql)
+        cursor.execute('''%s''' % sql)  # noqa
