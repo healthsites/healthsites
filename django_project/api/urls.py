@@ -26,6 +26,8 @@ from api.api_views.v2.get_migration_progress import GetMigrationProgress
 from api.api_views.v2.users.changesets import GetChangesets
 from api.api_views.v2.pending.list import GetPendingReviews, GetPendingUpdates
 from api.api_views.v2.pending.detail import GetDetailPendingReviews
+from api.api_views.v2.facilities.cluster import FilterOSMData
+
 
 countries_api = patterns(
     '',
@@ -86,7 +88,9 @@ api_v2 = patterns(
     url(r'migration-progress/',
         GetMigrationProgress.as_view(), name='api_get_migration_progress'),
     url(r'csv-import-progress/',
-        ImportCSVProgress.as_view(), name='api_get_csv_import_progress')
+        ImportCSVProgress.as_view(), name='api_get_csv_import_progress'),
+    url(r'filter-osm-data/',
+        FilterOSMData.as_view(), name='filter_osm_data')
 )
 
 urlpatterns = patterns(
