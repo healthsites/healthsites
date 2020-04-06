@@ -1,0 +1,13 @@
+version: '2.1'
+volumes:
+  geoserver-data:
+services:
+
+  geoserver:
+    image: geosolutionsit/geoserver-docker:2.13.x
+    ports:
+      - 49364:8080
+    links:
+      - osm-db:osm-db
+    volumes:
+      - geoserver-data:/geoserver_data/data

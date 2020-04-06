@@ -95,3 +95,4 @@ django_project/core/settings/version.txt
 *~
 *.orig
 scrap.txt
+.env

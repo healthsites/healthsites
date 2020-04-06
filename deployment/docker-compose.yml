@@ -100,6 +100,7 @@ services:
       - osm-db:osm-db
       - rabbitmq:rabbitmq
       - worker:worker
+      - geoserver:geoserver
 
   worker:
     build: docker
@@ -206,6 +207,7 @@ services:
       - smtp:smtp
       - db:db
       - osm-db:osm-db
+      - geoserver:geoserver
       - rabbitmq:rabbitmq
     ports:
       # for django test server

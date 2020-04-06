@@ -1,5 +1,5 @@
 PROJECT_ID := healthsites
-COMPOSE := -f docker-osm-compose.yml -f docker-compose.yml
+COMPOSE := -f docker-osm-compose.yml -f docker-compose.geoserver.yml  -f docker-compose.yml
 
 SHELL := /bin/bash
 
@@ -297,6 +297,12 @@ devweb: db rabbitmq
 	@echo "Running in DEVELOPMENT mode"
 	@echo "------------------------------------------------------------------"
 	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up --no-deps -d devweb
+
+devshell:
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) exec devweb /bin/bash
+
+devweb-runserver:
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) exec devweb /bin/bash -c "DJANGO_SETTINGS_MODULE=core.settings.dev_docker python manage.py runserver 0.0.0.0:8080 "
 
 build-devweb: db
 	@echo
