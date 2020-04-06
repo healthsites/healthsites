@@ -118,6 +118,14 @@ update-migrations:
 	@echo "------------------------------------------------------------------"
 	@docker-compose $(COMPOSE) -p $(PROJECT_ID) run uwsgi python manage.py makemigrations
 
+create-cache:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Running update migrations in production mode"
+	@echo "------------------------------------------------------------------"
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) run uwsgi python manage.py generate_cluster_cache
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) run uwsgi python manage.py generate_countries_cache
+
 collectstatic:
 	@echo
 	@echo "------------------------------------------------------------------"

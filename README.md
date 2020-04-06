@@ -113,9 +113,7 @@ http://localhost:49362
 Healthsites is using cache to fasten the process. To generate this process, some process needs to be done
 ```
 cd healthsites/deployment
-make shell
-python manage.py generate_cluster_cache
-python manage.py generate_countries_cache
+make create-cache
 ```
 and wait until everything is done
 
