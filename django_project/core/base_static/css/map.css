@@ -693,3 +693,51 @@ a.inner-navbar-brand:hover {
 #fb-share {
     cursor: pointer;
 }
+
+#filter-dashboard {
+    position: absolute;
+    width: 300px;
+    height: 100%;
+    z-index: 1199;
+    background-color: white;
+    right: 0;
+    overflow-y: auto;
+}
+
+#filter-content, #filter-tab {
+    margin-top: 73px;
+}
+
+#filter-tab {
+    transform: rotate(-90deg);
+    position: absolute;
+    top: 28px;
+    right: -26px;
+    background-color: #eff0f0;
+    padding: 5px 20px;
+    cursor: pointer;
+}
+
+#filter-content, .filter-button-wrapper {
+    padding: 7px 20px;
+}
+
+.filter-item {
+    margin-bottom: 10px;
+}
+
+.option-item {
+    display: inline-block;
+    padding: 0 5px;
+    border: 1px solid lightgray;
+    margin: 2px;
+}
+
+.option-item-wrapper {
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.form-control {
+    width: 100% !important;
+}
