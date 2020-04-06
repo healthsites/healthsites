@@ -2,7 +2,7 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '07/01/19'
 
 from django.contrib.gis.db import models
-from localities_osm.models.base import LocalityOSMBase
+from localities_osm.models.base import LocalityOSMBase, COVID19LocalityOSMScore
 from localities_osm.querysets import (
     PassThroughGeoManager,
     OSMQuerySet
@@ -187,7 +187,7 @@ class LocalityOSMView(LocalityOSM):
         verbose_name_plural = 'OSM Node and Way'
 
 
-class LocalityOSMNode(LocalityOSM):
+class LocalityOSMNode(LocalityOSM, COVID19LocalityOSMScore):
     """ This model is based on docker osm node
     """
     geometry = models.PointField(
@@ -200,7 +200,7 @@ class LocalityOSMNode(LocalityOSM):
         verbose_name_plural = 'OSM Node'
 
 
-class LocalityOSMWay(LocalityOSM):
+class LocalityOSMWay(LocalityOSM, COVID19LocalityOSMScore):
     """ This model is based on docker osm way
     """
     geometry = models.GeometryField(
