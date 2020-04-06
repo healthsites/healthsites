@@ -1,21 +1,20 @@
 version: '2.1'
 volumes:
   geoserver-data:
+
 services:
-
-  data-dir-conf:
-    image: geosolutionsit/geoserver_data:2.13.x
-    restart: on-failure
-    command: /bin/true
-    volumes:
-      - geoserver-data:/geoserver_data/data
-
   geoserver:
-    image: geosolutionsit/geoserver-docker:2.13.x
-    ports:
-      - 49364:8080
-    depends_on:
-      - osm-db
-      - data-dir-conf
+    image: kartoza/geoserver:2.15.2
+    hostname: geoserver
+    environment:
+      GEOSERVER_ADMIN_PASSWORD: myawesomegeoserver
+      ENABLE_JSONP: 'true'
+      INITIAL_MEMORY: 3G
+      MAXIMUM_MEMORY: 8G
     volumes:
-      - geoserver-data:/geoserver_data/data
+    - geoserver-data:/opt/geoserver/data_dir
+    ports:
+    - 49364:8080
+    user: root
+    links:
+      - osm-db:osm-db
