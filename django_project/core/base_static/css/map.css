@@ -718,7 +718,7 @@ a.inner-navbar-brand:hover {
     cursor: pointer;
 }
 
-#filter-content {
+#filter-content, .filter-button-wrapper {
     padding: 7px 20px;
 }
 
@@ -740,8 +740,4 @@ a.inner-navbar-brand:hover {
 
 .form-control {
     width: 100% !important;
-}
-
-.cancel-btn {
-    margin-left: 20px;
 }

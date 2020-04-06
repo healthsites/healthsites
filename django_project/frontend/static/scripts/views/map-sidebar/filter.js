@@ -4,6 +4,10 @@ define([
 ], function (Backbone, $) {
     return Backbone.View.extend({
         url: '/api/schema/',
+        el: '#filter-dashboard',
+        events: {
+            'click .cancel-btn': 'resetFilter'
+        },
         contentWrapper: '#filter-content',
         initialize: function () {
             let that = this;
@@ -54,13 +58,6 @@ define([
                     )
                 }
             }
-            $wrapper.append('' +
-                '<button class="btn btn-primary">Apply</button>' +
-                '<button class="cancel-btn btn btn-danger">Reset</button>'
-            );
-            $('.cancel-btn').click(function () {
-                that.resetFilter();
-            })
         },
         toggleFilter: function () {
             let $wrapper = $('#filter-dashboard');
