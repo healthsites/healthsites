@@ -96,6 +96,12 @@ nginx:
 	@docker-compose -p $(PROJECT_ID) up -d nginx
 	@echo "Site should now be available at http://localhost"
 
+geoserver:
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) up -d geoserver
+
+geoserver-kill:
+	@docker-compose $(COMPOSE) -p $(PROJECT_ID) stop geoserver
+
 migrate:
 	@echo
 	@echo "------------------------------------------------------------------"
