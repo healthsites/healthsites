@@ -9,6 +9,7 @@ from django.conf import settings
 from django.http.response import HttpResponseBadRequest
 from django.db import connections, DatabaseError
 from django.db.utils import ProgrammingError
+from django.core.exceptions import FieldError
 from api.api_views.v2.base_api import BaseAPI
 from rest_framework.response import Response
 from api.utilities.clustering import oms_view_cluster
@@ -112,8 +113,8 @@ class FilterOSMData(BaseAPI):
             )
         try:
             localities = LocalityOSMView.objects.filter(**filter_parameters)
-        except:
-            return Response('error')
+        except FieldError as e:
+            return Response(str(e))
         query_string = self.generate_query_string(localities)
         hashed_query_string = md5(query_string).hexdigest()
         view_name = 'osm-node-and-way-{}'.format(hashed_query_string)
@@ -134,9 +135,9 @@ class FilterOSMData(BaseAPI):
         for param in params:
             formatted_param = param
             if (
-                    isinstance(param, unicode) or
-                    isinstance(param, int) or
-                    isinstance(param, date)
+                    isinstance(param, unicode)
+                    or isinstance(param, int)  # noqa
+                    or isinstance(param, date)   # noqa
             ):
                 formatted_param = '\'' + str(param) + '\''
             elif isinstance(param, list):
@@ -159,7 +160,7 @@ class FilterOSMData(BaseAPI):
         try:
             sql = (
                 'DROP VIEW IF EXISTS "{view_name}"'.
-                    format(
+                format(
                     view_name=name
                 ))
             cursor.execute('''%s''' % sql)
@@ -167,7 +168,7 @@ class FilterOSMData(BaseAPI):
             pass
         sql = (
             'CREATE VIEW "{view_name}" AS {sql_raw}'.
-                format(
+            format(
                 view_name=name,
                 sql_raw=sql_raw
             ))
