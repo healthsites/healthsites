@@ -18,7 +18,7 @@ from api.api_views.v2.facilities.detail import (
     GetDetailFacility, GetDetailFacilityByUUID)
 from api.api_views.v2.facilities.list import (
     BulkUpload, GetFacilities, GetFacilitiesCount, GetFacilitiesStatistic)
-from api.api_views.v2.facilities.shapefile import GetFacilitiesShapefileProcess
+from api.api_views.v2.facilities.shapefile import GetShapefileDetail, GetShapefileDownload
 from api.api_views.v2.facilities.search import Autocomplete
 from api.api_views.v2.googlemaps.search import SearchByGeoname
 from api.api_views.v2.gather_enrollment import GatherEnrollment
@@ -34,6 +34,11 @@ countries_api = patterns(
 )
 facilities_api = patterns(
     '',
+    url(r'^shapefile/(?P<country>\w+)/detail',
+        GetShapefileDetail.as_view()),
+    url(r'^shapefile/(?P<country>\w+)/download',
+        GetShapefileDownload.as_view()),
+
     url(r'^cluster', GetCluster.as_view()),
     url(r'^count',
         GetFacilitiesCount.as_view()),
@@ -41,8 +46,6 @@ facilities_api = patterns(
         GetFacilitiesStatistic.as_view()),
     url(r'^autocomplete/',
         Autocomplete.as_view()),
-    url(r'^shapefile/process',
-        GetFacilitiesShapefileProcess.as_view()),
     url(r'^bulk/create', BulkUpload.as_view()),
     url(r'^(?P<osm_type>\w+)/(?P<osm_id>-?\d+)',
         GetDetailFacility.as_view()),
