@@ -4,21 +4,18 @@ import shutil
 import zipfile
 
 import shapefile
-import json
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.contrib.gis.geos import Polygon
 from django.forms.models import fields_for_model
 
 from localities.models import Country
-from localities_osm.models.locality import LocalityOSM
-from localities_osm.serializer.locality_osm import (
-    LocalityOSMSerializer
-)
+from localities_osm.models.locality import LocalityOSM, LocalityOSMView
 from localities_osm.queries import filter_locality
 
 directory_cache = settings.CACHE_DIR
-directory_media = settings.MEDIA_ROOT + '/shapefiles'
+directory_media = settings.SHAPEFILE_DIR
 
 
 def zipdir(path, ziph):
@@ -43,10 +40,16 @@ def getWKT_PRJ(epsg_code):
     return output
 
 
+def get_shapefile_folder(counter_name):
+    """ Return shapefile folder for a country"""
+    shp_filename = counter_name.replace('.', '')
+    return os.path.join(directory_cache, 'shapefiles', shp_filename)
+
+
 def country_data_into_shapefile(country=None):
     """ Convert country osm data into shapefile
 
-    :param country_name: Country name
+    :param country: Country name
     :type: str
     """
     if country == 'World' or country == 'world':
@@ -60,78 +63,98 @@ def country_data_into_shapefile(country=None):
 
     # get field that needs to be saved
     fields = fields_for_model(LocalityOSM).keys()
-    insert_to_shapefile(
-        LocalityOSMSerializer(queryset, many=True).data, fields, country_name)
 
-
-def get_shapefile_folder(counter_name):
-    """ Return shapefile folder for a country"""
-    shp_filename = counter_name.replace('.', '')
-    return os.path.join(directory_cache, 'shapefiles', shp_filename)
-
-
-def insert_to_shapefile(data, fields, output_filename):
-    """ Convert and insert data into shapefile
-    :param data: data that will be inserted
-    :param output_filename: shapefile name
-    """
-    shp_filename = output_filename.replace('.', '')
-    dir_cache = get_shapefile_folder(output_filename)
+    # get the folders
+    shp_filename = country_name.replace('.', '')
+    dir_cache = get_shapefile_folder(country_name)
     dir_shapefile = os.path.join(dir_cache, 'output')
-    metadata_file = os.path.join(dir_cache, 'metadata')
+
+    # delete the cache
+    try:
+        shutil.rmtree(dir_shapefile)
+    except OSError:
+        pass
+
+    # generate the node shapefile
+    insert_to_shapefile(
+        query=queryset.filter(osm_type=LocalityOSMView.NODE),
+        fields=fields,
+        dir_shapefile=dir_shapefile,
+        shp_filename='{}-node'.format(shp_filename),
+        TYPE=shapefile.POINT)
+
+    # generate the way shapefile
+    insert_to_shapefile(
+        query=queryset.filter(osm_type=LocalityOSMView.WAY),
+        fields=fields,
+        dir_shapefile=dir_shapefile,
+        shp_filename='{}-way'.format(shp_filename),
+        TYPE=shapefile.POLYGON)
+
+    # zip this output
+    print 'rezipping the files'
+    if not os.path.exists(directory_media):
+        os.makedirs(directory_media)
+    filename = os.path.join(directory_media, '%s.zip' % country_name)
+    try:
+        os.remove(filename)
+    except OSError:
+        pass
+
+    zipf = zipfile.ZipFile(filename, 'w', allowZip64=True)
+    zipdir(dir_shapefile, zipf)
+    zipf.close()
 
     try:
         shutil.rmtree(dir_cache)
     except OSError:
         pass
 
-    # this indicated that other generation process is run
-    os.makedirs(dir_shapefile)
+
+def insert_to_shapefile(query, fields, dir_shapefile, shp_filename, TYPE):
+    """ Convert and insert data into shapefile
+    """
+    from localities_osm.serializer.locality_osm import (
+        LocalityOSMGeoSerializer
+    )
 
     # Insert data into shapefile
     print 'generating shape object for ' + shp_filename
 
     shapefile_output = os.path.join(dir_shapefile, shp_filename)
-    shp = shapefile.Writer(shapefile_output, shapefile.POINT)
+    shp = shapefile.Writer(shapefile_output, TYPE)
     for field in fields:
         shp.field(str(field), 'C', 100)
 
-    total = len(data)
-    for index, healthsite in enumerate(data):
+    # insert data
+    for healthsite_obj in query:
         values = []
-        # if centroid is None
-        if not healthsite['centroid']:
-            total -= 1
-            continue
-
+        healthsite = LocalityOSMGeoSerializer(healthsite_obj).data
+        properties = healthsite['properties']
         for field in fields:
             value = ''
-            if field in healthsite['attributes']:
-                value = healthsite['attributes'][field]
-            elif field in healthsite:
-                value = healthsite[field]
+            if field in properties['attributes']:
+                value = properties['attributes'][field]
+            elif field in properties:
+                value = properties[field]
 
             try:
                 value = str(value.encode('utf8'))
             except AttributeError:
                 pass
             values.append(value)
-        shp.point(
-            healthsite['centroid']['coordinates'][0],
-            healthsite['centroid']['coordinates'][1])
+        if TYPE == shapefile.POINT:
+            shp.point(
+                healthsite['geometry']['coordinates'][0],
+                healthsite['geometry']['coordinates'][1])
+        elif TYPE == shapefile.POLYGON:
+            coordinates = healthsite['geometry']['coordinates']
+            if isinstance(healthsite_obj.geometry, Polygon):
+                shp.poly(coordinates)
+            else:
+                shp.poly(coordinates[0])
         shp.record(*values)
 
-        # save the process
-        try:
-            file = open(metadata_file, 'w+')
-            file.write(json.dumps({
-                'index': index + 1,
-                'total': total,
-                'last': healthsite['osm_id']
-            }))
-            file.close()
-        except Exception as e:  # noqa
-            pass
     shp.close()
 
     # create .cpg
@@ -146,20 +169,6 @@ def insert_to_shapefile(data, fields, output_filename):
     epsg = getWKT_PRJ('4326')
     prj.write(epsg)
     prj.close()
-
-    # zip this output
-    print 'rezipping the files'
-    if not os.path.exists(directory_media):
-        os.makedirs(directory_media)
-    filename = os.path.join(directory_media, '%s.zip' % output_filename)
-    try:
-        os.remove(filename)
-    except OSError:
-        pass
-
-    zipf = zipfile.ZipFile(filename, 'w', allowZip64=True)
-    zipdir(dir_shapefile, zipf)
-    zipf.close()
 
 
 class Command(BaseCommand):
