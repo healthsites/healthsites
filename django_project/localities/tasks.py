@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
+import os
 
 from datetime import datetime
 
@@ -151,9 +152,35 @@ def regenerate_cache_cluster(self):
 @app.task(bind=True)
 def country_data_into_shapefile_task(self, country):
     from api.management.commands.generate_shapefile_countries import (
-        country_data_into_shapefile
+        country_data_into_shapefile,
+        get_shapefile_folder
     )
-    country_data_into_shapefile(country)
+    country_cache = get_shapefile_folder(country)
+    metadata_file = os.path.join(country_cache, 'metadata')
+    try:
+        f = open(metadata_file, 'r')
+        file_content = f.read()
+        if file_content == 'Start':
+            return False
+    except IOError:
+        if not os.path.exists(country_cache):
+            os.makedirs(country_cache)
+        file = open(metadata_file, 'w+')
+        file.write('Start')
+        file.close()
+
+    try:
+        country_data_into_shapefile(country)
+        try:
+            os.remove(metadata_file)
+        except OSError:
+            pass
+    except Exception as e:
+        try:
+            os.remove(metadata_file)
+        except OSError:
+            pass
+        raise e
 
 
 @app.task(bind=True)
