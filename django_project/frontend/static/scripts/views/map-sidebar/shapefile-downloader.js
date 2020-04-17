@@ -4,41 +4,30 @@ define([
     'jquery-ui',
     'bootstrap'], function (Backbone, $, JqueryUI, Bootstrap) {
     return Backbone.View.extend({
+        found: false,
         initialize: function () {
-            var self = this;
             this.$el = $('.shapefile-downloader');
-            this.$el.click(function () {
-                self.downloadShapefile();
-            })
-        },
-        downloadShapefile: function () {
-            if (this.$el.html() === 'shapefile') {
-                this.$el.html('<i>generating...</i>');
-                this.checkingShapefile();
+
+            this.country = parameters.get('country');
+            if (!parameters.get('country')) {
+                this.country = 'World';
             }
+
+            this.checkingShapefile();
         },
         checkingShapefile: function () {
             var self = this;
-            var country = parameters.get('country');
-            if (!parameters.get('country')) {
-                country = 'World';
-            }
             $.ajax({
-                url: "/api/v2/facilities/shapefile/process/?country=" + country,
+                url: "/api/v2/facilities/shapefile/" + this.country + '/detail',
                 dataType: 'json',
                 success: function (data) {
-                    if (!data['index'] || data['index'] !== data['total']) {
-                        if (data['index']) {
-                            self.$el.html('<i>' + data['index'] + '/' + data['total'] + '</i>');
-                        }
-                        setTimeout(
-                            function () {
-                                self.checkingShapefile();
-                            }, 1000);
-                    } else {
-                        self.$el.html('shapefile');
-                        window.location.href = '/data/shapefiles/' + country + '.zip';
-                    }
+                    self.$el.html('<i>' + data['filename'] + ' (last update at : ' + new Date(data['time'] * 1000) + ')</i>');
+                    self.$el.click(function () {
+                        window.location.href = "/api/v2/facilities/shapefile/" + self.country + '/download';
+                    });
+                },
+                error: function () {
+                    self.$el.html('<i>Shapefile is not found, please ask admin to generate it.</i>')
                 }
             });
         }
