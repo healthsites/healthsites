@@ -11,7 +11,7 @@ from django.contrib.gis.geos import Polygon
 from django.forms.models import fields_for_model
 
 from localities.models import Country
-from localities_osm.models.locality import LocalityOSM, LocalityOSMView
+from localities_osm.models.locality import LocalityOSM, LocalityOSMView  # noqa
 from localities_osm.queries import filter_locality
 
 directory_cache = settings.CACHE_DIR
@@ -77,20 +77,19 @@ def country_data_into_shapefile(country=None):
 
     # generate the node shapefile
     insert_to_shapefile(
-        query=queryset,
+        query=queryset.filter(osm_type=LocalityOSMView.NODE),
         fields=fields,
         dir_shapefile=dir_shapefile,
-        shp_filename='{}'.format(shp_filename),
+        shp_filename='{}-node'.format(shp_filename),
         TYPE=shapefile.POINT)
 
     # generate the way shapefile
-    # TODO: FIX THIS, from production, there is always error
-    # insert_to_shapefile(
-    #     query=queryset.filter(osm_type=LocalityOSMView.WAY),
-    #     fields=fields,
-    #     dir_shapefile=dir_shapefile,
-    #     shp_filename='{}-way'.format(shp_filename),
-    #     TYPE=shapefile.POLYGON)
+    insert_to_shapefile(
+        query=queryset.filter(osm_type=LocalityOSMView.WAY),
+        fields=fields,
+        dir_shapefile=dir_shapefile,
+        shp_filename='{}-way'.format(shp_filename),
+        TYPE=shapefile.POLYGON)
 
     # zip this output
     print 'rezipping the files'
@@ -132,6 +131,8 @@ def insert_to_shapefile(query, fields, dir_shapefile, shp_filename, TYPE):
         values = []
         healthsite = LocalityOSMGeoSerializer(healthsite_obj).data
         properties = healthsite['properties']
+        if not properties['centroid'] or not properties['centroid']['coordinates']:
+            continue
         for field in fields:
             value = ''
             if field in properties['attributes']:
@@ -154,7 +155,6 @@ def insert_to_shapefile(query, fields, dir_shapefile, shp_filename, TYPE):
                 properties['centroid']['coordinates'][1])
         elif TYPE == shapefile.POLYGON:
             coordinates = healthsite['geometry']['coordinates']
-            # TODO: FIX THIS, from production, there is always error
             if isinstance(healthsite_obj.geometry, Polygon):
                 shp.poly(coordinates)
             else:
@@ -191,7 +191,10 @@ class Command(BaseCommand):
 
         # generate shapefiles for world
         if not country or country.lower() == 'world':
-            country_data_into_shapefile('')
+            try:
+                country_data_into_shapefile('')
+            except Exception as e:
+                print '{}'.format(e)
 
         # generate shapefiles for countries
         countries = Country.objects.all()
@@ -204,4 +207,4 @@ class Command(BaseCommand):
             try:
                 country_data_into_shapefile(country.name)
             except Exception as e:
-                print '{} : {}'.format(country.name, e)
+                print '{}'.format(e)
