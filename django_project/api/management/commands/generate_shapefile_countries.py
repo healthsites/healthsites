@@ -80,7 +80,7 @@ def country_data_into_shapefile(country=None):
         query=queryset.filter(osm_type=LocalityOSMView.NODE),
         fields=fields,
         dir_shapefile=dir_shapefile,
-        shp_filename='{}-node'.format(shp_filename),
+        shp_filename=u'{}-node'.format(shp_filename),
         TYPE=shapefile.POINT)
 
     # generate the way shapefile
@@ -88,7 +88,7 @@ def country_data_into_shapefile(country=None):
         query=queryset.filter(osm_type=LocalityOSMView.WAY),
         fields=fields,
         dir_shapefile=dir_shapefile,
-        shp_filename='{}-way'.format(shp_filename),
+        shp_filename=u'{}-way'.format(shp_filename),
         TYPE=shapefile.POLYGON)
 
     # zip this output
