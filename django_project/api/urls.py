@@ -34,9 +34,9 @@ countries_api = patterns(
 )
 facilities_api = patterns(
     '',
-    url(r'^shapefile/(?P<country>\w+)/detail',
+    url(r'^shapefile/(?P<country>.+)/detail',
         GetShapefileDetail.as_view()),
-    url(r'^shapefile/(?P<country>\w+)/download',
+    url(r'^shapefile/(?P<country>.+)/download',
         GetShapefileDownload.as_view()),
 
     url(r'^cluster', GetCluster.as_view()),
