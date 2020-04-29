@@ -693,3 +693,11 @@ a.inner-navbar-brand:hover {
 #fb-share {
     cursor: pointer;
 }
+
+.leaflet-right {
+    display: block!important;
+}
+
+.credits {
+    display: none;
+}
