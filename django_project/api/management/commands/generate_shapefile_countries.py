@@ -101,6 +101,13 @@ def country_data_into_shapefile(country=None):
     except OSError:
         pass
 
+    # copy the licenses
+    for license in settings.LICENSES:
+        name = os.path.basename(license)
+        shutil.copyfile(
+            license,
+            os.path.join(dir_shapefile, name))
+
     zipf = zipfile.ZipFile(filename, 'w', allowZip64=True)
     zipdir(dir_shapefile, zipf)
     zipf.close()

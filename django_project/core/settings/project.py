@@ -126,6 +126,12 @@ SHAPEFILE_DIR = os.path.join(MEDIA_ROOT, 'shapefiles')
 CLUSTER_CACHE_MAX_ZOOM = 5
 MAX_ZOOM = 18
 
+# DATA LICENSE
+LICENSES = [
+    ABS_PATH('api', 'LICENSE.txt'),
+    ABS_PATH('api', 'README.md')
+]
+
 # WHAT3WORDS API
 WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'
 DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
