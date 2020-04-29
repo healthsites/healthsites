@@ -50,7 +50,7 @@ class Command(BaseCommand):
             try:
                 file = open(is_run_file, 'w+')
                 file.close()
-            except Exception as e:
+            except IOError as e:
                 pass
 
         cache_data = get_statistic_cache(extent, country)
@@ -72,5 +72,7 @@ class Command(BaseCommand):
             file.write(json.dumps(statistic))
             file.close()
             os.remove(is_run_file)  # remove run indicator
+        except IOError as e:
+            pass
         except Exception as e:
             print e
