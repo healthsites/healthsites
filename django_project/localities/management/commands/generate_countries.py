@@ -131,7 +131,7 @@ class Command(BaseCommand):
 
         # create geometry for continent
         for country in Country.objects.filter(polygon_geometry__isnull=True):
-            print "processing {}".format(country.name)
+            print u'processing {}'.format(country.name)
             country.polygon_geometry = Country.objects.filter(parent=country).aggregate(
                 geometry=Union('polygon_geometry'))['geometry'].buffer(0.0000001)
             country.save()

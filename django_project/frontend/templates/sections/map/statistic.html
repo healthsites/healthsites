@@ -4,10 +4,10 @@
         <span id="locality-number" style="margin-left: 5px; margin-right: 5px">Loading</span>
         healthsites
     </div>
-    <p id="country-shapefiles" class="header" style="padding-bottom: 10px;">
+    <div id="country-shapefiles" class="header" style="padding-bottom: 10px;">
         Download all healthsite data from
         <span class="shapefile-downloader inner-navbar-brand" style="cursor: pointer">shapefile</span>
-    </p>
+    </div>
 
     <div style="padding: 20px">
         <div>
@@ -39,6 +39,17 @@
             </div>
             <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< previous</a>
                 <a class="next opacity-7" onclick="changePage(this)">next ></a></div>
+        </div>
+    </div>
+    <div id="countries-table" style="padding: 20px">
+        <h3>Country list</h3>
+        <div style="padding: 0">
+            <div class="block-header">
+                <span class="col-xs-6">Country</span> <span
+                    class="col-xs-3"># of sites</span>
+                <span class="col-xs-3">% complete</span></div>
+            <div id="accordion-country" class="accordion">
+            </div>
         </div>
     </div>
 </div>

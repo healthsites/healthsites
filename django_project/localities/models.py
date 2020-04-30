@@ -965,7 +965,8 @@ class Administrative(models.Model):
     """
     TODO:
       clean code, change all country references into using this
-      because we added continent also and also maybe sub region, we need to change this as Administrative
+      because we added continent also and also maybe sub region,
+      we need to change this as Administrative
 
     This is an administrative model (in abstract) that hold
     - code
@@ -975,11 +976,11 @@ class Administrative(models.Model):
     """
     id = models.AutoField(
         primary_key=True)
-    
+
     name = models.CharField(
         verbose_name='',
         max_length=50,
-        help_text="name of administrative")
+        help_text='name of administrative')
 
     code = models.CharField(
         blank=True,
@@ -992,7 +993,7 @@ class Administrative(models.Model):
         'self',
         blank=True,
         null=True,
-        help_text="is the administrative under other administrative (parent)",
+        help_text='is the administrative under other administrative (parent)',
         on_delete=models.SET_NULL)
 
     polygon_geometry = models.MultiPolygonField(

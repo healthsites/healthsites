@@ -75,7 +75,10 @@
         {% if countries %}
             {% for country in countries %}
                 var country = "{{ country.name }}";
-                countries.push(country);
+                countries.push({
+                    "name":"{{ country.name }}",
+                    "parent":"{{ country.parent__name }}",
+                });
             {% endfor %}
         {% endif %}
     </script>
