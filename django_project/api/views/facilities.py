@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from api.views.api_view import ApiView
-from localities.utils import get_heathsites_master, parse_bbox
+from localities.utils import get_healthsites_master, parse_bbox
 
 
 class FacilitiesApiView(ApiView):
@@ -28,7 +28,7 @@ class FacilitiesApiView(ApiView):
                 page = 1
 
             facilities = self.get_query_by_page(
-                get_heathsites_master().in_polygon(polygon), page
+                get_healthsites_master().in_polygon(polygon), page
             )
             facilities = self.query_to_json(facilities, self.format)
             return self.api_response(facilities)
@@ -38,7 +38,7 @@ class FacilitiesApiView(ApiView):
                 return self.api_response(
                     {'error': 'page is wrong type'}
                 )
-            facilities = self.get_query_by_page(get_heathsites_master(), self.page)
+            facilities = self.get_query_by_page(get_healthsites_master(), self.page)
             facilities = self.query_to_json(facilities, self.format)
             return self.api_response(facilities)
         else:

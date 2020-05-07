@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from django.core.serializers.json import DjangoJSONEncoder
 
 from localities.models import Country
-from localities.utils import get_heathsites_master, get_statistic
+from localities.utils import get_healthsites_master, get_statistic
 
 
 class Command(BaseCommand):
@@ -39,7 +39,7 @@ class Command(BaseCommand):
             filename = os.path.join(
                 settings.STATISTIC_CACHE_DIR,
                 'world_statistic')
-            healthsites = get_heathsites_master().all()
+            healthsites = get_healthsites_master().all()
             output = get_statistic(healthsites)
             result = json.dumps(output, cls=DjangoJSONEncoder)
             file = open(filename, 'w')
@@ -58,7 +58,7 @@ class Command(BaseCommand):
                     settings.STATISTIC_CACHE_DIR,
                     country.name + '_statistic'
                 )
-                healthsites = get_heathsites_master().in_polygon(
+                healthsites = get_healthsites_master().in_polygon(
                     polygons)
                 output = get_statistic(healthsites)
                 result = json.dumps(output, cls=DjangoJSONEncoder)
