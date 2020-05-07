@@ -2,7 +2,7 @@
 from api.views.api_view import ApiView
 from frontend.views import search_place
 from localities.models import Country, Locality, Value
-from localities.utils import get_heathsites_master, parse_bbox
+from localities.utils import get_healthsites_master, parse_bbox
 
 
 class LocalitySearchApiView(ApiView):
@@ -22,10 +22,10 @@ class LocalitySearchApiView(ApiView):
                 filter(data=facility_type).
                 values_list('locality__id', flat=True)
             )
-            facilities = get_heathsites_master().filter(
+            facilities = get_healthsites_master().filter(
                 id__in=facilities_id).in_polygon(polygon)
         else:
-            facilities = get_heathsites_master().in_polygon(polygon)
+            facilities = get_healthsites_master().in_polygon(polygon)
 
         if self.page:
             facilities = self.get_query_by_page(facilities, self.page)

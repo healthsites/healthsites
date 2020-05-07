@@ -21,7 +21,7 @@ from .forms import DataLoaderForm
 from .map_clustering import (cluster, oms_view_cluster)
 from .models import Attribute, Changeset, Domain, Locality, Specification, Value
 from .utils import (
-    get_country_statistic, get_heathsites_master, get_locality_by_spec_data,
+    get_country_statistic, get_healthsites_master, get_locality_by_spec_data,
     get_locality_detail, locality_create, locality_edit, locality_updates, parse_bbox
 )
 
@@ -120,7 +120,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                 )
             except IOError:
                 localities = \
-                    get_heathsites_master().in_bbox(
+                    get_healthsites_master().in_bbox(
                         parse_bbox('-180,-90,180,90'))
                 object_list = cluster(localities, zoom, *iconsize)
 
@@ -132,7 +132,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
             # cluster Localites for a view
             # localities = Locality.objects.in_bbox(bbox)
             # just master
-            localities = get_heathsites_master().in_bbox(bbox)
+            localities = get_healthsites_master().in_bbox(bbox)
             exception = False
             try:
                 if geoname != '':
@@ -159,7 +159,7 @@ class LocalitiesLayer(JSONResponseMixin, ListView):
                         except IOError:
                             polygon = country.polygon_geometry
                             localities = \
-                                get_heathsites_master().in_polygon(polygon)
+                                get_healthsites_master().in_polygon(polygon)
                             object_list = cluster(localities, zoom, *iconsize)
 
                             # create the missing cache
@@ -311,7 +311,7 @@ def search_locality_by_name(request):
         query = request.GET.get('q')
 
         try:
-            healthsites = get_heathsites_master()
+            healthsites = get_healthsites_master()
             if ',' in query:
                 place = query.split(',', 1)[1].strip()
                 query = query.split(',', 1)[0].strip()
