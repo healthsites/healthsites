@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import json
+from django.contrib.gis.db.models import Union
 from django.contrib.gis.gdal import DataSource
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.management.base import BaseCommand
@@ -12,12 +14,28 @@ class Command(BaseCommand):
     non_countries = ['Scarborough Reef']
 
     def handle(self, *args, **options):
+        country_by_code = {}
+        with open('localities/data/osm_boundaries/country_data.json') as file:
+            data = json.load(file)
+            for country in data:
+                if country['Three_Letter_Country_Code']:
+                    country_by_code[country['Three_Letter_Country_Code']] = country
+
         Country.objects.all().delete()
         data_source = DataSource(
             'localities/data/osm_boundaries/country_boundaries.shp')
         layer = data_source[0]
         for feature in layer:
             country_name = feature['name'].value
+            country_code = feature['country'].value
+
+            print u'processing {} ({})'.format(country_name, country_code)
+            try:
+                country_data = country_by_code[country_code]
+            except KeyError:
+                print u'{} ({}) is not found'.format(country_name, country_code)
+                continue
+            # print country_data
             country_name = country_name.encode('utf-8')
 
             # -------------------------------------------------
@@ -64,12 +82,9 @@ class Command(BaseCommand):
             country_name = country_name.replace('Ter.', 'Territory')
             country_name = country_name.replace('Vin.', 'Vincent')
             country_name = country_name.replace('W.', 'Western')
-
             country_name = country_name.strip()
+
             print 'generate {}'.format(country_name)
-            # -------------------------------------------------
-            # FINISH
-            # -------------------------------------------------
 
             geometry = feature.geom
             try:
@@ -87,14 +102,36 @@ class Command(BaseCommand):
                     polygons += \
                         [Polygon(coords) for coords in geometry.coords[0]]
                     geometry = MultiPolygon(polygons).geojson
-                country.polygon_geometry = geometry
+                geometry = geometry
             except Exception:
                 if 'MultiPolygon' not in geometry.geojson:
                     geometry = \
                         MultiPolygon(Polygon(geometry.coords[0])).geojson
                 else:
                     geometry = geometry.geojson
-                country = Country(name=country_name)
-                country.polygon_geometry = geometry
-            if country_name not in self.non_countries:
-                country.save()
+                geometry = geometry
+
+            # create the continent
+            continent, created = Country.objects.get_or_create(
+                name=country_data['Continent_Name'],
+                defaults={
+                    'code': country_data['Continent_Code']
+                }
+
+            )
+            # create country
+            Country.objects.get_or_create(
+                name=country_name,
+                defaults={
+                    'polygon_geometry': geometry,
+                    'code': country_data['Three_Letter_Country_Code'],
+                    'parent': continent
+                }
+            )
+
+        # create geometry for continent
+        for country in Country.objects.filter(polygon_geometry__isnull=True):
+            print u'processing {}'.format(country.name)
+            country.polygon_geometry = Country.objects.filter(parent=country).aggregate(
+                geometry=Union('polygon_geometry'))['geometry'].buffer(0.0000001)
+            country.save()

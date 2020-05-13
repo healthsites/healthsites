@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
-import os
 
 import googlemaps
 from api.api_views.v2.schema import Schema
@@ -15,8 +14,6 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from envelope.views import ContactView
-from hurry.filesize import size
-from localities.management.commands.generate_shapefile import directory_media
 from localities.models import Country, DataLoaderPermission, Locality, Value
 from localities.utils import (
     search_locality_by_spec_data, search_locality_by_tag
@@ -95,7 +92,7 @@ class GatherEnrollmentView(TemplateView):
 def search_place(request, place):
     # getting country's polygon
     result = {}
-    result['countries'] = Country.objects.order_by('name').values('name').distinct()
+    result['countries'] = Country.objects.order_by('name').values('name', 'parent__name')
     # geonames
     if place:
         google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
@@ -162,7 +159,6 @@ def map(request):
                 )
     else:
         tag = request.GET.get('tag')
-        country = request.GET.get('country')
         attribute = request.GET.get('attribute')
         uuid = request.GET.get('uuid')
         result = {}
@@ -170,8 +166,6 @@ def map(request):
         if tag:
             result = search_locality_by_tag(tag)
             result['tag'] = tag
-        elif country:
-            pass
         elif attribute:
             uuid = request.GET.get('uuid')
             result = search_locality_by_spec_data('attribute', attribute, uuid)
@@ -191,11 +185,6 @@ def map(request):
                     }
         else:
             result = search_place(request, None)
-            # get facilities shapefile size
-            result['shapefile_size'] = 0
-            filename = os.path.join(directory_media, 'facilities_shapefile.zip')
-            if (os.path.isfile(filename)):
-                result['shapefile_size'] = size(os.path.getsize(filename)) + 'B'
 
         if 'new_geom' in request.session:
             result['new_geom'] = request.session['new_geom']

@@ -64,12 +64,17 @@ require([
     renderCredit();
 
     L.clusterLayer = new Cluster();
-
     var countryStatictic = new CountryStatistic();
-    new CountryList();
     new LocalityDetail();
     var search = new Search();
     new ShapefileDownloader();
+    if (countries.length) {
+        if (parameters.get('country')) {
+            new CountryList($('#locality-statistic #countries-table'), parameters.get('country'));
+        } else {
+            new CountryList($('#countries-table'));
+        }
+    }
 
     // 1st step
     function goToCountry() {
