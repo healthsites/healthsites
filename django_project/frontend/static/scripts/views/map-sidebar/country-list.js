@@ -18,12 +18,14 @@ define([
          * @returns {string}
          */
         countryID: function (countryName) {
-            var country_id = countryName.split(".").join("-");
-            country_id = country_id.split("&#39;").join("-");
-            country_id = country_id.split(" ").join("-");
-            country_id = country_id.split("(").join("-");
-            country_id = country_id.split(")").join("-");
-            return country_id;
+            if (countryName) {
+                var country_id = countryName.split(".").join("-");
+                country_id = country_id.split("&#39;").join("-");
+                country_id = country_id.split(" ").join("-");
+                country_id = country_id.split("(").join("-");
+                country_id = country_id.split(")").join("-");
+                return country_id;
+            }
         },
         /** Render all country list
          */
