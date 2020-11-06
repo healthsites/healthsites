@@ -4,6 +4,17 @@
 {% block stylesheet %}
     <link rel="stylesheet" href="/static/css/contact.css">/>
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <style>
+        input[type='submit'] {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        input[type='submit'].enabled {
+            opacity: 1;
+            cursor: pointer;
+        }
+    </style>
 {% endblock stylesheet %}
 
 {% block content %}
@@ -53,16 +64,31 @@
                     {% endif %}
                 {% endfor %}
             {% endif %}
+        </div>
     </section>
 {% endblock %}
 {% block extra_js %}
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdyHdQUAAAAAPB9vqDbDWAGVbEyPdL964QgIJpP"></script>
     <script>
         $(document).ready(function () {
+            let enabled = false;
+            let $form = $('.container form');
+            var $submit = $("input[type='submit']");
+            $form.submit(function (event) {
+                if (!enabled) {
+                    event.preventDefault();
+                }
+
+            });
+            grecaptcha.ready(function () {
+                grecaptcha.execute('6LdyHdQUAAAAAPB9vqDbDWAGVbEyPdL964QgIJpP', {action: 'validate_captcha'})
+                    .then(function (token) {
+                        $submit.addClass('enabled')
+                        enabled = true;
+                    });
+            });
             $("#id_message").removeAttr("cols");
-            var submit = $("input[type='submit']");
-            var submit_parent = $(submit).closest('td');
-            {#            $(submit_parent).removeAttr("colspan");#}
-            {#            $(submit_parent).before("<th></th>");#}
         })
     </script>
+
 {% endblock extra_js %}
