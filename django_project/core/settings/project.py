@@ -140,3 +140,7 @@ DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
 GATHER_API_URL = 'http://gather.staging.healthsites.io/dev/'
 GATHER_API_URL_ODK = 'http://gather.staging.healthsites.io:8443/dev/odk'
 DUPLICATION_RADIUS = 100  # in meters
+
+# test users will send the data to osm instead just raise error
+# fill with username in list
+TEST_USERS = []
