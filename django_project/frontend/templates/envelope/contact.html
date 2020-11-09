@@ -68,7 +68,7 @@
     </section>
 {% endblock %}
 {% block extra_js %}
-    <script src="https://www.google.com/recaptcha/api.js?render=6LdyHdQUAAAAAPB9vqDbDWAGVbEyPdL964QgIJpP"></script>
+    <script src="https://www.google.com/recaptcha/api.js?render=6Ldj3uAZAAAAADlYpRQsjEaIKyelzBkjBac53WvQ"></script>
     <script>
         $(document).ready(function () {
             let enabled = false;
@@ -81,7 +81,7 @@
 
             });
             grecaptcha.ready(function () {
-                grecaptcha.execute('6LdyHdQUAAAAAPB9vqDbDWAGVbEyPdL964QgIJpP', {action: 'validate_captcha'})
+                grecaptcha.execute('6Ldj3uAZAAAAADlYpRQsjEaIKyelzBkjBac53WvQ', {action: 'validate_captcha'})
                     .then(function (token) {
                         $submit.addClass('enabled')
                         enabled = true;
