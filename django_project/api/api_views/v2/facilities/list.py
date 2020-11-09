@@ -4,6 +4,7 @@ __date__ = '29/11/18'
 import copy
 import json
 from datetime import datetime
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.http import Http404
@@ -118,6 +119,18 @@ class GetFacilities(
     def post(self, request):
         user = request.user
         data = copy.deepcopy(request.data)
+
+        if user.username in settings.TEST_USERS:
+            raise Exception(
+                'Create osm : {}'.format(
+                    json.dumps(
+                        {
+                            'payload': data,
+                            'user': user.username
+                        })
+                )
+            )
+
         # Now, we post the data directly to OSM.
         try:
             # Split osm and extension attribute
