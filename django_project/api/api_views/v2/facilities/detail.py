@@ -5,6 +5,7 @@ import copy
 import json
 from core.settings.utils import ABS_PATH
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.http import Http404
@@ -79,6 +80,18 @@ class GetDetailFacility(FacilitiesBaseAPI):
     def post(self, request, osm_type, osm_id):
         data = copy.deepcopy(request.data)
         user = request.user
+        if user.username in settings.TEST_USERS:
+            raise Exception(
+                'Update osm : {}'.format(
+                    json.dumps(
+                        {
+                            'payload': data,
+                            'user': user.username,
+                            'osm_id': osm_id,
+                            'osm_type': osm_type
+                        })
+                )
+            )
 
         # delete uuid, because it is not editable
         try:
