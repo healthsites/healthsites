@@ -17,6 +17,7 @@ define([
 
             this.el.submit(function () {
                 if (!self.autocomplete_url) {
+                    self.sendToAnalytic(self.$searchbox.val())
                     self.placeSearch(self.$searchbox.val());
                     return false;
                 }
@@ -57,6 +58,7 @@ define([
                     self.$searchbox.removeClass('error');
                     if (self.autocomplete_url) {
                         self.searchBoxSubmitted();
+                        self.sendToAnalytic(request.term)
                         self.searchAjax = $.ajax({
                             url: self.autocomplete_url,
                             data: {
@@ -75,8 +77,10 @@ define([
                 minLength: 3,
                 select: function (event, ui) {
                     if (self.currentSearch === 'healthsite') {
+                        self.sendToAnalytic(`${ui.item.label} (${ui.item.id})`)
                         window.location = '/map#!/locality/' + ui.item.id;
                     } else if (self.currentSearch === 'country') {
+                        self.sendToAnalytic(ui.item.label)
                         window.location = '/map?country=' + ui.item.label;
                     }
                 },
@@ -146,6 +150,10 @@ define([
                     }
                 }
             });
+        },
+        sendToAnalytic: function (value) {
+            const searchValue = `${$('input:radio[name=option]:checked').val()}=${value}`;
+            ga('send', 'event', 'search', searchValue);
         }
     })
 });
