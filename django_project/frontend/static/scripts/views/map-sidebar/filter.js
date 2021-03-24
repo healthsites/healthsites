@@ -108,10 +108,13 @@ define([
                     values.push($(this).attr('value'));
                 });
                 $(this).find('select').each(function (index) {
-                    values.push($(this).val());
+                    if ($(this).val()) {
+                        values.push($(this).val());
+                    }
                 });
 
                 if (values.length > 0) {
+                    console.log(values)
                     data[$(this).data('key')] = values
                     $('#filter-tab').addClass('active')
                 }

@@ -23,11 +23,10 @@ define([
             this.request.getStatistic(country, successCallback, errorCallback);
         },
         rerenderStatistic: function () {
-            this.showStatistic(this.country);
+            this.showStatistic(this.country, null, null, rerender);
         },
-        showStatistic: function (country, successCallback, errorCallback) {
+        showStatistic: function (country, successCallback, errorCallback, rerender) {
             var self = this;
-            console.log(country)
             self.country = country;
             this.getStatistic(country, function (data) {
                 shared.dispatcher.trigger('map.update-geoname', { 'geoname': country });
@@ -93,7 +92,7 @@ define([
                 //{# set view port #}
                 // creating polygon
                 var polygon_raw = data.geometry;
-                if (polygon_raw) {
+                if (polygon_raw && !rerender) {
                     var polygon_json = JSON.parse(polygon_raw);
                     var polygon = polygon_json['coordinates'];
                     shared.dispatcher.trigger('map.create-polygon', { 'polygon': polygon });
@@ -105,12 +104,14 @@ define([
                     var southwest_lng = parseFloat(data.viewport.southwest_lng);
                     if (southwest_lat !== 0.0 && southwest_lng !== 0.0 && northeast_lat !== 0.0 && northeast_lng) {
                         map._setFitBound(southwest_lat, southwest_lng, northeast_lat, northeast_lng);
-                        shared.dispatcher.trigger('map.update-bound', {
-                            'southwest_lat': southwest_lat,
-                            'southwest_lng': southwest_lng,
-                            'northeast_lat': northeast_lat,
-                            'northeast_lng': northeast_lng
-                        });
+                        if (!rerender) {
+                            shared.dispatcher.trigger('map.update-bound', {
+                                'southwest_lat': southwest_lat,
+                                'southwest_lng': southwest_lng,
+                                'northeast_lat': northeast_lat,
+                                'northeast_lng': northeast_lng
+                            });
+                        }
                     }
                 }
                 mapcount();
