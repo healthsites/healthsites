@@ -152,10 +152,19 @@
                 </div>
             </div>
             <br>
-            <div id="pending-review" class="pending" style="display: none">
+            <div id="pending-review-error" class="pending" style="display: none">
                 <h3>Error records when submitted</h3>
                 <div><i style="color: grey; font-size: 12px">This list contains records that you uploaded before from odk,
                     but was not success because of some error.</i></div>
+                <br>
+                <div class="pending-wrapper">
+                    <div class="graph updates">
+                    </div>
+                </div>
+            </div>
+            <div id="pending-review-draft" class="pending" style="display: none">
+                <h3>Your draft</h3>
+                <div><i style="color: grey; font-size: 12px">This list contains records that you uploaded before as a draft but haven't sent yet to osm.</i></div>
                 <br>
                 <div class="pending-wrapper">
                     <div class="graph updates">
@@ -291,6 +300,14 @@
                 success: function (data) {
                     // Show pending reviews
                     if (data.length > 0) {
+                        let $duplication = $('#duplication');
+                        let $duplicationWrapper = $duplication.find('.graph');
+                        let $error = $('#pending-review-error');
+                        let $errorWrapper = $error.find('.graph');
+                        let $draft = $('#pending-review-draft');
+                        let $draftWrapper = $draft.find('.graph');
+
+
                         $.each(data, function (index, value) {
                             var $wrapper = null;
                             var html = "<table class=\"entry\">";
@@ -301,12 +318,15 @@
                             html += "<span class=\"name\">";
                             html += "by <a href=\"/profile/" + value.uploader + "\">@" + value.uploader + "</a></span> ";
                             if (value.reason.indexOf("Duplication") >= 0) {
-                                $wrapper = $('#duplication').find('.graph');
-                                $('#duplication').show();
+                                $duplication.show();
+                                $wrapper = $duplicationWrapper;
+                            } else if (value.status === 'DRAFT') {
+                                $draft.show();
+                                $wrapper = $draftWrapper;
                             } else {
                                 html += ' (' + value.reason + ')';
-                                $wrapper = $('#pending-review').find('.graph');
-                                $('#pending-review').show();
+                                $error.show();
+                                $wrapper = $errorWrapper;
                             }
                             html += "</td></table>";
                             $wrapper.append(html);

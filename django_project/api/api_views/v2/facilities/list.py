@@ -27,12 +27,10 @@ from api.utilities.statistic import get_statistic_with_cache
 from core.settings.utils import ABS_PATH
 from localities.models import Country
 from api.utilities.pending import (
-    create_pending_update,
     create_pending_review, update_pending_review,
-    delete_pending_review, get_pending_review)
+    get_pending_review)
 from localities_osm.queries import filter_locality
 from localities_osm.utilities import split_osm_and_extension_attr
-from localities_osm_extension.utils import save_extensions
 
 
 class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
@@ -118,6 +116,7 @@ class GetFacilities(
 
     def post(self, request):
         user = request.user
+        request.data['type'] = 'node'
         data = copy.deepcopy(request.data)
 
         if user.username in settings.TEST_USERS:
@@ -166,19 +165,23 @@ class GetFacilities(
             data['tag'] = convert_to_osm_tag(
                 mapping_file_path, data['tag'], 'node')
 
-            # Push data to OSM
-            response = create_osm_node(user, data)
-
-            # create pending index
-            create_pending_update(
-                'node', response['id'],
-                data['tag']['name'], user, response['version'])
-
-            save_extensions('node', response['id'], locality_attr)
+            # Put it as draft first
+            # response = create_osm_node(user, data)
+            #
+            # # create pending index
+            # create_pending_update(
+            #     'node', response['id'],
+            #     data['tag']['name'], user, response['version'])
+            #
+            # save_extensions('node', response['id'], locality_attr)
 
             if request.GET.get('review', None):
-                delete_pending_review(request.GET.get('review', None))
-            return Response(response)
+                update_pending_review(
+                    request.GET['review'],
+                    request.data, '', 'DRAFT')
+            else:
+                create_pending_review(user, request.data, '', 'DRAFT')
+            return Response('OK')
 
         except Exception as e:
             if not request.GET.get('review', None):
@@ -186,8 +189,8 @@ class GetFacilities(
                     create_pending_review(user, request.data, '%s' % e)
             else:
                 try:
-                    update_pending_review(request.GET.get(
-                        'review', None), request.data, '%s' % e)
+                    update_pending_review(
+                        request.GET['review'], request.data, '%s' % e, 'ERROR')
                 except Exception as e:
                     return HttpResponseBadRequest('%s' % e)
             output = {

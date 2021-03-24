@@ -50,8 +50,8 @@ class OsmApiWrapper(OsmApi, object):
         :type path: str
         """
         logger_msg = (
-            '%s %s %s'
-            % (time.strftime('%Y-%m-%d %H:%M:%S'), method, path)
+                '%s %s %s'
+                % (time.strftime('%Y-%m-%d %H:%M:%S'), method, path)
         )
         LOG.info(logger_msg)
 

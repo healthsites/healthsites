@@ -25,12 +25,11 @@ from localities_osm.serializer.locality_osm import (
     LocalityOSMWayGeoSerializer
 )
 from api.utilities.pending import (
-    create_pending_update, validate_pending_update,
-    create_pending_review, update_pending_review, delete_pending_review,
+    validate_pending_update,
+    create_pending_review, update_pending_review,
     get_pending_review)
 from api.utils import (
-    validate_osm_data, convert_to_osm_tag,
-    update_osm_node, update_osm_way, verify_user)
+    validate_osm_data, convert_to_osm_tag, verify_user)
 from localities_osm_extension.models.extension import LocalityOSMExtension
 
 
@@ -78,7 +77,6 @@ class GetDetailFacility(FacilitiesBaseAPI):
             raise Http404()
 
     def post(self, request, osm_type, osm_id):
-        data = copy.deepcopy(request.data)
         user = request.user
         if user.username in settings.TEST_USERS:
             raise Exception(
@@ -94,25 +92,22 @@ class GetDetailFacility(FacilitiesBaseAPI):
             )
 
         # delete uuid, because it is not editable
-        try:
-            del data['tag']['uuid']
-        except KeyError:
-            pass
 
         # Now, we post the data directly to OSM.
         try:
-            if osm_type == 'node':
-                osm_function = update_osm_node
-            elif osm_type == 'way':
-                osm_function = update_osm_way
-            else:
-                # For now, we only support Node
+            locality = self.getLocalityOsm(osm_type, osm_id)
+            request.data['id'] = osm_id
+            request.data['type'] = osm_type
+            request.data['version'] = locality.changeset_version
+            data = copy.deepcopy(request.data)
+            try:
+                del data['tag']['uuid']
+            except KeyError:
+                pass
+
+            if not osm_type == 'node' and not osm_type == 'way':
                 return HttpResponseBadRequest(
                     '%s is not supported as osm type' % osm_type)
-            locality = self.getLocalityOsm(osm_type, osm_id)
-            data['id'] = osm_id
-            data['type'] = osm_type
-            data['version'] = locality.changeset_version
 
             # Verify data uploader and owner/collector if the API is being
             # used for uploading data from other osm user.
@@ -142,31 +137,26 @@ class GetDetailFacility(FacilitiesBaseAPI):
                 mapping_file_path, data['tag'], osm_type)
 
             # Push data to OSM
-            response = osm_function(user, data)
+            # response = osm_function(user, data)
+            #
+            # create_pending_update(
+            #     osm_type,
+            #     response['id'],
+            #     data['tag']['name'],
+            #     user,
+            #     response['version']
+            # )
 
-            create_pending_update(
-                osm_type,
-                response['id'],
-                data['tag']['name'],
-                user,
-                response['version']
-            )
             if request.GET.get('review', None):
-                delete_pending_review(request.GET.get('review', None))
-            return Response(response)
-
+                update_pending_review(
+                    request.GET['review'],
+                    request.data, '', 'DRAFT')
+            else:
+                create_pending_review(user, request.data, '', 'DRAFT')
+            return Response('OK')
         except KeyError as e:
             return HttpResponseBadRequest('%s is needed' % e)
         except Exception as e:
-            if not request.GET.get('review', None):
-                if user != request.user:
-                    create_pending_review(user, request.data, '%s' % e)
-            else:
-                try:
-                    update_pending_review(request.GET.get(
-                        'review', None), request.data, '%s' % e)
-                except Exception as e:
-                    return HttpResponseBadRequest('%s' % e)
             output = {
                 'error': '%s' % e,
                 'payload': request.data,
