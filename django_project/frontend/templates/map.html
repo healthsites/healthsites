@@ -13,9 +13,9 @@
     <html itemscope itemtype="https://schema.org/Organization">
     <meta itemprop="name" content="healthsites.io">
     <meta itemprop="description" content="Building an open data commons of health facility data with OpenStreetMap">
-    <meta itemprop="image" content="https://staging.healthsites.io/static/img/healthsites-gp.png">
+    <meta itemprop="image" content="https://healthsites.io/static/img/healthsites-gp.png">
     <meta property="og:title" content="healthsites.io"/>
-    <meta property="og:image" content="https://staging.healthsites.io/static/img/healthsites-fb.png"/>
+    <meta property="og:image" content="https://healthsites.io/static/img/healthsites-fb.png"/>
     <meta property="og:description" content="Building an open data commons of health facility data with OpenStreetMap"/>
 
     <title>Healthsites.io</title>
@@ -75,7 +75,10 @@
         {% if countries %}
             {% for country in countries %}
                 var country = "{{ country.name }}";
-                countries.push(country);
+                countries.push({
+                    "name":"{{ country.name }}",
+                    "parent":"{{ country.parent__name }}",
+                });
             {% endfor %}
         {% endif %}
     </script>

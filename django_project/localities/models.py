@@ -961,20 +961,45 @@ post_save.connect(load_data, sender=DataLoader)
 # -------------------------------------------------
 # BOUNDARY OF COUNTRY
 # -------------------------------------------------
-class Boundary(models.Model):
-    """This is an abstract model that vectors can inherit from. e.g. country"""
-    name = models.CharField(
-        verbose_name='',
-        help_text='',
-        max_length=50,
-        null=False,
-        blank=False)
+class Administrative(models.Model):
+    """
+    TODO:
+      clean code, change all country references into using this
+      because we added continent also and also maybe sub region,
+      we need to change this as Administrative
 
-    polygon_geometry = models.MultiPolygonField(
-        srid=4326)
-
+    This is an administrative model (in abstract) that hold
+    - code
+    - name
+    - polygon
+    - in tree structure
+    """
     id = models.AutoField(
         primary_key=True)
+
+    name = models.CharField(
+        verbose_name='',
+        max_length=50,
+        help_text='name of administrative')
+
+    code = models.CharField(
+        blank=True,
+        null=True,
+        max_length=32,
+        unique=True,
+        help_text='administrative code')
+
+    parent = models.ForeignKey(
+        'self',
+        blank=True,
+        null=True,
+        help_text='is the administrative under other administrative (parent)',
+        on_delete=models.SET_NULL)
+
+    polygon_geometry = models.MultiPolygonField(
+        srid=4326,
+        blank=True,
+        null=True)
 
     objects = models.GeoManager()
 
@@ -985,7 +1010,7 @@ class Boundary(models.Model):
         abstract = True
 
 
-class Country(Boundary):
+class Country(Administrative):
     """Class for Country."""
 
     class Meta:

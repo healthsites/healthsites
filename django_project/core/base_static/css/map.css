@@ -176,6 +176,15 @@
     text-align: right;
 }
 
+#countries-table .col-xs-6 {
+    text-align: left;
+}
+
+#countries-table .col-xs-6 a:hover{
+    opacity: 0.5;
+    text-decoration: underline;
+}
+
 #countries-table .block-data {
     padding: 0 5px;
     border-bottom: 1px solid #eff0f0;
@@ -692,6 +701,14 @@ a.inner-navbar-brand:hover {
 
 #fb-share {
     cursor: pointer;
+}
+
+.leaflet-right {
+    display: block!important;
+}
+
+.credits {
+    display: none;
 }
 
 #filter-dashboard {

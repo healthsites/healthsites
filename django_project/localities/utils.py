@@ -92,7 +92,7 @@ def get_country_statistic(query):
             except IOError:
                 try:
                     # query for each of ATTRIBUTE
-                    healthsites = get_heathsites_master().in_polygon(
+                    healthsites = get_healthsites_master().in_polygon(
                         polygons)
                     output = get_statistic(healthsites)
                     output = json.dumps(output, cls=DjangoJSONEncoder)
@@ -122,7 +122,7 @@ def get_country_statistic(query):
                         os.makedirs(settings.CACHE_DIR)
 
                     # query for each of attribute
-                    healthsites = get_heathsites_master()
+                    healthsites = get_healthsites_master()
                     output = get_statistic(healthsites)
                     output = json.dumps(output, cls=DjangoJSONEncoder)
 
@@ -140,7 +140,7 @@ def get_country_statistic(query):
     return output
 
 
-def get_heathsites_master():
+def get_healthsites_master():
     return Locality.objects.filter(is_master=True).order_by('name')
 
 
@@ -517,11 +517,11 @@ def locality_updates(locality_id, date):
 def get_locality_by_spec_data(spec, data, uuid):
     try:
         locality = Locality.objects.get(uuid=uuid)
-        localities = get_heathsites_master().filter(
+        localities = get_healthsites_master().filter(
             geom__distance_lte=(locality.geom, D(mi=100))
         ).exclude(uuid=uuid).distance(locality.geom).order_by('-distance')
     except Locality.DoesNotExist:
-        localities = get_heathsites_master()
+        localities = get_healthsites_master()
 
     try:
         if spec == 'attribute':
@@ -574,7 +574,7 @@ def search_locality_by_tag(query):
             .filter(specification__attribute__key='tags')
             .filter(data__icontains='|' + query + '|').values('locality')
         )
-        localities = get_heathsites_master().filter(id__in=localities)
+        localities = get_healthsites_master().filter(id__in=localities)
         output = json.dumps(get_statistic(localities), cls=DjangoJSONEncoder)
         output = json.loads(output)
         return output

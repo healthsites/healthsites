@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from localities.models import Country, Domain, Specification
-from localities.utils import get_heathsites_master
+from localities.utils import get_healthsites_master
 
 directory_cache = settings.CACHE_DIR + '/shapefiles'
 directory_media = settings.MEDIA_ROOT + '/shapefiles'
@@ -128,10 +128,10 @@ class Command(BaseCommand):
         for country in countries:
             polygons = country.polygon_geometry
             # query for each of ATTRIBUTE
-            healthsites = get_heathsites_master().in_polygon(
+            healthsites = get_healthsites_master().in_polygon(
                 polygons)
             # generate shapefiles for country
             insert_to_shapefile(healthsites, fields, country.name)
 
         # generate shapefiles for all country
-        insert_to_shapefile(get_heathsites_master(), fields, 'facilities')
+        insert_to_shapefile(get_healthsites_master(), fields, 'facilities')

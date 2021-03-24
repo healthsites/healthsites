@@ -95,6 +95,15 @@ class Parameters(object):
         ),
     )
 
+    q = Field(
+        'q',
+        location='query',
+        required=True,
+        schema=String(
+            description='Query .'
+        ),
+    )
+
 
 class ApiSchemaBaseWithoutApiKey(BaseFilterBackend):
     schemas = []

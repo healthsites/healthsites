@@ -126,6 +126,12 @@ SHAPEFILE_DIR = os.path.join(MEDIA_ROOT, 'shapefiles')
 CLUSTER_CACHE_MAX_ZOOM = 5
 MAX_ZOOM = 18
 
+# DATA LICENSE
+LICENSES = [
+    ABS_PATH('api', 'LICENSE.txt'),
+    ABS_PATH('api', 'README.md')
+]
+
 # WHAT3WORDS API
 WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'
 DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
@@ -134,3 +140,7 @@ DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
 GATHER_API_URL = 'http://gather.staging.healthsites.io/dev/'
 GATHER_API_URL_ODK = 'http://gather.staging.healthsites.io:8443/dev/odk'
 DUPLICATION_RADIUS = 100  # in meters
+
+# test users will send the data to osm instead just raise error
+# fill with username in list
+TEST_USERS = []
