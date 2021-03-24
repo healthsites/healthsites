@@ -6,10 +6,13 @@ define([
         url: '/api/schema/',
         el: '#filter-dashboard',
         events: {
-            'click .cancel-btn': 'resetFilter'
+            'click .cancel-btn': 'resetFilter',
+            'click .apply-btn': 'applyFilter',
         },
         contentWrapper: '#filter-content',
-        allowedFilters: ['amenity', 'healthcare'],
+        allowedFilters: [
+            'amenity', 'healthcare', 'speciality', 'operational_status', 'electricity',
+            'emergency', 'dispensing'],
         initialize: function () {
             let that = this;
             this.getData();
@@ -59,6 +62,17 @@ define([
                     }
                     $wrapperItem.append($optionWrapper);
                     $wrapper.append($wrapperItem)
+                } else if (value['type'] === 'boolean') {
+                    $wrapper.append(`
+                        <div class="filter-item" data-key="${value["key"]}">
+                            <label for="${value["key"]}">${value["key"]}</label>
+                            <select class="form-control" type="text" id="${value["key"]}">
+                                <option></option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                            </select>
+                        </div>`
+                    )
                 } else {
                     $wrapper.append(`
                         <div class="filter-item" data-key="${value["key"]}">
@@ -83,6 +97,29 @@ define([
             }
 
         },
+        /** Apply filter **/
+        applyFilter: function () {
+            // $(this.el).find('button').prop('disabled', true);
+            let data = {}
+            $('#filter-tab').removeClass('active')
+            $('.filter-item').each(function (index) {
+                let values = []
+                $(this).find('input:checked').each(function (index) {
+                    values.push($(this).attr('value'));
+                });
+                $(this).find('select').each(function (index) {
+                    values.push($(this).val());
+                });
+
+                if (values.length > 0) {
+                    data[$(this).data('key')] = values
+                    $('#filter-tab').addClass('active')
+                }
+            });
+            dataFilters = data;
+            shared.dispatcher.trigger('cluster.reload');
+            shared.dispatcher.trigger('statistic.rerender');
+        },
         /** reset filter **/
         resetFilter: function () {
             $('input[type=checkbox]').each(function () {
@@ -91,6 +128,7 @@ define([
             $('input[type=text]').each(function () {
                 $(this).val('')
             })
+            this.applyFilter();
         }
     })
 });

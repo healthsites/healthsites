@@ -64,7 +64,7 @@ def get_statistic_cache(extent, country):
         return None
 
 
-def get_statistic_with_cache(extent, country, timestamp_from, timestamp_to):
+def get_statistic_with_cache(extent, country, timestamp_from, timestamp_to, filters=''):
     """ Checking cache of statistic data
     How it is work? Get cache, if it presents, return cache
     If not, call statistic function and save into cache.
@@ -77,12 +77,13 @@ def get_statistic_with_cache(extent, country, timestamp_from, timestamp_to):
 
     :return: json
     """
-    cached_data = get_statistic_cache(extent, country)
-    country_data_into_statistic_task.delay(extent, country)
+    if not filters:
+        cached_data = get_statistic_cache(extent, country)
+        country_data_into_statistic_task.delay(extent, country)
 
-    # if cahed data presented
-    if cached_data:
-        return cached_data
+        # if cahed data presented
+        if cached_data:
+            return cached_data
 
     # if not return from statistic
     return get_statistic(
@@ -90,7 +91,8 @@ def get_statistic_with_cache(extent, country, timestamp_from, timestamp_to):
             extent=extent,
             country=country,
             timestamp_from=timestamp_from,
-            timestamp_to=timestamp_to
+            timestamp_to=timestamp_to,
+            filters=filters
         )
     )
 

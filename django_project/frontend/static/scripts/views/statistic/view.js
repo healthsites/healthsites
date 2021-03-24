@@ -7,6 +7,7 @@ define([
     return Backbone.View.extend({
         initialize: function () {
             this.listenTo(shared.dispatcher, 'show-statistic', this.showStatistic);
+            this.listenTo(shared.dispatcher, 'statistic.rerender', this.rerenderStatistic);
             this.$localityNumber = $("#locality-number");
             this.$updateWrapper = $("#updates-wrapper");
             this.$title = $("#title");
@@ -21,10 +22,15 @@ define([
         getStatistic: function (country, successCallback, errorCallback) {
             this.request.getStatistic(country, successCallback, errorCallback);
         },
+        rerenderStatistic: function () {
+            this.showStatistic(this.country);
+        },
         showStatistic: function (country, successCallback, errorCallback) {
             var self = this;
+            console.log(country)
+            self.country = country;
             this.getStatistic(country, function (data) {
-                shared.dispatcher.trigger('map.update-geoname', {'geoname': country});
+                shared.dispatcher.trigger('map.update-geoname', { 'geoname': country });
 
                 //{# default #}
                 self.$localityNumber.html(0);
@@ -90,7 +96,7 @@ define([
                 if (polygon_raw) {
                     var polygon_json = JSON.parse(polygon_raw);
                     var polygon = polygon_json['coordinates'];
-                    shared.dispatcher.trigger('map.create-polygon', {'polygon': polygon});
+                    shared.dispatcher.trigger('map.create-polygon', { 'polygon': polygon });
                 }
                 if (data.viewport) {
                     var northeast_lat = parseFloat(data.viewport.northeast_lat);

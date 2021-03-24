@@ -61,7 +61,9 @@ class GetCluster(BaseAPI):
         except ErrorParameter as e:
             return HttpResponseBadRequest('%s' % e)
 
-        if zoom <= settings.CLUSTER_CACHE_MAX_ZOOM:
+        filters = json.loads(request.GET.get('filters', '{}'))
+
+        if zoom <= settings.CLUSTER_CACHE_MAX_ZOOM and not filters:
             filename = '{}_{}_{}_localities.json'.format(zoom, *iconsize)
             if geoname:
                 filename = \
@@ -97,6 +99,7 @@ class GetCluster(BaseAPI):
                 localities = localities.in_polygon(polygon)
             except Country.DoesNotExist:
                 pass
+        localities = localities.in_filters(filters)
         return Response(
             oms_view_cluster(localities, zoom, *iconsize))
 

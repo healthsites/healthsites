@@ -1,5 +1,6 @@
 var shared = {};
 var parameters;
+let dataFilters = {};
 var map;
 shared['hash'] = function () {
     return window.location.hash.substr(2);

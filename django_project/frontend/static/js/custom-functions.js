@@ -13,8 +13,10 @@ function mapcount() {
     var s_width = $('.location-info').width();
     var r_height = v_height - h_height;
     if (v_width <= 991) {
+        $('.filters-wrapper').hide();
         var pad = r_height / 2;
-        $('.location-info').css('margin-top', h_height + pad);
+        $('.location-info').css('top', h_height + pad);
+        $('.location-info').css('height', '50%');
         $('.map-page #map').css('top', h_height);
         $('#map, #map-home').css('height', pad);
         $('#map, #map-home').css('width', v_width);
@@ -31,10 +33,9 @@ function mapcount() {
         if ($('.select-country').length > 0) {
             var c_height = $('.country-data').css('height');
         }
-        $('.location-info').css('margin-top', h_height);
-        $('.map-page #map').css('height', v_height - h_height);
+        $('#map-full').css('height', v_height - h_height);
+        $('#map-full').css('top', h_height);
         $('.map-page #map').css('width', v_width - s_width);
-        $('.map-page #map').css('top', h_height);
         $('body').removeClass('search-focus');
         $('#map, #map-home').css('height', c_height);
     }

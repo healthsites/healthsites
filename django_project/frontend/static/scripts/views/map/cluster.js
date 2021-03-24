@@ -85,6 +85,10 @@ define([
                 // TODO: we should probably create a custom map event and encapsulate this behaviour
                 self.localitySaved = true;
             });
+
+            shared.dispatcher.on('cluster.reload', function () {
+                self.update();
+            });
         },
 
 
@@ -321,7 +325,8 @@ define([
                     'tag': tag,
                     'spec': spec,
                     'data': data,
-                    'uuid': uuid
+                    'uuid': uuid,
+                    'filters' : JSON.stringify(dataFilters)
                 });
                 // when using cached data we don't need to make any new requests
                 // for example, this is useful when changing app contexts without changing map view
@@ -357,9 +362,11 @@ define([
                     }
                 };
             }
+            $('#loading-indicator').show();
             var request = new XMLHttpRequest();
             request.open('GET', url);
             request.onreadystatechange = function () {
+                $('#loading-indicator').hide();
                 var response = {};
                 if (request.readyState === 4 && request.status === 200) {
                     try {

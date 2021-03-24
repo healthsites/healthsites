@@ -8,7 +8,8 @@ define([
                 url: this.url + 'statistic',
                 dataType: 'json',
                 data: {
-                    country: country
+                    country: country,
+                    filters: JSON.stringify(dataFilters)
                 },
                 success: function (data) {
                     if (successCallback) {
@@ -27,7 +28,8 @@ define([
                 url: this.url + 'count',
                 dataType: 'json',
                 data: {
-                    country: country
+                    country: country,
+                    filters: dataFilters
                 },
                 success: function (data) {
                     if (successCallback) {

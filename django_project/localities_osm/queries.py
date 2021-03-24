@@ -13,7 +13,7 @@ def all_locality():
 
 
 def filter_locality(
-        extent=None, country=None, timestamp_from=None, timestamp_to=None, place=None):
+        extent=None, country=None, timestamp_from=None, timestamp_to=None, place=None, filters={}):
     """ Filter osm locality by extent and country
     :param extent: extent of data
     :type extent: str (with comma separator)
@@ -65,5 +65,6 @@ def filter_locality(
 
     if timestamp_to:
         queryset = queryset.filter(changeset_timestamp__lte=timestamp_to)
-
+    if filters:
+        queryset = queryset.in_filters(filters)
     return queryset
