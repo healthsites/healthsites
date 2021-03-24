@@ -172,6 +172,9 @@ class LocalityOSMView(LocalityOSM):
     """ This model is a view model (that created on migrations) that
     union node and way
     """
+    NODE = 'node'
+    WAY = 'way'
+
     geometry = models.GeometryField(
         srid=4326, blank=True, null=True)
     row = models.CharField(

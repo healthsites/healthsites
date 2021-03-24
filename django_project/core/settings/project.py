@@ -122,6 +122,7 @@ PIPELINE_CSS['home'] = {
 CACHE_DIR = '/home/web/cache'
 CLUSTER_CACHE_DIR = os.path.join(CACHE_DIR, 'cluster')
 STATISTIC_CACHE_DIR = os.path.join(CACHE_DIR, 'statistic')
+SHAPEFILE_DIR = os.path.join(MEDIA_ROOT, 'shapefiles')
 CLUSTER_CACHE_MAX_ZOOM = 5
 MAX_ZOOM = 18
 
