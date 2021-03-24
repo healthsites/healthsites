@@ -56,7 +56,7 @@ require([
     'static/scripts/views/map-sidebar/filter.js',
     'static/scripts/views/navbar/search.js',
     'static/scripts/views/map/app.js'
-], function ($, bootstrap, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App) {
+], function ($, bootstrap, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Filter, Search, App) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     parameters = new Parameters();
     map = new MAP();
@@ -67,6 +67,7 @@ require([
     L.clusterLayer = new Cluster();
     var countryStatictic = new CountryStatistic();
     new LocalityDetail();
+    new Filter();
     var search = new Search();
     new ShapefileDownloader();
     if (countries.length) {

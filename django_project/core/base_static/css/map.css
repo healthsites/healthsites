@@ -180,7 +180,7 @@
     text-align: left;
 }
 
-#countries-table .col-xs-6 a:hover{
+#countries-table .col-xs-6 a:hover {
     opacity: 0.5;
     text-decoration: underline;
 }
@@ -704,13 +704,14 @@ a.inner-navbar-brand:hover {
 }
 
 .leaflet-right {
-    display: block!important;
+    display: block !important;
 }
 
 .credits {
     display: none;
 }
 
+/* filters */
 #filter-dashboard {
     position: absolute;
     width: 300px;
@@ -735,26 +736,33 @@ a.inner-navbar-brand:hover {
     cursor: pointer;
 }
 
+#filter-dashboard h3 {
+    font-size: 18px;
+}
+
 #filter-content, .filter-button-wrapper {
     padding: 7px 20px;
 }
 
-.filter-item {
-    margin-bottom: 10px;
+#filter-dashboard .filter-item {
+    margin-bottom: 20px;
 }
 
-.option-item {
+.filter-item .option-item {
     display: inline-block;
     padding: 0 5px;
-    border: 1px solid lightgray;
+    border: 1px solid #ddd;
     margin: 2px;
 }
 
-.option-item-wrapper {
-    max-height: 150px;
-    overflow-y: auto;
+.filter-item .option-item label {
+    font-weight: 300 !important;
 }
 
-.form-control {
+.filter-item .option-item input, .filter-item .option-item label {
+    cursor: pointer !important;
+}
+
+.filter-item .form-control {
     width: 100% !important;
 }

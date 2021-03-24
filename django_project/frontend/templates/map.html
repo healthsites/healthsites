@@ -76,8 +76,8 @@
             {% for country in countries %}
                 var country = "{{ country.name }}";
                 countries.push({
-                    "name":"{{ country.name }}",
-                    "parent":"{{ country.parent__name }}",
+                    "name": "{{ country.name }}",
+                    "parent": "{{ country.parent__name }}",
                 });
             {% endfor %}
         {% endif %}
@@ -142,7 +142,10 @@
     </div>
     <div id="filter-tab"><b>Filters</b></div>
     <div id="filter-dashboard" style="display: none">
-        <div id="filter-content"></div>
+        <div id="filter-content">
+            <h3>Filter data in map</h3>
+            <hr>
+        </div>
         <div class="filter-button-wrapper">
             <div class="col-lg-12" style="padding: 0; margin-bottom: 20px">
                 <div class="col-lg-6" style="padding: 0; padding-right: 2px">
@@ -228,7 +231,7 @@
             latitude = parseFloat(latitude);
             var longitude = "{{ location.x }}";
             longitude = parseFloat(longitude);
-            shared.dispatcher.trigger('map.pan', {'location': [latitude, longitude]});
+            shared.dispatcher.trigger('map.pan', { 'location': [latitude, longitude] });
         {% endif %}
 
         {% if viewport %}
@@ -277,7 +280,7 @@
         // check cookie for create mode from request
         {% if new_geom %}
             var new_geom = "{{ new_geom }}".split(",");
-            shared.dispatcher.trigger('map.pan', {'location': [new_geom[0], new_geom[1]], 'zoom': 10});
+            shared.dispatcher.trigger('map.pan', { 'location': [new_geom[0], new_geom[1]], 'zoom': 10 });
             $('#add-button').click();
         {% endif %}
         // check cookie for create mode
@@ -339,15 +342,15 @@
                 var longitude = "{{ spec.location.x }}";
                 geom[0] = parseFloat(longitude);
             {% endif %}
-            shared.dispatcher.trigger('map.update-tag', {'tag': "{{ tag }}"});
+            shared.dispatcher.trigger('map.update-tag', { 'tag': "{{ tag }}" });
         {% elif country %}
             $("#title-name").html("{{ country }}");
-            shared.dispatcher.trigger('map.update-geoname', {'geoname': "{{ country }}"});
+            shared.dispatcher.trigger('map.update-geoname', { 'geoname': "{{ country }}" });
             // creating polygon
             var polygon_raw = '{{ polygon|safe }}';
             var polygon_json = JSON.parse(polygon_raw);
             var polygon = polygon_json['coordinates'];
-            shared.dispatcher.trigger('map.create-polygon', {'polygon': polygon});
+            shared.dispatcher.trigger('map.create-polygon', { 'polygon': polygon });
         {% elif spec %}
             var spec = "{{ spec.spec }}";
             var data = "{{ spec.data }}";
