@@ -7,6 +7,7 @@ define([
     return Backbone.View.extend({
         initialize: function () {
             this.listenTo(shared.dispatcher, 'show-statistic', this.showStatistic);
+            this.listenTo(shared.dispatcher, 'statistic.rerender', this.rerenderStatistic);
             this.$localityNumber = $("#locality-number");
             this.$updateWrapper = $("#updates-wrapper");
             this.$title = $("#title");
@@ -21,10 +22,14 @@ define([
         getStatistic: function (country, successCallback, errorCallback) {
             this.request.getStatistic(country, successCallback, errorCallback);
         },
-        showStatistic: function (country, successCallback, errorCallback) {
+        rerenderStatistic: function () {
+            this.showStatistic(this.country, null, null, rerender);
+        },
+        showStatistic: function (country, successCallback, errorCallback, rerender) {
             var self = this;
+            self.country = country;
             this.getStatistic(country, function (data) {
-                shared.dispatcher.trigger('map.update-geoname', {'geoname': country});
+                shared.dispatcher.trigger('map.update-geoname', { 'geoname': country });
 
                 //{# default #}
                 self.$localityNumber.html(0);
@@ -87,10 +92,10 @@ define([
                 //{# set view port #}
                 // creating polygon
                 var polygon_raw = data.geometry;
-                if (polygon_raw) {
+                if (polygon_raw && !rerender) {
                     var polygon_json = JSON.parse(polygon_raw);
                     var polygon = polygon_json['coordinates'];
-                    shared.dispatcher.trigger('map.create-polygon', {'polygon': polygon});
+                    shared.dispatcher.trigger('map.create-polygon', { 'polygon': polygon });
                 }
                 if (data.viewport) {
                     var northeast_lat = parseFloat(data.viewport.northeast_lat);
@@ -99,12 +104,14 @@ define([
                     var southwest_lng = parseFloat(data.viewport.southwest_lng);
                     if (southwest_lat !== 0.0 && southwest_lng !== 0.0 && northeast_lat !== 0.0 && northeast_lng) {
                         map._setFitBound(southwest_lat, southwest_lng, northeast_lat, northeast_lng);
-                        shared.dispatcher.trigger('map.update-bound', {
-                            'southwest_lat': southwest_lat,
-                            'southwest_lng': southwest_lng,
-                            'northeast_lat': northeast_lat,
-                            'northeast_lng': northeast_lng
-                        });
+                        if (!rerender) {
+                            shared.dispatcher.trigger('map.update-bound', {
+                                'southwest_lat': southwest_lat,
+                                'southwest_lng': southwest_lng,
+                                'northeast_lat': northeast_lat,
+                                'northeast_lng': northeast_lng
+                            });
+                        }
                     }
                 }
                 mapcount();

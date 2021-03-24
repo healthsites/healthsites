@@ -93,3 +93,8 @@ Array.prototype.remove = function () {
 function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1)
 }
+
+function humanize(string) {
+    return capitalize(string).replaceAll('_', ' ')
+
+}

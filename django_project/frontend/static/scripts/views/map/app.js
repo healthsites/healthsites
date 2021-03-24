@@ -38,6 +38,7 @@ define([
         },
 
         setHashSilently: function (hash) {
+            console.log(hash)
             hasher.changed.active = false;  // disable changed signal
             hasher.setHash(hash);  // set hash without dispatching changed signal
             hasher.changed.active = true;  // re-enable signal
