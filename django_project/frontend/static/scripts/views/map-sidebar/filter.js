@@ -51,7 +51,7 @@ define([
                 }
                 if (value.hasOwnProperty('options')) {
                     let $wrapperItem = $(`<div class="filter-item" data-key="${value["key"]}"></div>`);
-                    $wrapperItem.append(`<label class="label-options" for="${value["key"]}">${value["key"]}</label>`);
+                    $wrapperItem.append(`<label class="label-options" for="${value["key"]}">${humanize(value["key"])}</label>`);
                     let $optionWrapper = $('<div class="option-item-wrapper"></div>');
                     for (let j = 0; j < value['options'].length; j++) {
                         $optionWrapper.append(`
@@ -65,7 +65,7 @@ define([
                 } else if (value['type'] === 'boolean') {
                     $wrapper.append(`
                         <div class="filter-item" data-key="${value["key"]}">
-                            <label for="${value["key"]}">${value["key"]}</label>
+                            <label for="${value["key"]}">${humanize(value["key"])}</label>
                             <select class="form-control" type="text" id="${value["key"]}">
                                 <option></option>
                                 <option value="yes">Yes</option>
@@ -76,7 +76,7 @@ define([
                 } else {
                     $wrapper.append(`
                         <div class="filter-item" data-key="${value["key"]}">
-                            <label for="${value["key"]}">${value["key"]}</label>
+                            <label for="${value["key"]}">${humanize(value["key"])}</label>
                             <input class="form-control" type="text" id="${value["key"]}">
                         </div>`
                     )
