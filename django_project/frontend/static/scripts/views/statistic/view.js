@@ -23,7 +23,7 @@ define([
             this.request.getStatistic(country, successCallback, errorCallback);
         },
         rerenderStatistic: function () {
-            this.showStatistic(this.country, null, null, rerender);
+            this.showStatistic(this.country, null, null, true);
         },
         showStatistic: function (country, successCallback, errorCallback, rerender) {
             var self = this;
