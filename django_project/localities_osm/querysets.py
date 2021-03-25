@@ -45,7 +45,7 @@ class OSMQuerySet(GeoQuerySet):
             if value:
                 query = Q()
                 for x in value:
-                    query |= Q(**{'{}__contains'.format(key): x})
+                    query |= Q(**{'{}__icontains'.format(key): x})
                 queryset = queryset.filter(query)
         LOG.debug('Filtering Localities using filters: %s', filters)
         return queryset
