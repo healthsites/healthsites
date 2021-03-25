@@ -14,6 +14,13 @@ define([
                 success: function (data) {
                     if (successCallback) {
                         successCallback(data);
+
+                        // show and hide indicators
+                        if (Object.keys(dataFilters).length !== 0) {
+                            $('.filters-indicator').show();
+                        } else {
+                            $('.filters-indicator').hide();
+                        }
                     }
                 },
                 error: function (error) {

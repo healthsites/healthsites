@@ -67,13 +67,14 @@ require([
     L.clusterLayer = new Cluster();
     var countryStatictic = new CountryStatistic();
     new LocalityDetail();
-    new Filter();
     var search = new Search();
     new ShapefileDownloader();
     if (countries.length) {
         if (parameters.get('country')) {
+            new Filter(true);
             new CountryList($('#locality-statistic #countries-table'), parameters.get('country'));
         } else {
+            new Filter(false);
             new CountryList($('#countries-table'));
         }
     }
@@ -136,7 +137,7 @@ require([
 
     // geolocate
     function returnPosition(position) {
-        shared.dispatcher.trigger('map.pan', {'location': [position.coords.latitude, position.coords.longitude]});
+        shared.dispatcher.trigger('map.pan', { 'location': [position.coords.latitude, position.coords.longitude] });
     }
 
     $('#geolocate').click(function () {

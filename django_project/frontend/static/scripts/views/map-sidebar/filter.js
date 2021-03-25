@@ -11,14 +11,18 @@ define([
         },
         contentWrapper: '#filter-content',
         allowedFilters: [
-            'amenity', 'healthcare', 'speciality', 'operational_status', 'electricity',
+            'amenity', 'healthcare', 'speciality', 'health_amenity_type', 'operational_status', 'electricity',
             'emergency', 'dispensing'],
-        initialize: function () {
+        initialize: function (activate) {
             let that = this;
-            this.getData();
             $('#filter-tab').click(function () {
                 that.toggleFilter()
             })
+            if (activate) {
+                this.getData();
+            } else {
+                $('.filter-button-wrapper').hide();
+            }
         },
         /** Getting data filter from schema
          */
@@ -49,9 +53,14 @@ define([
                 if (!that.allowedFilters.includes(value["key"])) {
                     return
                 }
+
+                // override the label
+                const label = value['key'] === 'health_amenity_type' ? 'Equipment' : value['key'];
+
+
                 if (value.hasOwnProperty('options')) {
                     let $wrapperItem = $(`<div class="filter-item" data-key="${value["key"]}"></div>`);
-                    $wrapperItem.append(`<label class="label-options" for="${value["key"]}">${humanize(value["key"])}</label>`);
+                    $wrapperItem.append(`<label class="label-options" for="${value["key"]}">${humanize(label)}</label>`);
                     let $optionWrapper = $('<div class="option-item-wrapper"></div>');
                     for (let j = 0; j < value['options'].length; j++) {
                         $optionWrapper.append(`
