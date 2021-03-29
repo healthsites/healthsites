@@ -53,9 +53,10 @@ require([
     'static/scripts/views/map-sidebar/country-list.js',
     'static/scripts/views/map-sidebar/healthsite-detail/control.js',
     'static/scripts/views/map-sidebar/shapefile-downloader.js',
+    'static/scripts/views/map-sidebar/filter.js',
     'static/scripts/views/navbar/search.js',
     'static/scripts/views/map/app.js'
-], function ($, bootstrap, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Search, App) {
+], function ($, bootstrap, Backbone, _, L, Cluster, MAP, Parameters, Shared, CountryStatistic, CountryList, LocalityDetail, ShapefileDownloader, Filter, Search, App) {
     shared.dispatcher = _.extend({}, Backbone.Events);
     parameters = new Parameters();
     map = new MAP();
@@ -70,8 +71,10 @@ require([
     new ShapefileDownloader();
     if (countries.length) {
         if (parameters.get('country')) {
+            new Filter(true);
             new CountryList($('#locality-statistic #countries-table'), parameters.get('country'));
         } else {
+            new Filter(false);
             new CountryList($('#countries-table'));
         }
     }
@@ -134,7 +137,7 @@ require([
 
     // geolocate
     function returnPosition(position) {
-        shared.dispatcher.trigger('map.pan', {'location': [position.coords.latitude, position.coords.longitude]});
+        shared.dispatcher.trigger('map.pan', { 'location': [position.coords.latitude, position.coords.longitude] });
     }
 
     $('#geolocate').click(function () {

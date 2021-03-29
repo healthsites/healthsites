@@ -8,11 +8,19 @@ define([
                 url: this.url + 'statistic',
                 dataType: 'json',
                 data: {
-                    country: country
+                    country: country,
+                    filters: JSON.stringify(dataFilters)
                 },
                 success: function (data) {
                     if (successCallback) {
                         successCallback(data);
+
+                        // show and hide indicators
+                        if (Object.keys(dataFilters).length !== 0) {
+                            $('.filters-indicator').show();
+                        } else {
+                            $('.filters-indicator').hide();
+                        }
                     }
                 },
                 error: function (error) {
@@ -27,7 +35,8 @@ define([
                 url: this.url + 'count',
                 dataType: 'json',
                 data: {
-                    country: country
+                    country: country,
+                    filters: dataFilters
                 },
                 success: function (data) {
                     if (successCallback) {

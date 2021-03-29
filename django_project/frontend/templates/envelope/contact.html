@@ -4,15 +4,28 @@
 {% block stylesheet %}
     <link rel="stylesheet" href="/static/css/contact.css">/>
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <style>
         input[type='submit'] {
-            opacity: 0.5;
-            cursor: not-allowed;
+            padding: 5px;
+            margin-top: 10px;
+            cursor: pointer;
         }
 
-        input[type='submit'].enabled {
-            opacity: 1;
-            cursor: pointer;
+        tfoot {
+            display: none;
+        }
+
+        .g-recaptcha {
+            padding-left: 73px;
+        }
+
+        .errorlist {
+            color: red;
+        }
+
+        #captcha_response {
+            display: none;
         }
     </style>
 {% endblock stylesheet %}
@@ -45,10 +58,14 @@
                 {% for message in messages %}
                     {% if message.tags != "success" %}
                         {% render_contact_form %}
+                        <div class="g-recaptcha" data-sitekey="{{ CHAPCHA_SITE_KEY }}"></div>
+                        <input id="submit" type="submit" value="Send!">
                     {% endif %}
                 {% endfor %}
             {% else %}
                 {% render_contact_form %}
+                <div class="g-recaptcha" data-sitekey="{{ CHAPCHA_SITE_KEY }}"></div>
+                <input id="submit" type="submit" value="Send!">
             {% endif %}
             {% if messages %}
                 {% for message in messages %}
@@ -68,26 +85,20 @@
     </section>
 {% endblock %}
 {% block extra_js %}
-    <script src="https://www.google.com/recaptcha/api.js?render=6Ldj3uAZAAAAADlYpRQsjEaIKyelzBkjBac53WvQ"></script>
     <script>
         $(document).ready(function () {
-            let enabled = false;
             let $form = $('.container form');
-            var $submit = $("input[type='submit']");
             $form.submit(function (event) {
-                if (!enabled) {
+                const captcha = grecaptcha.getResponse();
+                if (!captcha) {
                     event.preventDefault();
                 }
-
+                $form.append('<input id="captcha_response" name="captcha_response" type="text" value="' + captcha + '">')
             });
-            grecaptcha.ready(function () {
-                grecaptcha.execute('6Ldj3uAZAAAAADlYpRQsjEaIKyelzBkjBac53WvQ', {action: 'validate_captcha'})
-                    .then(function (token) {
-                        $submit.addClass('enabled')
-                        enabled = true;
-                    });
-            });
-            $("#id_message").removeAttr("cols");
+            var $submit = $("#submit");
+            $submit.click(function () {
+                $form.submit();
+            })
         })
     </script>
 

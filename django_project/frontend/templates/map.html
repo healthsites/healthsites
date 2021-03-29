@@ -71,13 +71,14 @@
         {% endif %}
 
         var countries = [];
+        let currentCountry = '';
         // render country data list
         {% if countries %}
             {% for country in countries %}
                 var country = "{{ country.name }}";
                 countries.push({
-                    "name":"{{ country.name }}",
-                    "parent":"{{ country.parent__name }}",
+                    "name": "{{ country.name }}",
+                    "parent": "{{ country.parent__name }}",
                 });
             {% endfor %}
         {% endif %}
@@ -96,6 +97,11 @@
 
 {% include "sections/navbar.html" %}
 <section id="map-full" class="js-fullheight fluid-container">
+    <div id="loading-indicator">
+        <div id="loading-indicator-keyframe">
+
+        </div>
+    </div>
     <div class="location-info pad0x col-md-4">
         {# PROFILE SECTION #}
         {% include "sections/map/profile.html" %}
@@ -138,6 +144,27 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+    <div id="filter-tab" class="filters-wrapper"><b>Filters</b></div>
+    <div id="filter-dashboard" class="filters-wrapper" style="display: none">
+        <div id="filter-content">
+            <h3>Filter healthsites</h3>
+            <i style="color: grey">Filter healthsites on the map and the statistic.
+                Filter is available on National page.</i>
+            <hr>
+        </div>
+        <div class="filter-button-wrapper">
+            <div class="col-lg-12" style="padding: 0; margin-bottom: 20px">
+                <div class="col-lg-6" style="padding: 0; padding-right: 2px">
+                    <button class="apply-btn btn btn-primary" style="width: 100%">Apply</button>
+                </div>
+                <div class="col-lg-6" style="padding: 0; padding-left: 2px">
+                    <button class="cancel-btn btn btn-danger" style="width: 100%">Reset</button>
+                </div>
+            </div>
+            <br>
+            <br>
         </div>
     </div>
 </section>
@@ -214,7 +241,7 @@
             latitude = parseFloat(latitude);
             var longitude = "{{ location.x }}";
             longitude = parseFloat(longitude);
-            shared.dispatcher.trigger('map.pan', {'location': [latitude, longitude]});
+            shared.dispatcher.trigger('map.pan', { 'location': [latitude, longitude] });
         {% endif %}
 
         {% if viewport %}
@@ -263,7 +290,7 @@
         // check cookie for create mode from request
         {% if new_geom %}
             var new_geom = "{{ new_geom }}".split(",");
-            shared.dispatcher.trigger('map.pan', {'location': [new_geom[0], new_geom[1]], 'zoom': 10});
+            shared.dispatcher.trigger('map.pan', { 'location': [new_geom[0], new_geom[1]], 'zoom': 10 });
             $('#add-button').click();
         {% endif %}
         // check cookie for create mode
@@ -325,15 +352,15 @@
                 var longitude = "{{ spec.location.x }}";
                 geom[0] = parseFloat(longitude);
             {% endif %}
-            shared.dispatcher.trigger('map.update-tag', {'tag': "{{ tag }}"});
+            shared.dispatcher.trigger('map.update-tag', { 'tag': "{{ tag }}" });
         {% elif country %}
             $("#title-name").html("{{ country }}");
-            shared.dispatcher.trigger('map.update-geoname', {'geoname': "{{ country }}"});
+            shared.dispatcher.trigger('map.update-geoname', { 'geoname': "{{ country }}" });
             // creating polygon
             var polygon_raw = '{{ polygon|safe }}';
             var polygon_json = JSON.parse(polygon_raw);
             var polygon = polygon_json['coordinates'];
-            shared.dispatcher.trigger('map.create-polygon', {'polygon': polygon});
+            shared.dispatcher.trigger('map.create-polygon', { 'polygon': polygon });
         {% elif spec %}
             var spec = "{{ spec.spec }}";
             var data = "{{ spec.data }}";

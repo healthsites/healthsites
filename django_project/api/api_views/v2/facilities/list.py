@@ -239,6 +239,7 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
             extent = request.GET.get('extent', None)
             timestamp_from = request.GET.get('from', None)
             timestamp_to = request.GET.get('to', None)
+            filters = json.loads(request.GET.get('filters', '{}'))
 
             if timestamp_from:
                 timestamp_from = datetime.fromtimestamp(int(timestamp_from))
@@ -249,7 +250,7 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
             # get cache data
             output = \
                 get_statistic_with_cache(
-                    extent, country, timestamp_from, timestamp_to)
+                    extent, country, timestamp_from, timestamp_to, filters)
             if country:
                 country = self.get_country(country)
                 output['geometry'] = country.polygon_geometry.geojson
