@@ -22,7 +22,7 @@ Tests status: [![Build Status](https://travis-ci.org/healthsites/healthsites.svg
 
 Coverage status: [![Coverage Status](https://coveralls.io/repos/github/healthsites/healthsites/badge.svg?branch=develop)](https://coveralls.io/github/healthsites/healthsites?branch=develop)
 
-Development status: [![User stories in the backlog](https://github.com/healthsites/healthsites/projects/12)
+Development status: [User stories in the backlog](https://github.com/healthsites/healthsites/projects/12)
 
 # License
 
