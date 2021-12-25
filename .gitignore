@@ -1,97 +1,12 @@
-# project specifc
-django_project/core/settings/secret.py
-django_project/cache
-django_project/media
-django_project/celerybeat-schedule
-deployment/pg
-xmlrunner
-
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-env/
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# PyInstaller
-# Usually these files are written by a python script from a template
-# before PyInstaller builds the exe, so as to inject date/other infos
-# into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-#PyCharm
 .idea
-
-# Virtual env
-venv
-
-# Node
-django_project/static
-node_modules
-
-# Working data not intended to be versioned
-data_for_import
-
-deployment/docker/71-apt-cacher-ng
-mapproxy
-maps
-deployment/docker-osm-healthcare/settings
-deployment/static
+deployment/.env
 deployment/backups
-deployment/cache
-deployment/media
-django_project/core/settings/version.txt
+deployment/docker-compose.override.yml
+deployment/volumes
+deployment/sites-enabled/default.conf
+deployment/docker-osm-healthcare/settings
 
-# OSX things
-*.DS_Store
+__pycache__/
 
-# Other
-
-.bash_history
-.pycharm_helpers
-*~
-*.orig
-scrap.txt
+django_project/.pycharm_helpers/
+celerybeat-schedule*

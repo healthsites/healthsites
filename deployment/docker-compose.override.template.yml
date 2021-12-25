@@ -1,0 +1,53 @@
+version: '3.4'
+services:
+  db:
+    volumes:
+      - ./volumes/database:/var/lib/postgresql/13
+      - ./volumes/backups:/backups
+  dbbackups:
+    volumes:
+      - ./volumes/backups:/backups
+  django:
+    build:
+      context: ../
+      dockerfile: deployment/docker/Dockerfile
+      target: prod
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./volumes/static:/home/web/static
+      - ./volumes/media:/home/web/media
+      - ./volumes/cache:/home/web/cache
+  worker:
+    build:
+      context: ../
+      dockerfile: deployment/docker/Dockerfile
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./volumes/static:/home/web/static
+      - ./volumes/media:/home/web/media
+      - ./volumes/cache:/home/web/cache
+  nginx:
+    build:
+      context: ../
+      dockerfile: deployment/nginx/Dockerfile
+    volumes:
+      - ./volumes/static:/home/web/static:ro
+      - ./volumes/media:/home/web/media:ro
+      - ./volumes/cache:/home/web/cache:ro
+  dev:
+    build:
+      context: ../
+      dockerfile: deployment/docker/Dockerfile
+      target: dev
+    container_name: "${COMPOSE_PROJECT_NAME}_dev"
+    volumes:
+      - ../django_project:/home/web/django_project
+      - ./volumes/static:/home/web/static
+      - ./volumes/media:/home/web/media
+      - ./volumes/cache:/home/web/cache
+    ports:
+      # for django test server
+      - "2000:8080"
+      # for ssh
+      - "2001:22"
+    entrypoint: []

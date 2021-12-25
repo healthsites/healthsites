@@ -3,20 +3,14 @@ __date__ = '14/05/19'
 
 import json
 import os
-from datetime import date
-from hashlib import md5
 from django.conf import settings
 from django.http.response import HttpResponseBadRequest
-from django.db import connections, DatabaseError
-from django.db.utils import ProgrammingError
-from django.core.exceptions import FieldError
-from api.api_views.v2.base_api import BaseAPI
 from rest_framework.response import Response
+from api.api_views.v2.base_api import BaseAPI
 from api.utilities.clustering import oms_view_cluster
 from api.utilities.geometry import parse_bbox
 from localities.models import Country
 from localities_osm.queries import all_locality
-from localities_osm.models.locality import LocalityOSMView
 
 
 class ErrorParameter(Exception):
@@ -41,7 +35,7 @@ class GetCluster(BaseAPI):
         try:
             bbox_poly = parse_bbox(request.GET.get('bbox'))
             zoom = int(request.GET.get('zoom'))
-            icon_size = map(int, request.GET.get('iconsize').split(','))
+            icon_size = [int(i) for i in request.GET.get('iconsize').split(',')]
             geoname = request.GET.get('geoname')
         except Exception as e:
             raise ErrorParameter('%s is needed in parameters' % e)
@@ -64,11 +58,9 @@ class GetCluster(BaseAPI):
         filters = json.loads(request.GET.get('filters', '{}'))
 
         if zoom <= settings.CLUSTER_CACHE_MAX_ZOOM and not filters:
-            filename = '{}_{}_{}_localities.json'.format(zoom, *iconsize)
+            filename = f'{zoom}_{iconsize[0]}_{iconsize[1]}_localities.json'
             if geoname:
-                filename = \
-                    '{}_{}_{}_localities_{}.json'.format(
-                        zoom, iconsize[0], iconsize[1], geoname)
+                filename = f'{zoom}_{iconsize[0]}_{iconsize[1]}_localities_{geoname}.json'
             filename = os.path.join(
                 settings.CLUSTER_CACHE_DIR,
                 filename
@@ -102,77 +94,3 @@ class GetCluster(BaseAPI):
         localities = localities.in_filters(filters)
         return Response(
             oms_view_cluster(localities, zoom, *iconsize))
-
-
-class FilterOSMData(BaseAPI):
-    """Filters OSM data then returns the postgres view"""
-
-    def get(self, request, *args, **kwargs):
-        parameter_gets = request.GET.dict()
-        filter_parameters = {}
-        for get_key in parameter_gets:
-            filter_parameters['{}__in'.format(get_key)] = (
-                parameter_gets[get_key].split(',')
-            )
-        try:
-            localities = LocalityOSMView.objects.filter(**filter_parameters)
-        except FieldError as e:
-            return Response(str(e))
-        query_string = self.generate_query_string(localities)
-        hashed_query_string = md5(query_string).hexdigest()
-        view_name = 'osm-node-and-way-{}'.format(hashed_query_string)
-        self.create_view(view_name, query_string)
-        return Response(view_name)
-
-    def generate_query_string(self, queryset):
-        """
-        Generate raw string of queryset.
-        :param queryset: django queryset
-        :return: raw query in string
-        """
-        raw_query = queryset.query.sql_with_params()
-        if not raw_query:
-            return
-        formatted_params = ()
-        params = raw_query[1]
-        for param in params:
-            formatted_param = param
-            if (
-                    isinstance(param, unicode)
-                    or isinstance(param, int)  # noqa
-                    or isinstance(param, date)   # noqa
-            ):
-                formatted_param = '\'' + str(param) + '\''  # noqa
-            elif isinstance(param, list):
-                formatted_param = str(param)
-                formatted_param = formatted_param.replace('[u\'', '\'{"')  # noqa
-                formatted_param = formatted_param.replace('\',', '",')  # noqa
-                formatted_param = formatted_param.replace(' u\'', ' "')  # noqa
-                formatted_param = formatted_param.replace('\']', '"}\'')  # noqa
-            formatted_params += (formatted_param,)
-        query_string = raw_query[0] % formatted_params
-        return query_string
-
-    def create_view(self, name, sql_raw):
-        """
-        Create a postgres view, drop first if exist
-        :param name: name of the view
-        :param sql_raw: raw query in string
-        """
-        cursor = connections['docker_osm'].cursor()
-        try:
-            sql = (
-                'DROP VIEW IF EXISTS "{view_name}"'.
-                format(
-                    view_name=name
-                ))
-            cursor.execute('''%s''' % sql)  # noqa
-        except (ProgrammingError, DatabaseError):
-            pass
-        sql = (
-            'CREATE VIEW "{view_name}" AS {sql_raw}'.
-            format(
-                view_name=name,
-                sql_raw=sql_raw
-            ))
-        cursor.execute('''%s''' % sql)  # noqa

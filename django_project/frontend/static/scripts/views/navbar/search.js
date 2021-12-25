@@ -4,7 +4,7 @@ define([
     'jquery-ui', 'bootstrap'], function (Backbone, $, JqueryUI, Bootstrap) {
     return Backbone.View.extend({
         autocomplete_localities: "/api/v2/facilities/autocomplete/",
-        autocomplete_country: "/api/v2/countries/autocomplete/e",
+        autocomplete_country: "/api/v2/countries/autocomplete/",
         autocomplete_url: '',
         geoname_search: "/api/v2/gmaps/search/geoname",
         initialize: function () {

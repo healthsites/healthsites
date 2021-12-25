@@ -12,8 +12,7 @@ def parse_bbox(bbox):
     This function assumes that any raised exceptions will be handled upstream
     """
 
-    tmp_bbox = map(float, bbox.split(','))
-
+    tmp_bbox = [float(i) for i in bbox.split(',')]
     if tmp_bbox[0] > tmp_bbox[2] or tmp_bbox[1] > tmp_bbox[3]:
         # bbox is not properly formatted minLng, minLat, maxLng, maxLat
         raise ValueError

@@ -1,4 +1,4 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '31/01/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
 
 """ This application is handling data from docker osm """

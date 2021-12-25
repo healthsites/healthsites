@@ -56,8 +56,6 @@ define([
 
                 // override the label
                 const label = value['key'] === 'health_amenity_type' ? 'Equipment' : value['key'];
-
-
                 if (value.hasOwnProperty('options')) {
                     let $wrapperItem = $(`<div class="filter-item" data-key="${value["key"]}"></div>`);
                     $wrapperItem.append(`<label class="label-options" for="${value["key"]}">${humanize(label)}</label>`);

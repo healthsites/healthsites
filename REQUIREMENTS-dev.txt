@@ -1,2 +1,0 @@
--r deployment/docker/REQUIREMENTS-dev.txt
--r deployment/docker/REQUIREMENTS.txt

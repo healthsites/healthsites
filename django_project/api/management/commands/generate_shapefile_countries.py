@@ -30,12 +30,10 @@ def zipdir(path, ziph):
 
 # funtion to generate a .prj file
 def getWKT_PRJ(epsg_code):
-    import urllib
-    wkt = \
-        urllib.urlopen(
-            'http://spatialreference.org/ref/epsg/{0}/prettywkt/'.format(
-                epsg_code))
-    remove_spaces = wkt.read().replace(' ', '')
+    from urllib import request
+    wkt = request.urlopen(
+        'http://spatialreference.org/ref/epsg/{0}/prettywkt/'.format(epsg_code))
+    remove_spaces = wkt.read().decode("utf-8").replace(' ', '')
     output = remove_spaces.replace('\n', '')
     return output
 
@@ -92,7 +90,7 @@ def country_data_into_shapefile(country=None):
         TYPE=shapefile.POLYGON)
 
     # zip this output
-    print 'rezipping the files'
+    print('rezipping the files')
     if not os.path.exists(directory_media):
         os.makedirs(directory_media)
     filename = os.path.join(directory_media, '%s.zip' % country_name)
@@ -126,7 +124,7 @@ def insert_to_shapefile(query, fields, dir_shapefile, shp_filename, TYPE):
     )
 
     # Insert data into shapefile
-    print 'generating shape object for ' + shp_filename
+    print('generating shape object for ' + shp_filename)
 
     shapefile_output = os.path.join(dir_shapefile, shp_filename)
     shp = shapefile.Writer(shapefile_output, TYPE)
@@ -148,7 +146,7 @@ def insert_to_shapefile(query, fields, dir_shapefile, shp_filename, TYPE):
                 value = properties[field]
 
             try:
-                value = str(value.encode('utf8'))
+                value = value
             except AttributeError:
                 pass
             values.append(value)
@@ -201,7 +199,7 @@ class Command(BaseCommand):
             try:
                 country_data_into_shapefile('')
             except Exception as e:
-                print '{}'.format(e)
+                print('{}'.format(e))
 
         # generate shapefiles for countries
         countries = Country.objects.all()
@@ -214,4 +212,4 @@ class Command(BaseCommand):
             try:
                 country_data_into_shapefile(country.name)
             except Exception as e:
-                print '{}'.format(e)
+                print('{}'.format(e))

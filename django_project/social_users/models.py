@@ -13,11 +13,13 @@ LOG = logging.getLogger(__name__)
 
 class Profile(models.Model):
     """
-    Extention of User
+    Extension of User
     """
 
     user = models.OneToOneField(
-        User, default=1)
+        User, default=1,
+        on_delete=models.CASCADE
+    )
     profile_picture = models.CharField(
         default='', max_length=512, blank=True)
     osm_name = models.CharField(
@@ -30,11 +32,13 @@ class GatherUser(models.Model):
     """
 
     user = models.OneToOneField(
-        User, default=1)
+        User, default=1,
+        on_delete=models.CASCADE
+    )
     gather_id = models.IntegerField()
     gather_password = models.CharField(max_length=512)
 
-    def __unicode__(self):
+    def __str__(self):
         return u'%s' % self.user
 
 
@@ -43,10 +47,17 @@ class Organisation(models.Model):
     Extention of User
     """
 
-    name = models.CharField(blank=False, max_length=64)
-    site = models.ForeignKey(Site, on_delete=models.CASCADE, null=True, default=None)
-    contact = models.CharField(default='', blank=True, max_length=64)
-    organizer = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
+    name = models.CharField(
+        blank=False, max_length=64)
+    site = models.ForeignKey(
+        Site, on_delete=models.CASCADE, null=True, default=None
+    )
+    contact = models.CharField(
+        default='', blank=True, max_length=64
+    )
+    organizer = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=True, default=None
+    )
     trusted_users = models.ManyToManyField(
         'TrustedUser', through='OrganisationSupported', blank=True
     )
@@ -57,7 +68,7 @@ class Organisation(models.Model):
         else:
             return 'http://' + self.site.domain
 
-    def __unicode__(self):
+    def __str__(self):
         name = u'%s' % self.name
         if self.site:
             name += ' (%s)' % self.clean_website()
@@ -70,7 +81,9 @@ class TrustedUser(models.Model):
     """
 
     user = models.OneToOneField(
-        User, default=1, unique=True)
+        User, default=1, unique=True,
+        on_delete=models.CASCADE
+    )
     organisations_supported = models.ManyToManyField(
         'Organisation', through=Organisation.trusted_users.through, blank=True
     )

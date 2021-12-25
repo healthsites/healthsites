@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
+
 from django.contrib import admin
 from localities_osm.models.locality import (
     LocalityOSMNode,

@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
@@ -22,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='tag',
             name='extension',
-            field=models.ForeignKey(default=None, to='localities_osm_extension.LocalityOSMExtension'),
+            field=models.ForeignKey(default=None, to='localities_osm_extension.LocalityOSMExtension', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='tag',

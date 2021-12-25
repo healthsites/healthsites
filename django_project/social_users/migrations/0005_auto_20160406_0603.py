@@ -2,10 +2,10 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('sites', '0001_initial'),
         ('social_users', '0004_auto_20160331_1008'),
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=64)),
                 ('contact', models.CharField(default=b'', max_length=64, blank=True)),
-                ('site', models.ForeignKey(default=None, to='sites.Site', null=True)),
+                ('site', models.ForeignKey(default=None, to='sites.Site', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -27,7 +27,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('is_staff', models.BooleanField(default=False, verbose_name=b'Is Staff')),
                 ('date_added', models.DateField()),
-                ('organisation', models.ForeignKey(to='social_users.Organisation')),
+                ('organisation', models.ForeignKey(to='social_users.Organisation', on_delete=django.db.models.deletion.CASCADE)),
             ],
         ),
         migrations.RemoveField(
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organisationsupported',
             name='user',
-            field=models.ForeignKey(to='social_users.TrustedUser'),
+            field=models.ForeignKey(to='social_users.TrustedUser', on_delete=django.db.models.deletion.CASCADE),
         ),
         migrations.AddField(
             model_name='organisation',

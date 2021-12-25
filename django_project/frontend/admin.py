@@ -5,8 +5,8 @@ from django.contrib.flatpages.models import FlatPage
 from django.contrib.gis import admin
 from django.utils.safestring import mark_safe
 from ckeditor.widgets import CKEditorWidget
-from .models import CampaignPage
 from api.models.user_api_key import UserApiKey
+from .models import CampaignPage
 
 
 class CampaignPageAdminForm(forms.ModelForm):

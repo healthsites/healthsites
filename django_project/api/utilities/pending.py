@@ -1,8 +1,9 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '01/07/19'
 
-from localities_osm_extension.models.pending_state import LocalityOSMExtension, \
-    PendingUpdate, PendingReview
+from localities_osm_extension.models.pending_state import (
+    LocalityOSMExtension, PendingUpdate, PendingReview
+)
 from localities_osm.models.locality import LocalityOSMView
 
 

@@ -1,13 +1,17 @@
+django-nose
 coverage
+pep8
 pylint
 flake8
-flake8-quotes
 factory_boy
-autopep8
-isort
+
+django-devserver
 
 # documentation
 Sphinx
 
 # pdb plus plus
 pdbpp
+
+# mock
+mock

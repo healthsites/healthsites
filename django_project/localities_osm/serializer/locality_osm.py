@@ -1,5 +1,5 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '22/01/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
 
 import uuid
 import json
@@ -18,7 +18,7 @@ from localities_osm.models.locality import (
 from localities_osm_extension.models.extension import LocalityOSMExtension
 from localities_osm_extension.models.tag import Tag
 
-attributes_fields = LocalityOSM._meta.get_all_field_names()
+attributes_fields = [meta_field.name for meta_field in LocalityOSM._meta.get_fields()]
 attributes_fields.remove('osm_id')
 
 
@@ -98,8 +98,10 @@ class LocalityOSMBaseSerializer(object):
         return obj.osm_type
 
 
-class LocalityOSMSerializer(LocalityOSMBaseSerializer,
-                            ModelSerializer):
+class LocalityOSMSerializer(
+    LocalityOSMBaseSerializer,
+    ModelSerializer
+):
     attributes = SerializerMethodField()
     centroid = SerializerMethodField()
     completeness = SerializerMethodField()
@@ -117,8 +119,10 @@ class LocalityOSMSerializer(LocalityOSMBaseSerializer,
         return result
 
 
-class LocalityOSMGeoSerializer(LocalityOSMBaseSerializer,
-                               GeoFeatureModelSerializer):
+class LocalityOSMGeoSerializer(
+    LocalityOSMBaseSerializer,
+    GeoFeatureModelSerializer
+):
     attributes = SerializerMethodField()
     centroid = SerializerMethodField()
     completeness = SerializerMethodField()
@@ -137,8 +141,9 @@ class LocalityOSMGeoSerializer(LocalityOSMBaseSerializer,
         return result
 
 
-class LocalityOSMNodeSerializer(LocalityOSMBaseSerializer,
-                                ModelSerializer):
+class LocalityOSMNodeSerializer(
+    LocalityOSMBaseSerializer,
+    ModelSerializer):
     attributes = SerializerMethodField()
     centroid = SerializerMethodField()
     completeness = SerializerMethodField()
@@ -152,8 +157,9 @@ class LocalityOSMNodeSerializer(LocalityOSMBaseSerializer,
         fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
 
 
-class LocalityOSMNodeGeoSerializer(LocalityOSMBaseSerializer,
-                                   GeoFeatureModelSerializer):
+class LocalityOSMNodeGeoSerializer(
+    LocalityOSMBaseSerializer,
+    GeoFeatureModelSerializer):
     attributes = SerializerMethodField()
     centroid = SerializerMethodField()
     completeness = SerializerMethodField()
@@ -168,8 +174,9 @@ class LocalityOSMNodeGeoSerializer(LocalityOSMBaseSerializer,
         fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
 
 
-class LocalityOSMWaySerializer(LocalityOSMBaseSerializer,
-                               ModelSerializer):
+class LocalityOSMWaySerializer(
+    LocalityOSMBaseSerializer,
+    ModelSerializer):
     attributes = SerializerMethodField()
     centroid = SerializerMethodField()
     completeness = SerializerMethodField()
@@ -183,8 +190,9 @@ class LocalityOSMWaySerializer(LocalityOSMBaseSerializer,
         fields = ['attributes', 'centroid', 'osm_id', 'osm_type', 'completeness']
 
 
-class LocalityOSMWayGeoSerializer(LocalityOSMBaseSerializer,
-                                  GeoFeatureModelSerializer):
+class LocalityOSMWayGeoSerializer(
+    LocalityOSMBaseSerializer,
+    GeoFeatureModelSerializer):
     attributes = SerializerMethodField()
     centroid = SerializerMethodField()
     completeness = SerializerMethodField()

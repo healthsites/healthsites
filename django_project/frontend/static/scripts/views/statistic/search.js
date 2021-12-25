@@ -3,7 +3,7 @@ define([
     'jquery',
     'jquery-ui'], function (Backbone, $, JqueryUI) {
     return Backbone.View.extend({
-        url: '/countries',
+        url: "/api/v2/countries/autocomplete/",
         initialize: function () {
             var self = this;
             this.el = $('#country-form');
@@ -24,6 +24,8 @@ define([
                 },
                 minLength: 3,
                 select: function (event, ui) {
+                    $(self.el).find('input').val(ui.item.value);
+                    self.el.submit();
                 },
                 open: function () {
                     $(this).removeClass("ui-corner-all").addClass("ui-corner-top");

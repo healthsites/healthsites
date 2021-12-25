@@ -1,5 +1,5 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '04/04/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
 
 from localities_osm.models.locality import LocalityOSM
 
@@ -89,7 +89,7 @@ def split_osm_and_extension_attr(locality_attr):
 
     """
 
-    osm_fields = LocalityOSM._meta.get_all_field_names()
+    osm_fields = [f.name for f in LocalityOSM._meta.get_fields()]
 
     osm_attr = {}
     for field in osm_fields:

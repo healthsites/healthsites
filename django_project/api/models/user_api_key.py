@@ -12,7 +12,8 @@ class UserApiKey(models.Model):
     This model provide user API KEY to access API of healthsites
     """
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE)
     api_key = models.CharField(
         max_length=40, primary_key=True)
     is_active = models.BooleanField(
@@ -29,7 +30,7 @@ class UserApiKey(models.Model):
     def generate_key(self):
         return binascii.hexlify(os.urandom(20)).decode()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.api_key
 
     @staticmethod

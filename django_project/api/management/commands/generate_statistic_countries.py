@@ -44,7 +44,7 @@ class Command(BaseCommand):
         is_run_file = os.path.join(dirname, 'is_run')
         if os.path.exists(filename):
             if os.path.exists(is_run_file):
-                print '%s statistic generation already run' % country
+                print('%s statistic generation already run' % country)
                 LOG.info('%s statistic generation already run' % country)
                 return
             try:
@@ -64,7 +64,6 @@ class Command(BaseCommand):
                 return
 
         statistic = get_statistic(healthsites)
-
         # save the process
         LOG.info('%s statistic generated' % country)
         try:
@@ -75,4 +74,4 @@ class Command(BaseCommand):
         except IOError as e:
             pass
         except Exception as e:
-            print e
+            print(e)

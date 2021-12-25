@@ -1,11 +1,13 @@
 # coding=utf-8
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '03/05/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
 
 import googlemaps
 from django.conf import settings
 from django.http.response import HttpResponseBadRequest
+from rest_framework.schemas import coreapi, AutoSchema
 from rest_framework.views import APIView, Response
+from api.api_views.v2.schema import Parameters
 
 
 def search_by_geoname(geoname):
@@ -49,8 +51,12 @@ def search_by_geoname(geoname):
 
 
 class SearchByGeoname(APIView):
-    """ Search Location using geoname as query
     """
+    Search Location using geoname as query (q)
+    """
+    schema = AutoSchema(manual_fields=[
+        Parameters.q
+    ])
 
     def get(self, request):
         q = request.GET.get('q', '')
