@@ -80,7 +80,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            ABS_PATH('core', 'templates'),
             ABS_PATH('frontend', 'templates'),
         ],
         'OPTIONS': {

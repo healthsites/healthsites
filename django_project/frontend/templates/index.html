@@ -1,8 +1,7 @@
-{% load pipeline %}
 {% load static %}
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" itemscope itemtype="https://schema.org/Organization">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,44 +13,40 @@
     <meta property="og:title" content="healthsites.io"/>
     <meta property="og:image" content="https://healthsites.io/static/img/healthsites-fb.png"/>
     <meta property="og:description" content="Building an open data commons of health facility data with OpenStreetMap"/>
+    <link rel="shortcut icon" href="{% static "img/favicon.ico" %}" type="image/x-icon">
 
     <title>Healthsites.io</title>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/leaflet.css" rel="stylesheet" type="text/css"
-          media="screen, projection"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.3/leaflet.draw.css" rel="stylesheet"
-          type="text/css" media="screen, projection"/>
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet"
-          type="text/css" media="screen, projection"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" type="text/css"
-          media="screen, projection"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet"
-          type="text/css" media="screen, projection"/>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/jquery.slick/1.5.7/slick.css"/>
+    {# {% stylesheet 'base_library' %} #}
+    <link href="{% static 'libs/font-awesome/4.4.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/jquery-ui/1.11.4/jquery-ui.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/jquery.slick/1.5.7/slick.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/c3/0.4.10/c3.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/bootstrap/3.3.5/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/fonts.googleapis.com/Raleway.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/fonts.googleapis.com/Ubuntu.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
 
-    <link href='https://fonts.googleapis.com/css?family=Raleway:300,400,700,500,300' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Ubuntu:400,400italic,300,500,700' rel='stylesheet'
-          type='text/css'>
+    {# {% stylesheet 'project' %} #}
+    <link href="{% static 'css/jquery.cookiebar.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
 
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" type="text/css"
-          media="screen, projection"/>
-    <link rel="shortcut icon" href="static/img/favicon.ico" type="image/x-icon">
+    {# {% stylesheet 'base' %} #}
+    <link href="{% static 'css/site.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'css/home.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
 
-
-    {% stylesheet 'project' %}
-    {% stylesheet 'home' %}
-
-    {# HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries  #}
-    {# WARNING: Respond.js doesn't work if you view the page via file://  #}
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
+    {# {% stylesheet 'map' %} #}
+    <link href="{% static 'libs/leaflet/0.7.7/leaflet.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/leaflet.draw/0.2.3/leaflet.draw.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'css/map/locality-sidebar.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'css/map/widget/opening-hours.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'css/map/modal-duplication.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
 
 </head>
 
 <body class="body home" itemscope itemtype="http://schema.org/Organization">
+
 {% include "sections/navbar.html" %}
+
 <section id="tophome" class="slideshow js-fullheight fluid-container">
     <div class="slideshow-container limiter pin-top pin-bottom clearfix">
         <div class="z1 slideshow-text pad4y col-md-4 prose prose-big dark">
@@ -284,25 +279,79 @@
 </section>
 {% include "sections/footer.html" %}
 
+{#{% javascript 'base_library' %}#}
+<script src="{% static 'libs/jquery.js/3.3.1/jquery.min.js' %}"></script>
+<script src="{% static 'libs/jquery-ui/1.12.1/jquery-ui.min.js' %}"></script>
+<script src="{% static 'libs/bootstrap/3.3.5/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'libs/jquery.slick/1.5.7/slick.js' %}"></script>
+<script src="{% static 'libs/jquery.timepicker/1.10.0/jquery.timepicker.min.js' %}"></script>
+
+{#{% javascript 'project' %}#}
+<script src="{% static 'js/global/utilities.js' %}"></script>
+<script src="{% static 'js/global/custom-functions.js' %}"></script>
+<script src="{% static 'js/global/cookie-bar.js' %}"></script>
+<script src="{% static 'js/global/custom-jquery.js' %}"></script>
+<script src="{% static 'js/global/csrf-ajax.js' %}"></script>
+<script src="{% static 'js/global/nav-bar.js' %}"></script>
+<script src="{% static 'js/global/google-analytics.js' %}"></script>
+
+{#{% javascript 'basic_map' %}#}
+<script src="{% static 'libs/js-signals/1.0.0/js-signals.min.js' %}"></script>
+<script src="{% static 'libs/d3/3.5.7/d3.min.js' %}"></script>
+<script src="{% static 'libs/c3/0.4.10/c3.min.js' %}"></script>
+<script src="{% static 'libs/hasher/1.2.0/hasher.min.js' %}"></script>
+<script src="{% static 'libs/crossroads/0.12.2/crossroads.min.js' %}"></script>
+
 <script>
     var mapMaxZoom = {{ map_max_zoom | safe }};
+
+    const requireConfig = {
+        baseUrl: '/static/',
+        paths: {
+            "jquery": '{% static "libs/jquery.js/3.3.1/jquery.min.js" %}?',
+            "jquery-ui": '{% static "libs/jquery-ui/1.12.1/jquery-ui.min.js" %}?',
+            "backbone": '{% static "libs/backbone.js/1.4.0/backbone-min.js" %}?',
+            "underscore": '{% static "libs/underscore.js/1.9.1/underscore-min.js" %}?',
+            "leaflet": '{% static "libs/leaflet/0.7.7/leaflet-src.js" %}?',
+            'leafletDraw': '{% static 'libs/leaflet.draw/0.2.3/leaflet.draw-src.js' %}?',
+            'timePicker': '{% static  'libs/jquery.timepicker/1.10.0/jquery.timepicker.min.js' %}?',
+
+            {# project static  #}
+            'js/parameters': '{% static 'js/parameters.js' %}?',
+            'js/shared': '{% static 'js/shared.js' %}?',
+            'js/views/map/app': '{% static 'js/views/map/app.js' %}?',
+            'js/views/map/map': '{% static 'js/views/map/map.js' %}?',
+            'js/views/map/cluster': '{% static 'js/views/map/cluster.js' %}?',
+
+            'js/views/navbar/search': '{% static 'js/views/navbar/search.js' %}?',
+            'js/views/statistic/chart': '{% static 'js/views/statistic/chart.js' %}?',
+            'js/views/statistic/pie': '{% static 'js/views/statistic/pie.js' %}?',
+            'js/views/statistic/request': '{% static 'js/views/statistic/request.js' %}?',
+            'js/views/statistic/search': '{% static 'js/views/statistic/search.js' %}?',
+            'js/views/statistic/view': '{% static 'js/views/statistic/view.js' %}?',
+        },
+        shim: {
+            leaflet: {
+                exports: ['L']
+            },
+            leafletDraw: {
+                deps: ['leaflet'],
+                exports: 'LeafletDraw'
+            },
+            'js/views/map/map': {
+                deps: ['leaflet', 'leafletDraw']
+            },
+            'js/scripts/views/map/cluster': {
+                deps: ['leaflet'],
+            },
+        }
+    }
+
+    $(document).ready(function () {
+        renderCredit();
+    });
 </script>
-<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.7/d3.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
-<script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
-<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery.slick/1.5.7/slick.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/js-signals/1.0.0/js-signals.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hasher/1.2.0/hasher.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/crossroads/0.12.2/crossroads.min.js"></script>
-<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-
-{% javascript 'outsource' %}
-{% javascript 'project' %}
-{% javascript 'map' %}
-{% javascript 'home' %}
-
+<script data-main="{% static 'js/configs/index.js' %}" src="{% static 'libs/require.js/2.3.6/require.min.js' %}"></script>
 <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
 </body>
 </html>

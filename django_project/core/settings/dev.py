@@ -61,7 +61,7 @@ LOGGING = {
     }
 }
 
-PIPELINE['PIPELINE_ENABLED'] = False
+# PIPELINE['PIPELINE_ENABLED'] = False
 
 # -------------------------------------------------- #
 # ----------             OSM            ------------ #
