@@ -69,8 +69,7 @@ class Command(BaseCommand):
             countries = countries.filter(name__iexact=country_name)
         for country in countries:
             self.stdout.write('Generated cluster for %s' % country.name)
-            polygon = country.polygon_geometry
-            localities = osm_query.in_polygon(polygon)
+            localities = osm_query.in_administrative(country.get_codes)
             for zoom in range(settings.CLUSTER_CACHE_MAX_ZOOM + 1):
                 filename = os.path.join(
                     settings.CLUSTER_CACHE_DIR,

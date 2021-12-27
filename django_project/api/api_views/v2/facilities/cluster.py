@@ -73,7 +73,17 @@ class GetCluster(BaseAPI):
             except IOError:
                 pass
 
-        localities = all_locality().in_bbox(bbox)
+        localities = all_locality()
+        if geoname:
+            try:
+                # getting country's polygon
+                country = Country.objects.get(
+                    name__iexact=geoname)
+                localities = localities.in_administrative(country.get_codes)
+            except Country.DoesNotExist:
+                pass
+
+        localities = localities.in_bbox(bbox)
         uuid = request.GET.get('uuid', None)
         if uuid:
             uuid = uuid.split('/')
@@ -82,15 +92,6 @@ class GetCluster(BaseAPI):
                     localities = localities.exclude(osm_type=uuid[0], osm_id=uuid[1])
                 except ValueError:
                     pass
-        if geoname:
-            try:
-                # getting country's polygon
-                country = Country.objects.get(
-                    name__iexact=geoname)
-                polygon = country.polygon_geometry
-                localities = localities.in_polygon(polygon)
-            except Country.DoesNotExist:
-                pass
         localities = localities.in_filters(filters)
         return Response(
             oms_view_cluster(localities, zoom, *iconsize))

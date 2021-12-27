@@ -12,8 +12,8 @@ from localities_osm.models.locality import (
 
 class LocalityOSMAdmin(admin.ModelAdmin):
     list_display = (
-        'osm_id', 'amenity', 'name', 'changeset_timestamp', 'changeset_user')
-    list_filter = ('healthcare',)
+        'osm_id', 'amenity', 'name', 'changeset_timestamp', 'changeset_user', 'administrative_code')
+    list_filter = ('administrative_code',)
     ordering = ('name',)
     search_fields = ('name', 'osm_id')
     readonly_fields = ('osm_id',)
@@ -22,8 +22,8 @@ class LocalityOSMAdmin(admin.ModelAdmin):
 class LocalityOSMViewAdmin(LocalityOSMAdmin):
     list_display = (
         'osm_id', 'amenity', 'name', 'osm_type', 'changeset_timestamp',
-        'changeset_user', 'operator')
-    list_filter = ('amenity', 'osm_type')
+        'changeset_user', 'operator', 'administrative_code')
+    list_filter = ('amenity', 'osm_type', 'administrative_code')
     readonly_fields = ('osm_id', 'row', 'osm_type')
 
 

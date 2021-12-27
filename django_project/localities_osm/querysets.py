@@ -24,6 +24,12 @@ class OSMQuerySet(QuerySet):
         """
         return self.filter(geometry__within=polygon)
 
+    def in_administrative(self, codes: list):
+        """
+        Filter Localities within administrative_code
+        """
+        return self.filter(administrative_code__in=codes)
+
     def in_filters(self, filters):
         """
         Filter Localities within the filters input

@@ -128,3 +128,8 @@ def upload_data_from_csv(self, data_loader_pk):
 
     except DataLoader.DoesNotExist as exc:
         raise self.retry(exc=exc, countdown=30, max_retries=5)
+
+
+@app.task
+def run_generate_osm_administrative_code():
+    management.call_command('generate_osm_administrative_code')
