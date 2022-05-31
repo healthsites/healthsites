@@ -40,7 +40,13 @@ Our intention is to foster widespread usage of the data and the code that we pro
 cp deployment/.template.env .env
 ```
 
-2. Change the PBF file to smaller one, i.e. from Senegal
+2. Copy docker-compose file
+
+```shell
+cp deployment/docker-compose.override.template.yml deployment/docker-compose.override.yml
+```
+
+3. Change the PBF file to smaller one, i.e. from Senegal
 
 ```Dockerfile
 # change this
@@ -49,7 +55,7 @@ RUN wget https://planet.openstreetmap.org/pbf/planet-latest.osm.pbf  -O settings
 RUN wget https://download.geofabrik.de/africa/senegal-and-gambia-latest.osm.pbf -O settings/country.pbf
 ```
 
-3. Run `make`
+4. Run `make`
 
 Additional steps:
 
