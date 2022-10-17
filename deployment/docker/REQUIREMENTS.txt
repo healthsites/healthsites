@@ -18,6 +18,7 @@ googlemaps
 hurry.filesize
 nodeenv
 psycopg2
+social-auth-core == 1.2.0
 social-auth-app-django==3.1.0
 pytz
 raven
@@ -27,4 +28,4 @@ osmapi
 overpass
 requests_oauthlib
 mock
-django-ckeditor
+django-ckeditor==5.7.1
