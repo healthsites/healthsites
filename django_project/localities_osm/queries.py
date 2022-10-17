@@ -45,8 +45,7 @@ def filter_locality(
             country = Country.objects.get(
                 name__iexact=country)
             if country:
-                polygons = country.polygon_geometry
-                queryset = queryset.in_polygon(polygons)
+                queryset = queryset.in_administrative(country.get_codes)
         except Country.DoesNotExist:
             raise Exception('%s is not found or not a country.' % country)
 

@@ -168,7 +168,20 @@ class LocalityOSM(LocalityOSMBase):
             setattr(self, key, value)
 
 
-class LocalityOSMView(LocalityOSM):
+class LocalityOSMExtra(LocalityOSMBase):
+    # Administrative code
+    administrative_code = models.CharField(
+        blank=True,
+        null=True,
+        max_length=32,
+        help_text='Administrative code'
+    )
+
+    class Meta:
+        abstract = True
+
+
+class LocalityOSMView(LocalityOSM, LocalityOSMExtra):
     """ This model is a view model (that created on migrations) that
     union node and way
     """
@@ -189,7 +202,7 @@ class LocalityOSMView(LocalityOSM):
         verbose_name_plural = 'OSM Node and Way'
 
 
-class LocalityOSMNode(LocalityOSM):
+class LocalityOSMNode(LocalityOSM, LocalityOSMExtra):
     """ This model is based on docker osm node
     """
     geometry = models.PointField(
@@ -202,7 +215,7 @@ class LocalityOSMNode(LocalityOSM):
         verbose_name_plural = 'OSM Node'
 
 
-class LocalityOSMWay(LocalityOSM):
+class LocalityOSMWay(LocalityOSM, LocalityOSMExtra):
     """ This model is based on docker osm way
     """
     geometry = models.GeometryField(

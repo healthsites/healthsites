@@ -33,4 +33,34 @@ Code: [Free BSD License](http://www.freebsd.org/copyright/freebsd-license.html)
 Our intention is to foster widespread usage of the data and the code that we provide. Please use this code and data in the interests of humanity and not for nefarious purposes.
 
 # Setup instructions
-Under construction
+
+1. Copy the `.env` template to project root
+
+```shell
+cp deployment/.template.env .env
+```
+
+2. Copy docker-compose file
+
+```shell
+cp deployment/docker-compose.override.template.yml deployment/docker-compose.override.yml
+```
+
+3. Change the PBF file to smaller one, i.e. from Senegal
+
+```Dockerfile
+# change this
+RUN wget https://planet.openstreetmap.org/pbf/planet-latest.osm.pbf  -O settings/country.pbf
+# to this
+RUN wget https://download.geofabrik.de/africa/senegal-and-gambia-latest.osm.pbf -O settings/country.pbf
+```
+
+4. Run `make`
+
+Additional steps:
+
+1. Because the imposm may fail as the database container is not ready, you may need to restart it.
+
+```shell
+docker restart healthsites_osm_imposm
+```

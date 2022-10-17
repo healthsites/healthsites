@@ -91,7 +91,7 @@ services:
     <<: *default-common-django
     container_name: healthsites_django
     command: 'uwsgi --ini /uwsgi.conf'
-#    entrypoint: ["/home/web/django_project/entrypoint.sh"]
+    entrypoint: ["/home/web/django_project/entrypoint.sh"]
 
   # Celery worker that executes celery tasks created by Django.
   worker:

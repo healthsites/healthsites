@@ -58,6 +58,14 @@ class Country(Administrative):
         """Meta Class"""
         verbose_name_plural = 'Countries'
 
+    @property
+    def get_codes(self):
+        """ Return codes for the filters """
+        if self.country_set.count() == 0:
+            return [self.code]
+        else:
+            return list(self.country_set.values_list('code', flat=True))
+
 
 Country._meta.get_field('name').verbose_name = 'Country name'
 Country._meta.get_field('name').help_text = 'The name of the country.'
