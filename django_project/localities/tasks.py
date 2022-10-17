@@ -95,7 +95,7 @@ def country_data_into_statistic_task(extent, country):
         extent = ''
     if not country:
         country = ''
-    call_command('generate_statistic_countries', extent=extent, country=country)
+    call_command('generate_statistic_country', extent=extent, country=country)
 
 
 @app.task(bind=True, max_retries=3)
