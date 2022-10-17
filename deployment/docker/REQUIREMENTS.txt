@@ -1,5 +1,5 @@
 Django>=1.8,<1.9
-celery==4.2.1
+celery==5.2.2
 dicttoxml
 
 djangorestframework>=3.2,<3.7
