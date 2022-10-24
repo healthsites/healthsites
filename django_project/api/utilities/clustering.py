@@ -52,7 +52,6 @@ def oms_view_cluster(localites, zoom, pix_x, pix_y):
     for cluster_point in cluster_points:
         try:
             del cluster_point['bbox']
-            del cluster_point['minbbox']
         except KeyError:
             pass
     return cluster_points
