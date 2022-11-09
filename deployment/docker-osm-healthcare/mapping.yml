@@ -235,3 +235,23 @@ tables:
         - blood_donation
         - birthing_center
     type: polygon
+
+  healthcare_boundaries:
+    columns:
+      - name: osm_id
+        type: id
+      - name: geometry
+        type: geometry
+      - key: name
+        name: name
+        type: string
+      - name: boundary
+        type: mapping_value
+      - name: health_level
+        type: mapping_value
+    mapping:
+      boundary:
+        - health
+      health_level:
+        - __any__
+    type: polygon
