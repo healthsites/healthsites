@@ -3,7 +3,8 @@ __date__ = '28/01/19'
 
 from rest_framework import authentication
 from rest_framework import exceptions
-from api.models.user_api_key import UserApiKey
+
+from api.models.user_api_key import UserApiKey, ApiKeyAccess
 
 
 class APIKeyAuthentication(authentication.BaseAuthentication):
@@ -16,6 +17,7 @@ class APIKeyAuthentication(authentication.BaseAuthentication):
         if not user:
             raise exceptions.AuthenticationFailed('api-key is invalid')
         if request.method != 'GET' and not key.allow_write:
-            raise exceptions.AuthenticationFailed('this api-key is not allowed to post data')
-
+            raise exceptions.AuthenticationFailed(
+                'this api-key is not allowed to post data')
+        ApiKeyAccess.request(key, request.build_absolute_uri())
         return (user, None)

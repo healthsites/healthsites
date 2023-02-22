@@ -18,7 +18,7 @@ class Parameters(object):
         location='query',
         required=True,
         schema=String(
-            description='API KEY for access healthsites api.'
+            description='API KEY for accessing healthsites api.'
         ),
     )
 

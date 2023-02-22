@@ -3,8 +3,10 @@ __date__ = '28/01/19'
 
 import binascii
 import os
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.utils import timezone
 
 
 class UserApiKey(models.Model):
@@ -13,14 +15,18 @@ class UserApiKey(models.Model):
     """
 
     user = models.ForeignKey(
-        User, on_delete=models.CASCADE)
+        User, on_delete=models.CASCADE
+    )
     api_key = models.CharField(
-        max_length=40, primary_key=True)
+        max_length=40, primary_key=True
+    )
     is_active = models.BooleanField(
-        default=True)
+        default=True
+    )
     allow_write = models.BooleanField(
         default=False,
-        help_text='allow this api key to write data')
+        help_text='allow this api key to write data'
+    )
 
     def save(self, *args, **kwargs):
         if not self.api_key:
@@ -96,3 +102,31 @@ class UserApiKey(models.Model):
             return api_key_user
         except UserApiKey.DoesNotExist:
             return None
+
+
+class ApiKeyAccess(models.Model):
+    """API Key Access."""
+
+    api_key = models.ForeignKey(UserApiKey, on_delete=models.CASCADE)
+    date = models.DateField()
+    counter = models.IntegerField(default=0)
+
+    @staticmethod
+    def request(api_key: UserApiKey, url: str):
+        """Doing a request."""
+        now = timezone.now()
+        date = now.date()
+        access, _ = ApiKeyAccess.objects.get_or_create(
+            api_key=api_key, date=date
+        )
+        access.counter += 1
+        access.save()
+        ApiKeyRequestLog.objects.create(api_key=api_key, time=now, url=url)
+
+
+class ApiKeyRequestLog(models.Model):
+    """API Key for request log."""
+
+    api_key = models.ForeignKey(UserApiKey, on_delete=models.CASCADE)
+    time = models.DateTimeField()
+    url = models.TextField()

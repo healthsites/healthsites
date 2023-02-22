@@ -4,32 +4,35 @@ __date__ = '29/11/18'
 import copy
 import json
 from datetime import datetime
+
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.http import Http404
+from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from api.api_views.v2.facilities.base_api import FacilitiesBaseAPIWithAuth
+from api.api_views.v2.pagination import (
+    PaginationAPI, LessThanOneException, NotANumberException
+)
 from api.api_views.v2.schema import (
     ApiSchemaBase,
     ApiSchemaBaseWithoutApiKey,
     Parameters
 )
 from api.api_views.v2.utilities import BadRequestError
-from api.api_views.v2.pagination import (
-    PaginationAPI, LessThanOneException, NotANumberException
-)
-from api.api_views.v2.facilities.base_api import FacilitiesBaseAPIWithAuth
-from api.utils import validate_osm_data, convert_to_osm_tag, create_osm_node, \
-    verify_user
-from api.utilities.statistic import get_statistic_with_cache
-from core.settings.utils import ABS_PATH
-from localities.models import Country
 from api.utilities.pending import (
     create_pending_update,
     create_pending_review, update_pending_review,
     delete_pending_review, get_pending_review)
+from api.utilities.statistic import get_statistic_with_cache
+from api.utils import (
+    validate_osm_data, convert_to_osm_tag, create_osm_node, verify_user
+)
+from core.settings.utils import ABS_PATH
+from localities.models import Country
 from localities_osm.queries import filter_locality
 from localities_osm.utilities import split_osm_and_extension_attr
 from localities_osm_extension.utils import save_extensions
