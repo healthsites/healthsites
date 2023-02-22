@@ -218,9 +218,8 @@ class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):
                 timestamp_to = datetime.fromtimestamp(int(timestamp_to))
 
             # get cache data
-            output = \
-                get_statistic_with_cache(
-                    extent, country, timestamp_from, timestamp_to)
+            output = get_statistic_with_cache(
+                extent, country, timestamp_from, timestamp_to)
             return Response(output['localities'])
         except Exception as e:
             return HttpResponseBadRequest('%s' % e)

@@ -154,7 +154,10 @@ def convert_to_osm_tag(mapping_file_path, data, osm_type):
                     or isinstance(data[column['name']], float):
                 data[column['name']] = '%s' % data[column['name']]
             elif isinstance(data[column['name']], list):
-                data[column['name']] = '%s' % ';'.join(data[column['name']])
+                if len(data[column['name']]) == 0:
+                    del data[column['name']]
+                else:
+                    data[column['name']] = '%s' % ';'.join(data[column['name']])
         except:  # noqa
             pass
 
@@ -290,7 +293,7 @@ def validate_osm_tags(osm_tags):
             tag_definition['type'] = list
 
         if tag_definition.get('type') == str:
-            if not isinstance(item, unicode):
+            if not isinstance(item, str):
                 item = str(item)
         elif tag_definition.get('type') == int:
             item = int(item)
@@ -305,7 +308,7 @@ def validate_osm_tags(osm_tags):
             if not isinstance(item, list):
                 item = [item]
         if item is not None and not isinstance(item, tag_definition.get('type')):
-            if not (isinstance(item, unicode) and tag_definition.get('type') == str):
+            if not (isinstance(item, str) and tag_definition.get('type') == str):
                 message = (
                     'Invalid value type for key `{}`: '
                     'Expected type `{}`, got `{}` instead.').format(
@@ -352,11 +355,11 @@ def validate_duplication(osm_data):
         u'node["name"="{name}"](around:{radius}, {lat}, {lon});'
         u'node["name:en"="{name}"](around:{radius}, {lat}, {lon});'
         ')'.format(
-            name=name.decode('utf-8'),
+            name=name,
             radius=radius,
             lon=lon,
             lat=lat))
-    response = op_api.get(query.encode('utf-8'))
+    response = op_api.get(query)
     if len(response.get('features', [])) > 0:
         message = 'Duplication detected. Records = %s' % [
             feature['id'] for feature in response.get('features')]

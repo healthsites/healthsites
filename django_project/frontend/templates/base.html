@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {# The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags #}
+    <meta name="Description" CONTENT=
+            "When a natural disaster or disease outbreak occurs there is a rush to
+            establish accurate health care location data that can be used to support
+            people on the ground. The goal of Healthsites.io is to establish a free,
+            curated, canonical source of healthcare location data for the world, and
+            to make this data and the tools necessary to upload, manage and
+            make the data freely and easily accessible.">
+
+    <title>Building an open data commons of health facility data with OpenStreetMap</title>
+    <link rel="shortcut icon" href="{% static "img/favicon.ico" %}" type="image/x-icon">
+
+    {# {% stylesheet 'base_library' %} #}
+    <link href="{% static 'css/map.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/font-awesome/4.4.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/jquery-ui/1.11.4/jquery-ui.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/jquery.slick/1.5.7/slick.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/c3/0.4.10/c3.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/bootstrap/3.3.5/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/fonts.googleapis.com/Raleway.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'libs/fonts.googleapis.com/Ubuntu.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+
+    {# {% stylesheet 'project' %} #}
+    <link href="{% static 'css/site.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'css/jquery.cookiebar.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+    <link href="{% static 'css/profile.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+
+    {# {% stylesheet 'base' %} #}
+    <link href="{% static 'css/home.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
+
+    {% block stylesheet %}
+    {% endblock stylesheet %}
+</head>
+
+<body class="body">
+<div class="page-wrapper">
+    {% include "sections/navbar.html" %}
+    {% block content %}
+    {% endblock content %}
+</div><!-- .page-wraper -->
+{% include "sections/footer.html" %}
+
+{#{% javascript 'base_library' %}#}
+<script src="{% static 'libs/jquery.js/3.3.1/jquery.min.js' %}"></script>
+<script src="{% static 'libs/jquery-ui/1.12.1/jquery-ui.min.js' %}"></script>
+<script src="{% static 'libs/bootstrap/3.3.5/js/bootstrap.min.js' %}"></script>
+<script src="{% static 'libs/jquery.slick/1.5.7/slick.js' %}"></script>
+<script src="{% static 'libs/jquery.timepicker/1.10.0/jquery.timepicker.min.js' %}"></script>
+
+{#{% javascript 'project' %}#}
+<script src="{% static 'js/global/utilities.js' %}"></script>
+<script src="{% static 'js/global/custom-functions.js' %}"></script>
+<script src="{% static 'js/global/cookie-bar.js' %}"></script>
+<script src="{% static 'js/global/custom-jquery.js' %}"></script>
+<script src="{% static 'js/global/csrf-ajax.js' %}"></script>
+<script src="{% static 'js/global/nav-bar.js' %}"></script>
+<script src="{% static 'js/global/google-analytics.js' %}"></script>
+
+{% block extra_js %}
+{% endblock extra_js %}
+<script>
+    window.fbAsyncInit = function () {
+        FB.init({
+            appId: '739607739442410',
+            xfbml: true,
+            version: 'v2.1'
+        });
+    };
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+</body>
+</html>

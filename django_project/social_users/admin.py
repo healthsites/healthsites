@@ -4,7 +4,7 @@ from social_django.admin import UserSocialAuth
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, User
-
+from django.utils.html import mark_safe
 from social_users.models import Profile, TrustedUser, GatherUser
 
 from .models import Organisation
@@ -29,11 +29,11 @@ class TrustedUserAdmin(admin.ModelAdmin):
 
     def list_organisation_supported(self, obj):
         template_format = '<span><a href="/admin/social_users/organisation/%s">%s</a></span>'
-        return ', '.join(
-            [template_format % (p.id, p.name) for p in obj.organisations_supported.all()]
+        return mark_safe(
+            ', '.join(
+                [template_format % (p.id, p.name) for p in obj.organisations_supported.all()]
+            )
         )
-
-    list_organisation_supported.allow_tags = True
 
 
 admin.site.register(TrustedUser, TrustedUserAdmin)
@@ -44,11 +44,11 @@ class OrganisationAdmin(admin.ModelAdmin):
 
     def list_trusted_user(self, obj):
         template_format = '<span><a href="/admin/social_users/trusteduser/%s">%s</a></span>'
-        return ', '.join(
-            [template_format % (p.user.id, p.user.username) for p in obj.trusted_users.all()]
+        return mark_safe(
+            ', '.join(
+                [template_format % (p.user.id, p.user.username) for p in obj.trusted_users.all()]
+            )
         )
-
-    list_trusted_user.allow_tags = True
 
 
 admin.site.register(Organisation, OrganisationAdmin)
@@ -82,16 +82,15 @@ class TrustedUserInline(admin.TabularInline):
             '<a href="/admin/social_users/trusteduser/%s">'
             '<img src="/static/admin/img/icon-yes.gif" alt="True"></a>'
         )
-        return template_format % obj.id
+        return mark_safe(template_format % obj.id)
 
     def list_organisations(self, obj):
         template_format = '<span><a href="/admin/social_users/organization/%s">%s</a></span>'
-        return ', '.join(
-            [template_format % (p.id, p.name) for p in obj.organisations_supported.all()]
+        return mark_safe(
+            ', '.join(
+                [template_format % (p.id, p.name) for p in obj.organisations_supported.all()]
+            )
         )
-
-    is_trusted.allow_tags = True
-    list_organisations.allow_tags = True
 
 
 class UserAdmin(BaseUserAdmin):
@@ -102,19 +101,23 @@ class UserAdmin(BaseUserAdmin):
     def provider(self, obj):
         try:
             template_format = '<span><a href="/admin/default/usersocialauth/%s">%s</a></span>'
-            return ', '.join([
-                template_format % (p.id, p.provider)
-                for p in UserSocialAuth.objects.filter(user=obj)
-            ])
+            return mark_safe(
+                ', '.join([
+                    template_format % (p.id, p.provider)
+                    for p in UserSocialAuth.objects.filter(user=obj)
+                ])
+            )
         except UserSocialAuth.DoesNotExist:
             return ''
 
     def profile_picture(self, obj):
         try:
-            return ', '.join([
-                '<span><a href="%s">%s</a></span>' % (p.profile_picture, p.profile_picture)
-                for p in Profile.objects.filter(user=obj)
-            ])
+            return mark_safe(
+                ', '.join([
+                    '<span><a href="%s">%s</a></span>' % (p.profile_picture, p.profile_picture)
+                    for p in Profile.objects.filter(user=obj)
+                ])
+            )
         except UserSocialAuth.DoesNotExist:
             return ''
 
@@ -125,13 +128,9 @@ class UserAdmin(BaseUserAdmin):
                 '<a href="/admin/social_users/trusteduser/%s">'
                 '<img src="/static/admin/img/icon-yes.gif" alt="True"></a>'
             )
-            return template_format % detail.id
+            return mark_safe(template_format % detail.id)
         except TrustedUser.DoesNotExist:
-            return '<img src="/static/admin/img/icon-no.gif" alt="False">'
-
-    provider.allow_tags = True
-    profile_picture.allow_tags = True
-    is_trusted.allow_tags = True
+            return mark_safe('<img src="/static/admin/img/icon-no.gif" alt="False">')
 
 
 admin.site.unregister(Group)

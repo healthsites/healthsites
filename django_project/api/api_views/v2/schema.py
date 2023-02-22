@@ -100,7 +100,7 @@ class Parameters(object):
         location='query',
         required=True,
         schema=String(
-            description='Query .'
+            description='Query that needs to be checked.'
         ),
     )
 

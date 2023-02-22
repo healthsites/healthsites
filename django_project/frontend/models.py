@@ -12,7 +12,10 @@ class CampaignPage(FlatPage):
     )
     gather_url = models.CharField(
         max_length=250)
-    organisation = models.ForeignKey(Organisation)
+    organisation = models.ForeignKey(
+        Organisation,
+        on_delete=models.CASCADE
+    )
 
     def save(self, *args, **kwargs):
         self.title = self.campaign_title

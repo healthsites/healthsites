@@ -3,10 +3,10 @@ __author__ = 'Anita Hapsari <anita@kartoza.com>'
 __date__ = '26/04/19'
 
 from django.contrib import admin
+from localities_osm.models.locality import LocalityOSMView
 from .models.extension import LocalityOSMExtension
 from .models.tag import Tag
 from .models.pending_state import PendingUpdate, PendingReview
-from localities_osm.models.locality import LocalityOSMView
 
 
 class TagInline(admin.TabularInline):

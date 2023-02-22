@@ -36,9 +36,6 @@ class PaginationAPI(APIView):
         :param query: query that will be paginated
         :type query: Queryset
 
-        :param page: page index
-        :type page: int
-
         :return: Paginated query
         """
         data = self.request.GET

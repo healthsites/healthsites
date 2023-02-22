@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    Healthsites
+{% endblock %}
+
+{% block stylesheet %}
+    <link href="{% static 'css/data-loader.css' %} " rel="stylesheet" type="text/css""/>
+    <style>
+        #info {
+            margin-top: 20px;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+    </style>
+{% endblock stylesheet %}
+
+{% block content %}
+    <div class="container data-loader-form-wrapper">
+        <h3>Healthsites - Data Loader</h3>
+        <form id="data-loader-form" class="" action="/load-data" method="post"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div id="info">Template file can be downloaded in <a href="/static/data/Healthsites data uploader template.xlsx">here</a>.
+                After that, please export the xlsx into csv with , delimiter and upload the csv<br><br>
+                If you want to upload data from other user, how it can be done:<br>
+                - Add new column `osm_user` and put osm username into the column<br>
+                - You need to be organizer of organisation with the osm_user is trusted user of organisation.
+            </div>
+            <input type="submit" class="btn btn-primary" value="Submit"/>
+        </form>
+        <div id="result" hidden>
+            <p style="font-style: italic; color: darkorange">[WARNING] When you batch upload data, all records should be valid. You will see a report after uploading indicating any rows that have issues. If there were any issues, no data will be imported and you should open your batch datafile, resolve any issues, then try again to  upload your data.</p>
+            <p id="result_message"></p>
+            <p id="detailed_result_message"></p>
+        </div>
+
+        <div id="progress-bar-wrapper" style="display: none;">
+            <div id="progress-bar">0%</div>
+        </div>
+
+        <div id="table-wrapper" style="display: none;">
+            <table id="table-status">
+                <tr>
+                    <th>Row number</th>
+                    <th>Status</th>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+    <script>
+        var interval;
+
+        $(document).ready(function () {
+            $('#data-loader-form').submit(upload);
+        });
+
+        function upload(event) {
+            event.preventDefault();
+            let data = new FormData($(this).get(0));
+
+            $.ajax({
+                url: $(this).attr('action'),
+                type: $(this).attr('method'),
+                data: data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function (data) {
+                    $('#data-loader-form').hide();
+                    $('#result').show();
+                    $('#result_message').text(data['message']);
+                    $('#detailed_result_message').text(
+                        data['detailed_message']);
+                    if (data['success']) {
+                        interval = setInterval(getImportProgress, 250)
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#data-loader-form').hide();
+                    $('#result').show();
+                    $('#modal_close_button').hide();
+                    $('#result_message').text(data['message']);
+                    $('#detailed_result_message').text(xhr.responseText);
+                }
+            });
+        }
+
+        function getImportProgress() {
+            $('#progress-bar-wrapper').show();
+            $.ajax({
+                url: '{% url "api_get_csv_import_progress" %}',
+                data: {
+                    username: "{{ user.username }}"
+                },
+                success: function (data) {
+                    var progress = Math.round((data['count'] / data['total']) * 100);
+                    $('#progress-bar').css('width', progress + '%').html(progress + '% Complete');
+
+                    if (progress === 100) {
+                        clearInterval(interval);
+                        $('#table-wrapper').show();
+
+                        var checkmark = '<span>' + '&#9989;' + '</span>';
+                        var crossmark = '<span>' + '&#10060;' + '</span>';
+
+                        for (var rowNumber in data['status']) {
+                            let id = 'status-row-' + rowNumber;
+                            var statusmark = (
+                                data['status'][rowNumber]['is_valid'] ||
+                                data['status'][rowNumber]['uploaded'] ? checkmark : crossmark);
+                            let content = '' +
+                                '<td>' + rowNumber +
+                                '</td>' +
+                                '<td>' + statusmark + '&nbsp' + data['status'][rowNumber]['message'] +
+                                '</td>';
+                            if ($('#' + id).length === 0) {
+                                var statusTemplate = (
+                                    '<tr id="' + id + '" class="row-status">' + content +
+                                    '</tr>');
+                                $('#table-status').append(statusTemplate);
+                            } else {
+                                $('#' + id).html(content);
+                            }
+                        }
+                        $('#result_message').text('Import Result');
+                        $('#detailed_result_message').text(data['summary']);
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock extra_js %}

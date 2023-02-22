@@ -2,7 +2,6 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '14/05/19'
 
 from django.conf import settings
-from django.contrib.gis.geos.error import GEOSIndexError
 from api.utilities.geometry import (
     within_bbox, update_minbbox, overlapping_area
 )
@@ -24,7 +23,7 @@ def oms_view_cluster(localites, zoom, pix_x, pix_y):
         try:
             geomx = locality.geometry.centroid.x
             geomy = locality.geometry.centroid.y
-        except GEOSIndexError:
+        except IndexError:
             continue
 
         # check every point in cluster_points
@@ -34,7 +33,6 @@ def oms_view_cluster(localites, zoom, pix_x, pix_y):
                 pt['count'] += 1
                 pt['minbbox'] = update_minbbox((geomx, geomy), pt['minbbox'])
                 break
-
         else:
             # point is not in the catchment area of any cluster
             x_range, y_range = overlapping_area(zoom, pix_x, pix_y, geomy)
@@ -50,4 +48,10 @@ def oms_view_cluster(localites, zoom, pix_x, pix_y):
                 'minbbox': (geomx, geomy, geomx, geomy),
             }
             cluster_points.append(new_cluster)
+
+    for cluster_point in cluster_points:
+        try:
+            del cluster_point['bbox']
+        except KeyError:
+            pass
     return cluster_points

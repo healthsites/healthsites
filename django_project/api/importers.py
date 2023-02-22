@@ -306,8 +306,8 @@ class CSVtoOSMImporter:
                 upload_status.update({
                     'uploaded': False,
                     'message': '{0}: {1}'.format(
-                        unicode(sys.exc_info()[0].__name__),
-                        unicode(sys.exc_info()[1]))
+                        sys.exc_info()[0].__name__,
+                        sys.exc_info()[1])
                 })
 
             self._upload_status['status'][row_number + 1] = upload_status

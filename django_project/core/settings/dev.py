@@ -1,10 +1,15 @@
-from .project import *  # NOQA
+from .project import *  # noqa
 
 # Set debug to True for development
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+TEMPLATES[0]['OPTIONS']['debug'] = True
+TESTING = False
 LOGGING_OUTPUT_ENABLED = DEBUG
 LOGGING_LOG_SQL = DEBUG
+
+CRISPY_FAIL_SILENTLY = not DEBUG
+
+ALLOWED_HOSTS = ['*']
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -16,7 +21,7 @@ CACHES = {
 }
 
 # Make sure static files storage is set to default
-STATIC_FILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 LOGGING = {
     'version': 1,
@@ -56,34 +61,15 @@ LOGGING = {
     }
 }
 
-# set up devserver if installed
-try:
-    # noinspection PyUnresolvedReferences
-    import devserver  # noqa
-    INSTALLED_APPS += (
-        'devserver',
-    )
-    # more details at https://github.com/dcramer/django-devserver#configuration
-    DEVSERVER_DEFAULT_ADDR = '0.0.0.0'
-    DEVSERVER_DEFAULT_PORT = '8000'
-    DEVSERVER_AUTO_PROFILE = False  # use decorated functions
-    DEVSERVER_TRUNCATE_SQL = True  # squash verbose output, show from/where
-    DEVSERVER_MODULES = (
-        # uncomment if you want to show every SQL executed
-        # 'devserver.modules.sql.SQLRealTimeModule',
-        # show sql query summary
-        'devserver.modules.sql.SQLSummaryModule',
-        # Total time to render a request
-        'devserver.modules.profile.ProfileSummaryModule',
+# PIPELINE['PIPELINE_ENABLED'] = False
 
-        # Modules not enabled by default
-        # 'devserver.modules.ajax.AjaxDumpModule',
-        # 'devserver.modules.profile.MemoryUseModule',
-        # 'devserver.modules.cache.CacheSummaryModule',
-        # see documentation for line profile decorator examples
-        # 'devserver.modules.profile.LineProfilerModule',
-        # show django session information
-        # 'devserver.modules.request.SessionInfoModule',
-    )
-except ImportError:
-    pass
+# -------------------------------------------------- #
+# ----------             OSM            ------------ #
+# -------------------------------------------------- #
+# use master apis for dev
+DEV_OSM_API_URL = 'https://api06.dev.openstreetmap.org'
+OSM_API_URL = 'https://master.apis.dev.openstreetmap.org'
+AUTHENTICATION_BACKENDS = (
+    'core.backends.dev_openstreetmap.OpenStreetMapDevOAuth',
+    'django.contrib.auth.backends.ModelBackend',
+)

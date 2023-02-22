@@ -1,11 +1,11 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '19/06/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
 
 from django.contrib.gis.geos import Polygon
 from api.api_views.v2.googlemaps.search import search_by_geoname
-from localities.models import Country
+from core.utils import parse_bbox
+from localities.models.administration import Country
 from localities_osm.models.locality import LocalityOSMView
-from localities.utils import parse_bbox
 
 
 def all_locality():
@@ -45,8 +45,7 @@ def filter_locality(
             country = Country.objects.get(
                 name__iexact=country)
             if country:
-                polygons = country.polygon_geometry
-                queryset = queryset.in_polygon(polygons)
+                queryset = queryset.in_administrative(country.get_codes)
         except Country.DoesNotExist:
             raise Exception('%s is not found or not a country.' % country)
 

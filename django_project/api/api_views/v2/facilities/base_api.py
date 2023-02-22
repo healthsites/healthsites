@@ -4,9 +4,10 @@ __date__ = '03/05/19'
 import dicttoxml
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from api.api_views.v2.base_api import BaseAPI
-from api.authentication import APIKeyAuthentication
+from api.api_views.v2.authentication import APIKeyAuthentication
 from localities_osm.serializer.locality_osm import (
-    LocalityOSMSerializer, LocalityOSMGeoSerializer)
+    LocalityOSMSerializer, LocalityOSMGeoSerializer
+)
 
 
 class FacilitiesBaseAPI(BaseAPI):

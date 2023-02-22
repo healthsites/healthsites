@@ -1,2 +1,2 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '17/06/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
