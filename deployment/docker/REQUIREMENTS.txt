@@ -4,7 +4,7 @@ psycopg2-binary==2.9.1
 uwsgi==2.0.19.1
 
 # Project Library
-Django==3.2.10
+Django==3.2.18
 coreapi==2.3.3
 dicttoxml==1.7.4
 django-braces==1.15.0
