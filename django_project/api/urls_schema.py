@@ -6,6 +6,7 @@ from rest_framework.schemas.coreapi import (
     SchemaGenerator, insert_into, LinkNode
 )
 
+from api.api_views.v2.authentication import APIKeyAuthentication
 from api.api_views.v2.schema import SchemaView
 
 schema_url_patterns = [
@@ -32,7 +33,7 @@ class CustomSchemaGenerator(SchemaGenerator):
         for path, method, view in view_endpoints:
             if not self.has_view_permissions(path, method, view):
                 continue
-            if getattr(view, 'exclude_from_docs', None):
+            if APIKeyAuthentication not in view.authentication_classes:
                 continue
             link = view.schema.get_link(path, method, base_url=self.url)
             subpath = path[len(prefix):]

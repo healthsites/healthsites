@@ -13,7 +13,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from api.api_views.v2.facilities.base_api import FacilitiesBaseAPIWithAuth
+from api.api_views.v2.base_api import BaseAPIWithAuthAndApiKey
+from api.api_views.v2.facilities.base_api import FacilitiesBaseAPI
 from api.api_views.v2.pagination import (
     PaginationAPI, LessThanOneException, NotANumberException
 )
@@ -42,11 +43,11 @@ class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
     schemas = [
         Parameters.country,
         Parameters.extent,
-        Parameters.output,
         Parameters.timestamp_from,
         Parameters.timestamp_to,
         Parameters.flat,
-        Parameters.tag_format
+        Parameters.tag_format,
+        Parameters.output,
     ]
 
 
@@ -97,7 +98,9 @@ class GetFacilitiesBaseAPI(object):
 
 
 class GetFacilities(
-    PaginationAPI, FacilitiesBaseAPIWithAuth, GetFacilitiesBaseAPI):  # noqa
+    PaginationAPI, FacilitiesBaseAPI, BaseAPIWithAuthAndApiKey,
+    GetFacilitiesBaseAPI
+):  # noqa
     """
     get:
     Returns a list of facilities with some filtering parameters.
@@ -261,7 +264,7 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
             return HttpResponseBadRequest('%s' % e)
 
 
-class BulkUpload(FacilitiesBaseAPIWithAuth):
+class BulkUpload(FacilitiesBaseAPI, BaseAPIWithAuthAndApiKey):
     """
     post:
     Upload multiple healthsites/facilities data.

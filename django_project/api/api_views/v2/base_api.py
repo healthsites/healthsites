@@ -1,8 +1,11 @@
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import (
+    SessionAuthentication, BasicAuthentication
+)
 from rest_framework.views import APIView
+
 from api.api_views.v2.authentication import APIKeyAuthentication
 
 
@@ -18,5 +21,11 @@ class BaseAPI(APIView):
 
 class BaseAPIWithAuth(BaseAPI):
     authentication_classes = (
-        SessionAuthentication, BasicAuthentication, APIKeyAuthentication
+        SessionAuthentication, BasicAuthentication
+    )
+
+
+class BaseAPIWithAuthAndApiKey(BaseAPI):
+    authentication_classes = (
+        SessionAuthentication, BasicAuthentication, APIKeyAuthentication,
     )

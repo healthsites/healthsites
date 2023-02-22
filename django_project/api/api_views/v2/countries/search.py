@@ -19,7 +19,6 @@ class ApiSchema(ApiSchemaBaseWithoutApiKey):
 
 class Autocomplete(APIView):
     filter_backends = (ApiSchema,)
-    exclude_from_docs = True
 
     def get(self, request):
         q = request.GET.get('q', '').capitalize()

@@ -55,7 +55,6 @@ class SearchByGeoname(APIView):
     """
     Search Location using geoname as query (q)
     """
-    exclude_from_docs = True
     schema = AutoSchema(manual_fields=[
         Parameters.q
     ])

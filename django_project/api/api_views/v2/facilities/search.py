@@ -11,7 +11,6 @@ from localities_osm.serializer.locality_osm import \
 
 
 class Autocomplete(APIView):
-    exclude_from_docs = True
 
     def get(self, request):
         q = request.GET.get('q', '').capitalize()

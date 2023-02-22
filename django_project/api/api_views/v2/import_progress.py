@@ -12,7 +12,6 @@ from rest_framework.views import APIView, Response
 
 class ImportCSVProgress(APIView):
     """API to get the progress of data import from csv."""
-    exclude_from_docs = True
 
     def get(self, request):
         username = request.GET.get('username', request.user.username)
