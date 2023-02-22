@@ -2,7 +2,7 @@
 define([
     'backbone', 'jquery'], function (Backbone, $) {
     return Backbone.View.extend({
-        url: "/api/v2/countries/autocomplete/",
+        url: "/api/v3/countries/autocomplete/",
         initialize: function () {
             var self = this;
             this.el = $('#country-form');

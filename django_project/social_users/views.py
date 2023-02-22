@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
-
+from braces.views import LoginRequiredMixin
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
-from django.urls import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.urls import reverse
 from django.views.generic import TemplateView, View
-from braces.views import LoginRequiredMixin
 from rest_framework.views import APIView
 
 from api.models.user_api_key import UserApiKey
@@ -62,16 +61,12 @@ class ProfilePage(TemplateView):
 
 
 class UserSigninPage(TemplateView):
-    """
-    Login Page
-    """
+    """Login Page"""
     template_name = 'social_users/signinpage.html'
 
 
 class LogoutUser(View):
-    """
-    Logout views
-    """
+    """Logout views"""
 
     def get(self, request, *args, **kwargs):
         auth_logout(request)
@@ -79,9 +74,8 @@ class LogoutUser(View):
 
 
 class ProfileUpdate(APIView):
-    """
-    API for listing all database record of source reference.
-    """
+    """ POST API To update profile of user."""
+    exclude_from_schema = True
 
     def post(self, request, *args):
         if not request.user.is_authenticated:

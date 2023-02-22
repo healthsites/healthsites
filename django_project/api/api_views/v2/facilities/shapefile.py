@@ -2,17 +2,17 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '17/12/19'
 
 import os
+
 from django.conf import settings
 from django.http.response import HttpResponse, Http404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from localities.tasks import country_data_into_shapefile_task
 
 
 class GetShapefileDetail(APIView):
-    """
-    API for checking process of generating shapefile
-    """
+    """Get the shapefile detail with time and filename."""
 
     def get(self, request, country):
         if country == 'World' or country == 'world':
@@ -46,7 +46,8 @@ class GetShapefileDownload(APIView):
             test_file = open(file_path, 'rb')
             response = HttpResponse(content=test_file)
             response['Content-Type'] = 'application/zip'
-            response['Content-Disposition'] = 'attachment; filename="%s"' % filename
+            response[
+                'Content-Disposition'] = 'attachment; filename="%s"' % filename
             return response
         else:
             raise Http404()

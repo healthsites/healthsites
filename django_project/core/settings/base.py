@@ -81,6 +81,7 @@ TEMPLATES = [
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
             ABS_PATH('frontend', 'templates'),
+            ABS_PATH('core', 'templates'),
         ],
         'OPTIONS': {
             'loaders': [

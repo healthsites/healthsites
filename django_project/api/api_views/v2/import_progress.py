@@ -4,6 +4,7 @@ __date__ = '19/07/19'
 
 import json
 import os
+
 from django.conf import settings
 from django.http.response import HttpResponseBadRequest
 from rest_framework.views import APIView, Response
@@ -11,6 +12,7 @@ from rest_framework.views import APIView, Response
 
 class ImportCSVProgress(APIView):
     """API to get the progress of data import from csv."""
+    exclude_from_docs = True
 
     def get(self, request):
         username = request.GET.get('username', request.user.username)

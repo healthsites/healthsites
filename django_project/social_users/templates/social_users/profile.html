@@ -183,7 +183,7 @@
             var $updates99 = $("#updates-99");
             var $updatesWrappeer = $("#updates-wrapper");
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/changesets",
+                url: "/api/v3/user/{{ user.username }}/changesets",
                 dataType: 'json',
                 success: function (data) {
                     if ($updates99.length > 0 && data.length !== 0) {
@@ -236,7 +236,7 @@
                 return;
             }
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/updates",
+                url: "/api/v3/user/{{ user.username }}/updates",
                 dataType: 'json',
                 success: function (data) {
                     // Show pending updates
@@ -258,7 +258,7 @@
             });
 
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/reviews",
+                url: "/api/v3/user/{{ user.username }}/reviews",
                 dataType: 'json',
                 success: function (data) {
                     // Show pending reviews

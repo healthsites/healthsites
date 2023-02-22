@@ -5,8 +5,9 @@ __date__ = '20/12/21'
 import googlemaps
 from django.conf import settings
 from django.http.response import HttpResponseBadRequest
-from rest_framework.schemas import coreapi, AutoSchema
+from rest_framework.schemas import AutoSchema
 from rest_framework.views import APIView, Response
+
 from api.api_views.v2.schema import Parameters
 
 
@@ -54,6 +55,7 @@ class SearchByGeoname(APIView):
     """
     Search Location using geoname as query (q)
     """
+    exclude_from_docs = True
     schema = AutoSchema(manual_fields=[
         Parameters.q
     ])
