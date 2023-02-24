@@ -130,3 +130,39 @@ class ApiKeyRequestLog(models.Model):
     api_key = models.ForeignKey(UserApiKey, on_delete=models.CASCADE)
     time = models.DateTimeField()
     url = models.TextField()
+
+
+class ApiKeyEnrollment(models.Model):
+    """API Key enrollment data."""
+
+    contact_person = models.CharField(max_length=512)
+    contact_email = models.EmailField()
+    organisation_name = models.CharField(max_length=512)
+    organisation_url = models.CharField(max_length=512)
+    project_url = models.CharField(
+        max_length=512,
+        help_text='web site or project URL for API will be used'
+    )
+    time = models.DateTimeField(auto_now_add=True)
+    approved = models.BooleanField(
+        default=False,
+        help_text='When approved, the api_key will be created and activated'
+    )
+
+    api_key = models.ForeignKey(
+        UserApiKey, on_delete=models.SET_NULL, null=True, blank=True
+    )
+
+    def save(self, *args, **kwargs):
+        super(ApiKeyEnrollment, self).save(*args, **kwargs)
+        if self.api_key:
+            self.api_key.is_active = self.approved
+            self.api_key.save()
+
+    def generate_api_key(self, user: User):
+        """Generating api key."""
+        if not self.api_key:
+            self.api_key = UserApiKey.objects.create(
+                user=user, is_active=False
+            )
+            self.save()

@@ -1,0 +1,20 @@
+.container {
+    margin-top: 90px;
+}
+
+p {
+    margin: 20px 0;
+}
+
+label {
+    display: block;
+}
+
+input {
+    padding: 0.5rem;
+    width: 100%;
+}
+
+.helptext {
+    color: gray;
+}

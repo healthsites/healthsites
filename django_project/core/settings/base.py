@@ -82,6 +82,7 @@ TEMPLATES = [
         'DIRS': [
             ABS_PATH('frontend', 'templates'),
             ABS_PATH('core', 'templates'),
+            ABS_PATH('api', 'templates'),
         ],
         'OPTIONS': {
             'loaders': [
