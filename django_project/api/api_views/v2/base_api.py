@@ -7,6 +7,7 @@ from rest_framework.authentication import (
 from rest_framework.views import APIView
 
 from api.api_views.v2.authentication import APIKeyAuthentication
+from api.api_views.v2.schema import ApiSchemaBase
 
 
 class BaseAPI(APIView):
@@ -26,6 +27,7 @@ class BaseAPIWithAuth(BaseAPI):
 
 
 class BaseAPIWithAuthAndApiKey(BaseAPI):
+    filter_backends = (ApiSchemaBase,)
     authentication_classes = (
         SessionAuthentication, BasicAuthentication, APIKeyAuthentication,
     )

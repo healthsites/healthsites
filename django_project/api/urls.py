@@ -8,6 +8,7 @@ api_urls = [
     url(r'v3/', include('api.urls_v3')),
     url(r'v2/', ApiVersion2.as_view()),
     url(r'v1/', ApiVersion2.as_view()),
+    url(r'public/', include('api.urls_public')),
     url(r'^', include('api.urls_schema')),
 ]
 urlpatterns = [

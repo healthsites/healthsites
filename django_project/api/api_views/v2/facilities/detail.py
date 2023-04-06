@@ -11,8 +11,8 @@ from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 
+from api.api_views.v2.base_api import BaseAPIWithAuthAndApiKey
 from api.api_views.v2.facilities.base_api import FacilitiesBaseAPI
-from api.api_views.v2.schema import ApiSchemaBase
 from api.utilities.pending import (
     create_pending_update, validate_pending_update,
     create_pending_review, update_pending_review, delete_pending_review,
@@ -42,7 +42,6 @@ class GetDetailFacility(FacilitiesBaseAPI):
     post:
     Update a facility.
     """
-    filter_backends = (ApiSchemaBase,)
 
     def getLocalityOsm(self, osm_type, osm_id):
         """ Get locality osm """
@@ -80,6 +79,8 @@ class GetDetailFacility(FacilitiesBaseAPI):
             raise Http404()
 
     def post(self, request, osm_type, osm_id):
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden()
         data = copy.deepcopy(request.data)
         user = request.user
         if user.username in settings.TEST_USERS:
@@ -176,6 +177,19 @@ class GetDetailFacility(FacilitiesBaseAPI):
             return HttpResponseBadRequest('%s' % json.dumps(output))
         except (LocalityOSMNode.DoesNotExist, LocalityOSMNode.DoesNotExist):
             raise Http404()
+
+
+class GetDetailFacilityV3(GetDetailFacility, BaseAPIWithAuthAndApiKey):
+    """
+    get:
+    Returns a facility detail.
+
+    post:
+    Update a facility.
+    """
+    api_label = {
+        'POST': 'update'
+    }
 
 
 class GetDetailFacilityByUUID(GetDetailFacility):

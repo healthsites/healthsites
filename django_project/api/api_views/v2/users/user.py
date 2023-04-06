@@ -8,6 +8,9 @@ from social_users.serializer.user import UserSerializer
 class UserProfile(BaseAPIWithAuthAndApiKey):
     """Return logged in user detail."""
     filter_backends = (ApiSchemaBase,)
+    api_label = {
+        'GET': 'read'
+    }
 
     def get(self, request):
         return Response(UserSerializer(self.request.user).data)

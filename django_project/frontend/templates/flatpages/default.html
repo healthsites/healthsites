@@ -205,7 +205,7 @@
         $('#qr-code-generator').click(function () {
             $('#qrcode').html('<i>Please wait....</a>');
             $.ajax({
-                url: "/api/v3/gather/enrollment?campaign=" +{{ flatpage.id }},
+                url: api + "/gather/enrollment?campaign=" +{{ flatpage.id }},
                 dataType: 'json',
                 success: function (data) {
                     $('#qrcode').html('');

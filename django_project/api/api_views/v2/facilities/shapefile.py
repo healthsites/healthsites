@@ -8,6 +8,7 @@ from django.http.response import HttpResponse, Http404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.api_views.v2.base_api import BaseAPIWithAuthAndApiKey
 from localities.tasks import country_data_into_shapefile_task
 
 
@@ -51,3 +52,11 @@ class GetShapefileDownload(APIView):
             return response
         else:
             raise Http404()
+
+
+class GetShapefileDownloadV3(GetShapefileDownload, BaseAPIWithAuthAndApiKey):
+    """Download shapefile."""
+    api_label = {
+        'GET': 'download'
+    }
+    pass

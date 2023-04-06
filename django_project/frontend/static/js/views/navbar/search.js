@@ -3,10 +3,10 @@ define([
     'jquery',
     'jquery-ui'], function (Backbone, $, JqueryUI) {
     return Backbone.View.extend({
-        autocomplete_localities: "/api/v3/facilities/autocomplete/",
-        autocomplete_country: "/api/v3/countries/autocomplete/",
+        autocomplete_localities: api + "/facilities/autocomplete/",
+        autocomplete_country: api + "/countries/autocomplete/",
         autocomplete_url: '',
-        geoname_search: "/api/v3/gmaps/search/geoname",
+        geoname_search: api + "/gmaps/search/geoname",
         initialize: function () {
             var self = this;
             this.currentSearch = 'healthsite';

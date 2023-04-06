@@ -2,7 +2,7 @@ define([
     'backbone',
     'jquery'], function (Backbone, $) {
     return Backbone.View.extend({
-        url: '/api/v3/facilities/',
+        url: api + '/facilities/',
         tag_and_default: {
             'name': 'No Name',
             'amenity': 'needs information',

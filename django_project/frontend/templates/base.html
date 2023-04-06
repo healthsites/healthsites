@@ -35,7 +35,9 @@
 
     {# {% stylesheet 'base' %} #}
     <link href="{% static 'css/home.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
-
+    <script>
+        const api = '/api/public';
+    </script>
     {% block stylesheet %}
     {% endblock stylesheet %}
 </head>

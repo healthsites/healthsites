@@ -51,6 +51,10 @@ class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
     ]
 
 
+class FilterFacilitiesSchemeWithApiKey(ApiSchemaBase):
+    schemas = FilterFacilitiesScheme.schemas
+
+
 class ApiSchema(ApiSchemaBase):
     schemas = [Parameters.page] + FilterFacilitiesScheme.schemas
 
@@ -238,6 +242,10 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
     """
     filter_backends = (FilterFacilitiesScheme,)
 
+    def update_output(self, output):
+        """Updating output."""
+        return output
+
     def get(self, request):
         try:
             country = request.GET.get('country', None)
@@ -259,9 +267,32 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
             if country:
                 country = self.get_country(country)
                 output['geometry'] = country.polygon_geometry.geojson
-            return Response(output)
+            return Response(self.update_output(output))
         except Exception as e:
             return HttpResponseBadRequest('%s' % e)
+
+
+class GetFacilitiesStatisticV3(
+    GetFacilitiesStatistic, BaseAPIWithAuthAndApiKey
+):
+    """Get facility statistic information."""
+    api_label = {
+        'GET': 'statistic'
+    }
+    filter_backends = (FilterFacilitiesSchemeWithApiKey,)
+
+    def update_output(self, output):
+        """Updating output."""
+        try:
+            del output['geometry']
+        except KeyError:
+            pass
+        try:
+            output['facilities'] = output['localities']
+            del output['localities']
+        except KeyError:
+            pass
+        return output
 
 
 class BulkUpload(FacilitiesBaseAPI, BaseAPIWithAuthAndApiKey):

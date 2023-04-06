@@ -6,7 +6,7 @@ define([
     'js/views/map-sidebar/healthsite-detail/request',
     'js/views/map-sidebar/healthsite-detail/duplication-control'], function (Backbone, $, Detail, Form, Request, Duplication) {
     return Backbone.View.extend({
-        url: '/api/v3/facilities/',
+        url: api + '/facilities/',
         definition_url: '/api/schema/',
 
         // THIS DEFINITION IS OUTSIDE OF OUR MAPPING
@@ -241,7 +241,7 @@ define([
             /** get information of healthsite review id **/
             var self = this;
             this.showDetail();
-            this.reviewAPI = '/api/v3/pending/reviews/' + review_id;
+            this.reviewAPI = api + 'pending/reviews/' + review_id;
             this.isReview = true;
             self.detail_info = null;
             this.localityError('Loading locality information.');

@@ -38,6 +38,10 @@ class CustomSchemaGenerator(SchemaGenerator):
             link = view.schema.get_link(path, method, base_url=self.url)
             subpath = path[len(prefix):]
             keys = self.get_keys(subpath, method, view)
+            try:
+                keys = keys[:1] + [view.api_label[method]]
+            except (AttributeError, KeyError, ValueError):
+                pass
             insert_into(links, keys, link)
 
         return links
