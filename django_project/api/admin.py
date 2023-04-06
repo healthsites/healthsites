@@ -2,6 +2,7 @@ __author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
 __date__ = '22/02/23'
 
 from django.contrib import admin
+from django.utils.safestring import mark_safe
 
 from api.models.user_api_key import (
     UserApiKey, ApiKeyRequestLog, ApiKeyAccess, ApiKeyEnrollment
@@ -27,9 +28,19 @@ class ApiKeyEnrollmentAdmin(admin.ModelAdmin):
     list_display = (
         'contact_person', 'contact_email', 'organisation_name',
         'organisation_url', 'project_url', 'time', 'approved',
-        'api_key'
+        '_api_key'
     )
     list_editable = ('approved',)
+
+    def _api_key(self, obj: ApiKeyEnrollment):
+        """Return colors that palette has."""
+        return mark_safe(
+            f'<a href="/admin/api/userapikey/{obj.api_key}/change/">'
+            f'{obj.api_key}'
+            f'</a>'
+        )
+
+    _api_key.allow_tags = True
 
 
 admin.site.register(UserApiKey, UserApiKeyAdmin)

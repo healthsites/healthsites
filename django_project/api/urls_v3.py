@@ -15,6 +15,7 @@ from api.api_views.v2.googlemaps.search import SearchByGeoname
 from api.api_views.v2.import_progress import ImportCSVProgress
 from api.api_views.v2.pending.list import GetPendingReviews, GetPendingUpdates
 from api.api_views.v2.users.changesets import GetChangesets
+from api.api_views.v2.users.user import UserProfile
 
 countries_api = [
     url(r'^autocomplete', CountryAutocomplete.as_view())
@@ -24,21 +25,19 @@ countries_api = [
 facilities_api = [
     url(r'^(?P<osm_type>\w+)/(?P<osm_id>-?\d+)',
         GetDetailFacility.as_view()),
-    url(r'^autocomplete/',
-        Autocomplete.as_view()),
+    url(r'^autocomplete/', Autocomplete.as_view()),
     url(r'by-uuid/(?P<uuid>[\w\-]+)',
         GetDetailFacilityByUUID.as_view()),
     url(r'^cluster', GetCluster.as_view(), name='get-cluster'),
-    url(r'^count',
-        GetFacilitiesCount.as_view(), name='get-count'),
+    url(r'^count', GetFacilitiesCount.as_view(), name='get-count'),
     url(r'^statistic',
         GetFacilitiesStatistic.as_view(), name='get-statistic'),
+
     url(r'^shapefile/(?P<country>.+)/detail',
         GetShapefileDetail.as_view()),
     url(r'^shapefile/(?P<country>.+)/download',
         GetShapefileDownload.as_view()),
-    url(r'^',
-        GetFacilities.as_view()),
+    url(r'^', GetFacilities.as_view(), name='facilities'),
 ]
 
 # gmaps api
@@ -60,7 +59,8 @@ urlpatterns = [
     url(r'countries/', include(countries_api)),
     url(r'facilities/', include(facilities_api)),
     url(r'gmaps/', include(gmaps_api)),
-    url(r'user/(?P<username>.*)/', include(user_api)),
+    url(r'user/(?P<username>.*)/$', include(user_api)),
+    url(r'user/', UserProfile.as_view(), name='user-detail'),
     url(r'csv-import-progress/',
         ImportCSVProgress.as_view(), name='api_get_csv_import_progress'),
 ]

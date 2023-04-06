@@ -6,7 +6,10 @@ import os
 
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
+from django.core.validators import URLValidator
 from django.utils import timezone
+
+from core.models.preferences import SitePreferences
 
 
 class UserApiKey(models.Model):
@@ -21,49 +24,34 @@ class UserApiKey(models.Model):
         max_length=40, primary_key=True
     )
     is_active = models.BooleanField(
-        default=True
+        default=False
     )
     allow_write = models.BooleanField(
         default=False,
-        help_text='allow this api key to write data'
+        help_text='Allow this api key to write data'
+    )
+    max_request_per_day = models.IntegerField(
+        help_text=(
+            'Max request per day for the api key. '
+            'If it is empty, it will use default_max_request_api preference.'
+        ),
+        null=True, blank=True
     )
 
-    def save(self, *args, **kwargs):
-        if not self.api_key:
-            self.api_key = self.generate_key()
-        return super(UserApiKey, self).save(*args, **kwargs)
+    @property
+    def limit(self):
+        """Return limit of request."""
+        if self.max_request_per_day is None:
+            preference = SitePreferences.load()
+            return preference.default_max_request_api
+        return self.max_request_per_day
 
-    def generate_key(self):
+    @staticmethod
+    def generate_key():
         return binascii.hexlify(os.urandom(20)).decode()
 
     def __str__(self):
         return self.api_key
-
-    @staticmethod
-    def get_user_api_key(user, autogenerate=False):
-        """ return api key for user and autogenerate it
-
-        :param user: user that going to be checked
-        :type user: User
-
-        :param autogenerate: flag for autogenerate if not found
-        :type autogenerate: bool
-
-        :return: List of api keys
-        :rtype: list
-        """
-        api_keys = UserApiKey.objects.filter(
-            user=user,
-            is_active=True
-        ).values_list('api_key', flat=True)
-        if autogenerate and len(api_keys) == 0:
-            UserApiKey.objects.create(
-                user=user,
-                is_active=True
-            )
-            api_keys = UserApiKey.get_user_api_key(user)
-
-        return api_keys
 
     @staticmethod
     def get_user_from_api_key(api_key):
@@ -76,11 +64,10 @@ class UserApiKey(models.Model):
         :rtype: User
         """
         try:
-            api_key_user = UserApiKey.objects.get(
+            return UserApiKey.objects.get(
                 api_key=api_key,
                 is_active=True
-            )
-            return api_key_user.user
+            ).user
         except UserApiKey.DoesNotExist:
             return None
 
@@ -95,11 +82,9 @@ class UserApiKey(models.Model):
         :rtype: UserApiKey
         """
         try:
-            api_key_user = UserApiKey.objects.get(
-                api_key=api_key,
-                is_active=True
+            return UserApiKey.objects.get(
+                api_key=api_key
             )
-            return api_key_user
         except UserApiKey.DoesNotExist:
             return None
 
@@ -120,8 +105,12 @@ class ApiKeyAccess(models.Model):
             api_key=api_key, date=date
         )
         access.counter += 1
+        if access.counter > api_key.limit:
+            return False
+
         access.save()
         ApiKeyRequestLog.objects.create(api_key=api_key, time=now, url=url)
+        return True
 
 
 class ApiKeyRequestLog(models.Model):
@@ -138,18 +127,20 @@ class ApiKeyEnrollment(models.Model):
     contact_person = models.CharField(max_length=512)
     contact_email = models.EmailField()
     organisation_name = models.CharField(max_length=512)
-    organisation_url = models.CharField(max_length=512)
+    organisation_url = models.CharField(
+        max_length=512, validators=[URLValidator()]
+    )
     project_url = models.CharField(
         max_length=512,
-        help_text='web site or project URL for API will be used'
+        help_text='web site or project URL for API will be used',
+        validators=[URLValidator()]
     )
     time = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(
         default=False,
         help_text='When approved, the api_key will be created and activated'
     )
-
-    api_key = models.ForeignKey(
+    api_key = models.OneToOneField(
         UserApiKey, on_delete=models.SET_NULL, null=True, blank=True
     )
 
@@ -162,7 +153,10 @@ class ApiKeyEnrollment(models.Model):
     def generate_api_key(self, user: User):
         """Generating api key."""
         if not self.api_key:
-            self.api_key = UserApiKey.objects.create(
+            api_key = UserApiKey(
                 user=user, is_active=False
             )
+            api_key.api_key = UserApiKey.generate_key()
+            api_key.save()
+            self.api_key = api_key
             self.save()

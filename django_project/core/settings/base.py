@@ -99,7 +99,8 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'core.middleware.project.version',
-                'core.middleware.project.FlatPageLinkMiddleware'
+                'core.middleware.project.FlatPageLinkMiddleware',
+                'core.context_processors.global_context.global_context',
             ],
         },
     },

@@ -1,9 +1,13 @@
+form {
+    padding-top: 20px;
+}
+
 .container {
     margin-top: 90px;
 }
 
 p {
-    margin: 20px 0;
+    margin: 0 0 20px 0;
 }
 
 label {
@@ -13,6 +17,12 @@ label {
 input {
     padding: 0.5rem;
     width: 100%;
+}
+
+.errorlist {
+    color: red;
+    list-style-type: none;
+    padding-left: 0 !important;
 }
 
 .helptext {

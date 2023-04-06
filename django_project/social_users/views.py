@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+
 from braces.views import LoginRequiredMixin
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
@@ -11,6 +12,7 @@ from django.views.generic import TemplateView, View
 from rest_framework.views import APIView
 
 from api.models.user_api_key import UserApiKey
+from api.serializer.user_api_key import UserApiKeySerializer
 from social_users.models import Organisation
 from social_users.utils import get_profile
 
@@ -45,9 +47,10 @@ class ProfilePage(TemplateView):
 
             # returns API Keys if the profile is it's own user
             if self.request.user == user:
-                context['api_keys'] = UserApiKey.get_user_api_key(
-                    self.request.user, autogenerate=user.is_superuser
-                )
+                context['api_keys'] = UserApiKeySerializer(
+                    UserApiKey.objects.filter(user=self.request.user),
+                    many=True
+                ).data
         except User.DoesNotExist:
             user = {
                 'username': kwargs['username']
@@ -96,9 +99,6 @@ class ProfileUpdate(APIView):
                     name=org_name,
                     site=site
                 )
-
-        UserApiKey.get_user_api_key(
-            self.request.user, autogenerate=True)
 
         return HttpResponseRedirect(
             reverse('profile', kwargs={'username': request.user.username})

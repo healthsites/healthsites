@@ -97,10 +97,19 @@
                             <div class="modal-body">
                                 {% if api_keys %}
                                     {% for api_key in api_keys %}
-                                        <div>{{ api_key }}</div>
+                                        <div>
+                                            {{ api_key.api_key }}
+                                            {% if not api_key.is_active %}
+                                                <span>(Waiting admin approval)</span>
+                                            {% endif %}
+                                        </div>
                                     {% endfor %}
                                 {% else %}
-                                    <i style="color: #f44a52">You don't have api key. Please update profile or ask administrator.</i>
+                                    <a href="{% url 'enrollment-form' %}">
+                                        <button type="button" class="btn btn-primary">
+                                            You don't have any api key, do enrollment by clicking here.
+                                        </button>
+                                    </a>
                                 {% endif %}
                             </div>
                             <div class="modal-footer">

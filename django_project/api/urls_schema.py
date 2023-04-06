@@ -8,7 +8,6 @@ from rest_framework.schemas.coreapi import (
 
 from api.api_views.v2.authentication import APIKeyAuthentication
 from api.api_views.v2.schema import SchemaView
-from api.views.enrollment_form import EnrollmentFormView
 
 schema_url_patterns = [
     url('api/v3/', include('api.urls_v3')),
@@ -57,8 +56,4 @@ urlpatterns = [
         patterns=schema_url_patterns,
     )),
     url(r'^schema/', SchemaView.as_view(), name='schema_view'),
-    url(
-        r'^enrollment/form', EnrollmentFormView.as_view(),
-        name='enrollment_form'
-    ),
 ]
