@@ -188,6 +188,9 @@
             if ('{{ data_migration_in_progress }}' === 'True') {
                 $('#migration-progress-bar-wrapper').show();
             }
+            if (window.location.search.includes('action=api-key-created')) {
+              $('#api-key-modal').modal()
+            }
 
             var $updates99 = $("#updates-99");
             var $updatesWrappeer = $("#updates-wrapper");

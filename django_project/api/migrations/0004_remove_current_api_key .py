@@ -11,7 +11,7 @@ def run(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('api', '0003_auto_20230406_0408')
+        ('api', '0003_auto_20230406_0551')
     ]
 
     operations = [

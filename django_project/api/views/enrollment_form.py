@@ -25,4 +25,6 @@ class EnrollmentFormView(LoginRequiredMixin, CreateView):
         return response
 
     def get_success_url(self):
-        return reverse('profile', args=[self.request.user.username])
+        return reverse(
+            'profile', args=[self.request.user.username]
+        ) + '?action=api-key-created'

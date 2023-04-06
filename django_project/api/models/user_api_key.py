@@ -97,7 +97,7 @@ class ApiKeyAccess(models.Model):
     counter = models.IntegerField(default=0)
 
     @staticmethod
-    def request(api_key: UserApiKey, url: str):
+    def request(api_key: UserApiKey, url: str, method: str):
         """Doing a request."""
         now = timezone.now()
         date = now.date()
@@ -109,7 +109,9 @@ class ApiKeyAccess(models.Model):
             return False
 
         access.save()
-        ApiKeyRequestLog.objects.create(api_key=api_key, time=now, url=url)
+        ApiKeyRequestLog.objects.create(
+            api_key=api_key, time=now, url=url, method=method
+        )
         return True
 
 
@@ -117,6 +119,7 @@ class ApiKeyRequestLog(models.Model):
     """API Key for request log."""
 
     api_key = models.ForeignKey(UserApiKey, on_delete=models.CASCADE)
+    method = models.CharField(max_length=126)
     time = models.DateTimeField()
     url = models.TextField()
 

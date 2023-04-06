@@ -29,12 +29,14 @@ class APIKeyAuthentication(authentication.BaseAuthentication):
                 'This api-key is not allowed to post data. '
                 'Please ask admin to update it.'
             )
-        allow = ApiKeyAccess.request(key, request.build_absolute_uri())
+        allow = ApiKeyAccess.request(
+            key, request.build_absolute_uri(), request.method
+        )
         if not allow:
             raise exceptions.AuthenticationFailed(
                 "The number of today API requests is too high. "
                 f"The limit is {key.limit} per day. "
-                "Please ask admin to increase limit. "
+                "Please ask admin to increase the limit. "
             )
 
         return (user, None)
