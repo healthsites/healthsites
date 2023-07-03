@@ -12,7 +12,11 @@ class TestApiKey(TestCase):
 
     def setUp(self):
         """To setup tests."""
-        self.preference = SitePreferences.preferences()
+        preference = SitePreferences.preferences()
+        preference.site_url = 'http://test.com'
+        preference.save()
+        self.preference = preference
+
         self.username = 'test'
         self.password = 'test'
         self.user = UserF(
@@ -44,6 +48,7 @@ class TestApiKey(TestCase):
         url = reverse('user-detail') + '?api-key=test'
         response = client.get(url)
         self.assertEqual(response.status_code, 403)
+        self.assertTrue(self.preference.site_url in str(response.content))
 
     def test_api_v3_with_correct_api_key_but_not_active(self):
         """Test enrollment."""
@@ -75,4 +80,4 @@ class TestApiKey(TestCase):
 
         url = reverse('user-detail') + f'?api-key={self.api_key}'
         response = client.get(url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 403)

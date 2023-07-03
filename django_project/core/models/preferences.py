@@ -13,6 +13,13 @@ class SitePreferences(SingletonModel):
         help_text='Default max request per day for api key.'
     )
 
+    site_url = models.CharField(
+        max_length=32,
+        blank=True,
+        null=True,
+        help_text='Site url that will be used for code.'
+    )
+
     class Meta:  # noqa: D106
         verbose_name_plural = "site preferences"
 

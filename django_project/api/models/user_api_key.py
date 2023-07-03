@@ -3,7 +3,6 @@ __date__ = '28/01/19'
 
 import binascii
 import os
-
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.core.validators import URLValidator
@@ -28,12 +27,12 @@ class UserApiKey(models.Model):
     )
     allow_write = models.BooleanField(
         default=False,
-        help_text='Allow this api key to write data'
+        help_text='Allow this API key to write data.'
     )
     max_request_per_day = models.IntegerField(
         help_text=(
-            'Max request per day for the api key. '
-            'If it is empty, it will use default_max_request_api preference.'
+            'Maximum allowed API requests per day for the API key. '
+            'If empty, it will use the default_max_request_api preference.'
         ),
         null=True, blank=True
     )
@@ -135,7 +134,10 @@ class ApiKeyEnrollment(models.Model):
     )
     project_url = models.CharField(
         max_length=512,
-        help_text='web site or project URL for API will be used',
+        help_text=(
+            'Web site or project URL for which '
+            'the Healthsites API will be used.'
+        ),
         validators=[URLValidator()]
     )
     time = models.DateTimeField(auto_now_add=True)

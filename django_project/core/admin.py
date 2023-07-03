@@ -8,6 +8,9 @@ class SitePreferencesAdmin(admin.ModelAdmin):
     """Site Preferences admin."""
 
     fieldsets = (
+        ('', {
+            'fields': ('site_url',),
+        }),
         ('API KEY', {
             'fields': ('default_max_request_api',),
         }),

@@ -1,6 +1,6 @@
 # coding=utf-8
-from rest_framework.views import APIView, Response
 from django.urls import reverse
+from rest_framework.views import APIView, Response
 
 
 class ApiVersion2(APIView):
@@ -11,7 +11,7 @@ class ApiVersion2(APIView):
         return (
             'This API is deprecated, '
             'please upgrade your application to use v3 '
-            f"of the API and register for your API token at URL "
+            'of the API and register for your API token at this URL '
             f"{self.request.build_absolute_uri('/')[:-1]}{url}"
         )
 
