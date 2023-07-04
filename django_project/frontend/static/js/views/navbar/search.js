@@ -153,7 +153,9 @@ define([
         },
         sendToAnalytic: function (value) {
             const searchValue = `${$('input:radio[name=option]:checked').val()}=${value}`;
-            ga('send', 'event', 'search', searchValue);
+            // ga('send', 'event', 'search', searchValue);
+            var dataLayer = window.dataLayer || [];
+            dataLayer.push({'event': 'search', 'search': searchValue});
         }
     })
 });
