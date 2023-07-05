@@ -90,6 +90,7 @@ $(function () {
 
     // API Explorer
     $('form.api-interaction').submit(function (event) {
+        console.log(event)
         event.preventDefault()
 
         var $form = $(this).closest('form')
@@ -220,6 +221,8 @@ $(function () {
         }
 
         params['api-key'] = $('#api-key').val();
+        console.log(key)
+        console.log(schema)
         var client = new coreapi.Client(options)
         client.action(schema, key, params).then(function (data) {
             var response = JSON.stringify(data, null, 2)

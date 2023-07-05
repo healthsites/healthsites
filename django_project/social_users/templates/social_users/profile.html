@@ -97,10 +97,19 @@
                             <div class="modal-body">
                                 {% if api_keys %}
                                     {% for api_key in api_keys %}
-                                        <div>{{ api_key }}</div>
+                                        <div>
+                                            {{ api_key.api_key }}
+                                            {% if not api_key.is_active %}
+                                                <span>(Waiting admin approval)</span>
+                                            {% endif %}
+                                        </div>
                                     {% endfor %}
                                 {% else %}
-                                    <i style="color: #f44a52">You don't have api key. Please update profile or ask administrator.</i>
+                                    <a href="{% url 'enrollment-form' %}">
+                                        <button type="button" class="btn btn-primary">
+                                            You don't have any API keys issued to you. <br>You can enroll for a new API key by clicking here.
+                                        </button>
+                                    </a>
                                 {% endif %}
                             </div>
                             <div class="modal-footer">
@@ -179,11 +188,14 @@
             if ('{{ data_migration_in_progress }}' === 'True') {
                 $('#migration-progress-bar-wrapper').show();
             }
+            if (window.location.search.includes('action=api-key-created')) {
+              $('#api-key-modal').modal()
+            }
 
             var $updates99 = $("#updates-99");
             var $updatesWrappeer = $("#updates-wrapper");
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/changesets",
+                url: api + "/user/{{ user.username }}/changesets",
                 dataType: 'json',
                 success: function (data) {
                     if ($updates99.length > 0 && data.length !== 0) {
@@ -236,7 +248,7 @@
                 return;
             }
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/updates",
+                url: api + "/user/{{ user.username }}/updates",
                 dataType: 'json',
                 success: function (data) {
                     // Show pending updates
@@ -258,7 +270,7 @@
             });
 
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/reviews",
+                url: api + "/user/{{ user.username }}/reviews",
                 dataType: 'json',
                 success: function (data) {
                     // Show pending reviews

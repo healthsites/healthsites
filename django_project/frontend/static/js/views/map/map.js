@@ -298,7 +298,7 @@ define([
         _setupClusterLayer: function () {
             var self = this;
             this.clusterLayer = new Cluster({
-                'url': '/api/v2/facilities/cluster'
+                'url': api + '/facilities/cluster'
             });
             self.MAP.addLayer(this.clusterLayer);
         },

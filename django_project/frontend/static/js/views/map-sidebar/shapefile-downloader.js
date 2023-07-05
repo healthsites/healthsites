@@ -16,12 +16,12 @@ define([
         checkingShapefile: function () {
             var self = this;
             $.ajax({
-                url: "/api/v2/facilities/shapefile/" + this.country + '/detail',
+                url: api + "/facilities/shapefile/" + this.country + '/detail',
                 dataType: 'json',
                 success: function (data) {
                     self.$el.html('<i>' + data['filename'] + ' (last update at : ' + new Date(data['time'] * 1000) + ')</i>');
                     self.$el.click(function () {
-                        window.location.href = "/api/v2/facilities/shapefile/" + self.country + '/download';
+                        window.location.href = api + "/facilities/shapefile/" + self.country + '/download';
                     });
                 },
                 error: function () {
