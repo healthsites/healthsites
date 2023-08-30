@@ -51,3 +51,4 @@ services:
       # for ssh
       - "2001:22"
     entrypoint: []
+    profiles: ["dev"]

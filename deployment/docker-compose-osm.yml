@@ -15,6 +15,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - docker-osm-settings:/settings
+    profiles: ["dev"]
 
   osm-db:
     # About the postgresql version, it should match in the dockerfile of docker-imposm3
