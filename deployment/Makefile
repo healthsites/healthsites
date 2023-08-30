@@ -1,5 +1,5 @@
 PROJECT_ID := healthsites
-export COMPOSE_FILE=deployment/docker-compose-osm.yml:deployment/docker-compose.yml:deployment/docker-compose.override.yml
+export COMPOSE_FILE=docker-compose-osm.yml:docker-compose.yml:docker-compose.override.yml
 
 SHELL := /bin/bash
 
