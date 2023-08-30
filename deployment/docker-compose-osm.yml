@@ -30,7 +30,12 @@ services:
       - ALLOW_IP_RANGE= 0.0.0.0/0
 #    depends_on:
 #      - docker-osm-profile
-    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
 
   imposm:
     image: kartoza/docker-osm:imposm-latest
@@ -73,7 +78,12 @@ services:
       - QGIS_STYLE=yes
       # Use clip in the database
       - CLIP=no
-    restart: on-failure:5
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
 
   osmupdate:
     image: kartoza/docker-osm:osmupdate-latest
@@ -105,7 +115,12 @@ services:
       # seconds between 2 executions of the script
       # if 0, then no update will be done, only the first initial import from the PBF
       - TIME=120
-    restart: on-failure:5
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
 
   osmenrich:
     image: kartoza/docker-osm:osmenrich-latest
@@ -133,4 +148,9 @@ services:
       # seconds between 2 executions of the script
       # if 0, then no update will be done, only the first initial import from the PBF
       - TIME=120
-    restart: on-failure:5
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
