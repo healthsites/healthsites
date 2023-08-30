@@ -28,8 +28,8 @@ services:
       - POSTGRES_USER=${DATABASE_OSM_USERNAME}
       - POSTGRES_PASS=${DATABASE_OSM_PASSWORD}
       - ALLOW_IP_RANGE= 0.0.0.0/0
-    depends_on:
-      - docker-osm-profile
+#    depends_on:
+#      - docker-osm-profile
     restart: on-failure
 
   imposm:
