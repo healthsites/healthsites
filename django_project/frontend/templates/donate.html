@@ -8,9 +8,9 @@
 
 <style>
     /**
- * The CSS shown here will not be introduced in the Quickstart guide, but shows
- * how you can use CSS to style your Element's container.
- */
+     * The CSS shown here will not be introduced in the Quickstart guide, but shows
+     * how you can use CSS to style your Element's container.
+     */
     #card-element {
         width: 36em;
         box-sizing: border-box;
@@ -46,11 +46,77 @@
         -moz-appearance:textfield;
     }
 
+    #cc-amount-form {
+      width: 50%;
+    }
+
+    #payment-form {
+      width: 50%;
+    }
+
+    .oneline {
+      display: flex;
+    }
+
+    #attribution {
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 181px);
+    }
+    #attribution .content {
+      flex-grow: 1;
+    }
+    .other-campaigns{
+      padding-bottom: 2rem;
+    }
+    #other-campaigns {
+      display: flex;
+    }
+    #other-campaigns > a {
+      display: block;
+      cursor: pointer;
+      color: black;
+      padding: 1rem;
+      width: 234px;
+    }
+    #other-campaigns > a:hover{
+      background-color: #eee;
+    }
+
+    #other-campaigns > a:hover,
+    #other-campaigns > a:focus {
+      text-decoration: none;
+    }
+    #other-campaigns > a > .icon {
+      background-color: #ddd;
+      border-radius: 5px;
+      height: 120px;
+      width: 214px;
+    }
+    #other-campaigns > a > .icon div{
+      height: 100%;
+      width: 100%;
+      background-size: cover;
+    }
+    #other-campaigns > a > .icon img{
+      height: 100%;
+    }
+    #other-campaigns .desc {
+      margin-top: 1rem;
+    }
+    #other-campaigns .platform {
+      height: 1.5rem;
+      float: left;
+      margin-right: 1rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
 </style>
 {% endblock stylesheet %}
 
 {% block extra_js %}
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="{% static "js/donations.js" %}"></script>
 
 <script>
 
@@ -78,8 +144,6 @@
         }).then((response) => {
             return response.json();
         }).then(function (intent) {
-            console.log(intent);
-
             var stripe = Stripe(intent.publishableKey), elements = stripe.elements(), card = elements.create('card', { style: {
                     base: {
                         iconColor: '#c4f0ff',
@@ -148,13 +212,22 @@
                             }
                         }
                     });
-
             });
-
         });
-
     });
 
+    {# TODO: Donation #}
+    {#renderCampaigns(#}
+    {#  $('#other-campaigns'),#}
+    {#  [#}
+    {#    {#}
+    {#        id: 1,#}
+    {#        url : "https://www.gofundme.com/f/senegalese-health-facility-data-collaborative",#}
+    {#        icon: 'https://images.gofundme.com/YKT-JHXlND_m6e8e5Fym4I3By3o=/720x405/https://d2g8igdw686xgo.cloudfront.net/73487715_1686813170384116_r.png',#}
+    {#        title: 'Fund our work in Senegal'#}
+    {#    }#}
+    {#  ]#}
+    {#)#}
 
 </script>
 
@@ -164,57 +237,52 @@
     <section id="attribution">
     <div id="pagebanner">
         <div class="container">
-            <h1>Donate</h1>
-            <p>Support Healthsites.io work: Donate today!</p>
+            <h1>Support Healthsites.io.</h1>
+            <p>Healthsites.io provides a valuable service to organisations seeking to improve health outcomes around the world. <br>Your donation will help us keep this service running on a sustainable basis.</p>
         </div>
     </div>
     <div class="container content">
-
-
-        <h3>How much would you like to donate?</h3>
-
-
-
-
-            <form class="form-inline" id="cc-amount-form">
-                <div class="form-group form-group-lg">
-                    <label class="sr-only">Amount</label>
-                    <div class="input-group">
-                        <input type="number" class="form-control" placeholder="Amount" name="amount" min="5">
-                    </div>
+        <h3>Donation Amount</h3>
+        <br>
+        <form class="form-inline" id="cc-amount-form">
+            <label class="sr-only">Amount</label>
+            <div class="oneline">
+                <div class="form-group form-group-lg" style="flex-grow: 1">
+                    <input type="number" class="form-control" placeholder="Amount" name="amount" min="5" style="width: 100%; border-top-right-radius: 0; border-bottom-right-radius: 0">
                 </div>
                 <div class="form-group form-group-lg">
-                    <label class="sr-only">Amount (in british pounds)</label>
-                    <div class="input-group">
-                        <select name="currency" class="form-control">
-                            <option value="GBP">GBP</option>
-                            <option value="USD">USD</option>
-                            <option value="EUR">EUR</option>
-                        </select>
-                    </div>
+                    <select name="currency" class="form-control" style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px">
+                        <option value="GBP">GBP</option>
+                        <option value="USD">USD</option>
+                        <option value="EUR">EUR</option>
+                    </select>
                 </div>
-                <button type="submit" class="btn btn-primary btn-lg">Donate</button>
-            </form>
+            </div>
+            <br>
+            <br>
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%">Donate</button>
+        </form>
 
-            <div id="alert-step-1" class="alert alert-info" role="alert" style="display: none">Initializing payment form ...</div>
-            <div id="alert-step-2" class="alert alert-info" role="alert" style="display: none">Processing payment ...</div>
-            <div id="alert-success" class="alert alert-success" role="alert" style="display: none">Thank you! Your donation payment was successful.</div>
-            <div id="alert-error" class="alert alert-danger" role="alert" style="display: none">Something went wrong - unable to process transaction</div>
+        <div id="alert-step-1" class="alert alert-info" role="alert" style="display: none">Initializing payment form ...</div>
+        <div id="alert-step-2" class="alert alert-info" role="alert" style="display: none">Processing payment ...</div>
+        <div id="alert-success" class="alert alert-success" role="alert" style="display: none">Thank you! Your donation payment was successful.</div>
+        <div id="alert-error" class="alert alert-danger" role="alert" style="display: none">Something went wrong - unable to process transaction</div>
 
-            <form class="form-inline" id="payment-form" style="display: none">
-                <div class="form-group">
-                    <label class="sr-only" for="card-element">Credit or debit card</label>
-                    <div class="input-group" style="display: flex;">
-                        <div id="card-element" class="form-control"></div>
-                        <div id="card-errors"></div>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary btn-lg">Pay</button>
-            </form>
-
-        </div>
-
-
-
+        <form class="form-inline" id="payment-form" style="display: none">
+            <label class="sr-only" for="card-element">Credit or debit card</label>
+            <div id="card-element" class="form-control" style="width: 100%"></div>
+            <div id="card-errors"></div>
+            <br>
+            <br>
+            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%">Pay</button>
+        </form>
+    </div>
+{# TODO: Donation #}
+{#  We disabled this for now #}
+{#    <div class="other-campaigns container">#}
+{#        <h3>Support Data Collection Campaigns</h3>#}
+{#        <div id="other-campaigns">#}
+{#        </div>#}
+{#    </div>#}
 </section>
 {% endblock content %}
