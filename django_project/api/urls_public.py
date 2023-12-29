@@ -11,7 +11,7 @@ from api.api_views.v2.facilities import (
     GetShapefileDetail, GetShapefileDownload,
     GetFacilities
 )
-from api.api_views.v2.googlemaps.search import SearchByGeoname
+from api.api_views.v2.geocode.search import SearchByGeoname
 from api.api_views.v2.import_progress import ImportCSVProgress
 from api.api_views.v2.pending.list import GetPendingReviews, GetPendingUpdates
 from api.api_views.v2.users.changesets import GetChangesets
@@ -38,12 +38,6 @@ facilities_api = [
     url(r'^', GetFacilities.as_view(), name='facilities'),
 ]
 
-# gmaps api
-gmaps_api = [
-    url(r'^search/geoname',
-        SearchByGeoname.as_view(), name='search-geonome')
-]
-
 # API about user
 user_api = [
     url(r'^changesets',
@@ -54,9 +48,9 @@ user_api = [
         GetPendingUpdates.as_view()),
 ]
 urlpatterns = [
+    url(r'^search/geoname', SearchByGeoname.as_view(), name='search-geonome'),
     url(r'countries/', include(countries_api)),
     url(r'facilities/', include(facilities_api)),
-    url(r'gmaps/', include(gmaps_api)),
     url(r'user/(?P<username>.*)/', include(user_api)),
     url(r'csv-import-progress/',
         ImportCSVProgress.as_view(), name='api_get_csv_import_progress'),

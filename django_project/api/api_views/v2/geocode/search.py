@@ -2,8 +2,7 @@
 __author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
 __date__ = '20/12/21'
 
-import googlemaps
-from django.conf import settings
+import requests
 from django.http.response import HttpResponseBadRequest
 from rest_framework.schemas import AutoSchema
 from rest_framework.views import APIView, Response
@@ -28,15 +27,18 @@ def search_by_geoname(geoname):
     }
 
     """
-    google_maps_api_key = settings.GOOGLE_MAPS_API_KEY
-    gmaps = googlemaps.Client(key=google_maps_api_key)
     try:
-        geocode_result = gmaps.geocode(geoname)[0]
-        viewport = geocode_result['geometry']['viewport']
-        northeast_lat = viewport['northeast']['lat']
-        northeast_lng = viewport['northeast']['lng']
-        southwest_lat = viewport['southwest']['lat']
-        southwest_lng = viewport['southwest']['lng']
+        params = {'q': geoname, 'format': 'json', 'limit': 1}
+        response = requests.get(
+            'https://nominatim.openstreetmap.org/search',
+            params, headers={'Accept-Language': 'en'}
+        )
+        place = response.json()[0]
+        viewport = place['boundingbox']
+        northeast_lat = viewport[0]
+        northeast_lng = viewport[2]
+        southwest_lat = viewport[1]
+        southwest_lng = viewport[3]
         return {
             'northeast': {
                 'lat': northeast_lat,
