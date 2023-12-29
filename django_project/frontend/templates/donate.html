@@ -5,26 +5,28 @@
 
 {% block stylesheet %}
     <link rel="stylesheet" href="/static/css/attributions.css">
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
-<style>
-    /**
-     * The CSS shown here will not be introduced in the Quickstart guide, but shows
-     * how you can use CSS to style your Element's container.
-     */
-    #card-element {
+    <style>
+      /**
+       * The CSS shown here will not be introduced in the Quickstart guide, but shows
+       * how you can use CSS to style your Element's container.
+       */
+      #card-element {
         width: 36em;
         box-sizing: border-box;
         font-size: 18px;
         font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         height: 46px;
         border: 1px solid #ccc;
-    }
+      }
 
-    #card-errors {
+      #card-errors {
         color: #f44a52;
-    }
+      }
 
-    .StripeElement {
+      .StripeElement {
         background-color: white;
         padding: 10px 16px;
         border-radius: 4px;
@@ -32,103 +34,113 @@
         box-shadow: 0 1px 3px 0 #e6ebf1;
         -webkit-transition: box-shadow 150ms ease;
         transition: box-shadow 150ms ease;
-    }
+      }
 
-    /* Chrome, Safari, Edge, Opera */
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
+      /* Chrome, Safari, Edge, Opera */
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
-    }
+      }
 
-    /* Firefox */
-    input[type=number] {
-        -moz-appearance:textfield;
-    }
+      /* Firefox */
+      input[type=number] {
+        -moz-appearance: textfield;
+      }
 
-    #cc-amount-form {
-      width: 50%;
-    }
+      #cc-amount-form {
+        width: 50%;
+      }
 
-    #payment-form {
-      width: 50%;
-    }
+      #payment-form {
+        width: 50%;
+      }
 
-    .oneline {
-      display: flex;
-    }
+      .oneline {
+        display: flex;
+      }
 
-    #attribution {
-      display: flex;
-      flex-direction: column;
-      min-height: calc(100vh - 181px);
-    }
-    #attribution .content {
-      flex-grow: 1;
-    }
-    .other-campaigns{
-      padding-bottom: 2rem;
-    }
-    #other-campaigns {
-      display: flex;
-    }
-    #other-campaigns > a {
-      display: block;
-      cursor: pointer;
-      color: black;
-      padding: 1rem;
-      width: 234px;
-    }
-    #other-campaigns > a:hover{
-      background-color: #eee;
-    }
+      #attribution {
+        display: flex;
+        flex-direction: column;
+        min-height: calc(100vh - 181px);
+      }
 
-    #other-campaigns > a:hover,
-    #other-campaigns > a:focus {
-      text-decoration: none;
-    }
-    #other-campaigns > a > .icon {
-      background-color: #ddd;
-      border-radius: 5px;
-      height: 120px;
-      width: 214px;
-    }
-    #other-campaigns > a > .icon div{
-      height: 100%;
-      width: 100%;
-      background-size: cover;
-    }
-    #other-campaigns > a > .icon img{
-      height: 100%;
-    }
-    #other-campaigns .desc {
-      margin-top: 1rem;
-    }
-    #other-campaigns .platform {
-      height: 1.5rem;
-      float: left;
-      margin-right: 1rem;
-      margin-bottom: 0.5rem;
-      display: inline-block;
-    }
-</style>
+      #attribution .content {
+        flex-grow: 1;
+      }
+
+      .other-campaigns {
+        padding-bottom: 2rem;
+      }
+
+      #other-campaigns {
+        display: flex;
+      }
+
+      #other-campaigns > a {
+        display: block;
+        cursor: pointer;
+        color: black;
+        padding: 1rem;
+        width: 234px;
+      }
+
+      #other-campaigns > a:hover {
+        background-color: #eee;
+      }
+
+      #other-campaigns > a:hover,
+      #other-campaigns > a:focus {
+        text-decoration: none;
+      }
+
+      #other-campaigns > a > .icon {
+        background-color: #ddd;
+        border-radius: 5px;
+        height: 120px;
+        width: 214px;
+      }
+
+      #other-campaigns > a > .icon div {
+        height: 100%;
+        width: 100%;
+        background-size: cover;
+      }
+
+      #other-campaigns > a > .icon img {
+        height: 100%;
+      }
+
+      #other-campaigns .desc {
+        margin-top: 1rem;
+      }
+
+      #other-campaigns .platform {
+        height: 1.5rem;
+        float: left;
+        margin-right: 1rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+      }
+    </style>
 {% endblock stylesheet %}
 
 {% block extra_js %}
     <script src="https://js.stripe.com/v3/"></script>
     <script src="{% static "js/donations.js" %}"></script>
 
-<script>
+    <script>
 
-    var url;
+      var url;
 
-    if(window.location.hostname === 'healthsites.io') {
+      if (window.location.hostname === 'healthsites.io') {
         url = 'https://1pj9ud92b2.execute-api.eu-west-2.amazonaws.com/Prod/intent';
-    } else {
+      } else {
         url = 'https://1pj9ud92b2.execute-api.eu-west-2.amazonaws.com/Stage/intent';
-    }
+      }
 
-    $('#cc-amount-form').on('submit', function (event) {
+      $('#cc-amount-form').on('submit', function (event) {
 
         event.preventDefault();
         $(this).hide();
@@ -136,153 +148,215 @@
 
         var data = {};
 
-        for(var item of $(this).serializeArray()) { data[item.name] = item.value; }
+        for (var item of $(this).serializeArray()) {
+          data[item.name] = item.value;
+        }
 
         fetch(url, {
-            method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
         }).then((response) => {
-            return response.json();
+          return response.json();
         }).then(function (intent) {
-            var stripe = Stripe(intent.publishableKey), elements = stripe.elements(), card = elements.create('card', { style: {
-                    base: {
-                        iconColor: '#c4f0ff',
-                        color: '#000',
-                        fontWeight: 500,
-                        fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                        fontSize: '18px',
-                        fontSmoothing: 'antialiased',
-                        backgroundColor: '#fff',
-                        ':-webkit-autofill': {
-                            color: '#fce883',
-                        },
-                        '::placeholder': {
-                            color: '#666666',
-                        },
-                    },
-                    invalid: {
-                        iconColor: '#f44a52',
-                        color: '#f44a52',
-                    }
-                }});
-
-            card.mount('#card-element');
-
-            $('#alert-step-1').hide();
-            $('#payment-form').show();
-
-            // Handle real-time validation errors from the card Element.
-            card.addEventListener('change', function(event) {
-
-                var displayError = document.getElementById('card-errors');
-
-                if (event.error) {
-                    displayError.textContent = event.error.message;
-                } else {
-                    displayError.textContent = '';
+          var stripe = Stripe(intent.publishableKey),
+            elements = stripe.elements(), card = elements.create('card', {
+              style: {
+                base: {
+                  iconColor: '#c4f0ff',
+                  color: '#000',
+                  fontWeight: 500,
+                  fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+                  fontSize: '18px',
+                  fontSmoothing: 'antialiased',
+                  backgroundColor: '#fff',
+                  ':-webkit-autofill': {
+                    color: '#fce883',
+                  },
+                  '::placeholder': {
+                    color: '#666666',
+                  },
+                },
+                invalid: {
+                  iconColor: '#f44a52',
+                  color: '#f44a52',
                 }
+              }
             });
 
-            $('#payment-form').on('submit', function (event2) {
-                event2.preventDefault();
+          card.mount('#card-element');
 
-                $(this).hide();
-                $('#alert-step-2').show();
+          $('#alert-step-1').hide();
+          $('#payment-form').show();
 
-                stripe
-                    .confirmCardPayment(intent.clientSecret, {
-                        payment_method: {
-                            card: card
-                        }
-                    })
-                    .then(function(result) {
-                        console.log(result);
-                        $('#alert-step-2').hide();
+          // Handle real-time validation errors from the card Element.
+          card.addEventListener('change', function (event) {
 
-                        if(result.hasOwnProperty('error')) {
-                            document.getElementById('card-errors').textContent = result.error.message;
-                            $('#payment-form').show();
-                        }
+            var displayError = document.getElementById('card-errors');
 
-                        if (result.hasOwnProperty('paymentIntent')) {
-                            if (result.paymentIntent.status === "succeeded") {
-                                $('#alert-success').show();
-                            } else {
-                                $('#alert-error').show();
-                            }
-                        }
-                    });
-            });
+            if (event.error) {
+              displayError.textContent = event.error.message;
+            } else {
+              displayError.textContent = '';
+            }
+          });
+
+          $('#payment-form').on('submit', function (event2) {
+            event2.preventDefault();
+
+            $(this).hide();
+            $('#alert-step-2').show();
+
+            stripe
+              .confirmCardPayment(intent.clientSecret, {
+                payment_method: {
+                  card: card
+                }
+              })
+              .then(function (result) {
+                console.log(result);
+                $('#alert-step-2').hide();
+
+                if (result.hasOwnProperty('error')) {
+                  document.getElementById('card-errors').textContent = result.error.message;
+                  $('#payment-form').show();
+                }
+
+                if (result.hasOwnProperty('paymentIntent')) {
+                  if (result.paymentIntent.status === "succeeded") {
+                    $('#alert-success').show();
+                  } else {
+                    $('#alert-error').show();
+                  }
+                }
+              });
+          });
         });
-    });
+      });
 
-    {# TODO: Donation #}
-    {#renderCampaigns(#}
-    {#  $('#other-campaigns'),#}
-    {#  [#}
-    {#    {#}
-    {#        id: 1,#}
-    {#        url : "https://www.gofundme.com/f/senegalese-health-facility-data-collaborative",#}
-    {#        icon: 'https://images.gofundme.com/YKT-JHXlND_m6e8e5Fym4I3By3o=/720x405/https://d2g8igdw686xgo.cloudfront.net/73487715_1686813170384116_r.png',#}
-    {#        title: 'Fund our work in Senegal'#}
-    {#    }#}
-    {#  ]#}
-    {#)#}
+      {# TODO: Donation #}
+      {#renderCampaigns(#}
+      {#  $('#other-campaigns'),#}
+      {#  [#}
+      {#    {#}
+      {#        id: 1,#}
+      {#        url : "https://www.gofundme.com/f/senegalese-health-facility-data-collaborative",#}
+      {#        icon: 'https://images.gofundme.com/YKT-JHXlND_m6e8e5Fym4I3By3o=/720x405/https://d2g8igdw686xgo.cloudfront.net/73487715_1686813170384116_r.png',#}
+      {#        title: 'Fund our work in Senegal'#}
+      {#    }#}
+      {#  ]#}
+      {#)#}
 
-</script>
+      function captchaCallback() {
+        console.log($('input[name="amount"]').val())
+        const captcha = grecaptcha.getResponse();
+        if (captcha && $('input[name="amount"]').val()) {
+          $('button[type="submit"]').prop("disabled", false);
+        } else {
+          $('button[type="submit"]').prop("disabled", true);
+        }
+      }
+
+
+      $(document).ready(function () {
+        let $form = $('#payment-form');
+        $('button[type="submit"]').prop("disabled", true);
+        $form.submit(function (event) {
+          const captcha = grecaptcha.getResponse();
+          if (!captcha) {
+            event.preventDefault();
+          }
+          $form.append('<input id="captcha_response" name="captcha_response" type="text" value="' + captcha + '">')
+        });
+        var $submit = $("#submit");
+        $submit.click(function () {
+          $form.submit();
+        })
+        $('input[name="amount"]').on("keyup", captchaCallback);
+      })
+
+    </script>
 
 {% endblock extra_js %}
 
 {% block content %}
     <section id="attribution">
-    <div id="pagebanner">
-        <div class="container">
-            <h1>Support Healthsites.io.</h1>
-            <p>Healthsites.io provides a valuable service to organisations seeking to improve health outcomes around the world. <br>Your donation will help us keep this service running on a sustainable basis.</p>
-        </div>
-    </div>
-    <div class="container content">
-        <h3>Donation Amount</h3>
-        <br>
-        <form class="form-inline" id="cc-amount-form">
-            <label class="sr-only">Amount</label>
-            <div class="oneline">
-                <div class="form-group form-group-lg" style="flex-grow: 1">
-                    <input type="number" class="form-control" placeholder="Amount" name="amount" min="5" style="width: 100%; border-top-right-radius: 0; border-bottom-right-radius: 0">
-                </div>
-                <div class="form-group form-group-lg">
-                    <select name="currency" class="form-control" style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px">
-                        <option value="GBP">GBP</option>
-                        <option value="USD">USD</option>
-                        <option value="EUR">EUR</option>
-                    </select>
-                </div>
+        <div id="pagebanner">
+            <div class="container">
+                <h1>Support Healthsites.io.</h1>
+                <p>Healthsites.io provides a valuable service to organisations
+                    seeking to improve health outcomes around the world. <br>Your
+                    donation will help us keep this service running on a
+                    sustainable basis.</p>
             </div>
+        </div>
+        <div class="container content">
+            <h3>Donation Amount</h3>
             <br>
-            <br>
-            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%">Donate</button>
-        </form>
+            <form class="form-inline" id="cc-amount-form">
+                <label class="sr-only">Amount</label>
+                <div class="oneline">
+                    <div class="form-group form-group-lg" style="flex-grow: 1">
+                        <input type="number" class="form-control"
+                               placeholder="Amount" name="amount" min="5"
+                               style="width: 100%; border-top-right-radius: 0; border-bottom-right-radius: 0"
+                        >
+                    </div>
+                    <div class="form-group form-group-lg">
+                        <select name="currency" class="form-control"
+                                style="border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px">
+                            <option value="GBP">GBP</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                        </select>
+                    </div>
+                </div>
+                <br>
+                <div class="g-recaptcha"
+                     data-sitekey="{{ CAPTCHA_SITE_KEY }}"
+                     data-callback="captchaCallback"
+                ></div>
+                <br>
+                <button type="submit" class="btn btn-primary btn-lg"
+                        style="width: 100%">Donate
+                </button>
+            </form>
 
-        <div id="alert-step-1" class="alert alert-info" role="alert" style="display: none">Initializing payment form ...</div>
-        <div id="alert-step-2" class="alert alert-info" role="alert" style="display: none">Processing payment ...</div>
-        <div id="alert-success" class="alert alert-success" role="alert" style="display: none">Thank you! Your donation payment was successful.</div>
-        <div id="alert-error" class="alert alert-danger" role="alert" style="display: none">Something went wrong - unable to process transaction</div>
+            <div id="alert-step-1" class="alert alert-info" role="alert"
+                 style="display: none">Initializing payment form ...
+            </div>
+            <div id="alert-step-2" class="alert alert-info" role="alert"
+                 style="display: none">Processing payment ...
+            </div>
+            <div id="alert-success" class="alert alert-success" role="alert"
+                 style="display: none">Thank you! Your donation payment was
+                successful.
+            </div>
+            <div id="alert-error" class="alert alert-danger" role="alert"
+                 style="display: none">Something went wrong - unable to process
+                transaction
+            </div>
 
-        <form class="form-inline" id="payment-form" style="display: none">
-            <label class="sr-only" for="card-element">Credit or debit card</label>
-            <div id="card-element" class="form-control" style="width: 100%"></div>
-            <div id="card-errors"></div>
-            <br>
-            <br>
-            <button type="submit" class="btn btn-primary btn-lg" style="width: 100%">Pay</button>
-        </form>
-    </div>
-{# TODO: Donation #}
-{#  We disabled this for now #}
-{#    <div class="other-campaigns container">#}
-{#        <h3>Support Data Collection Campaigns</h3>#}
-{#        <div id="other-campaigns">#}
-{#        </div>#}
-{#    </div>#}
-</section>
+            <form class="form-inline" id="payment-form" style="display: none">
+                <label class="sr-only" for="card-element">Credit or debit
+                    card</label>
+                <div id="card-element" class="form-control"
+                     style="width: 100%"></div>
+                <div id="card-errors"></div>
+                <br>
+                <br>
+                <button type="submit" class="btn btn-primary btn-lg"
+                        style="width: 100%">Pay
+                </button>
+            </form>
+        </div>
+        {# TODO: Donation #}
+        {#  We disabled this for now #}
+        {#    <div class="other-campaigns container">#}
+        {#        <h3>Support Data Collection Campaigns</h3>#}
+        {#        <div id="other-campaigns">#}
+        {#        </div>#}
+        {#    </div>#}
+    </section>
 {% endblock content %}
