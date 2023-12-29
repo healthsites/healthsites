@@ -6,7 +6,7 @@ define([
         autocomplete_localities: api + "/facilities/autocomplete/",
         autocomplete_country: api + "/countries/autocomplete/",
         autocomplete_url: '',
-        geoname_search: api + "/gmaps/search/geoname",
+        geoname_search: api + "/search/geoname",
         initialize: function () {
             var self = this;
             this.currentSearch = 'healthsite';
