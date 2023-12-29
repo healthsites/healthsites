@@ -3,11 +3,13 @@ __date__ = '28/01/19'
 
 import binascii
 import os
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.core.validators import URLValidator
 from django.utils import timezone
 
+from core.email import send_email_with_html
 from core.models.preferences import SitePreferences
 
 
@@ -149,11 +151,37 @@ class ApiKeyEnrollment(models.Model):
         UserApiKey, on_delete=models.SET_NULL, null=True, blank=True
     )
 
+    @property
+    def username(self):
+        """Return username of enrollment."""
+        if self.api_key:
+            return self.api_key.user.username
+        else:
+            return ''
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_approved = self.approved
+
     def save(self, *args, **kwargs):
+        from api.serializer.user_api_key import ApiKeyEnrollmentSerializer
+        approved_changed = self.approved != self.__original_approved
         super(ApiKeyEnrollment, self).save(*args, **kwargs)
         if self.api_key:
             self.api_key.is_active = self.approved
             self.api_key.save()
+
+        if approved_changed:
+            if self.approved:
+                subject = 'Your API Key request has been approved'
+            else:
+                subject = 'Your API Key request has been rejected'
+
+            send_email_with_html(
+                subject, [self.contact_email],
+                ApiKeyEnrollmentSerializer(self).data,
+                'emails/api_enrollment_notification.html',
+            )
 
     def generate_api_key(self, user: User):
         """Generating api key."""
