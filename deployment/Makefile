@@ -1,5 +1,5 @@
 PROJECT_ID := healthsites
-export COMPOSE_FILE=deployment/docker-compose-osm.yml:deployment/docker-compose.yml:deployment/docker-compose.override.yml
+export COMPOSE_FILE=docker-compose-osm.yml:docker-compose.yml:docker-compose.override.yml
 
 SHELL := /bin/bash
 
@@ -31,18 +31,14 @@ dev:
 	@echo "------------------------------------------------------------------"
 	@echo "Running in dev mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose ${ARGS} up -d dev
-	@# Dont confuse this with the dbbackup make command below
-	@# This one runs the postgis-backup cron container
-	@# We add --no-recreate so that it does not destroy & recreate the db container
-	@docker-compose ${ARGS} up --no-recreate --no-deps -d
+	@docker-compose ${ARGS} --profile dev up -d
 
 build:
 	@echo
 	@echo "------------------------------------------------------------------"
 	@echo "Building in production mode"
 	@echo "------------------------------------------------------------------"
-	@docker-compose -p $(PROJECT_ID) build
+	@docker-compose -p $(PROJECT_ID) build --no-cache
 
 nginx:
 	@echo

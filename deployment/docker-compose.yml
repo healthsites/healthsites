@@ -15,6 +15,8 @@ x-common-django:
     - ADMIN_USERNAME=${ADMIN_USERNAME}
     - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     - ADMIN_EMAIL=${ADMIN_EMAIL}
+    - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+    - EMAIL_HOST_USER=${EMAIL_HOST_USER}
 
     # django database
     - DATABASE_NAME=${DATABASE_NAME}
@@ -37,8 +39,8 @@ x-common-django:
     - VIRTUAL_PORT=8080
 
     # KEYS
-    - CHAPCHA_SITE_KEY=${CHAPCHA_SITE_KEY}
-    - CHAPCHA_SECRET_KEY=${CHAPCHA_SECRET_KEY}
+    - CAPTCHA_SITE_KEY=${CAPTCHA_SITE_KEY}
+    - CAPTCHA_SECRET_KEY=${CAPTCHA_SECRET_KEY}
     - GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
     - SOCIAL_AUTH_OPENSTREETMAP_KEY=${SOCIAL_AUTH_OPENSTREETMAP_KEY}
     - SOCIAL_AUTH_OPENSTREETMAP_SECRET=${SOCIAL_AUTH_OPENSTREETMAP_SECRET}
@@ -46,7 +48,12 @@ x-common-django:
   volumes:
     - static-data:/home/web/static
     - media-data:/home/web/media
-  restart: on-failure
+  deploy:
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 5
+      window: 120s
 
 services:
   # Vanilla RabbitMQ service. This is needed by celery
@@ -55,7 +62,12 @@ services:
     container_name: healthsites_rabbitmq
     volumes:
       - rabbitmq:/var/lib/rabbitmq
-    restart: on-failure
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
 
   db:
     image: kartoza/postgis:13.0
@@ -67,7 +79,12 @@ services:
       - POSTGRES_DBNAME=${DATABASE_NAME}
       - POSTGRES_USER=${DATABASE_USERNAME}
       - POSTGRES_PASS=${DATABASE_PASSWORD}
-    restart: on-failure:5
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
 
   dbbackups:
     image: kartoza/pg-backup:13.0
@@ -85,7 +102,12 @@ services:
       - PGPORT=5432
     volumes:
       - backups-data:/backups
-    restart: on-failure:5
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
 
   django:
     <<: *default-common-django
@@ -108,4 +130,10 @@ services:
       - media-data:/home/web/media:ro
     ports:
       - "${HTTP_PORT}:8080"
-    restart: on-failure:5
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
+    profiles: ["dev"]

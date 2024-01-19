@@ -2,7 +2,7 @@ __author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
 __date__ = '20/12/21'
 
 from django.contrib.gis.geos import Polygon
-from api.api_views.v2.googlemaps.search import search_by_geoname
+from api.api_views.v2.geocode.search import search_by_geoname
 from core.utils import parse_bbox
 from localities.models.administration import Country
 from localities_osm.models.locality import LocalityOSMView

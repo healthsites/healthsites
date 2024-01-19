@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
-import logging
 import json
+import logging
 import os
+
 import requests
+from braces.views import FormMessagesMixin, LoginRequiredMixin
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic import FormView, TemplateView
-from braces.views import FormMessagesMixin, LoginRequiredMixin
 from envelope.views import ContactView as EnvelopeContactView
+
 from api.api_views.v2.schema import Schema
-from localities.models import Country, DataLoaderPermission
 from frontend.forms import DataLoaderForm
+from localities.models import Country, DataLoaderPermission
 from social_users.utils import get_profile
 
 LOG = logging.getLogger(__name__)
@@ -47,7 +49,7 @@ class MessagesContactView(FormMessagesMixin, EnvelopeContactView):
 
     def get_context_data(self, **kwargs):
         context = super(MessagesContactView, self).get_context_data(**kwargs)
-        context['CHAPCHA_SITE_KEY'] = settings.CHAPCHA_SITE_KEY
+        context['CAPTCHA_SITE_KEY'] = settings.CAPTCHA_SITE_KEY
         return context
 
     def form_valid(self, form):
@@ -57,17 +59,22 @@ class MessagesContactView(FormMessagesMixin, EnvelopeContactView):
             return self.form_invalid(form)
         else:
             # lets check the response
-            response = requests.post('https://www.google.com/recaptcha/api/siteverify', data={
-                'secret': settings.CHAPCHA_SECRET_KEY,
-                'response': captcha_response
-            })
+            response = requests.post(
+                'https://www.google.com/recaptcha/api/siteverify',
+                data={
+                    'secret': settings.CAPTCHA_SECRET_KEY,
+                    'response': captcha_response
+                }
+            )
             if response.status_code != 200:
                 form.add_error(None, "Captcha is invalid")
                 return self.form_invalid(form)
             else:
                 text = json.loads(response.text)
                 if not text['success']:
-                    form.add_error(None, "Captcha : " + ','.join(text['error-codes']))
+                    form.add_error(
+                        None, "Captcha : " + ','.join(text['error-codes'])
+                    )
                     return self.form_invalid(form)
 
         return super(MessagesContactView, self).form_valid(form)
@@ -86,7 +93,9 @@ class MapView(TemplateView):
         context['osm_API'] = settings.OSM_API_URL
         context['map_max_zoom'] = settings.MAX_ZOOM
         context['schema'] = json.dumps(Schema().get_schema())
-        context['countries'] = Country.objects.order_by('name').values('name', 'parent__name')
+        context['countries'] = Country.objects.order_by('name').values(
+            'name', 'parent__name'
+        )
 
         if self.request.user.is_authenticated:
             user = get_object_or_404(User, username=self.request.user)
@@ -108,6 +117,11 @@ class AttributionsView(TemplateView):
 
 class DonateView(TemplateView):
     template_name = 'donate.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(DonateView, self).get_context_data(**kwargs)
+        context['CAPTCHA_SITE_KEY'] = settings.CAPTCHA_SITE_KEY
+        return context
 
 
 class GatherEnrollmentView(TemplateView):

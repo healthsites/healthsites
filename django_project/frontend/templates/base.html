@@ -19,7 +19,6 @@
     <link rel="shortcut icon" href="{% static "img/favicon.ico" %}" type="image/x-icon">
 
     {# {% stylesheet 'base_library' %} #}
-    <link href="{% static 'css/map.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
     <link href="{% static 'libs/font-awesome/4.4.0/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
     <link href="{% static 'libs/jquery-ui/1.11.4/jquery-ui.min.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
     <link href="{% static 'libs/jquery.slick/1.5.7/slick.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
@@ -35,7 +34,9 @@
 
     {# {% stylesheet 'base' %} #}
     <link href="{% static 'css/home.css' %}" rel="stylesheet" type="text/css" media="screen, projection"/>
-
+    <script>
+        const api = '/api/public';
+    </script>
     {% block stylesheet %}
     {% endblock stylesheet %}
 </head>

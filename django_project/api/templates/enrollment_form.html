@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+    API Enrollment Form
+{% endblock %}
+
+{% block stylesheet %}
+    <link href="{% static 'css/form.css' %} " rel="stylesheet"
+          type="text/css"/>
+{% endblock stylesheet %}
+
+{% block content %}
+    <div class="container">
+        <h3>Healthsites - API Enrollment Form</h3>
+        <form id="data-loader-form" class="" method="post"
+              enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" class="btn btn-primary" value="Submit"/>
+        </form>
+    </div>
+
+{% endblock %}

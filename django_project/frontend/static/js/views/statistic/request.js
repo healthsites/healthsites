@@ -2,7 +2,7 @@ define([
     'backbone',
     'jquery'], function (Backbone, $) {
     return Backbone.View.extend({
-        url: "/api/v2/facilities/",
+        url: api + "/facilities/",
         getStatistic: function (country, successCallback, errorCallback) {
             $.ajax({
                 url: this.url + 'statistic',

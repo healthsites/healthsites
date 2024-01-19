@@ -14,7 +14,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'celery',
     'ckeditor',
     # 'pipeline',
-    'envelope'
+    'envelope',
 )
 
 REST_FRAMEWORK = {

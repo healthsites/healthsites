@@ -83,7 +83,7 @@
         $('#qr-code-generator').click(function () {
             $('#qrcode').html('<i>Please wait....</a>');
             $.ajax({
-                url: "/api/v2/gather/enrollment",
+                url: api + "/gather/enrollment",
                 dataType: 'json',
                 success: function (data) {
                     $('#qrcode').html('');

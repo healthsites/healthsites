@@ -3,17 +3,24 @@ __date__ = '29/11/18'
 
 import copy
 import json
-from core.settings.utils import ABS_PATH
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.http import Http404
+from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from api.api_views.v2.facilities.base_api import (
-    FacilitiesBaseAPI
-)
+
+from api.api_views.v2.base_api import BaseAPIWithAuthAndApiKey
+from api.api_views.v2.facilities.base_api import FacilitiesBaseAPI
+from api.utilities.pending import (
+    create_pending_update, validate_pending_update,
+    create_pending_review, update_pending_review, delete_pending_review,
+    get_pending_review)
+from api.utils import (
+    validate_osm_data, convert_to_osm_tag,
+    update_osm_node, update_osm_way, verify_user)
+from core.settings.utils import ABS_PATH
 from localities_osm.models.locality import (
     LocalityOSMNode,
     LocalityOSMWay
@@ -24,13 +31,6 @@ from localities_osm.serializer.locality_osm import (
     LocalityOSMWaySerializer,
     LocalityOSMWayGeoSerializer
 )
-from api.utilities.pending import (
-    create_pending_update, validate_pending_update,
-    create_pending_review, update_pending_review, delete_pending_review,
-    get_pending_review)
-from api.utils import (
-    validate_osm_data, convert_to_osm_tag,
-    update_osm_node, update_osm_way, verify_user)
 from localities_osm_extension.models.extension import LocalityOSMExtension
 
 
@@ -39,7 +39,7 @@ class GetDetailFacility(FacilitiesBaseAPI):
     get:
     Returns a facility detail.
 
-    put:
+    post:
     Update a facility.
     """
 
@@ -73,11 +73,14 @@ class GetDetailFacility(FacilitiesBaseAPI):
                 '%s is not recognized as osm type' % osm_type)
 
         try:
-            return Response(self.serialize(self.getLocalityOsm(osm_type, osm_id)))
-        except (LocalityOSMNode.DoesNotExist, LocalityOSMNode.DoesNotExist):
+            return Response(
+                self.serialize(self.getLocalityOsm(osm_type, osm_id)))
+        except (LocalityOSMNode.DoesNotExist, LocalityOSMWay.DoesNotExist):
             raise Http404()
 
     def post(self, request, osm_type, osm_id):
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden()
         data = copy.deepcopy(request.data)
         user = request.user
         if user.username in settings.TEST_USERS:
@@ -176,6 +179,19 @@ class GetDetailFacility(FacilitiesBaseAPI):
             raise Http404()
 
 
+class GetDetailFacilityV3(GetDetailFacility, BaseAPIWithAuthAndApiKey):
+    """
+    get:
+    Returns a facility detail.
+
+    post:
+    Update a facility.
+    """
+    api_label = {
+        'POST': 'update'
+    }
+
+
 class GetDetailFacilityByUUID(GetDetailFacility):
     """
     get:
@@ -195,9 +211,11 @@ class GetDetailFacilityByUUID(GetDetailFacility):
     def get(self, request, uuid):
         """ Get facility by uuid """
         osm_type, osm_id = self.get_facility_by_uuid(uuid)
-        return super(GetDetailFacilityByUUID, self).get(request, osm_type, osm_id)
+        return super(GetDetailFacilityByUUID, self).get(
+            request, osm_type, osm_id)
 
     def post(self, request, uuid):
         """ Update facility by uuid """
         osm_type, osm_id = self.get_facility_by_uuid(uuid)
-        return super(GetDetailFacilityByUUID, self).post(request, osm_type, osm_id)
+        return super(GetDetailFacilityByUUID, self).post(
+            request, osm_type, osm_id)

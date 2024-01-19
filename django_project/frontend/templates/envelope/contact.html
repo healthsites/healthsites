@@ -58,13 +58,13 @@
                 {% for message in messages %}
                     {% if message.tags != "success" %}
                         {% render_contact_form %}
-                        <div class="g-recaptcha" data-sitekey="{{ CHAPCHA_SITE_KEY }}"></div>
+                        <div class="g-recaptcha" data-sitekey="{{ CAPTCHA_SITE_KEY }}"></div>
                         <input id="submit" type="submit" value="Send!">
                     {% endif %}
                 {% endfor %}
             {% else %}
                 {% render_contact_form %}
-                <div class="g-recaptcha" data-sitekey="{{ CHAPCHA_SITE_KEY }}"></div>
+                <div class="g-recaptcha" data-sitekey="{{ CAPTCHA_SITE_KEY }}"></div>
                 <input id="submit" type="submit" value="Send!">
             {% endif %}
             {% if messages %}

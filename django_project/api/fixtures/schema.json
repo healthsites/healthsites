@@ -7,7 +7,7 @@
   "facilities": {
     "create": {
       "type": "link",
-      "url": "/api/v2/facilities",
+      "url": "/api/v3/facilities",
       "action": "post",
       "encoding": "application/json",
       "description": "Create new facility.",

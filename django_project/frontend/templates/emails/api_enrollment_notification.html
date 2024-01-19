@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>
+        Your API Key Request has been {% if approved %} approved {% else %} rejected {% endif %}
+    </title>
+    <style>
+      #healthsites-notification {
+        background-color: #f6f6f6;
+        font-family: sans-serif;
+        -webkit-font-smoothing: antialiased;
+        font-size: 14px;
+        line-height: 1.4;
+        margin: 0;
+        padding: 1rem !important;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      #healthsites-notification .container {
+        font-family: sans-serif;
+        font-size: 14px;
+        vertical-align: top;
+        display: block;
+        max-width: 580px;
+        padding: 2rem;
+        box-sizing: border-box;
+        width: 580px;
+        margin: 1rem auto;
+        background-color: white;
+      }
+
+      #healthsites-notification p {
+        family: sans-serif;
+        font-size: 14px;
+        font-weight: normal;
+        margin: 0;
+        margin-bottom: 30px;
+      }
+
+      .red-button {
+        border-radius: 5px;
+        box-sizing: border-box;
+        cursor: pointer;
+        color: white !important;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: bold;
+        margin: 0;
+        padding: 12px 25px;
+        text-decoration: none;
+        background-color: #f44a52;
+      }
+    </style>
+</head>
+<body id="healthsites-notification">
+<div class="container">
+    <p> Hi {{ contact_person }},</p>
+    <br>
+    <p>
+        Your API Key request has been {% if approved %}approved{% else %}rejected{% endif %}.
+    </p>
+    {% if approved %}
+        <a href="https://healthsites.io/profile/{{ username }}/"
+           class="red-button"
+           target="_blank">
+            Click here to your profile page.
+        </a>
+    {% else %}
+        <div>
+            Please contact admin for more information.
+        </div>
+        <br>
+        <a href="https://healthsites.io/contact"
+           target="_blank"
+           class="red-button">
+            Contact
+        </a>
+    {% endif %}
+    <br>
+    <br>
+    <br>
+    <p>Best Regards,</p>
+</div>
+</body>
+</html>
