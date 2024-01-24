@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import os
-from optparse import make_option
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -24,14 +23,15 @@ class Command(BaseCommand):
            'the method : overlap healthsites (by the icon size) will be clustered)\n' \
            'default size for healthsite is %d,%d' % (default_size[0], default_size[1])
 
-    option_list = BaseCommand.option_list + (
-        make_option(
-            '--tabs', action='store_true', dest='use_tabs', default=False,
-            help='Use when input file is tab delimited'
-        ),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--country',
+            dest='country',
+            help='Country name',
+        )
 
     def handle(self, *args, **options):
+        country_name = options.get('country', None)
 
         if len(args) != 2:
             icon_size = self.default_size
@@ -59,26 +59,28 @@ class Command(BaseCommand):
             localities = osm_query.in_bbox(parse_bbox('-180,-90,180,90'))
             object_list = oms_view_cluster(localities, zoom, *icon_size)
 
-            with open(filename, 'wb') as cache_file:
-                json.dump(object_list, cache_file)
+            with open(filename, 'w') as f:
+                json.dump(object_list, f)
 
             self.stdout.write('Generated cluster cache for zoom: %s' % zoom)
 
-        for country in Country.objects.all():
+        countries = Country.objects.all()
+        if country_name:
+            countries = countries.filter(name__iexact=country_name)
+        for country in countries:
             self.stdout.write('Generated cluster for %s' % country.name)
-            polygon = country.polygon_geometry
-            localities = osm_query.in_polygon(polygon)
+            localities = osm_query.in_administrative(country.get_codes)
             for zoom in range(settings.CLUSTER_CACHE_MAX_ZOOM + 1):
                 filename = os.path.join(
                     settings.CLUSTER_CACHE_DIR,
                     '{}_{}_{}_localities_{}.json'.format(
-                        zoom, icon_size[0], icon_size[1], country.name.encode('utf-8')
+                        zoom, icon_size[0], icon_size[1], country.name
                     )
                 )
 
                 object_list = oms_view_cluster(localities, zoom, *icon_size)
 
-                with open(filename, 'wb') as cache_file:
-                    json.dump(object_list, cache_file)
+                with open(filename, 'w') as f:
+                    json.dump(object_list, f)
 
                 self.stdout.write('Generated cluster cache for zoom: %s' % zoom)

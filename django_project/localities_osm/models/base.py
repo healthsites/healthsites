@@ -1,5 +1,5 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '07/01/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
 
 from django.contrib.gis.db import models
 

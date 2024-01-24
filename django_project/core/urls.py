@@ -1,31 +1,42 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/08/21'
+
+"""Project level url handler."""
+
 from django.conf import settings
-from django.conf.urls import include, patterns, url
+from django.conf.urls import include, url
+from django.conf.urls.static import static
 from django.contrib import admin
+from django.shortcuts import redirect
+from django.views.generic import View
 
-urlpatterns = patterns(
-    '',
+from core.models.preferences import SitePreferences
+from core.views.template import HomeView
 
-    # Enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
+admin.autodiscover()
 
-    # uncomment to enable defaut Django auth
-    # url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
 
-    # include application urls
+class SitePreferenceAdmin(View):
+    """Redirect it to site preference."""
+
+    def get(self, request, **kwargs):
+        preference = SitePreferences.preferences()
+        return redirect(
+            f'/admin/core/sitepreferences/{preference.id}/change/'
+        )
+
+
+urlpatterns = [
+    url(r'^admin/core/sitepreferences/$', SitePreferenceAdmin.as_view()),
+    url(r'^admin/', admin.site.urls),
     url(r'', include('frontend.urls')),
     url(r'', include('localities.urls')),
     url(r'', include('social_users.urls')),
-    url(r'api/', include('api.urls')),
-    url(r'data/(?P<path>.*)$', 'django.views.static.serve',
-        {
-            'document_root': settings.MEDIA_ROOT,
-            'show_indexes': True
-        }),
-)
+    url(r'', include('api.urls')),
+    url(r'^$', HomeView.as_view(), name='home'),
+]
 
-# expose static files and uploded media if DEBUG is active
-urlpatterns += patterns(
-    '',
-    url(r'', include('django.contrib.staticfiles.urls'))
-)
+if settings.DEBUG:
+    urlpatterns += static(
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

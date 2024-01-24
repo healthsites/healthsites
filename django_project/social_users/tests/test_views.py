@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from unittest import skip
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import Client, TestCase
 from mock import patch, MagicMock
 

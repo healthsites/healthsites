@@ -56,8 +56,9 @@ def get_statistic_cache(extent, country):
     :return: json
     """
     try:
-        cached_locs = open(get_statistic_cache_filename(
-            extent, country), 'rb')
+        cached_locs = open(
+            get_statistic_cache_filename(
+                extent, country), 'rb')
         cached_data = json.loads(cached_locs.read())
         return cached_data
     except (IOError, ValueError, KeyError) as e:  # noqa

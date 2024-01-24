@@ -1,0 +1,156 @@
+version: '3.4'
+
+volumes:
+  docker-osm-cache:
+  docker-osm-settings:
+  docker-osm-database:
+  docker-osm-import-done:
+  docker-osm-import-queue:
+
+services:
+  docker-osm-profile:
+    container_name: healthsites_osm_profile
+    build:
+      context: docker-osm-profile
+      dockerfile: Dockerfile
+    volumes:
+      - docker-osm-settings:/settings
+    profiles: ["dev"]
+
+  osm-db:
+    # About the postgresql version, it should match in the dockerfile of docker-imposm3
+    image: kartoza/postgis:13.0
+    container_name: healthsites_osm_db
+    volumes:
+      - docker-osm-database:/var/lib/postgresql/13
+    environment:
+      - POSTGRES_DBNAME=${DATABASE_OSM_NAME}
+      - POSTGRES_USER=${DATABASE_OSM_USERNAME}
+      - POSTGRES_PASS=${DATABASE_OSM_PASSWORD}
+      - ALLOW_IP_RANGE= 0.0.0.0/0
+#    depends_on:
+#      - docker-osm-profile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
+
+  imposm:
+    image: kartoza/docker-osm:imposm-latest
+    container_name: healthsites_osm_imposm
+    volumes:
+      - docker-osm-settings:/home/settings
+      - docker-osm-import-done:/home/docker-osm-import-done
+      - docker-osm-import-queue:/home/docker-osm-import-queue
+      - docker-osm-cache:/home/cache
+    depends_on:
+      - osm-db
+    environment:
+      - POSTGRES_USER=${DATABASE_OSM_USERNAME}
+      - POSTGRES_PASS=${DATABASE_OSM_PASSWORD}
+      - POSTGRES_DBNAME=${DATABASE_OSM_NAME}
+      - POSTGRES_HOST=${DATABASE_OSM_HOST}
+      - POSTGRES_PORT=5432
+      # seconds between 2 executions of the script
+      # if 0, then no update will be done, only the first initial import from the PBF
+      - TIME=120
+      # folder for settings (with *.json and *.sql)
+      - SETTINGS=settings
+      # folder for caching
+      - CACHE=cache
+      # folder for diff which has been imported
+      - IMPORT_DONE=docker-osm-import-done
+      # folder for diff which hasn't been imported yet
+      - IMPORT_QUEUE=docker-osm-import-queue
+      # it can be 3857
+      - SRID=4326
+      # see http://imposm.org/docs/imposm3/latest/tutorial.html#optimize
+      - OPTIMIZE=false
+      # see http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+      - DBSCHEMA_PRODUCTION=public
+      # http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+      - DBSCHEMA_IMPORT=import
+      # http://imposm.org/docs/imposm3/latest/tutorial.html#deploy-production-tables
+      - DBSCHEMA_BACKUP=backup
+      # Install some styles if you are using the default mapping. It can be 'yes' or 'no'
+      - QGIS_STYLE=yes
+      # Use clip in the database
+      - CLIP=no
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
+
+  osmupdate:
+    image: kartoza/docker-osm:osmupdate-latest
+    container_name: healthsites_osm_osmupdate
+    volumes:
+      - docker-osm-settings:/home/settings
+      - docker-osm-import-done:/home/docker-osm-import-done
+      - docker-osm-import-queue:/home/docker-osm-import-queue
+      - docker-osm-cache:/home/cache
+    depends_on:
+      - osm-db
+    environment:
+      # These are all currently the defaults but listed here for your
+      # convenience if you want to change them
+      # the maximum time range to assemble a cumulated changefile.
+      - MAX_DAYS=100
+      # osmupdate uses a combination of minutely, hourly and daily changefiles. This value can be minute, hour, day or sporadic.
+      - DIFF=sporadic
+      # argument to determine the maximum number of parallely processed changefiles.
+      - MAX_MERGE=7
+      # define level for gzip compression. values between 1 (low compression but fast) and 9 (high compression but slow)
+      - COMPRESSION_LEVEL=1
+      # change the URL to use a custom URL to fetch regional file updates.
+      - BASE_URL=http://planet.openstreetmap.org/replication/
+      # folder for diff which hasn't been imported yet
+      - IMPORT_QUEUE=docker-osm-import-queue
+      # folder for diff which has been imported
+      - IMPORT_DONE=docker-osm-import-done
+      # seconds between 2 executions of the script
+      # if 0, then no update will be done, only the first initial import from the PBF
+      - TIME=120
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s
+
+  osmenrich:
+    image: kartoza/docker-osm:osmenrich-latest
+    container_name: healthsites_osm_osmenrich
+    volumes:
+      # These are sharable to other containers
+      - docker-osm-settings:/home/settings
+      - docker-osm-import-done:/home/docker-osm-import-done
+      - docker-osm-import-queue:/home/docker-osm-import-queue
+      - docker-osm-cache:/home/cache
+    depends_on:
+      - osm-db
+    environment:
+      - POSTGRES_USER=${DATABASE_OSM_USERNAME}
+      - POSTGRES_PASS=${DATABASE_OSM_PASSWORD}
+      - POSTGRES_DBNAME=${DATABASE_OSM_NAME}
+      - POSTGRES_HOST=${DATABASE_OSM_HOST}
+      - POSTGRES_PORT=5432
+      # These are all currently the defaults but listed here for your
+      # convenience if you want to change them
+      # folder for diff which hasn't been imported yet
+      - IMPORT_QUEUE=docker-osm-import-queue
+      # folder for diff which has been imported
+      - IMPORT_DONE=docker-osm-import-done
+      # seconds between 2 executions of the script
+      # if 0, then no update will be done, only the first initial import from the PBF
+      - TIME=120
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s

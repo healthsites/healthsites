@@ -4,15 +4,16 @@ __date__ = '03/05/19'
 
 from django.http.response import HttpResponseBadRequest
 from rest_framework.views import APIView, Response
+
 from api.api_views.v2.schema import (
-    ApiSchemaBase,
+    ApiSchemaBaseWithoutApiKey,
     Parameters
 )
 from api.serializer.country import CountryAutoCompleteSerializer
 from localities.models import Country
 
 
-class ApiSchema(ApiSchemaBase):
+class ApiSchema(ApiSchemaBaseWithoutApiKey):
     schemas = [Parameters.q]
 
 

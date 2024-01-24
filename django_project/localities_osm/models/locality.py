@@ -1,16 +1,14 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '07/01/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
 
 from django.contrib.gis.db import models
 from localities_osm.models.base import LocalityOSMBase
-from localities_osm.querysets import (
-    PassThroughGeoManager,
-    OSMQuerySet
-)
+from localities_osm.querysets import OSMManager
 
 
 class LocalityOSM(LocalityOSMBase):
-    """ This maps through to the docker-osm cache table containing healthcare facilities
+    """
+    This maps through to the docker-osm cache table containing healthcare facilities
     that defined in mapping.yml at docker-osm-healthcare/mapping.yml
     """
     MANDATORY_FIELD = ['amenity', 'healthcare', 'name', 'operator', 'source']
@@ -113,12 +111,12 @@ class LocalityOSM(LocalityOSMBase):
     changeset_user = models.CharField(
         max_length=512, blank=True, null=True)
 
-    objects = PassThroughGeoManager.for_queryset_class(OSMQuerySet)()
+    objects = OSMManager()
 
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         if self.amenity:
             return u'%s [%s]' % (self.name, self.amenity)
         else:
@@ -132,10 +130,11 @@ class LocalityOSM(LocalityOSMBase):
 
     @staticmethod
     def get_count_of_complete(queryset):
-        for field in LocalityOSM._meta.get_all_field_names():
+        for meta_field in LocalityOSM._meta.get_fields():
+            field = meta_field.name
             if field in [
                 'osm_id', 'changeset_id', 'changeset_version',
-                    'changeset_timestamp', 'changeset_user']:
+                'changeset_timestamp', 'changeset_user']:
                 continue
             queryset = queryset.exclude(**{'%s' % field: ''})
         return queryset.count()
@@ -147,7 +146,8 @@ class LocalityOSM(LocalityOSMBase):
         """
         total = 0
         completed = 0
-        for field in LocalityOSM._meta.get_all_field_names():
+        for meta_field in LocalityOSM._meta.get_fields():
+            field = meta_field.name
             total += 1
             if self._meta.get_field(field).get_internal_type() == 'CharField':
                 if getattr(self, field):
@@ -168,7 +168,20 @@ class LocalityOSM(LocalityOSMBase):
             setattr(self, key, value)
 
 
-class LocalityOSMView(LocalityOSM):
+class LocalityOSMExtra(LocalityOSMBase):
+    # Administrative code
+    administrative_code = models.CharField(
+        blank=True,
+        null=True,
+        max_length=32,
+        help_text='Administrative code'
+    )
+
+    class Meta:
+        abstract = True
+
+
+class LocalityOSMView(LocalityOSM, LocalityOSMExtra):
     """ This model is a view model (that created on migrations) that
     union node and way
     """
@@ -181,7 +194,6 @@ class LocalityOSMView(LocalityOSM):
         max_length=64, primary_key=True)
     osm_type = models.CharField(
         max_length=64, blank=True, null=True)
-    objects = PassThroughGeoManager.for_queryset_class(OSMQuerySet)()
 
     class Meta:
         managed = False
@@ -190,7 +202,7 @@ class LocalityOSMView(LocalityOSM):
         verbose_name_plural = 'OSM Node and Way'
 
 
-class LocalityOSMNode(LocalityOSM):
+class LocalityOSMNode(LocalityOSM, LocalityOSMExtra):
     """ This model is based on docker osm node
     """
     geometry = models.PointField(
@@ -203,7 +215,7 @@ class LocalityOSMNode(LocalityOSM):
         verbose_name_plural = 'OSM Node'
 
 
-class LocalityOSMWay(LocalityOSM):
+class LocalityOSMWay(LocalityOSM, LocalityOSMExtra):
     """ This model is based on docker osm way
     """
     geometry = models.GeometryField(

@@ -1,10 +1,14 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '01/07/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
+
 from localities_osm_extension.models.extension import LocalityOSMExtension
 from localities_osm_extension.models.tag import Tag
 
 
 def save_extensions(osm_type, osm_id, extension):
+    """
+    Save the extensions
+    """
     locality_extension, created = LocalityOSMExtension.objects.get_or_create(
         osm_id=osm_id,
         osm_type=osm_type

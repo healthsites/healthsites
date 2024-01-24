@@ -29,14 +29,12 @@ class Command(BaseCommand):
             country_name = feature['name'].value
             country_code = feature['country'].value
 
-            print u'processing {} ({})'.format(country_name, country_code)
+            print(u'processing {} ({})'.format(country_name, country_code))
             try:
                 country_data = country_by_code[country_code]
             except KeyError:
-                print u'{} ({}) is not found'.format(country_name, country_code)
+                print('{} ({}) is not found'.format(country_name, country_code))
                 continue
-            # print country_data
-            country_name = country_name.encode('utf-8')
 
             # -------------------------------------------------
             # CORRECTING THE NAME
@@ -84,7 +82,7 @@ class Command(BaseCommand):
             country_name = country_name.replace('W.', 'Western')
             country_name = country_name.strip()
 
-            print 'generate {}'.format(country_name)
+            print('generate {}'.format(country_name))
 
             geometry = feature.geom
             try:
@@ -105,8 +103,7 @@ class Command(BaseCommand):
                 geometry = geometry
             except Exception:
                 if 'MultiPolygon' not in geometry.geojson:
-                    geometry = \
-                        MultiPolygon(Polygon(geometry.coords[0])).geojson
+                    geometry = MultiPolygon(Polygon(geometry.coords[0])).geojson
                 else:
                     geometry = geometry.geojson
                 geometry = geometry
@@ -131,7 +128,7 @@ class Command(BaseCommand):
 
         # create geometry for continent
         for country in Country.objects.filter(polygon_geometry__isnull=True):
-            print u'processing {}'.format(country.name)
+            print('processing {}'.format(country.name))
             country.polygon_geometry = Country.objects.filter(parent=country).aggregate(
                 geometry=Union('polygon_geometry'))['geometry'].buffer(0.0000001)
             country.save()

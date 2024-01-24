@@ -1,19 +1,9 @@
 {% extends 'base.html' %}
-{% load pipeline %}
 {% load static %}
 
 {% block title %}Healthsites{% endblock %}
 
 {% block content %}
-    {% if old_data_available and not data_migration_in_progress %}
-        <div class="migration-info">We are migrating all data into OSM data, thus your healthsites data will not be displayed on the map. Please migrate your data into OSM data by clicking on
-            <button class="btn btn-primary btn-migrate" onclick="migrateClicked()">Migrate</button>
-            .
-            <span class="pull-right" style="margin-right: 20px; cursor: pointer" onclick="$('.migration-info').remove()">
-                <i class="fa fa-times" aria-hidden="true"></i>
-            </span>
-        </div>
-    {% endif %}
     <section class="white container">
         <div class="col-sm-3 user-profile">
             <div class="profile-image-size">
@@ -35,7 +25,11 @@
                 <div>
                     <div class="label-profile">username</div>
                     <div class="value-profile">
-                        {{ user.screen_name }}
+                        {% if osm_user %}
+                            {{ user.username }}
+                        {% else %}
+                            {{ user.screen_name }}
+                        {% endif %}
                     </div>
                 </div>
                 <div>
@@ -103,10 +97,19 @@
                             <div class="modal-body">
                                 {% if api_keys %}
                                     {% for api_key in api_keys %}
-                                        <div>{{ api_key }}</div>
+                                        <div>
+                                            {{ api_key.api_key }}
+                                            {% if not api_key.is_active %}
+                                                <span>(Waiting admin approval)</span>
+                                            {% endif %}
+                                        </div>
                                     {% endfor %}
                                 {% else %}
-                                    <i style="color: #f44a52">You don't have api key. Please update profile or ask administrator.</i>
+                                    <a href="{% url 'enrollment-form' %}">
+                                        <button type="button" class="btn btn-primary">
+                                            You don't have any API keys issued to you. <br>You can enroll for a new API key by clicking here.
+                                        </button>
+                                    </a>
                                 {% endif %}
                             </div>
                             <div class="modal-footer">
@@ -125,7 +128,7 @@
 
             <div id="updates-wrapper">
                 <div id="updates-99" class="graph updates">
-                    <div class="entry">-</div>
+                    <div class="entry"><i>Loading</i></div>
                 </div>
             </div>
             <div class="nav-updates"><a class="prev opacity-7" onclick="changePage(this)">< view previous</a>
@@ -180,91 +183,72 @@
 
 {% block extra_js %}
     <script>
-        var interval;
         var osmURL = "{{ osm_API }}";
-
-        function migrateClicked() {
-            $('.loading-icon').show();
-            $.ajax({
-                url: '{% url "migrate-user-data" user.username %}',
-                success: function (data) {
-                    $('.migration-info').hide();
-                    $('.migrate-btn-wrapper').hide();
-                    $('#migration-progress-bar-wrapper').show();
-                    interval = setInterval(getMigrationProgress, 250);
-                }
-            })
-        }
-
-        function getMigrationProgress() {
-            $.ajax({
-                url: '{% url "api_get_migration_progress" %}',
-                data: {
-                    username: "{{ user.username }}"
-                },
-                success: function (data) {
-                    var progress = Math.round((data['count'] / data['total']) * 100);
-                    $('#migration-progress-bar').css('width', progress + '%').html(progress + '% Complete')
-                    if (progress === 100) {
-                        location.reload();
-                        clearInterval(interval)
-                    }
-                },
-                error: function (data) {
-                    clearInterval(interval)
-                }
-            })
-        }
-
         $(document).ready(function () {
             if ('{{ data_migration_in_progress }}' === 'True') {
                 $('#migration-progress-bar-wrapper').show();
+            }
+            if (window.location.search.includes('action=api-key-created')) {
+              $('#api-key-modal').modal()
             }
 
             var $updates99 = $("#updates-99");
             var $updatesWrappeer = $("#updates-wrapper");
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/changesets",
+                url: api + "/user/{{ user.username }}/changesets",
                 dataType: 'json',
                 success: function (data) {
                     if ($updates99.length > 0 && data.length !== 0) {
                         $updatesWrappeer.html("");
-                    }
-                    $.each(data, function (i, update) {
-                        var page = parseInt(i / 10);
-                        var $page = $("#updates-" + page);
-                        if ($page.length === 0) {
-                            $updatesWrappeer.append('<div id="updates-' + page + '" class="graph updates"></div>');
-                            $page = $("#updates-" + page);
-                            if (page !== 0) {
-                                $page.hide();
-                            }
-                        }
-                        var html = "<div class=\"entry\">";
-                        html += "<div class=\"entry\">";
-                        html += "<span class=\"date\">" + getDateString(update.changeset_timestamp) + "</span> - ";
-                        html += "<span class=\"name\">";
-                        html += "<a href=\"/profile/" + update.changeset_user + "\">@" + update.changeset_user + "</a></span> - ";
-                        var mode = "added";
-                        if (update.changeset_version > 1) {
-                            mode = "amended";
-                        }
 
-                        //{# update the html #}
-                        html += "<a href=\"/map#!/locality/" + update.uuid + "\" class=\"location-name\">" + update.name + "</a>";
-                        html += "<span class=\"location-name\"> " + mode + " </span>";
-                        html += "</div>";
-                        $page.append(html);
-                    });
-                    updateButton();
+                        $.each(data, function (i, update) {
+                            var page = parseInt(i / 10);
+                            var $page = $("#updates-" + page);
+                            if ($page.length === 0) {
+                                $updatesWrappeer.append('<div id="updates-' + page + '" class="graph updates"></div>');
+                                $page = $("#updates-" + page);
+                                if (page !== 0) {
+                                    $page.hide();
+                                }
+                            }
+                            var html = "<div class=\"entry\">";
+                            html += "<div class=\"entry\">";
+                            html += "<span class=\"date\">" + getDateString(update.changeset_timestamp) + "</span> - ";
+                            html += "<span class=\"name\">";
+                            html += "<a href=\"/profile/" + update.changeset_user + "\">@" + update.changeset_user + "</a></span> - ";
+                            var mode = "added";
+                            if (update.changeset_version > 1) {
+                                mode = "amended";
+                            }
+
+                            //{# update the html #}
+                            html += "<a href=\"/map#!/locality/" + update.uuid + "\" class=\"location-name\">" + update.name + "</a>";
+                            html += "<span class=\"location-name\"> " + mode + " </span>";
+                            html += "</div>";
+                            $page.append(html);
+                        });
+                        updateButton();
+                    } else {
+                        $updatesWrappeer.html(
+                            '<div id="updates-99" class="graph updates">' +
+                            '   <div class="entry" style="color: grey">No Updates</div>' +
+                            '</div>');
+                    }
+                },
+                error: function (data) {
+                    $updatesWrappeer.html(
+                        '<div id="updates-99" class="graph updates">' +
+                        '   <div class="entry" style="color: red">Error</div>' +
+                        '</div>');
                 }
+
             });
             var isStaff = "{{ request.user.is_staff }}";
             if (isStaff !== "True" && "{{ user.username  }}" !== "{{ request.user.username }}") {
                 return;
             }
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/updates",
+                url: api + "/user/{{ user.username }}/updates",
                 dataType: 'json',
                 success: function (data) {
                     // Show pending updates
@@ -286,7 +270,7 @@
             });
 
             $.ajax({
-                url: "/api/v2/user/{{ user.username }}/reviews",
+                url: api + "/user/{{ user.username }}/reviews",
                 dataType: 'json',
                 success: function (data) {
                     // Show pending reviews
@@ -314,8 +298,6 @@
                     }
                 }
             });
-
-            interval = setInterval(getMigrationProgress, 250);
         });
     </script>
 {% endblock extra_js %}

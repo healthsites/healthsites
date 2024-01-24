@@ -1,12 +1,14 @@
 # coding=utf-8
+
+from ckeditor.widgets import CKEditorWidget
 from django import forms
 from django.contrib.flatpages.admin import FlatPageAdmin
 from django.contrib.flatpages.models import FlatPage
 from django.contrib.gis import admin
 from django.utils.safestring import mark_safe
-from ckeditor.widgets import CKEditorWidget
-from .models import CampaignPage
+
 from api.models.user_api_key import UserApiKey
+from .models import CampaignPage
 
 
 class CampaignPageAdminForm(forms.ModelForm):
@@ -19,7 +21,9 @@ class CampaignPageAdminForm(forms.ModelForm):
 
 class CampaignPageAdmin(FlatPageAdmin):
     form = CampaignPageAdminForm
-    list_display = ('campaign_title', 'gather_url', 'organisation', 'campaign_page')
+    list_display = (
+        'campaign_title', 'gather_url', 'organisation', 'campaign_page'
+    )
 
     fieldsets = (
         (None, {
@@ -33,7 +37,9 @@ class CampaignPageAdmin(FlatPageAdmin):
     readonly_fields = ('api_key',)
 
     def campaign_page(self, obj):
-        return mark_safe("""<a href="/campaign%s">%s</a>""" % (obj.url, obj.url))
+        return mark_safe(
+            """<a href="/campaign%s">%s</a>""" % (obj.url, obj.url)
+        )
 
     def api_key(self, obj):
         if obj.organisation and obj.organisation.organizer:

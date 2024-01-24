@@ -2,12 +2,13 @@
 
 import requests
 from django.conf import settings
-from social_users.models import TrustedUser
-
-from .models import Profile
+from social_users.models import Profile, TrustedUser
 
 
 def get_profile(user, request=None):
+    """
+    Get profile of user
+    """
     shared_links = []
     # check if the user has profile_picture
     # if not, just send empty string
@@ -73,7 +74,9 @@ def get_profile(user, request=None):
 
 
 def get_osm_name(user):
-    """ Getting real osm user name from HS user """
+    """
+    Getting real osm user name from HS user
+    """
     # get osm name from profile
     profile, created = Profile.objects.get_or_create(user=user)
     if profile.osm_name:

@@ -7,7 +7,7 @@ import sys
 from osmapi import ElementDeletedApiError
 
 from api.osm_api_client import OsmApiWrapper
-from core.settings.base import DEV_OSM_API_URL
+from core.settings.tests import DEV_OSM_API_URL
 
 try:
     from core.settings.secret import (

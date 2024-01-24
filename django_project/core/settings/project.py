@@ -6,27 +6,57 @@ Adjust these values as needed but don't commit passwords etc. to any public
 repository!
 """
 
-import os
+import os  # noqa
 from django.utils.translation import ugettext_lazy as _
-
-from .celery_setting import *
 from .contrib import *  # noqa
-from .secret import *  # NOQA
 
-# Project apps
-INSTALLED_APPS += (
-    'localities',
-    'localities_osm',
-    'localities_osm_extension',
-    'frontend',
-    'social_users',
-    'api',
-    'django_hashedfilenamestorage',
-    'envelope'
+VERSION = os.environ.get('VERSION', '')
+APP_NAME = 'Healthsites.io'
+ALLOWED_HOSTS = ['*']
+ADMINS = (
+    ('Irwan Fathurrahman', 'meomancer@gmail.com'),
 )
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.environ.get('DATABASE_NAME', 'gis'),
+        'USER': os.environ.get('DATABASE_USERNAME', 'docker'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD', 'docker'),
+        'HOST': os.environ.get('DATABASE_HOST', 'db'),
+        'PORT': os.environ.get('DATABASE_PORT', 5432),
+        'TEST_NAME': 'unittests',
+    },
+    'docker_osm': {
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'NAME': os.environ.get('DATABASE_OSM_NAME', 'gis'),
+        'USER': os.environ.get('DATABASE_OSM_USERNAME', 'osm_docker'),
+        'PASSWORD': os.environ.get('DATABASE_OSM_PASSWORD', 'osm_docker'),
+        'HOST': os.environ.get('DATABASE_OSM_HOST', 'osm-db'),
+        'PORT': os.environ.get('DATABASE_OSM_PORT', 5432),
+        'TEST_NAME': 'docker_osm_unittests',
+    }
+}
+DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
 
-# How many versions to list in each project box
-PROJECT_VERSION_LIST_SIZE = 10
+# -------------------------------------------------- #
+# ----------            CELERY          ------------ #
+# -------------------------------------------------- #
+CELERY_BROKER_URL = 'amqp://guest:guest@%s:5672//' % os.environ.get('RABBITMQ_HOST', 'rabbitmq')
+CELERY_RESULT_BACKEND = None
+CELERY_TASK_ALWAYS_EAGER = False  # set this to False in order to run async
+CELERY_TASK_IGNORE_RESULT = True
+CELERY_TASK_DEFAULT_QUEUE = "default"
+CELERY_TASK_DEFAULT_EXCHANGE = "default"
+CELERY_TASK_DEFAULT_EXCHANGE_TYPE = "direct"
+CELERY_TASK_DEFAULT_ROUTING_KEY = "default"
+CELERY_TASK_CREATE_MISSING_QUEUES = True
+CELERY_TASK_RESULT_EXPIRES = 1
+CELERY_WORKER_DISABLE_RATE_LIMITS = True
+CELERY_WORKER_SEND_TASK_EVENTS = False
+
+# Due to profile page does not available,
+# this will redirect to home page after login
+LOGIN_REDIRECT_URL = '/'
 
 # Set debug to false for production
 DEBUG = TEMPLATE_DEBUG = False
@@ -36,95 +66,21 @@ SOUTH_TESTS_MIGRATE = False
 # Set languages which want to be translated
 LANGUAGES = (
     ('en', _('English')),
-    ('af', _('Afrikaans')),
-    ('id', _('Indonesian')),
-    ('ko', _('Korean')),
 )
 
 # Set storage path for the translation files
-LOCALE_PATHS = [ABS_PATH('locale')]
+LOCALE_PATHS = (ABS_PATH('locale'),)
 
-# Project specific javascript files to be pipelined
-# For third party libs like jquery should go in contrib.py
-# Maybe we can split these between project-home and project-map
-PIPELINE_JS['home'] = {
-    'source_filenames': (
-        # this is new using require
-        'libs/require.js/2.3.6/require.min.js',
-        'scripts/configs/index.js'
-    ),
-    'output_filename': 'js/home.js',
-}
-PIPELINE_JS['map.js'] = {
-    'source_filenames': (
-        'libs/require.js/2.3.6/require.min.js',
-        'scripts/configs/map.js'
-    ),
-    'output_filename': 'js/map.js',
-}
-
-PIPELINE_JS['project'] = {
-    'source_filenames': (
-        'js/utilities.js',
-        'js/custom-functions.js',
-        'js/cookie-bar.js',
-        'js/custom-jquery.js',
-        'js/csrf-ajax.js',
-        'js/nav-bar.js',
-        'js/google-analytics.js',
-    ),
-    'output_filename': 'js/project.js',
-}
-PIPELINE_JS['map'] = {
-    'source_filenames': (
-        'js/locality-sidebar.js',
-    ),
-    'output_filename': 'js/map.js',
-}
-
-# Contributed / third party css for pipeline compression
-# For hand rolled css for this app, use project.py
-PIPELINE_CSS['project'] = {
-    'source_filenames': (
-        'css/site.css',
-        'css/profile.css',
-        'css/map/locality-sidebar.css',
-        'css/map/widget/opening-hours.css',
-        'css/map/modal-duplication.css',
-        'css/jquery.cookiebar.css'
-    ),
-    'output_filename': 'css/project.css',
-    'extra_context': {
-        'media': 'screen, projection',
-    },
-}
-
-PIPELINE_CSS['map'] = {
-    'source_filenames': (
-        'css/map.css',
-    ),
-    'output_filename': 'css/map.css',
-    'extra_context': {
-        'media': 'screen, projection',
-    },
-}
-PIPELINE_CSS['home'] = {
-    'source_filenames': (
-        'css/home.css',
-    ),
-    'output_filename': 'css/home.css',
-    'extra_context': {
-        'media': 'screen, projection',
-    },
-}
-
-# Cache folder
-CACHE_DIR = '/home/web/cache'
-CLUSTER_CACHE_DIR = os.path.join(CACHE_DIR, 'cluster')
-STATISTIC_CACHE_DIR = os.path.join(CACHE_DIR, 'statistic')
-SHAPEFILE_DIR = os.path.join(MEDIA_ROOT, 'shapefiles')
-CLUSTER_CACHE_MAX_ZOOM = 5
-MAX_ZOOM = 18
+# Extra installed apps
+INSTALLED_APPS = INSTALLED_APPS + (
+    'core',
+    'frontend',
+    'localities',
+    'localities_osm',
+    'localities_osm_extension',
+    'api',
+    'social_users'
+)
 
 # DATA LICENSE
 LICENSES = [
@@ -132,15 +88,19 @@ LICENSES = [
     ABS_PATH('api', 'README.md')
 ]
 
-# WHAT3WORDS API
-WHAT3WORDS_API_POS_TO_WORDS = 'https://api.what3words.com/position?key=%s&lang=en&position=%s,%s'
-DATABASE_ROUTERS = ['core.router.HealthsiteRouter']
-
-# TODO: MOVE IT AS ADMIN SETTING
-GATHER_API_URL = 'http://gather.staging.healthsites.io/dev/'
-GATHER_API_URL_ODK = 'http://gather.staging.healthsites.io:8443/dev/odk'
-DUPLICATION_RADIUS = 100  # in meters
+# Cache folder
+CACHE_DIR = '/home/web/cache'
+CLUSTER_CACHE_DIR = os.path.join(CACHE_DIR, 'cluster')
+STATISTIC_CACHE_DIR = os.path.join(CACHE_DIR, 'statistic')
+SHAPEFILE_DIR = os.path.join(MEDIA_ROOT, 'shapefiles')
+CLUSTER_CACHE_MAX_ZOOM = 8
+MAX_ZOOM = 18
 
 # test users will send the data to osm instead just raise error
 # fill with username in list
-TEST_USERS = []
+TEST_USERS = os.environ.get('TEST_USERS', '').split(',')
+
+# -------------------------------------------------- #
+# ----------             OSM            ------------ #
+# -------------------------------------------------- #
+DUPLICATION_RADIUS = 100  # in meters

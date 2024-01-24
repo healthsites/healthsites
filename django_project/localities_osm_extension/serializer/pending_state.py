@@ -1,5 +1,5 @@
-__author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
-__date__ = '15/07/19'
+__author__ = 'Irwan Fathurrahman <meomancer@gmail.com>'
+__date__ = '20/12/21'
 
 import ast
 import json
@@ -8,7 +8,8 @@ from rest_framework_gis.serializers import (
     GeoFeatureModelSerializer, GeometrySerializerMethodField)
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from localities_osm_extension.models.pending_state import (
-    PendingReview, PendingUpdate)
+    PendingReview, PendingUpdate
+)
 
 
 class PendingReviewSerializer(ModelSerializer):
