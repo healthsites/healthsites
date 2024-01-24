@@ -28,7 +28,7 @@ Development status: [User stories in the backlog](https://github.com/healthsites
 
 Data: [Open Database License](http://opendatacommons.org/licenses/odbl/)<br>
 Data credits : &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors <br>
-Code: [Free BSD License](http://www.freebsd.org/copyright/freebsd-license.html)
+Code: [3-clause BSD License](https://opensource.org/license/bsd-3-clause/)
 
 Our intention is to foster widespread usage of the data and the code that we provide. Please use this code and data in the interests of humanity and not for nefarious purposes.
 
