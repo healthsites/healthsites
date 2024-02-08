@@ -13,7 +13,6 @@ django-envelope==1.4
 django-pipeline==2.0.7
 djangorestframework==3.12.2
 djangorestframework-gis==0.17
-googlemaps==4.5.3
 osmapi==2.0.2
 overpass==0.7
 pyshp==2.1.3
