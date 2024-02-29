@@ -188,10 +188,10 @@ class LocalityOSMView(LocalityOSM, LocalityOSMExtra):
     NODE = 'node'
     WAY = 'way'
 
-    geometry = models.GeometryField(
-        srid=4326, blank=True, null=True)
     row = models.CharField(
         max_length=64, primary_key=True)
+    geometry = models.GeometryField(
+        srid=4326, blank=True, null=True)
     osm_type = models.CharField(
         max_length=64, blank=True, null=True)
 
