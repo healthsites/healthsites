@@ -51,6 +51,50 @@ services:
       - ./volumes/static:/home/web/static
       - ./volumes/media:/home/web/media
       - ./volumes/cache:/home/web/cache
+    environment:
+      - VERSION=${VERSION}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+
+      # django database
+      - DATABASE_NAME=${DATABASE_NAME}
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_PORT=${DATABASE_PORT}
+
+      # docker osm database
+      - DATABASE_OSM_NAME=${DATABASE_OSM_NAME}
+      - DATABASE_OSM_HOST=${DATABASE_OSM_HOST}
+      - DATABASE_OSM_USERNAME=${DATABASE_OSM_USERNAME}
+      - DATABASE_OSM_PASSWORD=${DATABASE_OSM_PASSWORD}
+      - DATABASE_OSM_PORT=${DATABASE_OSM_PORT}
+
+      # hardcoded
+      - RABBITMQ_HOST=rabbitmq
+      - DJANGO_SETTINGS_MODULE=core.settings.dev
+      - VIRTUAL_HOST=healthsites.io
+      - VIRTUAL_PORT=8080
+
+      # KEYS
+      - CAPTCHA_SITE_KEY=${CAPTCHA_SITE_KEY}
+      - CAPTCHA_SECRET_KEY=${CAPTCHA_SECRET_KEY}
+      - SOCIAL_AUTH_OPENSTREETMAP_KEY=${SOCIAL_AUTH_OPENSTREETMAP_KEY}
+      - SOCIAL_AUTH_OPENSTREETMAP_SECRET=${SOCIAL_AUTH_OPENSTREETMAP_SECRET}
+      - SOCIAL_AUTH_OPENSTREETMAP_OAUTH2_SCOPE=${SOCIAL_AUTH_OPENSTREETMAP_OAUTH2_SCOPE}
+      - TEST_USERS=${TEST_USERS}
+
+      # Email envs
+      - EMAIL_HOSTNAME=${EMAIL_HOSTNAME}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - EMAIL_USE_TLS=${EMAIL_USE_TLS}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - USE_OSM_DEV=True
     ports:
       # for django test server
       - "2000:8080"
@@ -58,3 +102,12 @@ services:
       - "2001:22"
     entrypoint: [ ]
     profiles: [ "dev" ]
+    command: 'python manage.py runserver 0.0.0.0:8080'
+    depends_on:
+      - db
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 120s

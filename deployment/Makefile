@@ -40,6 +40,25 @@ build:
 	@echo "------------------------------------------------------------------"
 	@docker compose -p $(PROJECT_ID) build --no-cache
 
+prepare-data:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Prepare data"
+	@echo "------------------------------------------------------------------"
+	@docker exec $(PROJECT_ID)_django python manage.py migrate localities_osm --database docker_osm
+	@docker exec $(PROJECT_ID)_django python manage.py generate_countries
+	@docker exec $(PROJECT_ID)_django python manage.py generate_osm_administrative_code
+
+generate-cache:
+	@echo
+	@echo "------------------------------------------------------------------"
+	@echo "Generate cache"
+	@echo "------------------------------------------------------------------"
+	@docker exec $(PROJECT_ID)_django python manage.py generate_cluster_cache
+	@docker exec $(PROJECT_ID)_django python manage.py generate_shapefile_countries
+	@docker exec $(PROJECT_ID)_django python manage.py generate_statistic_countries
+	@docker exec $(PROJECT_ID)_django python manage.py generate_statistic_country
+
 nginx:
 	@echo
 	@echo "------------------------------------------------------------------"

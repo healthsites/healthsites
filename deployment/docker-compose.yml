@@ -117,12 +117,16 @@ services:
         delay: 5s
         max_attempts: 5
         window: 120s
+    depends_on:
+      - db
 
   django:
     <<: *default-common-django
     container_name: healthsites_django
     command: 'uwsgi --ini /uwsgi.conf'
     entrypoint: [ "/home/web/django_project/entrypoint.sh" ]
+    depends_on:
+      - db
 
   # Celery worker that executes celery tasks created by Django.
   worker:
@@ -130,6 +134,8 @@ services:
     container_name: healthsites_worker
     command: celery -A core.celery:app worker -B -l debug
     entrypoint: [ ]
+    depends_on:
+      - db
 
   nginx:
     image: nginx
@@ -140,4 +146,6 @@ services:
       - static-data:/home/web/static
       - media-data:/home/web/media
     links:
+      - django
+    depends_on:
       - django
