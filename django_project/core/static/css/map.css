@@ -447,7 +447,7 @@ html, body {
 @media only screen and (max-width: 991px) {
     .map-page {
         background: #c8e6ff;
-        position: absolute;
+        position: absolute !important;
         top: 0;
         right: 0;
         left: 0;
