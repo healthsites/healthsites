@@ -38,7 +38,9 @@ services:
         window: 120s
 
   imposm:
-    image: kartoza/docker-osm:imposm-latest
+    image: meomancer/docker-osm:imposm-1.0.0
+    platform: linux/amd64
+    # platform: linux/arm64 # ARM
     container_name: healthsites_osm_imposm
     volumes:
       - docker-osm-settings:/home/settings
@@ -86,7 +88,9 @@ services:
         window: 120s
 
   osmupdate:
-    image: kartoza/docker-osm:osmupdate-latest
+    image: meomancer/docker-osm:osmupdate-1.0.0
+    platform: linux/amd64
+    # platform: linux/arm64 # ARM
     container_name: healthsites_osm_osmupdate
     volumes:
       - docker-osm-settings:/home/settings
@@ -123,8 +127,10 @@ services:
         window: 120s
 
   osmenrich:
-    image: kartoza/docker-osm:osmenrich-latest
+    image: meomancer/docker-osm:osmenrich-1.0.0
     container_name: healthsites_osm_osmenrich
+    platform: linux/amd64
+    # platform: linux/arm64 # ARM
     volumes:
       # These are sharable to other containers
       - docker-osm-settings:/home/settings
