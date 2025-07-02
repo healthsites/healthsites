@@ -28,10 +28,15 @@ def search_by_geoname(geoname):
 
     """
     try:
+        headers = {
+            'Accept-Language': 'en',
+            'Accept': 'application/json',
+            'User-Agent': 'healthsites.io (contact: mark@healthsites.io)'
+        }
         params = {'q': geoname, 'format': 'json', 'limit': 1}
         response = requests.get(
             'https://nominatim.openstreetmap.org/search',
-            params, headers={'Accept-Language': 'en'}
+            params, headers=headers, timeout=10
         )
         place = response.json()[0]
         viewport = place['boundingbox']
