@@ -17,6 +17,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """ Do your work here """
+        print('Generating statistic cache...')
         call_command('generate_statistic_country')
         countries = Country.objects.all()
         for country in countries:

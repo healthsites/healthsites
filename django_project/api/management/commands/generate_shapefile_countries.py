@@ -192,6 +192,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        print('Generating shapefile cache...')
         country = options.get('country', None)
 
         # generate shapefiles for world
