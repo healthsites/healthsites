@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
-import os
 
+import os
+from celery.utils.log import get_task_logger
 from django.core import management
 from django.core.mail import send_mail
 from django.utils import timezone
-from celery.utils.log import get_task_logger
 
 from api.importers import CSVtoOSMImporter
 from core.celery import app
@@ -50,8 +50,12 @@ def generate_shapefile():
 
 @app.task
 def regenerate_cache_cluster():
-    from django.core.management import call_command
-    call_command('generate_cluster_cache')
+    management.call_command('generate_cluster_cache')
+
+
+@app.task
+def generate_statistic_countries():
+    management.call_command('generate_statistic_countries')
 
 
 @app.task

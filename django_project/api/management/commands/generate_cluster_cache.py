@@ -31,6 +31,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        print('Generating cluster cache...')
         country_name = options.get('country', None)
 
         if len(args) != 2:

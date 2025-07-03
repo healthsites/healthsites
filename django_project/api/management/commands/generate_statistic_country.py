@@ -4,7 +4,8 @@ __date__ = '19/06/19'
 import json
 import logging
 import os
-
+import time
+from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 
 from api.utilities.statistic import (
@@ -46,9 +47,27 @@ class Command(BaseCommand):
         is_run_file = os.path.join(dirname, 'is_run')
         if os.path.exists(filename):
             if os.path.exists(is_run_file):
-                print('%s statistic generation already run' % country)
-                LOG.info('%s statistic generation already run' % country)
-                return
+                # Get last modified time of the file
+                last_modified = datetime.fromtimestamp(
+                    os.path.getmtime(is_run_file)
+                )
+                now = datetime.now()
+
+                # Check if less than 1 day old
+                if now - last_modified < timedelta(days=1):
+                    print(
+                        '%s statistic generation already run within 1 day' % country
+                    )
+                    LOG.info(
+                        '%s statistic generation already run within 1 day' % country
+                    )
+                    return
+                else:
+                    # Old file, remove and recreate
+                    try:
+                        os.remove(is_run_file)
+                    except OSError:
+                        pass
             try:
                 file = open(is_run_file, 'w+')
                 file.close()
