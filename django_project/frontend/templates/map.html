@@ -214,6 +214,9 @@
             'js/views/statistic/view': '{% static 'js/views/statistic/view.js' %}?',
         },
         shim: {
+            bootstrap: {
+                deps: ['jquery']
+            },
             leaflet: {
                 exports: ['L']
             },
