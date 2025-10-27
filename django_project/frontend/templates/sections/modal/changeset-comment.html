@@ -26,7 +26,7 @@
                         <label for="changeset-comment-input" class="col-form-label">Comment :</label>
                         <div class="help-text">Please provide any comments about this change. For example the mapping event, organisation programme or other rationale for these changes.<br><br></div>
                         <div class="alert alert-primary" role="alert" id="changeset-comment-input-error">
-                            Your comment is empty or very short.
+                            Your comment is empty or very short. The minimum length is 10 characters.
                         </div>
                         <textarea class="form-control" id="changeset-comment-input"></textarea>
                     </div>
@@ -34,9 +34,16 @@
                         <label for="changeset-comment-source-input" class="col-form-label">Source :</label>
                         <div class="help-text">Please indicate the source of the information you used for this update. e.g. local knowledge, a website, an open geodata portal.<br><br></div>
                         <div class="alert alert-primary" role="alert" id="changeset-comment-source-input-error">
-                            Your source is empty or very short.
+                            Your source is empty or very short. The minimum length is 5 characters.
                         </div>
                         <input type="text" class="form-control" id="changeset-comment-source-input">
+                    </div>
+                    <div class="form-group">
+                        <label for="changeset-comment-hashtags-input" class="col-form-label">Hashtags :</label>
+                        <div class="help-text">Add a unique hashtag for organized editing projects, as recommended by the OSM Foundation, and you can include one or multiple hashtags separated by commas.<br>
+                            Example: <b>#Healthistes, #healthsites2026</b>
+                            <br><br></div>
+                        <input type="text" class="form-control" id="changeset-comment-hashtags-input">
                     </div>
                 </form>
             </div>

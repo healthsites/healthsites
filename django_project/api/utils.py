@@ -419,7 +419,9 @@ def create_osm_node(user, data):
         appid=settings.APP_NAME
     )
     response = osm_api.create_node(
-        data, data.get('comment', None), data.get('source', None))
+        data, data.get('comment', None), data.get('source', None),
+        data.get('hashtags', None)
+    )
 
     return response
 
@@ -464,7 +466,9 @@ def update_osm_node(user, data):
         appid=settings.APP_NAME
     )
     response = osm_api.update_node(
-        data, data.get('comment', None), data.get('source', None))
+        data, data.get('comment', None), data.get('source', None),
+        data.get('hashtags', None)
+    )
 
     return response
 
@@ -505,7 +509,9 @@ def update_osm_way(user, data):
         appid=settings.APP_NAME
     )
     response = osm_api.update_way(
-        data, data.get('comment', None), data.get('source', None))
+        data, data.get('comment', None), data.get('source', None),
+        data.get('hashtags', None)
+    )
 
     return response
 

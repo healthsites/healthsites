@@ -2,6 +2,7 @@
 
 import logging
 import time
+import re
 
 from osmapi import (
     OsmApi, ApiError,
@@ -114,7 +115,7 @@ class OsmApiWrapper(OsmApi, object):
         return response.content
 
     @staticmethod
-    def changeset_tags(comment, source):
+    def changeset_tags(comment, source, hashtags = None):
         """Helper to create osm changeset tags.
 
         :param comment: The changeset comment.
@@ -123,19 +124,24 @@ class OsmApiWrapper(OsmApi, object):
         :param comment: The changeset source.
         :type comment: str
 
+        :param hashtags:
+            The hashtags for the changeset, separated by space, comma, or ;.
+        :type hashtags: str
+
         :return: The changeset tags.
         :rtype: dict
         """
-        tags = {}
         if not comment:
             raise AssertionError('comment is needed')
         if not source:
             raise AssertionError('source is needed')
-
-        tags.update({
+        tags = {
             'comment': comment,
             'source': source
-        })
+        }
+        if hashtags:
+            hashtags = re.split(r'[ ,;]+', hashtags)
+            tags['hashtags'] = ';'.join(hashtags)
         return tags
 
     def merge_data(self, current_data, updated_data):
@@ -160,7 +166,7 @@ class OsmApiWrapper(OsmApi, object):
         }
         return updated_data
 
-    def create_node(self, data, comment=None, source=None):
+    def create_node(self, data, comment=None, source=None, hashtags= None):
         """Create OSM node data and push it to OSM instance through OSM api.
 
         :param data: OSM Node data.
@@ -177,6 +183,10 @@ class OsmApiWrapper(OsmApi, object):
         :param source: Changeset source.
         :type source: str
 
+        :param hashtags:
+            The hashtags for the changeset, separated by space, comma, or ;.
+        :type hashtags: str
+
         :return: OSM changeset data.
         :rtype: dict
             example: {
@@ -192,13 +202,13 @@ class OsmApiWrapper(OsmApi, object):
             }
         """
         self.ChangesetCreate(
-            self.changeset_tags(comment, source))
+            self.changeset_tags(comment, source, hashtags))
         changeset = self.NodeCreate(data)
         self.ChangesetClose()
 
         return changeset
 
-    def update_node(self, data, comment=None, source=None):
+    def update_node(self, data, comment=None, source=None, hashtags= None):
         """Update OSM node data and push it to OSM instance through OSM api.
 
         :param data: OSM Node data.
@@ -217,6 +227,10 @@ class OsmApiWrapper(OsmApi, object):
         :param source: Changeset source.
         :type source: str
 
+        :param hashtags:
+            The hashtags for the changeset, separated by space, comma, or ;.
+        :type hashtags: str
+
         :return: OSM changeset data.
         :rtype: dict
             example: {
@@ -234,13 +248,13 @@ class OsmApiWrapper(OsmApi, object):
         current_data = self.NodeGet(data['id'])
         data = self.merge_data(current_data, data)
         self.ChangesetCreate(
-            self.changeset_tags(comment, source))
+            self.changeset_tags(comment, source, hashtags))
         changeset = self.NodeUpdate(data)
         self.ChangesetClose()
 
         return changeset
 
-    def delete_node(self, data, comment=None, source=None):
+    def delete_node(self, data, comment=None, source=None, hashtags= None):
         """Delete OSM node data through OSM api.
 
         :param data: OSM Node data.
@@ -258,6 +272,10 @@ class OsmApiWrapper(OsmApi, object):
         :param source: Changeset source.
         :type source: str
 
+        :param hashtags:
+            The hashtags for the changeset, separated by space, comma, or ;.
+        :type hashtags: str
+
         :return: OSM changeset data.
         :rtype: dict
             example: {
@@ -273,13 +291,13 @@ class OsmApiWrapper(OsmApi, object):
             }
         """
         self.ChangesetCreate(
-            self.changeset_tags(comment, source))
+            self.changeset_tags(comment, source, hashtags))
         changeset = self.NodeDelete(data)
         self.ChangesetClose()
 
         return changeset
 
-    def create_way(self, data, comment=None, source=None):
+    def create_way(self, data, comment=None, source=None, hashtags= None):
         """Create OSM way data and push it to OSM instance through OSM api.
 
         :param data: OSM Way data.
@@ -295,6 +313,10 @@ class OsmApiWrapper(OsmApi, object):
         :param source: Changeset source.
         :type source: str
 
+        :param hashtags:
+            The hashtags for the changeset, separated by space, comma, or ;.
+        :type hashtags: str
+
         :return: OSM changeset data.
         :rtype: dict
             example: {
@@ -309,13 +331,13 @@ class OsmApiWrapper(OsmApi, object):
             }
         """
         self.ChangesetCreate(
-            self.changeset_tags(comment, source))
+            self.changeset_tags(comment, source, hashtags))
         changeset = self.WayCreate(data)
         self.ChangesetClose()
 
         return changeset
 
-    def update_way(self, data, comment=None, source=None):
+    def update_way(self, data, comment=None, source=None, hashtags= None):
         """Update OSM way data and push it to OSM instance through OSM api.
 
         :param data: OSM Way data.
@@ -332,6 +354,10 @@ class OsmApiWrapper(OsmApi, object):
 
         :param source: Changeset source.
         :type source: str
+
+        :param hashtags:
+            The hashtags for the changeset, separated by space, comma, or ;.
+        :type hashtags: str
 
         :return: OSM changeset data.
         :rtype: dict
@@ -351,7 +377,7 @@ class OsmApiWrapper(OsmApi, object):
         del data['lat']
         del data['lon']
         self.ChangesetCreate(
-            self.changeset_tags(comment, source))
+            self.changeset_tags(comment, source, hashtags))
         changeset = self.WayUpdate(data)
         self.ChangesetClose()
 

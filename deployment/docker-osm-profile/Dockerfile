@@ -8,4 +8,4 @@ RUN mkdir /settings
 ADD mapping.yml /settings/mapping.yml
 ADD clip /settings/clip
 ADD qgis_style.sql /settings/qgis_style.sql
-RUN wget https://planet.openstreetmap.org/pbf/planet-latest.osm.pbf -O settings/country.pbf
+RUN wget https://download.geofabrik.de/asia/indonesia-latest.osm.pbf -O settings/country.pbf
