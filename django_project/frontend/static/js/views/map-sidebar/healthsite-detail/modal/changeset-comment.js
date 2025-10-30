@@ -11,6 +11,7 @@ define([
             this.$modalCancel = $('#changeset-comment-cancel');
             this.$modalCommentInput = $('#changeset-comment-input');
             this.$modalSourceInput = $('#changeset-comment-source-input');
+            this.$modalhashtagsInput = $('#changeset-comment-hashtags-input');
             this.$modalCommentInputError = $('#changeset-comment-input-error');
             this.$modalSourceInputError = $('#changeset-comment-source-input-error');
         },
@@ -20,6 +21,7 @@ define([
         reset: function () {
             this.$modalCommentInput.val('');
             this.$modalSourceInput.val('');
+            this.$modalhashtagsInput.val('');
             this.$modalCommentInputError.hide();
             this.$modalSourceInputError.hide();
         },
@@ -43,7 +45,8 @@ define([
                     self.$modalSourceInputError.hide();
                     let data = {
                         'comment': self.$modalCommentInput.val(),
-                        'source': self.$modalSourceInput.val()
+                        'source': self.$modalSourceInput.val(),
+                        'hashtags': self.$modalhashtagsInput.val()
                     };
                     let valid = true;
                     if (data['comment'].length <= self.minChangesetComment) {
