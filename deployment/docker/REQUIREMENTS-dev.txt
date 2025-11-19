@@ -7,6 +7,9 @@ factory_boy
 
 django-devserver
 
+# behaviour-driven tests
+behave==1.2.6
+
 # documentation
 Sphinx
 
