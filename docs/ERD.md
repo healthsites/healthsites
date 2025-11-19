@@ -25,6 +25,9 @@ erDiagram
 
     localities_country ||--o{ localities_country : "parent"
 
+    localities_osm_localityosmnode ||--|| localities_osm_localityosmview : "feeds"
+    localities_osm_localityosmway ||--|| localities_osm_localityosmview : "feeds"
+
     localities_osm_extension_localityosmextension ||--|| localities_osm_extension_pendingupdate : "extension"
     localities_osm_extension_localityosmextension ||--o{ localities_osm_extension_tag : "tags"
 
@@ -43,6 +46,10 @@ erDiagram
 * Many-to-many relationships between Organisations and Trusted Users are shown
   explicitly through the `OrganisationSupported` join table so that the staff
   flag on the relationship is not lost.
+* `localities_osm.LocalityOSMView`, `LocalityOSMNode`, and `LocalityOSMWay`
+  are materialized views of the docker-osm cache. The `feeds` connectors in the
+  diagram indicate that the node/way tables supply rows to the union view even
+  though no explicit ForeignKey exists between the tables.
 * Only models that define database tables are included. Abstract helpers such
   as `SingletonModel` are intentionally omitted because they do not appear in
   the ERD.
