@@ -2,12 +2,65 @@ __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
-from drf_spectacular.utils import OpenApiParameter
+from drf_spectacular.utils import OpenApiParameter, OpenApiExample
 from rest_framework.filters import BaseFilterBackend
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.osm_tag_defintions import ALL_TAGS, MANDATORY_TAGS
 from api.utils import get_osm_schema
+
+_PYTHON_TYPE_TO_OPENAPI = {
+    str: 'string',
+    list: 'array',
+    float: 'number',
+    int: 'integer',
+    bool: 'boolean',
+    dict: 'object',
+}
+
+
+def _tag_to_property(tag):
+    prop = {
+        'type': _PYTHON_TYPE_TO_OPENAPI.get(tag['type'], 'string'),
+        'description': tag.get('description', ''),
+    }
+    if 'options' in tag:
+        prop['enum'] = tag['options']
+    return prop
+
+
+def _tag_example_value(tag):
+    """Return a representative example value for a tag."""
+    options = tag.get('options')
+    python_type = tag['type']
+    if options:
+        return [options[0]] if python_type is list else options[0]
+    if python_type is int:
+        return 0
+    if python_type is bool:
+        return False
+    if python_type is list:
+        return []
+    return ''
+
+
+_TAG_EXAMPLE_OVERRIDES = {
+    'name': 'Example Clinic',
+    'operator': 'Ministry of Health',
+    'contact_number': '+1-555-0100',
+    'opening_hours': 'Mo-Fr 08:00-17:00',
+    'beds': 50,
+    'staff_doctors': 5,
+    'staff_nurses': 20,
+    'is_in_health_area': 'Health Area 1',
+    'is_in_health_zone': 'Health Zone A',
+    'url': 'https://example.com',
+    'addr_housenumber': '123',
+    'addr_street': 'Main Street',
+    'addr_postcode': '12345',
+    'addr_city': 'Example City',
+}
 
 
 class APIKeyTokenAuthScheme(OpenApiAuthenticationExtension):
@@ -30,11 +83,14 @@ class APIKeyTokenAuthScheme(OpenApiAuthenticationExtension):
 
 
 def remove_cookie_auth(result, generator, request, public):
-    """Postprocessing hook: remove cookieAuth from the generated schema."""
+    """Postprocessing hook: remove cookieAuth and basicAuth from the generated schema."""
     schemes = result.get('components', {}).get('securitySchemes', {})
     schemes.pop('cookieAuth', None)
+    schemes.pop('basicAuth', None)
     security = result.get('security', [])
-    result['security'] = [s for s in security if 'cookieAuth' not in s]
+    result['security'] = [
+        s for s in security if 'cookieAuth' not in s and 'basicAuth' not in s
+    ]
     return result
 
 
@@ -102,6 +158,61 @@ class Parameters(object):
         'q', str, OpenApiParameter.QUERY, required=True,
         description='Query string to search.',
     )
+
+
+class FacilityRequestSchema:
+    """OpenAPI request body schema and examples for facility write operations."""
+
+    create_request = {
+        'application/json': {
+            'type': 'object',
+            'properties': {
+                'lat': {'type': 'number', 'description': 'Latitude'},
+                'lon': {'type': 'number', 'description': 'Longitude'},
+                'tag': {
+                    'type': 'object',
+                    'description': 'OSM tags describing the facility.',
+                    'properties': {
+                        tag['key']: _tag_to_property(tag) for tag in ALL_TAGS
+                    },
+                    'required': [tag['key'] for tag in MANDATORY_TAGS],
+                },
+                'comment': {
+                    'type': 'string',
+                    'description': 'Changeset comment describing the edit.',
+                },
+                'source': {
+                    'type': 'string',
+                    'description': 'Source of the data (e.g. survey, imagery).',
+                },
+                'hashtags': {
+                    'type': 'string',
+                    'description': (
+                        'Semicolon-separated changeset hashtags '
+                        '(e.g. "#healthsites;#hotosm").'
+                    ),
+                },
+            },
+            'required': ['lat', 'lon', 'tag'],
+        }
+    }
+
+    create_examples = [
+        OpenApiExample(
+            'Basic facility',
+            value={
+                'lat': 47.287,
+                'lon': 8.765,
+                'tag': {
+                    tag['key']: _TAG_EXAMPLE_OVERRIDES.get(
+                        tag['key'], _tag_example_value(tag)
+                    )
+                    for tag in ALL_TAGS
+                },
+            },
+            request_only=True,
+        ),
+    ]
 
 
 class ApiSchemaBaseWithoutApiKey(BaseFilterBackend):

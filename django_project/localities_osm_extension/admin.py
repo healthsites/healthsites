@@ -3,10 +3,11 @@ __author__ = 'Anita Hapsari <anita@kartoza.com>'
 __date__ = '26/04/19'
 
 from django.contrib import admin
+
 from localities_osm.models.locality import LocalityOSMView
 from .models.extension import LocalityOSMExtension
-from .models.tag import Tag
 from .models.pending_state import PendingUpdate, PendingReview
+from .models.tag import Tag
 
 
 class TagInline(admin.TabularInline):
@@ -40,9 +41,12 @@ class LocalityOSMExtensionAdmin(admin.ModelAdmin):
 
 
 class PendingUpdateAdmin(admin.ModelAdmin):
-    list_display = ('extension', 'uploader', 'name', 'version', 'time_uploaded')
+    list_display = (
+        'extension', 'uploader', 'name', 'version', 'time_uploaded'
+    )
     list_filter = ('uploader', 'time_uploaded')
     search_fields = ['name']
+    raw_id_fields = ('extension', 'uploader')
 
 
 class PendingReviewAdmin(admin.ModelAdmin):

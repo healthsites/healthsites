@@ -14,7 +14,7 @@ from rest_framework.response import Response
 
 from api.api_views.v2.base_api import BaseAPIWithAuthAndApiKey
 from api.api_views.v2.facilities.base_api import FacilitiesBaseAPI
-from api.api_views.v2.schema import Parameters
+from api.api_views.v2.schema import FacilityRequestSchema, Parameters
 from api.utilities.pending import (
     create_pending_update, validate_pending_update,
     create_pending_review, update_pending_review, delete_pending_review,
@@ -98,6 +98,8 @@ class GetDetailFacility(FacilitiesBaseAPI):
         summary='Update facility',
         description='Update an existing facility node or way in OpenStreetMap.',
         parameters=[_OSM_TYPE_PARAM, _OSM_ID_PARAM],
+        request=FacilityRequestSchema.create_request,
+        examples=FacilityRequestSchema.create_examples,
     )
     def post(self, request, osm_type, osm_id):
         if not request.user.is_authenticated:

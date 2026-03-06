@@ -41,6 +41,7 @@ SPECTACULAR_SETTINGS = {
         'drf_spectacular.hooks.postprocess_schema_enums',
         'api.api_views.v2.schema.remove_cookie_auth',
     ],
+    'SWAGGER_UI_FAVICON_HREF': STATIC_URL + 'img/favicon.ico',
 }
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'

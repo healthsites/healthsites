@@ -22,6 +22,7 @@ from api.api_views.v2.pagination import (
 from api.api_views.v2.schema import (
     ApiSchemaBase,
     ApiSchemaBaseWithoutApiKey,
+    FacilityRequestSchema,
     Parameters
 )
 from api.api_views.v2.utilities import BadRequestError
@@ -110,8 +111,8 @@ class GetFacilities(
     @extend_schema(
         summary='List facilities',
         description=(
-            'Returns a paginated list of health facilities. '
-            'Results can be filtered by country, bounding box, and timestamp.'
+                'Returns a paginated list of health facilities. '
+                'Results can be filtered by country, bounding box, and timestamp.'
         ),
         parameters=ApiSchema.parameters,
     )
@@ -132,6 +133,8 @@ class GetFacilities(
     @extend_schema(
         summary='Create facility',
         description='Create a new health facility node in OpenStreetMap.',
+        request=FacilityRequestSchema.create_request,
+        examples=FacilityRequestSchema.create_examples,
     )
     def post(self, request):
         user = request.user
@@ -252,9 +255,9 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
     @extend_schema(
         summary='Facility statistics',
         description=(
-            'Returns statistics about facilities, optionally filtered by '
-            'country, bounding box, and timestamp. '
-            'Includes country geometry when filtering by country.'
+                'Returns statistics about facilities, optionally filtered by '
+                'country, bounding box, and timestamp. '
+                'Includes country geometry when filtering by country.'
         ),
         parameters=FilterFacilitiesScheme.parameters,
     )
@@ -296,8 +299,8 @@ class GetFacilitiesStatisticV3(
     @extend_schema(
         summary='Facility statistics (v3)',
         description=(
-            'Returns statistics about facilities. '
-            'Requires API key authentication.'
+                'Returns statistics about facilities. '
+                'Requires API key authentication.'
         ),
         parameters=FilterFacilitiesSchemeWithApiKey.parameters,
     )
