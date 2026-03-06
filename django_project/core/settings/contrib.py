@@ -14,10 +14,24 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'ckeditor',
     # 'pipeline',
     'envelope',
+    'drf_spectacular',
 )
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Healthsites API Version 3',
+    'DESCRIPTION': 'To access the api, you need api-key for it.',
+    'VERSION': '3.0.0',
+    'PREPROCESSING_HOOKS': [
+        'api.api_views.v2.schema.filter_api_key_endpoints'
+    ],
+    'POSTPROCESSING_HOOKS': [
+        'drf_spectacular.hooks.postprocess_schema_enums',
+        'api.api_views.v2.schema.remove_cookie_auth',
+    ],
 }
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
