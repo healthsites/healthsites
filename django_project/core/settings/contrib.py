@@ -22,8 +22,17 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Healthsites API Version 3',
-    'DESCRIPTION': 'To access the api, you need api-key for it.',
+    'TITLE': 'Healthsites API',
+    'DESCRIPTION': (
+        'The Healthsites API provides access to health facility data sourced '
+        'from OpenStreetMap.\n\n'
+        '## Authentication\n\n'
+        'All endpoints require an API key. You can provide it in two ways:\n\n'
+        '- **Authorization header** (recommended): '
+        '`Authorization: Bearer <api-key>`\n'
+        '- **Query parameter**: `?api-key=<api-key>`\n\n'
+        'To obtain an API key, register on your profile page.'
+    ),
     'VERSION': '3.0.0',
     'PREPROCESSING_HOOKS': [
         'api.api_views.v2.schema.filter_api_key_endpoints'

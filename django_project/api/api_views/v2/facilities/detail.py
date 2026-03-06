@@ -9,10 +9,12 @@ from django.contrib.auth.models import User
 from django.http import Http404
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.response import Response
 
 from api.api_views.v2.base_api import BaseAPIWithAuthAndApiKey
 from api.api_views.v2.facilities.base_api import FacilitiesBaseAPI
+from api.api_views.v2.schema import Parameters
 from api.utilities.pending import (
     create_pending_update, validate_pending_update,
     create_pending_review, update_pending_review, delete_pending_review,
@@ -34,14 +36,23 @@ from localities_osm.serializer.locality_osm import (
 from localities_osm_extension.models.extension import LocalityOSMExtension
 
 
-class GetDetailFacility(FacilitiesBaseAPI):
-    """
-    get:
-    Returns a facility detail.
+_OSM_TYPE_PARAM = OpenApiParameter(
+    'osm_type', str, OpenApiParameter.PATH,
+    description='OSM element type.',
+    enum=['node', 'way'],
+)
+_OSM_ID_PARAM = OpenApiParameter(
+    'osm_id', int, OpenApiParameter.PATH,
+    description='OSM element ID.',
+)
+_UUID_PARAM = OpenApiParameter(
+    'uuid', str, OpenApiParameter.PATH,
+    description='Facility UUID.',
+)
 
-    post:
-    Update a facility.
-    """
+
+class GetDetailFacility(FacilitiesBaseAPI):
+    """Facility detail and update endpoint, addressed by OSM type and ID."""
 
     def getLocalityOsm(self, osm_type, osm_id):
         """ Get locality osm """
@@ -53,6 +64,11 @@ class GetDetailFacility(FacilitiesBaseAPI):
         else:
             return None
 
+    @extend_schema(
+        summary='Get facility detail',
+        description='Returns the full detail of a single facility by OSM type and ID.',
+        parameters=[_OSM_TYPE_PARAM, _OSM_ID_PARAM, Parameters.output],
+    )
     def get(self, request, osm_type, osm_id):
         validation = self.validation()
         if validation:
@@ -78,6 +94,11 @@ class GetDetailFacility(FacilitiesBaseAPI):
         except (LocalityOSMNode.DoesNotExist, LocalityOSMWay.DoesNotExist):
             raise Http404()
 
+    @extend_schema(
+        summary='Update facility',
+        description='Update an existing facility node or way in OpenStreetMap.',
+        parameters=[_OSM_TYPE_PARAM, _OSM_ID_PARAM],
+    )
     def post(self, request, osm_type, osm_id):
         if not request.user.is_authenticated:
             return HttpResponseForbidden()
@@ -180,42 +201,38 @@ class GetDetailFacility(FacilitiesBaseAPI):
 
 
 class GetDetailFacilityV3(GetDetailFacility, BaseAPIWithAuthAndApiKey):
-    """
-    get:
-    Returns a facility detail.
+    """Authenticated facility detail and update endpoint (API v3)."""
 
-    post:
-    Update a facility.
-    """
     api_label = {
         'POST': 'update'
     }
 
 
 class GetDetailFacilityByUUID(GetDetailFacility):
-    """
-    get:
-    Returns a facility detail.
-
-    put:
-    Update a facility.
-    """
+    """Facility detail and update endpoint, addressed by UUID."""
 
     def get_facility_by_uuid(self, uuid):
-        """ Get facility by uuid """
         extension = LocalityOSMExtension.get_extension_by_uuid(uuid)
         if not extension:
             raise Http404('not found')
         return extension.osm_type, extension.osm_id
 
+    @extend_schema(
+        summary='Get facility detail by UUID',
+        description='Returns the full detail of a single facility by its UUID.',
+        parameters=[_UUID_PARAM, Parameters.output],
+    )
     def get(self, request, uuid):
-        """ Get facility by uuid """
         osm_type, osm_id = self.get_facility_by_uuid(uuid)
         return super(GetDetailFacilityByUUID, self).get(
             request, osm_type, osm_id)
 
+    @extend_schema(
+        summary='Update facility by UUID',
+        description='Update an existing facility in OpenStreetMap by its UUID.',
+        parameters=[_UUID_PARAM],
+    )
     def post(self, request, uuid):
-        """ Update facility by uuid """
         osm_type, osm_id = self.get_facility_by_uuid(uuid)
         return super(GetDetailFacilityByUUID, self).post(
             request, osm_type, osm_id)

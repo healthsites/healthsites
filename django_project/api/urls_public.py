@@ -8,8 +8,7 @@ from api.api_views.v2.facilities import (
     Autocomplete,
     GetDetailFacility, GetDetailFacilityByUUID,
     GetCluster, GetFacilitiesCount, GetFacilitiesStatistic,
-    GetShapefileDetail, GetShapefileDownload,
-    GetFacilities
+    GetShapefileDetail, GetShapefileDownload
 )
 from api.api_views.v2.geocode.search import SearchByGeoname
 from api.api_views.v2.import_progress import ImportCSVProgress
@@ -34,8 +33,7 @@ facilities_api = [
     url(r'^shapefile/(?P<country>.+)/detail',
         GetShapefileDetail.as_view()),
     url(r'^shapefile/(?P<country>.+)/download',
-        GetShapefileDownload.as_view()),
-    url(r'^', GetFacilities.as_view(), name='facilities'),
+        GetShapefileDownload.as_view())
 ]
 
 # API about user

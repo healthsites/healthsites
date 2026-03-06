@@ -1,16 +1,21 @@
-from api.utils import get_osm_schema
-
 __author__ = 'Irwan Fathurrahman <irwan@kartoza.com>'
 __date__ = '29/11/18'
 
-from rest_framework.filters import BaseFilterBackend
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from drf_spectacular.extensions import OpenApiAuthenticationExtension
+from drf_spectacular.utils import OpenApiParameter
+from rest_framework.filters import BaseFilterBackend
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from api.utils import get_osm_schema
 
 
 class APIKeyTokenAuthScheme(OpenApiAuthenticationExtension):
-    """Map APIKeyAuthentication to an OpenAPI tokenAuth security scheme."""
+    """Maps APIKeyAuthentication to an OpenAPI bearer security scheme.
+
+    Swagger UI will prompt for the API key and automatically send it as
+    'Authorization: Bearer <key>'.
+    """
 
     target_class = 'api.api_views.v2.authentication.APIKeyAuthentication'
     name = 'tokenAuth'
@@ -33,96 +38,6 @@ def remove_cookie_auth(result, generator, request, public):
     return result
 
 
-class Parameters(object):
-    """ Class that holds all parameter schemas
-    """
-    api_key = {
-        'name': 'api-key',
-        'required': True,
-        'in': 'query',
-        'description': 'API KEY for accessing healthsites api.',
-        'schema': {'type': 'string'},
-    }
-
-    page = {
-        'name': 'page',
-        'required': False,
-        'in': 'query',
-        'description': 'A page number within the paginated result set.',
-        'schema': {'type': 'integer', 'default': 1},
-    }
-
-    extent = {
-        'name': 'extent',
-        'required': False,
-        'in': 'query',
-        'description': (
-            'Extent of map that is used for filtering data. '
-            '(format: minLng, minLat, maxLng, maxLat)'
-        ),
-        'schema': {'type': 'string'},
-    }
-
-    timestamp_from = {
-        'name': 'from',
-        'required': False,
-        'in': 'query',
-        'description': 'Get latest modified data from this timestamp.',
-        'schema': {'type': 'integer'},
-    }
-
-    timestamp_to = {
-        'name': 'to',
-        'required': False,
-        'in': 'query',
-        'description': 'Get latest modified data from this timestamp.',
-        'schema': {'type': 'integer'},
-    }
-
-    country = {
-        'name': 'country',
-        'required': False,
-        'in': 'query',
-        'description': 'Filter by country',
-        'schema': {'type': 'string'},
-    }
-
-    output = {
-        'name': 'output',
-        'required': False,
-        'in': 'query',
-        'description': (
-            'Output format for the request. '
-            '(json/xml/geojson, default: json)'
-        ),
-        'schema': {'type': 'string'},
-    }
-
-    flat = {
-        'name': 'flat-properties',
-        'required': False,
-        'in': 'query',
-        'description': 'Put true to show properties in flat',
-        'schema': {'type': 'string'},
-    }
-
-    tag_format = {
-        'name': 'tag-format',
-        'required': False,
-        'in': 'query',
-        'description': 'Tag format that want to be used. (osm/hxl. default : osm)',
-        'schema': {'type': 'string'},
-    }
-
-    q = {
-        'name': 'q',
-        'required': True,
-        'in': 'query',
-        'description': 'Query that needs to be checked.',
-        'schema': {'type': 'string'},
-    }
-
-
 def filter_api_key_endpoints(endpoints, **kwargs):
     """Preprocessing hook: only include endpoints using APIKeyAuthentication."""
     from api.api_views.v2.authentication import APIKeyAuthentication
@@ -135,21 +50,79 @@ def filter_api_key_endpoints(endpoints, **kwargs):
     return filtered
 
 
+class Parameters(object):
+    """Reusable OpenApiParameter definitions shared across API views."""
+
+    api_key = OpenApiParameter(
+        'api-key', str, OpenApiParameter.QUERY, required=False,
+        description=(
+            'API key for accessing the Healthsites API. '
+            'Alternative to the Authorization: Bearer header.'
+        ),
+    )
+    page = OpenApiParameter(
+        'page', int, OpenApiParameter.QUERY, required=False,
+        description='Page number within the paginated result set.',
+        default=1,
+    )
+    extent = OpenApiParameter(
+        'extent', str, OpenApiParameter.QUERY, required=False,
+        description='Bounding box filter. '
+                    'Format: minLng,minLat,maxLng,maxLat',
+    )
+    timestamp_from = OpenApiParameter(
+        'from', int, OpenApiParameter.QUERY, required=False,
+        description='Return facilities modified after this Unix timestamp.',
+    )
+    timestamp_to = OpenApiParameter(
+        'to', int, OpenApiParameter.QUERY, required=False,
+        description='Return facilities modified before this Unix timestamp.',
+    )
+    country = OpenApiParameter(
+        'country', str, OpenApiParameter.QUERY, required=False,
+        description='Filter results by country name.',
+    )
+    output = OpenApiParameter(
+        'output', str, OpenApiParameter.QUERY, required=False,
+        description='Response format.',
+        enum=['json', 'xml', 'geojson'],
+        default='json',
+    )
+    flat = OpenApiParameter(
+        'flat-properties', str, OpenApiParameter.QUERY, required=False,
+        description='Set to "true" to return properties in a flat structure.',
+    )
+    tag_format = OpenApiParameter(
+        'tag-format', str, OpenApiParameter.QUERY, required=False,
+        description='Tag format to use.',
+        enum=['osm', 'hxl'],
+        default='osm',
+    )
+    q = OpenApiParameter(
+        'q', str, OpenApiParameter.QUERY, required=True,
+        description='Query string to search.',
+    )
+
+
 class ApiSchemaBaseWithoutApiKey(BaseFilterBackend):
-    schemas = []
+    """Filter backend that exposes query parameters to the OpenAPI schema."""
+
+    parameters = []
 
     def get_schema_operation_parameters(self, view):
-        return self.schemas
+        return self.parameters
 
 
-class ApiSchemaBase(BaseFilterBackend):
-    schemas = []
+class ApiSchemaBase(ApiSchemaBaseWithoutApiKey):
+    """Filter backend that exposes query parameters including the API key."""
 
     def get_schema_operation_parameters(self, view):
-        return [Parameters.api_key] + self.schemas
+        return [Parameters.api_key] + self.parameters
 
 
 class Schema(object):
+    """Converts the OSM schema field types to JSON-serialisable strings."""
+
     def _change_type_into_string(self, type):
         if type == float:
             return 'float'
@@ -173,11 +146,12 @@ class Schema(object):
             if field['key'] == 'tag':
                 for tag in field['tags']:
                     tag['type'] = self._change_type_into_string(tag['type'])
-
         return schema
 
 
 class SchemaView(APIView):
+    """Returns the OSM facility schema as JSON."""
+
     def get(self, request):
         schema = Schema().get_schema()
         return Response(schema)
