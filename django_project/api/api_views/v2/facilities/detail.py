@@ -35,7 +35,6 @@ from localities_osm.serializer.locality_osm import (
 )
 from localities_osm_extension.models.extension import LocalityOSMExtension
 
-
 _OSM_TYPE_PARAM = OpenApiParameter(
     'osm_type', str, OpenApiParameter.PATH,
     description='OSM element type.',
@@ -183,6 +182,10 @@ class GetDetailFacility(FacilitiesBaseAPI):
 
         except KeyError as e:
             return HttpResponseBadRequest('%s is needed' % e)
+        except (LocalityOSMNode.DoesNotExist, LocalityOSMNode.DoesNotExist):
+            raise Http404(
+                "Facility not found. Please check your OSM ID and OSM TYPE."
+            )
         except Exception as e:
             if not request.GET.get('review', None):
                 if user != request.user:
@@ -198,8 +201,6 @@ class GetDetailFacility(FacilitiesBaseAPI):
                 'payload': request.data,
             }
             return HttpResponseBadRequest('%s' % json.dumps(output))
-        except (LocalityOSMNode.DoesNotExist, LocalityOSMNode.DoesNotExist):
-            raise Http404()
 
 
 class GetDetailFacilityV3(GetDetailFacility, BaseAPIWithAuthAndApiKey):
