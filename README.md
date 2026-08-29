@@ -92,7 +92,7 @@ git clone git@github.com:healthsites/healthsites.git
 Copy the **.env.template** to the project root directory:
 
 ```shell
-cp deployment/.template.env .env
+cp deployment/.template.env deployment/.env
 ```
 
 ### Copy the Docker Compose Configuration
