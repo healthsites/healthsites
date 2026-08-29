@@ -81,6 +81,7 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'localities',
     'localities_osm',
     'localities_osm_extension',
+    'healthsites',
     'api',
     'social_users'
 )
