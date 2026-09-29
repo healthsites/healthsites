@@ -129,10 +129,14 @@ services:
       - db
 
   # Celery worker that executes celery tasks created by Django.
+  # Beat runs embedded in the worker (-B). Its schedule file is kept in /tmp
+  # inside the container rather than in the bind-mounted django_project
+  # directory: a corrupt file there once made beat crash silently on start
+  # while the worker kept running, so no periodic task ran for months.
   worker:
     <<: *default-common-django
     container_name: healthsites_worker
-    command: celery -A core.celery:app worker -B -l debug
+    command: celery -A core.celery:app worker -B --schedule /tmp/celerybeat-schedule -l debug
     entrypoint: [ ]
     depends_on:
       - db
