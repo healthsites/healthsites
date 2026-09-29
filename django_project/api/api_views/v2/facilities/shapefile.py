@@ -5,16 +5,30 @@ import os
 
 from django.conf import settings
 from django.http.response import HttpResponse, Http404
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.api_views.v2.base_api import BaseAPIWithAuthAndApiKey
 from localities.tasks import country_data_into_shapefile_task
 
+_COUNTRY_PARAM = OpenApiParameter(
+    'country', str, OpenApiParameter.PATH,
+    description='Country name, or "World" for global data.',
+)
+
 
 class GetShapefileDetail(APIView):
-    """Get the shapefile detail with time and filename."""
+    """Shapefile metadata endpoint."""
 
+    @extend_schema(
+        summary='Get shapefile detail',
+        description=(
+            'Returns the last-modified timestamp and filename of the '
+            'shapefile for the given country.'
+        ),
+        parameters=[_COUNTRY_PARAM],
+    )
     def get(self, request, country):
         if country == 'World' or country == 'world':
             country = 'World'
@@ -32,10 +46,18 @@ class GetShapefileDetail(APIView):
 
 
 class GetShapefileDownload(APIView):
-    """
-    API for checking process of generating shapefile
-    """
+    """Shapefile download endpoint."""
 
+    @extend_schema(
+        summary='Download shapefile',
+        description=(
+            'Triggers shapefile generation for the given country (if not '
+            'already cached) and returns the ZIP file as a download. '
+            'Raises 404 if the file is not yet available.'
+        ),
+        parameters=[_COUNTRY_PARAM],
+        responses={(200, 'application/zip'): bytes},
+    )
     def get(self, request, country):
         if country == 'World' or country == 'world':
             country = 'World'
@@ -55,8 +77,21 @@ class GetShapefileDownload(APIView):
 
 
 class GetShapefileDownloadV3(GetShapefileDownload, BaseAPIWithAuthAndApiKey):
-    """Download shapefile."""
+    """Authenticated shapefile download endpoint (API v3)."""
+
     api_label = {
         'GET': 'download'
     }
-    pass
+
+    @extend_schema(
+        summary='Download shapefile (v3)',
+        description=(
+            'Triggers shapefile generation for the given country (if not '
+            'already cached) and returns the ZIP file as a download. '
+            'Requires API key authentication.'
+        ),
+        parameters=[_COUNTRY_PARAM],
+        responses={(200, 'application/zip'): bytes},
+    )
+    def get(self, request, country):
+        return super().get(request, country)

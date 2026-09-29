@@ -12,7 +12,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_default_provider(self, user: User) -> bool:
         """Return provider is default one."""
-        return user.social_auth.get.provider == settings.DEFAULT_PROVIDER
+        try:
+            return user.social_auth.get.provider == settings.DEFAULT_PROVIDER
+        except AttributeError:
+            return False
 
     class Meta:  # noqa: D106
         model = User

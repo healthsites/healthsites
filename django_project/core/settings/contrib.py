@@ -14,10 +14,34 @@ INSTALLED_APPS = INSTALLED_APPS + (
     'ckeditor',
     # 'pipeline',
     'envelope',
+    'drf_spectacular',
 )
 
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Healthsites API',
+    'DESCRIPTION': (
+        'The Healthsites API provides access to health facility data sourced '
+        'from OpenStreetMap.\n\n'
+        '## Authentication\n\n'
+        'All endpoints require an API key. You can provide it in two ways:\n\n'
+        '- **Authorization header** (recommended): '
+        '`Authorization: Bearer <api-key>`\n'
+        '- **Query parameter**: `?api-key=<api-key>`\n\n'
+        'To obtain an API key, register on your profile page.'
+    ),
+    'VERSION': '3.0.0',
+    'PREPROCESSING_HOOKS': [
+        'api.api_views.v2.schema.filter_api_key_endpoints'
+    ],
+    'POSTPROCESSING_HOOKS': [
+        'drf_spectacular.hooks.postprocess_schema_enums',
+        'api.api_views.v2.schema.remove_cookie_auth',
+    ],
+    'SWAGGER_UI_FAVICON_HREF': STATIC_URL + 'img/favicon.ico',
 }
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'

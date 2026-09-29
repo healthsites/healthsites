@@ -10,6 +10,7 @@ from django.contrib.auth.models import User
 from django.http import Http404
 from django.http.response import HttpResponseBadRequest, HttpResponseForbidden
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -21,6 +22,7 @@ from api.api_views.v2.pagination import (
 from api.api_views.v2.schema import (
     ApiSchemaBase,
     ApiSchemaBaseWithoutApiKey,
+    FacilityRequestSchema,
     Parameters
 )
 from api.api_views.v2.utilities import BadRequestError
@@ -40,7 +42,7 @@ from localities_osm_extension.utils import save_extensions
 
 
 class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
-    schemas = [
+    parameters = [
         Parameters.country,
         Parameters.extent,
         Parameters.timestamp_from,
@@ -52,21 +54,18 @@ class FilterFacilitiesScheme(ApiSchemaBaseWithoutApiKey):
 
 
 class FilterFacilitiesSchemeWithApiKey(ApiSchemaBase):
-    schemas = FilterFacilitiesScheme.schemas
+    parameters = FilterFacilitiesScheme.parameters
 
 
 class ApiSchema(ApiSchemaBase):
-    schemas = [Parameters.page] + FilterFacilitiesScheme.schemas
+    parameters = [Parameters.page] + FilterFacilitiesScheme.parameters
 
 
 class GetFacilitiesBaseAPI(object):
-    """
-    Parent class that hold filtering method of healthsites
-    """
+    """Mixin that provides shared facility filtering helpers."""
 
     def get_country(self, country):
-        """ This function is for get country object from request
-        """
+        """Return the Country object for the given name, or None for 'World'."""
         # check by country
         if country == 'World':
             country = None
@@ -105,15 +104,18 @@ class GetFacilities(
     PaginationAPI, FacilitiesBaseAPI, BaseAPIWithAuthAndApiKey,
     GetFacilitiesBaseAPI
 ):  # noqa
-    """
-    get:
-    Returns a list of facilities with some filtering parameters.
+    """Paginated list of facilities. Supports filtering and bulk creation."""
 
-    post:
-    Create new facility.
-    """
     filter_backends = (ApiSchema,)
 
+    @extend_schema(
+        summary='List facilities',
+        description=(
+                'Returns a paginated list of health facilities. '
+                'Results can be filtered by country, bounding box, and timestamp.'
+        ),
+        parameters=ApiSchema.parameters,
+    )
     def get(self, request):
         validation = self.validation()
         if validation:
@@ -128,6 +130,12 @@ class GetFacilities(
 
         return Response(self.serialize(queryset, many=True))
 
+    @extend_schema(
+        summary='Create facility',
+        description='Create a new health facility node in OpenStreetMap.',
+        request=FacilityRequestSchema.create_request,
+        examples=FacilityRequestSchema.create_examples,
+    )
     def post(self, request):
         user = request.user
         data = copy.deepcopy(request.data)
@@ -210,12 +218,13 @@ class GetFacilities(
 
 
 class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):
-    """
-    get:
-    Returns count of facilities with some filtering parameters.
-    """
-    filter_backends = (FilterFacilitiesScheme,)
+    """Facility count endpoint."""
 
+    @extend_schema(
+        summary='Count facilities',
+        description='Returns the total number of facilities matching the given filters.',
+        parameters=FilterFacilitiesScheme.parameters,
+    )
     def get(self, request):
         try:
             country = request.GET.get('country', None)
@@ -238,16 +247,20 @@ class GetFacilitiesCount(APIView, GetFacilitiesBaseAPI):
 
 
 class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
-    """
-    get:
-    Returns statistic of facilities with some filtering parameters.
-    """
-    filter_backends = (FilterFacilitiesScheme,)
+    """Facility statistics endpoint."""
 
     def update_output(self, output):
-        """Updating output."""
         return output
 
+    @extend_schema(
+        summary='Facility statistics',
+        description=(
+                'Returns statistics about facilities, optionally filtered by '
+                'country, bounding box, and timestamp. '
+                'Includes country geometry when filtering by country.'
+        ),
+        parameters=FilterFacilitiesScheme.parameters,
+    )
     def get(self, request):
         try:
             country = request.GET.get('country', None)
@@ -277,14 +290,24 @@ class GetFacilitiesStatistic(APIView, GetFacilitiesBaseAPI):
 class GetFacilitiesStatisticV3(
     GetFacilitiesStatistic, BaseAPIWithAuthAndApiKey
 ):
-    """Get facility statistic information."""
+    """Authenticated facility statistics endpoint (API v3)."""
+
     api_label = {
         'GET': 'statistic'
     }
-    filter_backends = (FilterFacilitiesSchemeWithApiKey,)
+
+    @extend_schema(
+        summary='Facility statistics (v3)',
+        description=(
+                'Returns statistics about facilities. '
+                'Requires API key authentication.'
+        ),
+        parameters=FilterFacilitiesSchemeWithApiKey.parameters,
+    )
+    def get(self, request):
+        return super().get(request)
 
     def update_output(self, output):
-        """Updating output."""
         try:
             del output['geometry']
         except KeyError:
@@ -298,12 +321,9 @@ class GetFacilitiesStatisticV3(
 
 
 class BulkUpload(FacilitiesBaseAPI, BaseAPIWithAuthAndApiKey):
-    """
-    post:
-    Upload multiple healthsites/facilities data.
-    """
-    filter_backends = (ApiSchema,)
+    """Bulk facility upload endpoint."""
 
+    @extend_schema(exclude=True)
     def get(self, request):
         """FOR TESTING ONLY"""
         user = request.user
@@ -317,6 +337,10 @@ class BulkUpload(FacilitiesBaseAPI, BaseAPIWithAuthAndApiKey):
 
         return Response(response)
 
+    @extend_schema(
+        summary='Bulk upload facilities',
+        description='Upload multiple health facility nodes to OpenStreetMap in a single request.',
+    )
     def post(self, request):
         user = request.user
         data = request.data

@@ -30,9 +30,10 @@ speciality_options = {
 amenity = {
     'key': 'amenity',
     'name': 'amenity',
-    'description':
-        'For describing useful and important facilities '
-        'for visitors and residents',
+    'description': (
+        'The primary OSM tag for health facilities. '
+        'Describes the type of amenity provided.'
+    ),
     'options': [
         'clinic', 'doctors', 'hospital', 'dentist', 'pharmacy'
     ],
@@ -43,9 +44,10 @@ amenity = {
 healthcare = {
     'key': 'healthcare',
     'name': 'healthcare',
-    'description':
-        'A key to tag all places that provide healthcare '
-        '(are part of the healthcare sector)',
+    'description': (
+        'Classifies the facility within the healthcare sector. '
+        'Use alongside amenity to provide full context.'
+    ),
     'options': [
         'doctor', 'pharmacy', 'hospital', 'clinic', 'dentist',
         'physiotherapist', 'alternative', 'laboratory', 'optometrist',
@@ -58,7 +60,7 @@ healthcare = {
 name = {
     'key': 'name',
     'name': 'name',
-    'description': 'Name for buildings and facilities',
+    'description': 'The official name of the health facility.',
     'required': True,
     'type': str,
 }
@@ -66,10 +68,10 @@ name = {
 operator = {
     'key': 'operator',
     'name': 'operator',
-    'description':
-        'The operator tag is used to name a company, corporation, '
-        'person or any other entity who is directly in charge of '
-        'the current operation of a map object',
+    'description': (
+        'The name of the organisation, company, or individual '
+        'directly responsible for operating the facility.'
+    ),
     'required': False,
     'type': str,
 }
@@ -89,12 +91,11 @@ operator = {
 speciality = {
     'key': 'speciality',
     'name': 'speciality',
-    'description':
-        'A key to detail the special services provided by '
-        'a healthcare facility. '
-        'To be used in conjuction with the \'healthcare=*\' tag. '  # noqa
-        'For example \'healthcare=laboratory\', '  # noqa
-        'and \'healthcare:speciality=blood_check\'',  # noqa
+    'description': (
+        'The medical speciality or specialities offered by the facility. '
+        'Use in conjunction with healthcare=*. '
+        'For example: healthcare=laboratory and speciality=blood_check.'
+    ),
     'options': [
         'allergology',
         'anatomy',
@@ -174,9 +175,9 @@ speciality = {
 operator_type = {
     'key': 'operator_type',
     'name': 'operator_type',
-    'description':
-        'This tag is used to give more information about '
-        'the type of operator for a feature',
+    'description': (
+        'The ownership or management type of the facility operator.'
+    ),
     'options': [
         'public', 'private', 'community', 'religious', 'government', 'ngo',
         'combination'
@@ -188,8 +189,7 @@ operator_type = {
 contact_number = {
     'key': 'contact_number',
     'name': 'contact_number',
-    'description':
-        'Contact number of facility',
+    'description': 'Phone number for contacting the facility.',
     'required': False,
     'type': str,
 }
@@ -197,9 +197,7 @@ contact_number = {
 operational_status = {
     'key': 'operational_status',
     'name': 'operational_status',
-    'description':
-        'Used to document an observation of the current '
-        'functional status of a mapped feature',
+    'description': 'The current operational status of the facility.',
     'options': [
         'operational', 'non_operational', 'unknown'
     ],
@@ -210,8 +208,10 @@ operational_status = {
 opening_hours = {
     'key': 'opening_hours',
     'name': 'opening_hours',
-    'description':
-        'Time of facility open',
+    'description': (
+        'The opening hours of the facility in OSM format. '
+        'Example: Mo-Fr 08:00-17:00.'
+    ),
     'required': False,
     'type': str,
 }
@@ -219,7 +219,7 @@ opening_hours = {
 beds = {
     'key': 'beds',
     'name': 'beds',
-    'description': 'Indicates the number of beds in a hotel or hospital',
+    'description': 'The total number of beds available at the facility.',
     'required': False,
     'type': int,
 }
@@ -227,7 +227,7 @@ beds = {
 staff_doctors = {
     'key': 'staff_doctors',
     'name': 'staff_doctors',
-    'description': 'Indicates the number of doctors in a hospitall',
+    'description': 'The number of doctors employed at the facility.',
     'required': False,
     'type': int,
 }
@@ -235,7 +235,7 @@ staff_doctors = {
 staff_nurses = {
     'key': 'staff_nurses',
     'name': 'staff_nurses',
-    'description': 'Indicates the number of nurses in a hospitall',
+    'description': 'The number of nurses employed at the facility.',
     'required': False,
     'type': int,
 }
@@ -243,9 +243,9 @@ staff_nurses = {
 health_amenity_type = {
     'key': 'health_amenity_type',
     'name': 'health_amenity_type',
-    'description':
-        'Indicates what types of speciality medical equipment '
-        'is available at the healthsite',
+    'description': (
+        'Speciality medical equipment or services available at the facility.'
+    ),
     'options': [
         'ultrasound', 'mri', 'x_ray', 'dialysis', 'operating_theater',
         'laboratory', 'imaging_equipment', 'intensive_care_unit',
@@ -258,10 +258,10 @@ health_amenity_type = {
 dispensing = {
     'key': 'dispensing',
     'name': 'dispensing',
-    'description':
-        'Whether a pharmacy dispenses prescription drugs or not. '
-        'Used to add information to something that is already '
-        'tagged as amenity=pharmacy',
+    'description': (
+        'Whether the pharmacy dispenses prescription drugs. '
+        'Applies to facilities tagged as amenity=pharmacy.'
+    ),
     'required': False,
     'type': bool,
 }
@@ -269,10 +269,7 @@ dispensing = {
 wheelchair = {
     'key': 'wheelchair',
     'name': 'wheelchair',
-    'description':
-        'Used to mark places or ways that are suitable to be used '
-        'with a wheelchair and a person with a disability who uses '
-        'another mobility device (like a walker)',
+    'description': 'Whether the facility is accessible by wheelchair.',
     'required': False,
     'type': bool,
 }
@@ -280,7 +277,7 @@ wheelchair = {
 emergency = {
     'key': 'emergency',
     'name': 'emergency',
-    'description': 'This key describes various emergency services',
+    'description': 'Whether the facility provides emergency services.',
     'required': False,
     'type': bool,
 }
@@ -288,9 +285,7 @@ emergency = {
 insurance = {
     'key': 'insurance',
     'name': 'insurance',
-    'description':
-        'This key describes the type of health '
-        'insurance accepted at the healthsite',
+    'description': 'The type of health insurance accepted at the facility.',
     'options': [
         'no', 'public', 'private', 'unknown'
     ],
@@ -301,9 +296,7 @@ insurance = {
 water_source = {
     'key': 'water_source',
     'name': 'water_source',
-    'description':
-        'Used to indicate the source of the water for '
-        'features that provide or use water',
+    'description': 'The source of water supply for the facility.',
     'options': [
         'well', 'water_works', 'manual_pump', 'powered_pump',
         'groundwater', 'rain'
@@ -315,7 +308,7 @@ water_source = {
 electricity = {
     'key': 'electricity',
     'name': 'electricity',
-    'description': 'Used to indicate the source of the power generated',
+    'description': 'The source of electricity supply for the facility.',
     'options': [
         'grid', 'generator', 'solar', 'other', 'none'
     ],
@@ -326,8 +319,7 @@ electricity = {
 is_in_health_area = {
     'key': 'is_in_health_area',
     'name': 'is_in_health_area',
-    'description':
-        'Used to capture the health area a health facility falls within',
+    'description': 'The health area (administrative division) the facility belongs to.',
     'required': False,
     'type': str,
 }
@@ -335,8 +327,7 @@ is_in_health_area = {
 is_in_health_zone = {
     'key': 'is_in_health_zone',
     'name': 'is_in_health_zone',
-    'description':
-        'Used to capture the health zone a health facility falls within',
+    'description': 'The health zone (administrative division) the facility belongs to.',
     'required': False,
     'type': str,
 }
@@ -344,9 +335,7 @@ is_in_health_zone = {
 url = {
     'key': 'url',
     'name': 'url',
-    'description':
-        'Specifying a url related to a feature, '
-        'in this case the url if available',
+    'description': 'The website URL of the facility.',
     'required': False,
     'type': str,
 }
@@ -355,32 +344,28 @@ url = {
 addr_housenumber = {
     'key': 'addr_housenumber',
     'name': 'addr_housenumber',
-    'description':
-        'Housenumber',
+    'description': 'The house or building number of the facility address.',
     'required': False,
     'type': str,
 }
 addr_street = {
     'key': 'addr_street',
     'name': 'addr_street',
-    'description':
-        'Street name',
+    'description': 'The street name of the facility address.',
     'required': False,
     'type': str,
 }
 addr_postcode = {
     'key': 'addr_postcode',
     'name': 'addr_postcode',
-    'description':
-        'Postcode',
+    'description': 'The postcode of the facility address.',
     'required': False,
     'type': str,
 }
 addr_city = {
     'key': 'addr_city',
     'name': 'addr_city',
-    'description':
-        'City name',
+    'description': 'The city of the facility address.',
     'required': False,
     'type': str,
 }

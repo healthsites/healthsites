@@ -6,6 +6,7 @@ uwsgi==2.0.19.1
 # Project Library
 Django==3.2.19
 coreapi==2.3.3
+drf-spectacular==0.27.2
 dicttoxml==1.7.4
 django-braces==1.15.0
 django-ckeditor==6.3.2
