@@ -212,6 +212,19 @@
             'js/views/statistic/request': '{% static 'js/views/statistic/request.js' %}?',
             'js/views/statistic/search': '{% static 'js/views/statistic/search.js' %}?',
             'js/views/statistic/view': '{% static 'js/views/statistic/view.js' %}?',
+
+            {# map sidebar modules: hashed so Cloudflare/browser caches pick up new deploys #}
+            'js/views/map-sidebar/country-list': '{% static 'js/views/map-sidebar/country-list.js' %}?',
+            'js/views/map-sidebar/filter': '{% static 'js/views/map-sidebar/filter.js' %}?',
+            'js/views/map-sidebar/shapefile-downloader': '{% static 'js/views/map-sidebar/shapefile-downloader.js' %}?',
+            'js/views/map-sidebar/healthsite-detail/control': '{% static 'js/views/map-sidebar/healthsite-detail/control.js' %}?',
+            'js/views/map-sidebar/healthsite-detail/detail': '{% static 'js/views/map-sidebar/healthsite-detail/detail.js' %}?',
+            'js/views/map-sidebar/healthsite-detail/duplication-control': '{% static 'js/views/map-sidebar/healthsite-detail/duplication-control.js' %}?',
+            'js/views/map-sidebar/healthsite-detail/form': '{% static 'js/views/map-sidebar/healthsite-detail/form.js' %}?',
+            'js/views/map-sidebar/healthsite-detail/request': '{% static 'js/views/map-sidebar/healthsite-detail/request.js' %}?',
+            'js/views/map-sidebar/healthsite-detail/form-widget/nominatim': '{% static 'js/views/map-sidebar/healthsite-detail/form-widget/nominatim.js' %}?',
+            'js/views/map-sidebar/healthsite-detail/form-widget/opening-hours': '{% static 'js/views/map-sidebar/healthsite-detail/form-widget/opening-hours.js' %}?',
+            'js/views/map-sidebar/healthsite-detail/modal/changeset-comment': '{% static 'js/views/map-sidebar/healthsite-detail/modal/changeset-comment.js' %}?',
         },
         shim: {
             bootstrap: {
