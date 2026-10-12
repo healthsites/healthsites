@@ -67,6 +67,7 @@ x-common-django:
 services:
   # Vanilla RabbitMQ service. This is needed by celery
   rabbitmq:
+    restart: unless-stopped
     image: rabbitmq:3.7-alpine
     container_name: healthsites_rabbitmq
     volumes:
@@ -79,6 +80,7 @@ services:
         window: 120s
 
   db:
+    restart: unless-stopped
     image: kartoza/postgis:13.0
     container_name: healthsites_db
     volumes:
@@ -96,6 +98,7 @@ services:
         window: 120s
 
   dbbackups:
+    restart: unless-stopped
     image: kartoza/pg-backup:13.0
     container_name: healthsites_dbbackups
     environment:

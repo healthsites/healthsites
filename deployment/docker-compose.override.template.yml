@@ -1,15 +1,18 @@
 version: '3.4'
 services:
   db:
+    restart: unless-stopped
     volumes:
       - ./volumes/database:/var/lib/postgresql/13
       - ./volumes/backups:/backups
 
   dbbackups:
+    restart: unless-stopped
     volumes:
       - ./volumes/backups:/backups
 
   django:
+    restart: unless-stopped
     build:
       context: ../
       dockerfile: deployment/docker/Dockerfile
@@ -21,6 +24,7 @@ services:
       - ./volumes/cache:/home/web/cache
 
   worker:
+    restart: unless-stopped
     build:
       context: ../
       dockerfile: deployment/docker/Dockerfile
@@ -31,6 +35,7 @@ services:
       - ./volumes/cache:/home/web/cache
 
   nginx:
+    restart: unless-stopped
     volumes:
       - ./nginx/sites-enabled:/etc/nginx/conf.d:ro
       - ./volumes/static:/home/web/static
