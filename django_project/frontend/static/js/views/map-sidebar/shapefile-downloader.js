@@ -21,7 +21,16 @@ define([
                 success: function (data) {
                     self.$el.html('<i>' + data['filename'] + ' (last update at : ' + new Date(data['time'] * 1000) + ')</i>');
                     self.$el.click(function () {
-                        window.location.href = api + "/facilities/shapefile/" + self.country + '/download';
+                        var url = api + "/facilities/shapefile/" + self.country + '/download';
+                        if (window.hsAnalytics) {
+                            window.hsAnalytics.event('file_download', {
+                                file_name: self.country + '.zip',
+                                file_extension: 'zip',
+                                link_url: url,
+                                country: self.country
+                            });
+                        }
+                        window.location.href = url;
                     });
                 },
                 error: function () {
