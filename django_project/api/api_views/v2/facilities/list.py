@@ -33,8 +33,7 @@ from api.utils import (
     validate_osm_data, convert_to_osm_tag, create_osm_node, verify_user
 )
 from core.settings.utils import ABS_PATH
-from localities.models import Country
-from localities_osm.queries import filter_locality
+from localities_osm.queries import filter_locality, get_country
 from localities_osm.utilities import split_osm_and_extension_attr
 from localities_osm_extension.utils import save_extensions
 
@@ -72,8 +71,7 @@ class GetFacilitiesBaseAPI(object):
             country = None
         if country:
             # getting country's polygon
-            country = Country.objects.get(
-                name__iexact=country)
+            country = get_country(country)
         return country
 
     def get_healthsites(self, request):
