@@ -10,3 +10,6 @@ __pycache__/
 
 django_project/.pycharm_helpers/
 celerybeat-schedule*
+.omc/
+
+.env
