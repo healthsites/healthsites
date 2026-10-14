@@ -10,7 +10,7 @@ from api.api_views.v2.base_api import BaseAPI
 from api.utilities.clustering import oms_view_cluster
 from api.utilities.geometry import parse_bbox
 from localities.models import Country
-from localities_osm.queries import all_locality
+from localities_osm.queries import all_locality, get_country
 
 
 class ErrorParameter(Exception):
@@ -77,8 +77,7 @@ class GetCluster(BaseAPI):
         if geoname:
             try:
                 # getting country's polygon
-                country = Country.objects.get(
-                    name__iexact=geoname)
+                country = get_country(geoname)
                 localities = localities.in_administrative(country.get_codes)
             except Country.DoesNotExist:
                 pass

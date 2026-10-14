@@ -5,12 +5,26 @@ from django.contrib.gis.geos import Polygon
 
 from api.api_views.v2.geocode.search import search_by_geoname
 from core.utils import parse_bbox
+from localities.country_codes import get_iso_3166_alpha3
 from localities.models.administration import Country
 from localities_osm.models.locality import LocalityOSMView
 
 
 def all_locality():
     return LocalityOSMView.objects.filter(osm_id__isnull=False)
+
+
+def get_country(country):
+    """Resolve the API's country name or ISO 3166-1 code to a Country."""
+    try:
+        return Country.objects.get(name__iexact=country)
+    except Country.DoesNotExist:
+        country_code = country.strip().upper() if isinstance(country, str) else ''
+        if len(country_code) == 2:
+            country_code = get_iso_3166_alpha3(country_code)
+        if country_code and len(country_code) == 3:
+            return Country.objects.get(code__iexact=country_code)
+        raise
 
 
 def filter_locality(
@@ -38,8 +52,7 @@ def filter_locality(
     if country:
         try:
             # getting country's polygon
-            country = Country.objects.get(
-                name__iexact=country)
+            country = get_country(country)
             if country:
                 queryset = queryset.in_administrative(country.get_codes)
         except Country.DoesNotExist:
