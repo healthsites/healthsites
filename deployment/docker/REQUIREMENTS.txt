@@ -19,3 +19,6 @@ pyshp==2.1.3
 PyYAML==6.0
 raven==6.10.0
 social-auth-app-django==5.4.1
+
+# behaviour-driven tests
+behave==1.2.6
